@@ -1,12 +1,11 @@
 package ua.nike.project.struct;
 
-
 public class Operation {
-    private Integer index = null;
-    private OperationDay operationDate; // дата операційного дня
+//    private Integer index = null;
+    private OperationDay operationDate; // ???????????? дата операційного дня    ????????????????
     private String timeForCome; // час приходу в день операції
     private Integer numberOfOrder; // номер по порядку виклику в операційну
-    private Patient patient;
+    private Human human;   //  ??????????????????
     private String operationAndEye = null;
     private String operation = null;
     private String eye = null;
@@ -15,12 +14,12 @@ public class Operation {
     private String roomAndPlace = null; // палата та ліжко для паціента
     private String note = null; // палата та ліжко для паціента
 
-    public Operation(Integer index, OperationDay operationDate, String timeForCome, Integer numberOfOrder, Patient patient, String operation, String eye, String surgeon, String manager, String roomAndPlace, String note) {
-        this.index = index;
+    public Operation(OperationDay operationDate, String timeForCome, Integer numberOfOrder, Human human, String operation, String eye, String surgeon, String manager, String roomAndPlace, String note) {
+//        this.index = index;
         setOperationDate(operationDate);
         setTimeForCome(timeForCome);
         setNumberOfOrder(numberOfOrder);
-        setPatient(patient);
+        setHuman(human);
         setOperation(operation);
         setEye(eye);
         setOperationAndEye(operation, eye);
@@ -54,12 +53,12 @@ public class Operation {
         this.numberOfOrder = numberOfOrder;
     }
 
-    public Patient getPatient() {
-        return patient;
+    public Human getHuman() {
+        return human;
     }
 
-    public void setPatient(Patient patient) {
-        this.patient = patient;
+    public void setHuman(Human human) {
+        this.human = human;
     }
 
     public String getOperationAndEye() {
@@ -118,6 +117,7 @@ public class Operation {
         this.note = note;
     }
 
+    // Create first point to Upper Case
     private String firstUpperCase(String word) {
         if (word == null || word.isEmpty()) {
             return "";
