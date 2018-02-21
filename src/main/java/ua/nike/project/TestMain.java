@@ -38,6 +38,6 @@ public class TestMain {
 //        }
 
         JdbcStorage jdbcStorage = new JdbcStorage();
-        System.out.println(jdbcStorage.getHumanName(1));
+        System.out.println(jdbcStorage.getHuman(3));
     }
 }

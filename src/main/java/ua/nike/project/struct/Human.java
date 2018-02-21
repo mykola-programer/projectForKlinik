@@ -3,21 +3,24 @@ package ua.nike.project.struct;
 import java.util.Objects;
 
 public class Human {
+    private final Integer uid;
     private final String surname;
     private final String firstName;
     private final String secondName;
     private final String allName;
-    private final String sex;
+    private final Character sex;
     private final String status;
-    private Integer telephone;
+    private final String telephone;
 
-    public Human(String surname, String firstName, String secondName, String sex, String status) {
+    public Human(Integer uid, String surname, String firstName, String secondName, Character sex, String status, String telephone) {
+        this.uid = uid;
         this.surname = firstUpperCase(surname);
         this.firstName = firstUpperCase(firstName);
         this.secondName = firstUpperCase(secondName);
         this.allName = this.surname + " " + this.firstName + " " + this.secondName;
-        this.sex = sex.toLowerCase();
+        this.sex = sex;
         this.status = status.toLowerCase();
+        this.telephone = telephone;
     }
 
     public String getSurname() {
@@ -36,7 +39,7 @@ public class Human {
         return allName;
     }
 
-    public String getSex() {
+    public Character getSex() {
         return sex;
     }
 
@@ -44,17 +47,13 @@ public class Human {
         return status;
     }
 
-    public Integer getTelephone() {
+    public String getTelephone() {
         return telephone;
     }
 
-    public void setTelephone(Integer telephone) {
-        this.telephone = telephone;
-    }
-
-    // Create first point to Upper Case. Another case is Lower Case.
 
     /**
+     * Create first point to Upper Case. Another case is Lower Case.
      *
      * @param word - це будь яке слово типу String, яке треба вивести з великої букви
      * @return String - повертає теж саме слово, але з великої букви.
@@ -88,5 +87,18 @@ public class Human {
     @Override
     public int hashCode() {
         return Objects.hash(surname, firstName, secondName);
+    }
+
+    @Override
+    public String toString() {
+        return "Human{" +
+                "Індекс=" + uid +
+                ", Прізвище='" + surname + '\'' +
+                ", Ім'я='" + firstName + '\'' +
+                ", По-батькові='" + secondName + '\'' +
+                ", Стать=" + sex +
+                ", Статус='" + status + '\'' +
+                ", Телефон='" + telephone + '\'' +
+                '}';
     }
 }
