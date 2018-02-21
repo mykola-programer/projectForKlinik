@@ -2,6 +2,7 @@ package ua.nike.project;
 
 import ua.nike.project.service.JdbcStorage;
 import ua.nike.project.service.Settings;
+import ua.nike.project.struct.Human;
 
 import java.io.FileNotFoundException;
 import java.sql.*;
@@ -36,8 +37,12 @@ public class TestMain {
 //            System.out.println("Wrong parameters to connection. Please, check your file 'my.properties' !");
 //            e.printStackTrace();
 //        }
+//
 
         JdbcStorage jdbcStorage = new JdbcStorage();
         System.out.println(jdbcStorage.getHuman(3));
+        Human human6 = new Human(null, "Мітрік", "", "", 'Ж', "супроводжуючий", "+380991235767");
+        human6.setUid(jdbcStorage.addHuman(human6));
+        System.out.println(jdbcStorage.getHuman("uid", human6.getUid().toString()));
     }
 }

@@ -3,7 +3,8 @@ package ua.nike.project.struct;
 import java.util.Objects;
 
 public class Human {
-    private final Integer uid;
+    private Integer uid;
+
     private final String surname;
     private final String firstName;
     private final String secondName;
@@ -11,7 +12,6 @@ public class Human {
     private final Character sex;
     private final String status;
     private final String telephone;
-
     public Human(Integer uid, String surname, String firstName, String secondName, Character sex, String status, String telephone) {
         this.uid = uid;
         this.surname = firstUpperCase(surname);
@@ -21,6 +21,14 @@ public class Human {
         this.sex = sex;
         this.status = status.toLowerCase();
         this.telephone = telephone;
+    }
+
+    public Integer getUid() {
+        return uid;
+    }
+
+    public void setUid(Integer uid) {
+        this.uid = uid;
     }
 
     public String getSurname() {
