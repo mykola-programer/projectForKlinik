@@ -40,7 +40,14 @@ public class TestMain {
 //
 
         JdbcStorage jdbcStorage = new JdbcStorage();
-        System.out.println(jdbcStorage.getHumans());
+        for (Human human:jdbcStorage.getHumans()){
+            System.out.println(human);
+        }
+        System.out.println("---------------------");
+        jdbcStorage.editHuman(1, new Human(null, "Мельник", "", "", 'Ж', "супроводжуючий", "+380638326767"));
+        for (Human human:jdbcStorage.getHumans()){
+            System.out.println(human);
+        }
 //        Human human6 = new Human(null, "Мітрік", "", "", 'Ж', "супроводжуючий", "+380991235767");
   //      human6.setUid(jdbcStorage.addHuman(human6));
     //    System.out.println(jdbcStorage.getHuman("uid", human6.getUid().toString()));

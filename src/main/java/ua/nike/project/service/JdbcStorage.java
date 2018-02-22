@@ -3,7 +3,6 @@ package ua.nike.project.service;
 import ua.nike.project.struct.Human;
 
 import java.sql.*;
-import java.util.ArrayList;
 import java.util.LinkedList;
 
 /**
@@ -12,7 +11,6 @@ import java.util.LinkedList;
 public class JdbcStorage {
 
     private Connection connect;  // ???????????
-    private LinkedList<Human> humans;
 
     /**
      * Конструктор створює конект до бази даних
@@ -115,7 +113,12 @@ public class JdbcStorage {
         return 0;
     }
 
+    /**
+     *
+     * @return - повертає список всіх записів які зберігаються в таблиці Human (SQL-base)
+     */
     public LinkedList<Human> getHumans() {
+        LinkedList<Human> humans = new LinkedList<Human>();
         try (Statement statement = this.connect.createStatement();
              ResultSet result = statement.executeQuery("select * from human")) {
             while(result.next()) {
@@ -134,5 +137,31 @@ public class JdbcStorage {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public void editHuman(int index, Human human) {
+        String surname = human.getSurname();
+        String firstName = human.getFirstName();
+        String secondName = human.getSecondName();
+        char sex = human.getSex();
+        String status = human.getStatus();
+        String telephone = human.getTelephone();
+// Human(null, "Шпак", "", "", 'Ж', "супроводжуючий", "+380637943767")
+//
+// update human set surname = 'Шпак', firstName = '', secondName='', sex='Ж', status = 'супроводжуючий', phone = '+380637943767' where uid = 7
+//
+        try (Statement statement = this.connect.createStatement()) {
+            statement.executeUpdate(String.format("update human set " +
+                            "surname = '%s', " +
+                            "firstName = '%s', " +
+                            "secondName = '%s', " +
+                            "sex = '%s', " +
+                            "status = '%s', " +
+                            "phone = '%s' " +
+                            "where uid = '%s'",
+                    surname, firstName, secondName, sex, status, telephone, index ));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }
