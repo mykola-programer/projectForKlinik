@@ -3,6 +3,8 @@ package ua.nike.project.service;
 import ua.nike.project.struct.Human;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
 
 /**
  * Клас в якому описані всі основні операції(методи) з базою даних :
@@ -10,6 +12,7 @@ import java.sql.*;
 public class JdbcStorage {
 
     private Connection connect;  // ???????????
+    private LinkedList<Human> humans;
 
     /**
      * Конструктор створює конект до бази даних
@@ -110,5 +113,26 @@ public class JdbcStorage {
             e.printStackTrace();
         }
         return 0;
+    }
+
+    public LinkedList<Human> getHumans() {
+        try (Statement statement = this.connect.createStatement();
+             ResultSet result = statement.executeQuery("select * from human")) {
+            while(result.next()) {
+                int uid = result.getInt("uid");
+                String surname = result.getString("surname");
+                String firstName = result.getString("firstName");
+                String secondName = result.getString("secondName");
+                char sex = result.getString("sex").toCharArray()[0];
+                String status = result.getString("status");
+                String telephone = result.getString("phone");
+
+                humans.add(new Human(uid, surname, firstName, secondName, sex, status, telephone));
+            }
+            return humans;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
