@@ -8,14 +8,14 @@ import java.util.LinkedList;
 /**
  * Клас в якому описані всі основні операції(методи) з базою даних :
  */
-public class JdbcStorage {
+public class JdbcStoragePatient {
 
     private Connection connect;  // ???????????
 
     /**
      * Конструктор створює конект до бази даних
      */
-    public JdbcStorage() {
+    public JdbcStoragePatient() {
         final String URL = Settings.getSettings().value("jdbc.url");
         final String USERNAME = Settings.getSettings().value("jdbc.username");
         final String PASSWORD = Settings.getSettings().value("jdbc.password");

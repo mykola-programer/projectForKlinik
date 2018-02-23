@@ -1,6 +1,6 @@
 package ua.nike.project;
 
-import ua.nike.project.service.JdbcStorage;
+import ua.nike.project.service.JdbcStoragePatient;
 import ua.nike.project.struct.Patient;
 
 import java.io.FileNotFoundException;
@@ -8,13 +8,13 @@ import java.io.FileNotFoundException;
 public class TestMain {
     public static void main(String[] args) throws FileNotFoundException, ClassNotFoundException {
 
-        JdbcStorage jdbcStorage = new JdbcStorage();
-        for (Patient patient :jdbcStorage.getHumans()){
+        JdbcStoragePatient jdbcStoragePatient = new JdbcStoragePatient();
+        for (Patient patient : jdbcStoragePatient.getHumans()){
             System.out.println(patient);
         }
         System.out.println("---------------------");
-        jdbcStorage.editHuman(1, new Patient(null, "Мельник", "", "", 'Ж', "супроводжуючий", "+380638326767"));
-        for (Patient patient :jdbcStorage.getHumans()){
+        jdbcStoragePatient.editHuman(1, new Patient(null, "Мельник", "", "", 'Ж', "супроводжуючий", "+380638326767"));
+        for (Patient patient : jdbcStoragePatient.getHumans()){
             System.out.println(patient);
         }
 
@@ -51,7 +51,7 @@ public class TestMain {
 //
 
 //        Patient human6 = new Patient(null, "Мітрік", "", "", 'Ж', "супроводжуючий", "+380991235767");
-  //      human6.setUid(jdbcStorage.addHuman(human6));
-    //    System.out.println(jdbcStorage.getPatient("uid", human6.getUid().toString()));
+  //      human6.setUid(jdbcStoragePatient.addHuman(human6));
+    //    System.out.println(jdbcStoragePatient.getPatient("uid", human6.getUid().toString()));
     }
 }
