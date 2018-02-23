@@ -39,11 +39,11 @@ public class JdbcStoragePatient {
      * @return повертає екземпляр класу Patient.
      * Якщо запис не знайдено, то викидає SQLException та передає значення null.
      */
-    public Patient getHuman(int index) {
+    public Patient getPatient(int index) {
         try (Statement statement = this.connect.createStatement();
-             ResultSet result = statement.executeQuery("select * from human where uid = " + index)) {
+             ResultSet result = statement.executeQuery("select * from patient where uid = " + index)) {
             result.next();
-            int uid = result.getInt("human_id");
+            int uid = result.getInt("patient_id");
             String surname = result.getString("surname");
             String firstName = result.getString("firstName");
             String secondName = result.getString("secondName");
@@ -65,9 +65,9 @@ public class JdbcStoragePatient {
      * @return повертає перший знайдений екземпляр класу Patient.
      * Якщо не знайдено жодного запису, то викидає SQLException та передає значення null.
      */
-    public Patient getHuman(String parameter, String value) {
+    public Patient getPatient(String parameter, String value) {
         try (Statement statement = this.connect.createStatement();
-             ResultSet result = statement.executeQuery("select * from human where " + parameter + " = " + value)) {
+             ResultSet result = statement.executeQuery("select * from patient where " + parameter + " = " + value)) {
             result.next();
             int uid = result.getInt("uid");
             String surname = result.getString("surname");
@@ -88,7 +88,7 @@ public class JdbcStoragePatient {
      * @return - повертається true, якщо запис в базу відбувся без Exeptions,
      * повертає false, якщо запис не було додано !
      */
-    public int addHuman(Patient patient) {
+    public int addPatient(Patient patient) {
         String surname = patient.getSurname();
         String firstName = patient.getFirstName();
         String secondName = patient.getSecondName();
@@ -117,10 +117,10 @@ public class JdbcStoragePatient {
      *
      * @return - повертає список всіх записів які зберігаються в таблиці Patient (SQL-base)
      */
-    public LinkedList<Patient> getHumans() {
+    public LinkedList<Patient> getPatients() {
         LinkedList<Patient> patients = new LinkedList<Patient>();
         try (Statement statement = this.connect.createStatement();
-             ResultSet result = statement.executeQuery("select * from human")) {
+             ResultSet result = statement.executeQuery("select * from patient")) {
             while(result.next()) {
                 int uid = result.getInt("uid");
                 String surname = result.getString("surname");
@@ -139,7 +139,7 @@ public class JdbcStoragePatient {
         return null;
     }
 
-    public void editHuman(int index, Patient patient) {
+    public void editPatient(int index, Patient patient) {
         String surname = patient.getSurname();
         String firstName = patient.getFirstName();
         String secondName = patient.getSecondName();
