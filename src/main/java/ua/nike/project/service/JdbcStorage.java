@@ -1,6 +1,6 @@
 package ua.nike.project.service;
 
-import ua.nike.project.struct.Human;
+import ua.nike.project.struct.Patient;
 
 import java.sql.*;
 import java.util.LinkedList;
@@ -33,24 +33,24 @@ public class JdbcStorage {
     }
 
     /**
-     * Метод повертає із SQL бази екземпляр класу Human по вказазаному індексу
+     * Метод повертає із SQL бази екземпляр класу Patient по вказазаному індексу
      *
      * @param index - це індекс, по якому буде здійснюватись пошук по базі відповідного значення
-     * @return повертає екземпляр класу Human.
+     * @return повертає екземпляр класу Patient.
      * Якщо запис не знайдено, то викидає SQLException та передає значення null.
      */
-    public Human getHuman(int index) {
+    public Patient getHuman(int index) {
         try (Statement statement = this.connect.createStatement();
              ResultSet result = statement.executeQuery("select * from human where uid = " + index)) {
             result.next();
-            int uid = result.getInt("uid");
+            int uid = result.getInt("human_id");
             String surname = result.getString("surname");
             String firstName = result.getString("firstName");
             String secondName = result.getString("secondName");
             char sex = result.getString("sex").toCharArray()[0];
             String status = result.getString("status");
             String telephone = result.getString("phone");
-            return new Human(uid, surname, firstName, secondName, sex, status, telephone);
+            return new Patient(uid, surname, firstName, secondName, sex, status, telephone);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -58,14 +58,14 @@ public class JdbcStorage {
     }
 
     /**
-     * Метод повертає із SQL бази екземпляр класу Human по вказазаному параметру та його значенню
+     * Метод повертає із SQL бази екземпляр класу Patient по вказазаному параметру та його значенню
      *
      * @param parameter - це параметер, по якому буде здійснюватись пошук по базі відповідного значення
      * @param value     - це значення параметру, по якому здійснюється пошук по базі
-     * @return повертає перший знайдений екземпляр класу Human.
+     * @return повертає перший знайдений екземпляр класу Patient.
      * Якщо не знайдено жодного запису, то викидає SQLException та передає значення null.
      */
-    public Human getHuman(String parameter, String value) {
+    public Patient getHuman(String parameter, String value) {
         try (Statement statement = this.connect.createStatement();
              ResultSet result = statement.executeQuery("select * from human where " + parameter + " = " + value)) {
             result.next();
@@ -76,7 +76,7 @@ public class JdbcStorage {
             char sex = result.getString("sex").toCharArray()[0];
             String status = result.getString("status");
             String telephone = result.getString("phone");
-            return new Human(uid, surname, firstName, secondName, sex, status, telephone);
+            return new Patient(uid, surname, firstName, secondName, sex, status, telephone);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -84,20 +84,20 @@ public class JdbcStorage {
     }
 
     /**
-     * @param human - передається екземпляр класу Human
+     * @param patient - передається екземпляр класу Patient
      * @return - повертається true, якщо запис в базу відбувся без Exeptions,
      * повертає false, якщо запис не було додано !
      */
-    public int addHuman(Human human) {
-        String surname = human.getSurname();
-        String firstName = human.getFirstName();
-        String secondName = human.getSecondName();
-        char sex = human.getSex();
-        String status = human.getStatus();
-        String telephone = human.getTelephone();
+    public int addHuman(Patient patient) {
+        String surname = patient.getSurname();
+        String firstName = patient.getFirstName();
+        String secondName = patient.getSecondName();
+        char sex = patient.getSex();
+        String status = patient.getStatus();
+        String telephone = patient.getTelephone();
 
         try (Statement statement = this.connect.createStatement()) {
-            statement.executeUpdate(String.format("insert into human (surname, firstName, secondName, sex, status, phone) " +
+            statement.executeUpdate(String.format("insert into patient (surname, firstName, secondName, sex, status, phone) " +
                     "values ('%s', '%s', '%s', '%s', '%s', '%s')", surname, firstName, secondName, sex, status, telephone));
 // замінити код на більш захищеніший !!!
 //--------------------------------------------------------------------------
@@ -115,10 +115,10 @@ public class JdbcStorage {
 
     /**
      *
-     * @return - повертає список всіх записів які зберігаються в таблиці Human (SQL-base)
+     * @return - повертає список всіх записів які зберігаються в таблиці Patient (SQL-base)
      */
-    public LinkedList<Human> getHumans() {
-        LinkedList<Human> humans = new LinkedList<Human>();
+    public LinkedList<Patient> getHumans() {
+        LinkedList<Patient> patients = new LinkedList<Patient>();
         try (Statement statement = this.connect.createStatement();
              ResultSet result = statement.executeQuery("select * from human")) {
             while(result.next()) {
@@ -130,28 +130,28 @@ public class JdbcStorage {
                 String status = result.getString("status");
                 String telephone = result.getString("phone");
 
-                humans.add(new Human(uid, surname, firstName, secondName, sex, status, telephone));
+                patients.add(new Patient(uid, surname, firstName, secondName, sex, status, telephone));
             }
-            return humans;
+            return patients;
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return null;
     }
 
-    public void editHuman(int index, Human human) {
-        String surname = human.getSurname();
-        String firstName = human.getFirstName();
-        String secondName = human.getSecondName();
-        char sex = human.getSex();
-        String status = human.getStatus();
-        String telephone = human.getTelephone();
-// Human(null, "Шпак", "", "", 'Ж', "супроводжуючий", "+380637943767")
+    public void editHuman(int index, Patient patient) {
+        String surname = patient.getSurname();
+        String firstName = patient.getFirstName();
+        String secondName = patient.getSecondName();
+        char sex = patient.getSex();
+        String status = patient.getStatus();
+        String telephone = patient.getTelephone();
+// Patient(null, "Шпак", "", "", 'Ж', "супроводжуючий", "+380637943767")
 //
-// update human set surname = 'Шпак', firstName = '', secondName='', sex='Ж', status = 'супроводжуючий', phone = '+380637943767' where uid = 7
+// update patient set surname = 'Шпак', firstName = '', secondName='', sex='Ж', status = 'супроводжуючий', phone = '+380637943767' where uid = 7
 //
         try (Statement statement = this.connect.createStatement()) {
-            statement.executeUpdate(String.format("update human set " +
+            statement.executeUpdate(String.format("update patient set " +
                             "surname = '%s', " +
                             "firstName = '%s', " +
                             "secondName = '%s', " +

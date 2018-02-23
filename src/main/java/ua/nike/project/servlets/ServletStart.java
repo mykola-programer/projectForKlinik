@@ -1,14 +1,12 @@
 package ua.nike.project.servlets;
 
-import ua.nike.project.struct.Human;
+import ua.nike.project.struct.Patient;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.time.Clock;
-import java.time.LocalDate;
 import java.util.Date;
 import java.util.TreeSet;
 
@@ -28,14 +26,14 @@ public class ServletStart extends HttpServlet{
                     "</body>\n" +
                     "</html>\n";
 
-    private TreeSet<Human> humanTreeSet;
+    private TreeSet<Patient> patientTreeSet;
 
-    public TreeSet<Human> getHumanTreeSet() {
-        return humanTreeSet;
+    public TreeSet<Patient> getPatientTreeSet() {
+        return patientTreeSet;
     }
 
-    public void setHumanTreeSet(TreeSet<Human> humanTreeSet) {
-        this.humanTreeSet = humanTreeSet;
+    public void setPatientTreeSet(TreeSet<Patient> patientTreeSet) {
+        this.patientTreeSet = patientTreeSet;
     }
 
     @Override

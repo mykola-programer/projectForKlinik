@@ -2,7 +2,7 @@ package ua.nike.project.struct;
 
 import java.util.Objects;
 
-public class Human {
+public class Patient {
     private Integer uid;
 
     private final String surname;
@@ -12,7 +12,7 @@ public class Human {
     private final Character sex;
     private final String status;
     private final String telephone;
-    public Human(Integer uid, String surname, String firstName, String secondName, Character sex, String status, String telephone) {
+    public Patient(Integer uid, String surname, String firstName, String secondName, Character sex, String status, String telephone) {
         this.uid = uid;
         this.surname = firstUpperCase(surname);
         this.firstName = firstUpperCase(firstName);
@@ -78,18 +78,18 @@ public class Human {
      *
      * @param o - обєкт, який потрібно порівняти з поточним.
      * @return Якщо обєкти зсилають на один і той же обєкт,
-     *         якщо обєкти є обєктами Human,
+     *         якщо обєкти є обєктами Patient,
      *         якщо у обектів рівні поля(surname,firstName,secondName),
      *         то метод повертає true.
      */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Human)) return false;
-        Human human = (Human) o;
-        return Objects.equals(surname, human.surname) &&
-                Objects.equals(firstName, human.firstName) &&
-                Objects.equals(secondName, human.secondName);
+        if (!(o instanceof Patient)) return false;
+        Patient patient = (Patient) o;
+        return Objects.equals(surname, patient.surname) &&
+                Objects.equals(firstName, patient.firstName) &&
+                Objects.equals(secondName, patient.secondName);
     }
 
     @Override
@@ -99,7 +99,7 @@ public class Human {
 
     @Override
     public String toString() {
-        return "Human{" +
+        return "Patient{" +
                 "Індекс=" + uid +
                 ", Прізвище='" + surname + '\'' +
                 ", Ім'я='" + firstName + '\'' +
