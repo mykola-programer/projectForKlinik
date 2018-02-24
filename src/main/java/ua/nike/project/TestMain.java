@@ -9,12 +9,12 @@ public class TestMain {
     public static void main(String[] args) throws FileNotFoundException, ClassNotFoundException {
 
         JdbcStoragePatient jdbcStoragePatient = new JdbcStoragePatient();
-        for (Patient patient : jdbcStoragePatient.getHumans()){
+        for (Patient patient : jdbcStoragePatient.getPatients()){
             System.out.println(patient);
         }
         System.out.println("---------------------");
-        jdbcStoragePatient.editHuman(1, new Patient(null, "Мельник", "", "", 'Ж', "супроводжуючий", "+380638326767"));
-        for (Patient patient : jdbcStoragePatient.getHumans()){
+        jdbcStoragePatient.editPatient(1, new Patient(null, "Мельник", "", "", 'Ж', "супроводжуючий", 1, "+380638326767"));
+        for (Patient patient : jdbcStoragePatient.getPatients()){
             System.out.println(patient);
         }
 

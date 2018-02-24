@@ -3,69 +3,99 @@ package ua.nike.project.struct;
 import java.util.Objects;
 
 public class Patient {
-    private Integer uid;
+    private Integer patient_id;
+    private String surname;
+    private String firstName;
+    private String secondName;
+    private Character sex;
+    private String status;
+    private Integer relative_id;
+    private String telephone;
 
-    private final String surname;
-    private final String firstName;
-    private final String secondName;
-    private final String allName;
-    private final Character sex;
-    private final String status;
-    private final String telephone;
-    public Patient(Integer uid, String surname, String firstName, String secondName, Character sex, String status, String telephone) {
-        this.uid = uid;
-        this.surname = firstUpperCase(surname);
-        this.firstName = firstUpperCase(firstName);
-        this.secondName = firstUpperCase(secondName);
-        this.allName = this.surname + " " + this.firstName + " " + this.secondName;
-        this.sex = sex;
-        this.status = status.toLowerCase();
-        this.telephone = telephone;
+    public Patient() {
     }
 
-    public Integer getUid() {
-        return uid;
+    public Patient(Integer patient_id, String surname, String firstName, String secondName, Character sex, String status, Integer relative_id, String telephone) {
+        setPatient_id(patient_id);
+        setSurname(surname);
+        setFirstName(firstName);
+        setSecondName(secondName);
+        setSex(sex);
+        setStatus(status);
+        setRelative_id(relative_id);
+        setTelephone(telephone);
     }
 
-    public void setUid(Integer uid) {
-        this.uid = uid;
+    public Integer getPatient_id() {
+        return patient_id;
+    }
+
+    public void setPatient_id(Integer patient_id) {
+        this.patient_id = patient_id;
     }
 
     public String getSurname() {
         return surname;
     }
 
+    public void setSurname(String surname) {
+        this.surname = firstUpperCase(surname);
+    }
+
     public String getFirstName() {
         return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstUpperCase(firstName);
     }
 
     public String getSecondName() {
         return secondName;
     }
 
-    public String getAllName() {
-        return allName;
+    public void setSecondName(String secondName) {
+        this.secondName = firstUpperCase(secondName);
     }
 
     public Character getSex() {
         return sex;
     }
 
+    public void setSex(Character sex) {
+        this.sex = sex;
+    }
+
     public String getStatus() {
         return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status.toLowerCase();
+    }
+
+    public Integer getRelative_id() {
+        return relative_id;
+    }
+
+    public void setRelative_id(Integer relative_id) {
+        this.relative_id = relative_id;
     }
 
     public String getTelephone() {
         return telephone;
     }
 
+    public void setTelephone(String telephone) {
+        this.telephone = telephone;
+    }
 
     /**
      * Create first point to Upper Case. Another case is Lower Case.
      *
      * @param word - це будь яке слово типу String, яке треба вивести з великої букви
      * @return String - повертає теж саме слово, але з великої букви.
-     *         Якщо переданий пареметр пуста строка, чи пуста ссилка, то метод повертає пусту строку.
+     * Якщо переданий пареметр пуста строка, чи пуста ссилка, то метод повертає пусту строку.
      */
     private String firstUpperCase(String word) {
         if (word == null || word.isEmpty()) {
@@ -74,33 +104,31 @@ public class Patient {
         return word.substring(0, 1).toUpperCase() + word.substring(1).toLowerCase();
     }
 
-    /**
-     *
-     * @param o - обєкт, який потрібно порівняти з поточним.
-     * @return Якщо обєкти зсилають на один і той же обєкт,
-     *         якщо обєкти є обєктами Patient,
-     *         якщо у обектів рівні поля(surname,firstName,secondName),
-     *         то метод повертає true.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Patient)) return false;
         Patient patient = (Patient) o;
-        return Objects.equals(surname, patient.surname) &&
+        return Objects.equals(patient_id, patient.patient_id) &&
+                Objects.equals(surname, patient.surname) &&
                 Objects.equals(firstName, patient.firstName) &&
-                Objects.equals(secondName, patient.secondName);
+                Objects.equals(secondName, patient.secondName) &&
+                Objects.equals(sex, patient.sex) &&
+                Objects.equals(status, patient.status) &&
+                Objects.equals(relative_id, patient.relative_id) &&
+                Objects.equals(telephone, patient.telephone);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(surname, firstName, secondName);
+
+        return Objects.hash(patient_id, surname, firstName, secondName, sex, status, relative_id, telephone);
     }
 
     @Override
     public String toString() {
         return "Patient{" +
-                "Індекс=" + uid +
+                "Індекс=" + patient_id +
                 ", Прізвище='" + surname + '\'' +
                 ", Ім'я='" + firstName + '\'' +
                 ", По-батькові='" + secondName + '\'' +

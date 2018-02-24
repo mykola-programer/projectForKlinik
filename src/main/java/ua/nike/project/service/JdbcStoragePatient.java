@@ -6,14 +6,18 @@ import java.sql.*;
 import java.util.LinkedList;
 
 /**
- * Клас в якому описані всі основні операції(методи) з базою даних :
+ * This {@code JdbcStoragePatient} class is used for creating connection to the database "Patient".
+ * The class {@code JdbcStoragePatient} includes methods for working with database "Patient"...
  */
 public class JdbcStoragePatient {
 
-    private Connection connect;  // ???????????
+    /** The value is used for the connection to database. */
+    private Connection connect;
 
-    /**
-     * Конструктор створює конект до бази даних
+
+
+    /** Initializes a newly created {@code JdbcStoragePatient} object and automatically creating connection
+     * to the database.
      */
     public JdbcStoragePatient() {
         final String URL = Settings.getSettings().value("jdbc.url");
@@ -33,60 +37,64 @@ public class JdbcStoragePatient {
     }
 
     /**
-     * Метод повертає із SQL бази екземпляр класу Patient по вказазаному індексу
+     * This method return from database instance of class {@code Patient} of the index.
      *
-     * @param index - це індекс, по якому буде здійснюватись пошук по базі відповідного значення
-     * @return повертає екземпляр класу Patient.
-     * Якщо запис не знайдено, то викидає SQLException та передає значення null.
+     * @param index   Index in the database.
+     * @return  Return instance of class {@code Patient}.
+     *          If generated exception, then return NULL.
      */
     public Patient getPatient(int index) {
         try (Statement statement = this.connect.createStatement();
-             ResultSet result = statement.executeQuery("select * from patient where uid = " + index)) {
+             ResultSet result = statement.executeQuery("select * from patient where patient_id = " + index)) {
             result.next();
-            int uid = result.getInt("patient_id");
+            int patient_id = result.getInt("patient_id");
             String surname = result.getString("surname");
             String firstName = result.getString("firstName");
             String secondName = result.getString("secondName");
             char sex = result.getString("sex").toCharArray()[0];
             String status = result.getString("status");
+            int relative_id = result.getInt("relative_id");
             String telephone = result.getString("phone");
-            return new Patient(uid, surname, firstName, secondName, sex, status, telephone);
+            return new Patient(patient_id, surname, firstName, secondName, sex, status, relative_id, telephone);
         } catch (SQLException e) {
             e.printStackTrace();
+            return null;
         }
-        return null;
     }
 
     /**
-     * Метод повертає із SQL бази екземпляр класу Patient по вказазаному параметру та його значенню
+     * This method return from database instance of class {@code Patient} of parameter and his value.
      *
-     * @param parameter - це параметер, по якому буде здійснюватись пошук по базі відповідного значення
-     * @param value     - це значення параметру, по якому здійснюється пошук по базі
-     * @return повертає перший знайдений екземпляр класу Patient.
-     * Якщо не знайдено жодного запису, то викидає SQLException та передає значення null.
+     * @param parameter Parameter in the database.
+     * @param value     Value of parameter.
+     * @return Return instance of class {@code Patient}.
+     *          If this method generated exception, then return NULL.
      */
     public Patient getPatient(String parameter, String value) {
         try (Statement statement = this.connect.createStatement();
              ResultSet result = statement.executeQuery("select * from patient where " + parameter + " = " + value)) {
             result.next();
-            int uid = result.getInt("uid");
+            int patient_id = result.getInt("patient_id");
             String surname = result.getString("surname");
             String firstName = result.getString("firstName");
             String secondName = result.getString("secondName");
             char sex = result.getString("sex").toCharArray()[0];
             String status = result.getString("status");
+            int relative_id = result.getInt("relative_id");
             String telephone = result.getString("phone");
-            return new Patient(uid, surname, firstName, secondName, sex, status, telephone);
+            return new Patient(patient_id, surname, firstName, secondName, sex, status, relative_id, telephone);
         } catch (SQLException e) {
             e.printStackTrace();
+            return null;
         }
-        return null;
     }
 
     /**
-     * @param patient - передається екземпляр класу Patient
-     * @return - повертається true, якщо запис в базу відбувся без Exeptions,
-     * повертає false, якщо запис не було додано !
+     * This method insert to database instance of class {@code Patient} of parameter and his value.
+     *
+     * @param patient Instance of class {@code Patient}.
+     * @return - After insert to database, this method return patient_id from database.
+     *          If this method generated exception, then return 0.
      */
     public int addPatient(Patient patient) {
         String surname = patient.getSurname();
@@ -94,62 +102,73 @@ public class JdbcStoragePatient {
         String secondName = patient.getSecondName();
         char sex = patient.getSex();
         String status = patient.getStatus();
+        int relative_id = patient.getRelative_id();
         String telephone = patient.getTelephone();
 
         try (Statement statement = this.connect.createStatement()) {
-            statement.executeUpdate(String.format("insert into patient (surname, firstName, secondName, sex, status, phone) " +
-                    "values ('%s', '%s', '%s', '%s', '%s', '%s')", surname, firstName, secondName, sex, status, telephone));
+            statement.executeUpdate(String.format("insert into patient (surname, firstName, secondName, sex, status, relative_id, phone) " +
+                    "values ('%s', '%s', '%s', '%s', '%s', '%s', '%s')", surname, firstName, secondName, sex, status, relative_id, telephone));
 // замінити код на більш захищеніший !!!
 //--------------------------------------------------------------------------
+//
+//            try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
+//                if (generatedKeys.next()){
+//                    return generatedKeys.getInt(1);
+//                }
+//            }
 
-            try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
-                if (generatedKeys.next()){
-                    return generatedKeys.getInt(1);
-                }
-            }
+
         } catch (SQLException e) {
             e.printStackTrace();
+            return 0;
         }
         return 0;
     }
 
     /**
      *
-     * @return - повертає список всіх записів які зберігаються в таблиці Patient (SQL-base)
+     * @return List of instance of class {@code Patient} from table patient in database.
+     *         If this method generated exception, then return NULL.
      */
     public LinkedList<Patient> getPatients() {
         LinkedList<Patient> patients = new LinkedList<Patient>();
         try (Statement statement = this.connect.createStatement();
              ResultSet result = statement.executeQuery("select * from patient")) {
             while(result.next()) {
-                int uid = result.getInt("uid");
+                int patient_id = result.getInt("patient_id");
                 String surname = result.getString("surname");
                 String firstName = result.getString("firstName");
                 String secondName = result.getString("secondName");
                 char sex = result.getString("sex").toCharArray()[0];
                 String status = result.getString("status");
+                int relative_id = result.getInt("relative_id");
                 String telephone = result.getString("phone");
 
-                patients.add(new Patient(uid, surname, firstName, secondName, sex, status, telephone));
+                patients.add(new Patient(patient_id, surname, firstName, secondName, sex, status, relative_id, telephone));
             }
             return patients;
         } catch (SQLException e) {
             e.printStackTrace();
+            return null;
         }
-        return null;
     }
 
-    public void editPatient(int index, Patient patient) {
+    /**
+     *
+     * @param index Index in the database.
+     * @param patient Instance of class {@code Patient}
+     * @return true, if patient in database is successfully update.
+     *          If this method generated exception, then return false.
+     */
+    public boolean editPatient(int index, Patient patient) {
         String surname = patient.getSurname();
         String firstName = patient.getFirstName();
         String secondName = patient.getSecondName();
         char sex = patient.getSex();
         String status = patient.getStatus();
+        int relative_id = patient.getRelative_id();
         String telephone = patient.getTelephone();
-// Patient(null, "Шпак", "", "", 'Ж', "супроводжуючий", "+380637943767")
-//
-// update patient set surname = 'Шпак', firstName = '', secondName='', sex='Ж', status = 'супроводжуючий', phone = '+380637943767' where uid = 7
-//
+
         try (Statement statement = this.connect.createStatement()) {
             statement.executeUpdate(String.format("update patient set " +
                             "surname = '%s', " +
@@ -157,11 +176,14 @@ public class JdbcStoragePatient {
                             "secondName = '%s', " +
                             "sex = '%s', " +
                             "status = '%s', " +
+                            "relative_id = '%s', " +
                             "phone = '%s' " +
-                            "where uid = '%s'",
-                    surname, firstName, secondName, sex, status, telephone, index ));
+                            "where patient_id = '%s'",
+                    surname, firstName, secondName, sex, status, relative_id, telephone, index ));
+            return true;
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
     }
 }

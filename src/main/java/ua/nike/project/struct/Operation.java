@@ -3,8 +3,8 @@ package ua.nike.project.struct;
 import java.util.Date;
 
 public class Operation {
-//    private Integer index = null;
-    private OperationDay operationDate; // ???????????? дата операційного дня    ????????????????
+    private Integer index;
+    private OperationDay operationDate;
     private Date timeForCome; // час приходу в день операції
     private Integer numberOfOrder; // номер по порядку виклику в операційну
     private Patient patient;   //  ??????????????????
@@ -15,6 +15,10 @@ public class Operation {
     private String manager; // менеджер, який оформляв на операцію
     private String roomAndPlace; // палата та ліжко для паціента
     private String note; // палата та ліжко для паціента
+
+    /** Initializes a newly created {@code Operation} object. */
+    public Operation() {
+    }
 
     public Operation(OperationDay operationDate, Date timeForCome, Integer numberOfOrder, Patient patient, String operation, String eye, String surgeon, String manager, String roomAndPlace, String note) {
         this.operationDate = operationDate;
