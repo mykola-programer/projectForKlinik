@@ -1,53 +1,61 @@
 package ua.nike.project.struct;
 
-import java.util.Date;
+import java.time.LocalTime;
+import java.util.Objects;
 
 public class Operation {
     private Integer index;
-    private OperationDay operationDate;
-    private Date timeForCome; // час приходу в день операції
-    private Integer numberOfOrder; // номер по порядку виклику в операційну
-    private Patient patient;   //  ??????????????????
-    private String operationAndEye;
-    private String operation;
+    private Integer operationDay_id;
+    private LocalTime timeForCome;
+    private Integer numberOfOrder;
+    private Integer patient_id;
+    private Integer operation_id;
     private String eye;
-    private String surgeon; // хірург, який буде робити операцію
-    private String manager; // менеджер, який оформляв на операцію
-    private String roomAndPlace; // палата та ліжко для паціента
-    private String note; // палата та ліжко для паціента
+    private String surgeon;
+    private String manager;
+    private String note;
 
-    /** Initializes a newly created {@code Operation} object. */
+    /**
+     * Initializes a newly created {@code Operation} object.
+     */
     public Operation() {
     }
 
-    public Operation(OperationDay operationDate, Date timeForCome, Integer numberOfOrder, Patient patient, String operation, String eye, String surgeon, String manager, String roomAndPlace, String note) {
-        this.operationDate = operationDate;
-        setOperationDate(operationDate);
+    @Deprecated
+    public Operation(Integer index, Integer operationDay_id, LocalTime timeForCome, Integer numberOfOrder, Integer patient_id, Integer operation_id, String eye, String surgeon, String manager, String note) {
+        this.index = index;
+        setOperationDay_id(operationDay_id);
         setTimeForCome(timeForCome);
         setNumberOfOrder(numberOfOrder);
-        setPatient(patient);
-        setOperation(operation);
+        setPatient_id(patient_id);
+        setOperation_id(operation_id);
         setEye(eye);
-        setOperationAndEye(operation, eye);
         setSurgeon(surgeon);
         setManager(manager);
-        setRoomAndPlace(roomAndPlace);
         setNote(note);
     }
 
-    public OperationDay getOperationDate() {
-        return operationDate;
+    public Integer getIndex() {
+        return index;
     }
 
-    public void setOperationDate(OperationDay operationDate) {
-        this.operationDate = operationDate;
+    public void setIndex(Integer index) {
+        this.index = index;
     }
 
-    public Date getTimeForCome() {
+    public Integer getOperationDay_id() {
+        return operationDay_id;
+    }
+
+    public void setOperationDay_id(Integer operationDay_id) {
+        this.operationDay_id = operationDay_id;
+    }
+
+    public LocalTime getTimeForCome() {
         return timeForCome;
     }
 
-    public void setTimeForCome(Date timeForCome) {
+    public void setTimeForCome(LocalTime timeForCome) {
         this.timeForCome = timeForCome;
     }
 
@@ -59,28 +67,20 @@ public class Operation {
         this.numberOfOrder = numberOfOrder;
     }
 
-    public Patient getPatient() {
-        return patient;
+    public Integer getPatient_id() {
+        return patient_id;
     }
 
-    public void setPatient(Patient patient) {
-        this.patient = patient;
+    public void setPatient_id(Integer patient_id) {
+        this.patient_id = patient_id;
     }
 
-    public String getOperationAndEye() {
-        return operationAndEye;
+    public Integer getOperation_id() {
+        return operation_id;
     }
 
-    public void setOperationAndEye(String operation, String eye) {
-        this.operationAndEye = operation + " " + eye.toUpperCase();
-    }
-
-    public String getOperation() {
-        return operation;
-    }
-
-    public void setOperation(String operation) {
-        this.operation = operation;
+    public void setOperation_id(Integer operation_id) {
+        this.operation_id = operation_id;
     }
 
     public String getEye() {
@@ -107,14 +107,6 @@ public class Operation {
         this.manager = firstUpperCase(manager);
     }
 
-    public String getRoomAndPlace() {
-        return roomAndPlace;
-    }
-
-    public void setRoomAndPlace(String roomAndPlace) {
-        this.roomAndPlace = roomAndPlace;
-    }
-
     public String getNote() {
         return note;
     }
@@ -123,11 +115,56 @@ public class Operation {
         this.note = note;
     }
 
-    // Create first point to Upper Case
+    /**
+     * Convert first symbol in this {@code String} to Upper Case. Another symbols is Lower Case.
+     *
+     * @param word This is a {@code String}, that needs to be converted to a specific format.
+     * @return {@code String} first symbol to Upper Case and another symbols is Lower Case.
+     * If word is null or "", that return "".
+     */
     private String firstUpperCase(String word) {
         if (word == null || word.isEmpty()) {
             return "";
         }
         return word.substring(0, 1).toUpperCase() + word.substring(1).toLowerCase();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Operation)) return false;
+        Operation operation = (Operation) o;
+        return Objects.equals(index, operation.index) &&
+                Objects.equals(operationDay_id, operation.operationDay_id) &&
+                Objects.equals(timeForCome, operation.timeForCome) &&
+                Objects.equals(numberOfOrder, operation.numberOfOrder) &&
+                Objects.equals(patient_id, operation.patient_id) &&
+                Objects.equals(operation_id, operation.operation_id) &&
+                Objects.equals(eye, operation.eye) &&
+                Objects.equals(surgeon, operation.surgeon) &&
+                Objects.equals(manager, operation.manager) &&
+                Objects.equals(note, operation.note);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(index, operationDay_id, timeForCome, numberOfOrder, patient_id, operation_id, eye, surgeon, manager, note);
+    }
+
+    @Override
+    public String toString() {
+        return "Operation{" +
+                "index=" + index +
+                ", operationDay_id=" + operationDay_id +
+                ", timeForCome=" + timeForCome +
+                ", numberOfOrder=" + numberOfOrder +
+                ", patient_id=" + patient_id +
+                ", operation_id=" + operation_id +
+                ", eye='" + eye + '\'' +
+                ", surgeon='" + surgeon + '\'' +
+                ", manager='" + manager + '\'' +
+                ", note='" + note + '\'' +
+                '}';
     }
 }

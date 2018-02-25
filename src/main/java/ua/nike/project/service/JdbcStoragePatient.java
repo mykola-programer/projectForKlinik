@@ -136,13 +136,13 @@ public class JdbcStoragePatient {
         try (Statement statement = this.connect.createStatement();
              ResultSet result = statement.executeQuery("select * from patient")) {
             while(result.next()) {
-                int patient_id = result.getInt("patient_id");
+                Integer patient_id = result.getInt("patient_id");
                 String surname = result.getString("surname");
                 String firstName = result.getString("firstName");
                 String secondName = result.getString("secondName");
-                char sex = result.getString("sex").toCharArray()[0];
+                Character sex = result.getString("sex").toCharArray()[0];
                 String status = result.getString("status");
-                int relative_id = result.getInt("relative_id");
+                Integer relative_id = result.getInt("relative_id");
                 String telephone = result.getString("phone");
 
                 patients.add(new Patient(patient_id, surname, firstName, secondName, sex, status, relative_id, telephone));
@@ -166,22 +166,22 @@ public class JdbcStoragePatient {
         String surname = patient.getSurname();
         String firstName = patient.getFirstName();
         String secondName = patient.getSecondName();
-        char sex = patient.getSex();
+        Character sex = patient.getSex();
         String status = patient.getStatus();
-        int relative_id = patient.getRelative_id();
+        Integer relative_id = patient.getRelative_id();
         String telephone = patient.getTelephone();
 
         try (Statement statement = this.connect.createStatement()) {
             statement.executeUpdate(String.format("update patient set " +
                             "surname = '%s', " +
-                            "firstName = '%s', " +
-                            "secondName = '%s', " +
+                            "firstname = '%s', " +
+                            "secondname = '%s', " +
                             "sex = '%s', " +
                             "status = '%s', " +
-                            "relative_id = '%s', " +
-                            "phone = '%s' " +
+                            "phone = '%s', " +
+                            "relative_id = %s " +
                             "where patient_id = '%s'",
-                    surname, firstName, secondName, sex, status, relative_id, telephone, index ));
+                    surname, firstName, secondName, sex, status, telephone, relative_id, index ));
             return true;
         } catch (SQLException e) {
             e.printStackTrace();

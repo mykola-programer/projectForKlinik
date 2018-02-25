@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.util.Properties;
 
 /**
- * Клас в якому будуть зберігатись всі базові налаштування
+ * Class {@code Setting} have basic properties for connect.
  */
 public class Settings {
     private static final Settings SETTINGS = new Settings();
@@ -13,8 +13,7 @@ public class Settings {
     private Properties properties = new Properties();
 
     /**
-     * Приватний конструктор. Для того щоб не можна було створити екземпляр класу із зовні. Його можна отримати
-     *      із гетера.
+     * Private constructor. Initializes a newly created {@code Setting} object from getter 'getSettings()'.
      */
     private Settings() {
         try {
@@ -24,14 +23,18 @@ public class Settings {
         }
     }
 
+    /**
+     *
+     * @return instance of Settings.
+     */
     public static Settings getSettings() {
         return SETTINGS;
     }
 
     /**
      *
-     * @param key - ключ по якому буде йти пошук відповідної настройки
-     * @return - метод повертає значення настройки по відповідному ключу.
+     * @param key Key in our properties.
+     * @return {@code String} value from properties relative for key.
      */
     public String value(String key) {
         return this.properties.getProperty(key);

@@ -34,6 +34,7 @@ public class Patient {
      * @param relative_id Link to another patient, who is a relative of this patient.
      * @param telephone   patient. Format : "+380508888888".
      */
+    @Deprecated
     public Patient(Integer patient_id, String surname, String firstName, String secondName, Character sex, String status, Integer relative_id, String telephone) {
         setPatient_id(patient_id);
         setSurname(surname);
@@ -45,104 +46,134 @@ public class Patient {
         setTelephone(telephone);
     }
 
-    /** Returns the integer value of the patient_id from patient */
+    /**
+     * Returns the {@code Integer} value of the patient_id from patient
+     */
     public Integer getPatient_id() {
+        if (patient_id==null){
+            patient_id=0;
+        }
         return patient_id;
     }
 
     /**
      * Set patient_id
+     *
      * @param patient_id
      */
     public void setPatient_id(Integer patient_id) {
+        if (patient_id==null){
+            patient_id=0;
+        }
         this.patient_id = patient_id;
     }
 
-    /** Returns the String value of the surname from patient. */
+    /**
+     * Returns the {@code String} value of the surname from patient.
+     */
     public String getSurname() {
         return surname;
     }
 
     /**
      * Set surname and convert it to firstUpperCase.
+     *
      * @param surname
      */
     public void setSurname(String surname) {
         this.surname = firstUpperCase(surname);
     }
 
-    /** Returns the String value of the firstName from patient. */
+    /**
+     * Returns the {@code String} value of the firstName from patient.
+     */
     public String getFirstName() {
         return firstName;
     }
 
     /**
      * Set firstName and convert it to firstUpperCase.
+     *
      * @param firstName
      */
     public void setFirstName(String firstName) {
         this.firstName = firstUpperCase(firstName);
     }
 
-    /** Returns the String value of the secondName from patient. */
+    /**
+     * Returns the {@code String} value of the secondName from patient.
+     */
     public String getSecondName() {
         return secondName;
     }
 
     /**
      * Set secondName and convert it to firstUpperCase.
+     *
      * @param secondName
      */
     public void setSecondName(String secondName) {
         this.secondName = firstUpperCase(secondName);
     }
 
-    /** Returns the character value of the sex from patient. */
+    /**
+     * Returns the {@code Character} value of the sex from patient.
+     */
     public Character getSex() {
         return sex;
     }
 
     /**
      * Set sex.
+     *
      * @param sex
      */
     public void setSex(Character sex) {
         this.sex = sex;
     }
 
-    /** Returns the String value of the status from patient. */
+    /**
+     * Returns the {@code String} value of the status from patient.
+     */
     public String getStatus() {
         return status;
     }
 
     /**
      * Set status and convert it to LowerCase.
+     *
      * @param status
      */
     public void setStatus(String status) {
         this.status = status.toLowerCase();
     }
 
-    /** Returns the integer value of the relative_id from patient */
+    /**
+     * Returns the {@code Integer} value of the relative_id from patient
+     */
     public Integer getRelative_id() {
         return relative_id;
     }
 
     /**
      * Set relative_id.
+     *
      * @param relative_id
      */
     public void setRelative_id(Integer relative_id) {
         this.relative_id = relative_id;
     }
 
-    /** Returns the String value of the telephone from patient. */
+    /**
+     * Returns the {@code String} value of the telephone from patient.
+     */
     public String getTelephone() {
         return telephone;
     }
 
     /**
      * Set telephone.
+     *
      * @param telephone
      */
     public void setTelephone(String telephone) {
@@ -154,7 +185,7 @@ public class Patient {
      *
      * @param word This is a {@code String}, that needs to be converted to a specific format.
      * @return {@code String} first symbol to Upper Case and another symbols is Lower Case.
-     *          If word is null or "", that return "".
+     * If word is null or "", that return "".
      */
     private String firstUpperCase(String word) {
         if (word == null || word.isEmpty()) {
