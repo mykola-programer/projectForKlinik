@@ -126,6 +126,7 @@ public class JdbcStoragePatient {
     }
 
     /**
+     * Getting list of instance of class {@code Patient} from table patient in database.
      *
      * @return List of instance of class {@code Patient} from table patient in database.
      *         If this method generated exception, then return NULL.
@@ -154,6 +155,7 @@ public class JdbcStoragePatient {
     }
 
     /**
+     * Correct record in the database.
      *
      * @param index Index in the database.
      * @param patient Instance of class {@code Patient}
