@@ -1,5 +1,6 @@
 package ua.nike.project.servlets;
 
+import ua.nike.project.service.JdbcStoragePatient;
 import ua.nike.project.struct.Patient;
 
 import javax.servlet.ServletException;
@@ -7,42 +8,44 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Date;
-import java.util.TreeSet;
+import java.util.List;
 
-public class ServletStart extends HttpServlet{
+public class ServletStart extends HttpServlet {
 
-    Date date = new Date();
-
-    static String http_out_inf =
+    private String httpOutStart =
             "<!DOCTYPE HTML>\n" +
                     "<html>\n" +
                     "   <head>\n" +
                     "       <meta charset=\"UTF-8\">\n" +
                     "       <title>Заїзд на операції</title>\n" +
                     "</head>\n" +
-                    "<body>\n" +
-                    "   <h3>Операційний день : 15.02.2018 р.<operationDate></h3>\n" +
-                    "</body>\n" +
-                    "</html>\n";
+                    "<body>\n";
+    private String httpOutBody;
+    private String httpOutEnd = "" +
+            "</body>\n" +
+            "</html>\n";
 
-    private TreeSet<Patient> patientTreeSet;
+    private List<Patient> patientSet;
 
-    public TreeSet<Patient> getPatientTreeSet() {
-        return patientTreeSet;
-    }
-
-    public void setPatientTreeSet(TreeSet<Patient> patientTreeSet) {
-        this.patientTreeSet = patientTreeSet;
-    }
 
     @Override
     protected void doGet(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws ServletException, IOException {
         String responseContentType = "text/html;charset=UTF-8";
         httpServletResponse.setContentType(responseContentType);
 
-        httpServletResponse.getWriter().write(date.getDate()+"."+(date.getMonth()+1)+"."+(1900+date.getYear())+" р."+"/n");
-        httpServletResponse.getWriter().write(http_out_inf);
+
+        httpServletResponse.getWriter().write(httpOutStart+getHttpOutBody()+httpOutEnd);
     }
 
+    private String getHttpOutBody() {
+        JdbcStoragePatient jdbcStoragePatient = new JdbcStoragePatient();
+        patientSet = jdbcStoragePatient.getPatients();
+        httpOutBody = "<ol>\n" ;
+
+        for (Patient patient: patientSet){
+            httpOutBody += "<li>" + patient + "</li>\n";
+        }
+        httpOutBody += "</ol>\n";
+        return httpOutBody;
+    }
 }

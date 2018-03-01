@@ -3,6 +3,7 @@ package ua.nike.project.service;
 import ua.nike.project.struct.Patient;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 /**
@@ -36,8 +37,13 @@ public class JdbcStoragePatient {
         }
     }
 
+
+    public Connection getConnect() {
+        return connect;
+    }
+
     /**
-     * This method return from database instance of class {@code Patient} of the index.
+     * This method return record from database, instance of class {@code Patient} of the index.
      *
      * @param index   Index in the database.
      * @return  Return instance of class {@code Patient}.
@@ -47,13 +53,13 @@ public class JdbcStoragePatient {
         try (Statement statement = this.connect.createStatement();
              ResultSet result = statement.executeQuery("select * from patient where patient_id = " + index)) {
             result.next();
-            int patient_id = result.getInt("patient_id");
+            Integer patient_id = result.getInt("patient_id");
             String surname = result.getString("surname");
             String firstName = result.getString("firstName");
             String secondName = result.getString("secondName");
-            char sex = result.getString("sex").toCharArray()[0];
+            Character sex = result.getString("sex").toCharArray()[0];
             String status = result.getString("status");
-            int relative_id = result.getInt("relative_id");
+            Integer relative_id = result.getInt("relative_id");
             String telephone = result.getString("phone");
             return new Patient(patient_id, surname, firstName, secondName, sex, status, relative_id, telephone);
         } catch (SQLException e) {
@@ -74,13 +80,13 @@ public class JdbcStoragePatient {
         try (Statement statement = this.connect.createStatement();
              ResultSet result = statement.executeQuery("select * from patient where " + parameter + " = " + value)) {
             result.next();
-            int patient_id = result.getInt("patient_id");
+            Integer patient_id = result.getInt("patient_id");
             String surname = result.getString("surname");
             String firstName = result.getString("firstName");
             String secondName = result.getString("secondName");
-            char sex = result.getString("sex").toCharArray()[0];
+            Character sex = result.getString("sex").toCharArray()[0];
             String status = result.getString("status");
-            int relative_id = result.getInt("relative_id");
+            Integer relative_id = result.getInt("relative_id");
             String telephone = result.getString("phone");
             return new Patient(patient_id, surname, firstName, secondName, sex, status, relative_id, telephone);
         } catch (SQLException e) {
@@ -131,8 +137,8 @@ public class JdbcStoragePatient {
      * @return List of instance of class {@code Patient} from table patient in database.
      *         If this method generated exception, then return NULL.
      */
-    public LinkedList<Patient> getPatients() {
-        LinkedList<Patient> patients = new LinkedList<Patient>();
+    public ArrayList<Patient> getPatients() {
+        ArrayList<Patient> patients = new ArrayList<Patient>();
         try (Statement statement = this.connect.createStatement();
              ResultSet result = statement.executeQuery("select * from patient")) {
             while(result.next()) {

@@ -50,8 +50,8 @@ public class Patient {
      * Returns the {@code Integer} value of the patient_id from patient
      */
     public Integer getPatient_id() {
-        if (patient_id==null){
-            patient_id=0;
+        if (patient_id == null) {
+            patient_id = 0;
         }
         return patient_id;
     }
@@ -62,8 +62,8 @@ public class Patient {
      * @param patient_id
      */
     public void setPatient_id(Integer patient_id) {
-        if (patient_id==null){
-            patient_id=0;
+        if (patient_id == null) {
+            patient_id = 0;
         }
         this.patient_id = patient_id;
     }
@@ -216,14 +216,11 @@ public class Patient {
 
     @Override
     public String toString() {
-        return "Patient{" +
-                "Індекс=" + patient_id +
-                ", Прізвище='" + surname + '\'' +
-                ", Ім'я='" + firstName + '\'' +
-                ", По-батькові='" + secondName + '\'' +
-                ", Стать=" + sex +
-                ", Статус='" + status + '\'' +
-                ", Телефон='" + telephone + '\'' +
+        return "Patient " + patient_id + ". {" +
+                " " + surname + " " + firstName + " " + secondName + " " +
+                "(" + sex + ")" +
+                " - " + status + ". " +
+                " Тел.='" + telephone +
                 '}';
     }
 }
