@@ -8,8 +8,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.*;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.TreeSet;
@@ -36,7 +34,6 @@ public class ServletStart extends HttpServlet {
     protected void doGet(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws ServletException, IOException {
         String responseContentType = "text/html;charset=UTF-8";
         httpServletResponse.setContentType(responseContentType);
-        httpOutBody = "";
         String reqDate = httpServletRequest.getParameter("date");
         if (reqDate != null){
             DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -44,8 +41,8 @@ public class ServletStart extends HttpServlet {
         }else {
             selectedDate = LocalDate.now();
         }
-        System.out.println(selectedDate);
         httpServletResponse.getWriter().write(httpOutStart + getHttpOutBody(selectedDate) + httpOutEnd);
+        httpOutBody = "";
     }
 
     @Override
@@ -55,7 +52,7 @@ public class ServletStart extends HttpServlet {
 
     private String getHttpOutBody(LocalDate selectedDate) {
 
-        String sql = "SELECT operationday.operationdate, patient.surname, operationday.surgeon " +
+        String sql = "SELECT operationday.operationdate, patient.surname, patient.firstname, patient.secondname, operation.operation_id, operation.eye, operationday.surgeon, operation.manager " +
                 "FROM operationday, operation, patient " +
                 "WHERE operationdate = ? AND operation.patient_id = patient.patient_id AND operation.operationday_id = operationday.\"operationDay_id\"";
         try (Connection connection = ConnectToBase.getConnect();
@@ -66,7 +63,7 @@ public class ServletStart extends HttpServlet {
 
 
             httpOutBody += "" +
-                    "<form>\n" +
+                    "<form method='post'>\n" +
                     "    <p>Виберіть дату: <input list=\"date\" name=\"date\">\n" +
                     "        <datalist id=\"date\">\n";
 
@@ -78,15 +75,17 @@ public class ServletStart extends HttpServlet {
             httpOutBody += "" +
                     "        </datalist>\n" +
                     "        <input type=\"submit\" value=\"Отправить\"></p>\n" +
-                    "</form>" +
+                    "</form>\n" +
                     "" +
                     "<table border=\"1\">" +
-                    "<tr><th> Дата </th><th> Пацієнт </th><th> Хірург </th></tr>\n";
+                    "<tr><th> Дата </th><th> Пацієнт </th><th> Операція та око </th><th> Хірург </th><th> Менеджер </th></tr>\n";
 
             while (resultSet.next()) {
-                httpOutBody += "<tr ><td > " + resultSet.getDate(1) + " </td >" +
-                        "<td > " + resultSet.getString(2) + " </td >" +
-                        "<td > " + resultSet.getString(3) + " </td ></tr >\n";
+                httpOutBody += "<tr ><td > " + resultSet.getDate("operationdate") + " </td >" +
+                        "<td > " + resultSet.getString("surname") + " " + resultSet.getString("firstname") + " " + resultSet.getString("secondname") + " </td >" +
+                        "<td > " + resultSet.getString("operation_id")+ " " + resultSet.getString("eye") + " </td >" +
+                        "<td > " + resultSet.getString("surgeon") + " </td >" +
+                        "<td > " + resultSet.getString("manager") + " </td ></tr >\n";
             }
             httpOutBody += "</table>\n";
 
