@@ -12,7 +12,7 @@
 
   <servlet-mapping>
     <servlet-name>ServletStart</servlet-name>
-    <url-pattern>/index</url-pattern>
+    <url-pattern>/operation_index</url-pattern>
   </servlet-mapping>
 
 </web-app>

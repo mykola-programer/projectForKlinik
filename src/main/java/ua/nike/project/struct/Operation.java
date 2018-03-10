@@ -4,14 +4,13 @@ import java.time.LocalTime;
 import java.util.Objects;
 
 public class Operation {
-    private Integer index;
+    private Integer operation_index;
     private Integer operationDay_id;
     private LocalTime timeForCome;
     private Integer numberOfOrder;
     private Integer patient_id;
     private Integer operation_id;
     private String eye;
-    private String surgeon;
     private String manager;
     private String note;
 
@@ -22,25 +21,24 @@ public class Operation {
     }
 
     @Deprecated
-    public Operation(Integer index, Integer operationDay_id, LocalTime timeForCome, Integer numberOfOrder, Integer patient_id, Integer operation_id, String eye, String surgeon, String manager, String note) {
-        this.index = index;
+    public Operation(Integer operation_index, Integer operationDay_id, LocalTime timeForCome, Integer numberOfOrder, Integer patient_id, Integer operation_id, String eye, String manager, String note) {
+        this.operation_index = operation_index;
         setOperationDay_id(operationDay_id);
         setTimeForCome(timeForCome);
         setNumberOfOrder(numberOfOrder);
         setPatient_id(patient_id);
         setOperation_id(operation_id);
         setEye(eye);
-        setSurgeon(surgeon);
         setManager(manager);
         setNote(note);
     }
 
-    public Integer getIndex() {
-        return index;
+    public Integer getOperation_index() {
+        return operation_index;
     }
 
-    public void setIndex(Integer index) {
-        this.index = index;
+    public void setOperation_index(Integer operation_index) {
+        this.operation_index = operation_index;
     }
 
     public Integer getOperationDay_id() {
@@ -91,14 +89,6 @@ public class Operation {
         this.eye = eye.toUpperCase();
     }
 
-    public String getSurgeon() {
-        return surgeon;
-    }
-
-    public void setSurgeon(String surgeon) {
-        this.surgeon = firstUpperCase(surgeon);
-    }
-
     public String getManager() {
         return manager;
     }
@@ -134,14 +124,13 @@ public class Operation {
         if (this == o) return true;
         if (!(o instanceof Operation)) return false;
         Operation operation = (Operation) o;
-        return Objects.equals(index, operation.index) &&
+        return Objects.equals(operation_index, operation.operation_index) &&
                 Objects.equals(operationDay_id, operation.operationDay_id) &&
                 Objects.equals(timeForCome, operation.timeForCome) &&
                 Objects.equals(numberOfOrder, operation.numberOfOrder) &&
                 Objects.equals(patient_id, operation.patient_id) &&
                 Objects.equals(operation_id, operation.operation_id) &&
                 Objects.equals(eye, operation.eye) &&
-                Objects.equals(surgeon, operation.surgeon) &&
                 Objects.equals(manager, operation.manager) &&
                 Objects.equals(note, operation.note);
     }
@@ -149,20 +138,19 @@ public class Operation {
     @Override
     public int hashCode() {
 
-        return Objects.hash(index, operationDay_id, timeForCome, numberOfOrder, patient_id, operation_id, eye, surgeon, manager, note);
+        return Objects.hash(operation_index, operationDay_id, timeForCome, numberOfOrder, patient_id, operation_id, eye, manager, note);
     }
 
     @Override
     public String toString() {
         return "Operation{" +
-                "index=" + index +
+                "operation_index=" + operation_index +
                 ", operationDay_id=" + operationDay_id +
                 ", timeForCome=" + timeForCome +
                 ", numberOfOrder=" + numberOfOrder +
                 ", patient_id=" + patient_id +
                 ", operation_id=" + operation_id +
                 ", eye='" + eye + '\'' +
-                ", surgeon='" + surgeon + '\'' +
                 ", manager='" + manager + '\'' +
                 ", note='" + note + '\'' +
                 '}';

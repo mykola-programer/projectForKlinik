@@ -1,31 +1,47 @@
 package ua.nike.project;
 
+import com.sun.net.httpserver.HttpServer;
 import ua.nike.project.service.JdbcStoragePatient;
 import ua.nike.project.struct.Patient;
+
+import javax.servlet.Servlet;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class TestMain {
     public static void main(String[] args) {
 
-        JdbcStoragePatient jdbcStoragePatient = new JdbcStoragePatient();
-        for (Patient patient : jdbcStoragePatient.getPatients()) {
-            System.out.println(patient);
-        }
-        System.out.println("---------------------");
-        {
-            Patient patient = new Patient();
-            patient.setPatient_id(null);
-            patient.setSurname("Мельник");
-            patient.setFirstName("Марія");
-            patient.setSecondName("Іванівна");
-            patient.setSex('Ж');
-            patient.setStatus("супроводжуючий");
-            patient.setRelative_id(null);
-            patient.setTelephone("+380638326767");
+        ArrayList list = new ArrayList();
+        Collections.synchronizedList(list);
 
-            System.out.println(jdbcStoragePatient.editPatient(8, patient));
-        }
-        for (Patient patient : jdbcStoragePatient.getPatients()) {
-            System.out.println(patient);
-        }
+//        JdbcStoragePatient jdbcStoragePatient = new JdbcStoragePatient();
+//        for (Patient patient : jdbcStoragePatient.getPatients()) {
+//            System.out.println(patient);
+//        }
+//        System.out.println("---------------------");
+//        {
+//            Patient patient = new Patient();
+////            patient.setPatient_id(null);
+//            patient.setSurname("Мітрік");
+//            patient.setFirstName("Олена");
+//            patient.setSecondName("Іванівна");
+//            patient.setSex('Ж');
+//            patient.setStatus("пацієнт");
+//            patient.setRelative_id(0);
+//            patient.setTelephone("+380667543737");
+//
+//            patient.setPatient_id(jdbcStoragePatient.addPatient(patient));
+//
+////            System.out.println(jdbcStoragePatient.editPatient(8, patient));
+//        }
+//        for (Patient patient : jdbcStoragePatient.getPatients()) {
+//            System.out.println(patient);
+//        }
     }
 }

@@ -5,7 +5,7 @@ import java.util.Objects;
 
 public class OperationDay {
     private Integer operationDay_id;
-    private LocalDate date;
+    private LocalDate operationDate;
     private String surgeon;
 
     /**
@@ -31,19 +31,19 @@ public class OperationDay {
     }
 
     /**
-     * Returns the {@code LocateDate} value of the date from OperationDay.
+     * Returns the {@code LocateDate} value of the operationDate from OperationDay.
      */
-    public LocalDate getDate() {
-        return date;
+    public LocalDate getOperationDate() {
+        return operationDate;
     }
 
     /**
-     * Set date.
+     * Set operationDate.
      *
-     * @param date
+     * @param operationDate
      */
-    public void setDate(LocalDate date) {
-        this.date = date;
+    public void setOperationDate(LocalDate operationDate) {
+        this.operationDate = operationDate;
     }
 
     /**
@@ -80,7 +80,7 @@ public class OperationDay {
     public String toString() {
         return "OperationDay{" +
                 "operationDay_id=" + operationDay_id +
-                ", date=" + date +
+                ", operationDate=" + operationDate +
                 ", surgeon='" + surgeon + '\'' +
                 '}';
     }
@@ -91,13 +91,13 @@ public class OperationDay {
         if (!(o instanceof OperationDay)) return false;
         OperationDay that = (OperationDay) o;
         return Objects.equals(operationDay_id, that.operationDay_id) &&
-                Objects.equals(date, that.date) &&
+                Objects.equals(operationDate, that.operationDate) &&
                 Objects.equals(surgeon, that.surgeon);
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(operationDay_id, date, surgeon);
+        return Objects.hash(operationDay_id, operationDate, surgeon);
     }
 }
