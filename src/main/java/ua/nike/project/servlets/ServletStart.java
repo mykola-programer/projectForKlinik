@@ -3,6 +3,7 @@ package ua.nike.project.servlets;
 import ua.nike.project.service.ConnectToBase;
 
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -12,7 +13,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.TreeSet;
 
-
+@WebServlet("/operation_index")
 public class ServletStart extends HttpServlet {
 
     private String httpOutStart =
@@ -35,10 +36,10 @@ public class ServletStart extends HttpServlet {
         String responseContentType = "text/html;charset=UTF-8";
         httpServletResponse.setContentType(responseContentType);
         String reqDate = httpServletRequest.getParameter("date");
-        if (reqDate != null){
+        if (reqDate != null & reqDate !="") {
             DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             selectedDate = LocalDate.parse(reqDate, format);
-        }else {
+        } else {
             selectedDate = LocalDate.now();
         }
         httpServletResponse.getWriter().write(httpOutStart + getHttpOutBody(selectedDate) + httpOutEnd);
@@ -62,32 +63,32 @@ public class ServletStart extends HttpServlet {
             ResultSet resultSet = prepStat.executeQuery();
 
 
-            httpOutBody += "" +
+            httpOutBody = httpOutBody.concat("" +
                     "<form method='post'>\n" +
                     "    <p>Виберіть дату: <input list=\"date\" name=\"date\">\n" +
-                    "        <datalist id=\"date\">\n";
+                    "        <datalist id=\"date\">\n");
 
             TreeSet<Date> dateList = getOperationDates();
             for (Date date : dateList) {
-                httpOutBody += "<option value=\"" + date + "\">\n";
+                httpOutBody = httpOutBody.concat("<option value=\"" + date + "\">\n");
             }
 
-            httpOutBody += "" +
+            httpOutBody = httpOutBody.concat("" +
                     "        </datalist>\n" +
                     "        <input type=\"submit\" value=\"Отправить\"></p>\n" +
                     "</form>\n" +
                     "" +
                     "<table border=\"1\">" +
-                    "<tr><th> Дата </th><th> Пацієнт </th><th> Операція та око </th><th> Хірург </th><th> Менеджер </th></tr>\n";
+                    "<tr><th> Дата </th><th> Пацієнт </th><th> Операція та око </th><th> Хірург </th><th> Менеджер </th></tr>\n");
 
             while (resultSet.next()) {
-                httpOutBody += "<tr ><td > " + resultSet.getDate("operationdate") + " </td >" +
+                httpOutBody = httpOutBody.concat("<tr ><td > " + resultSet.getDate("operationdate") + " </td >" +
                         "<td > " + resultSet.getString("surname") + " " + resultSet.getString("firstname") + " " + resultSet.getString("secondname") + " </td >" +
-                        "<td > " + resultSet.getString("operation_id")+ " " + resultSet.getString("eye") + " </td >" +
+                        "<td > " + resultSet.getString("operation_id") + " " + resultSet.getString("eye") + " </td >" +
                         "<td > " + resultSet.getString("surgeon") + " </td >" +
-                        "<td > " + resultSet.getString("manager") + " </td ></tr >\n";
+                        "<td > " + resultSet.getString("manager") + " </td ></tr >\n");
             }
-            httpOutBody += "</table>\n";
+            httpOutBody = httpOutBody.concat("</table>\n");
 
         } catch (SQLException e) {
             e.printStackTrace();

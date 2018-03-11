@@ -5,14 +5,14 @@
 <web-app>
   <display-name>Archetype Created Web Application</display-name>
 
-  <servlet>
-    <servlet-name>ServletStart</servlet-name>
-    <servlet-class>ua.nike.project.servlets.ServletStart</servlet-class>
-  </servlet>
+  <!--<servlet>-->
+    <!--<servlet-name>ServletStart</servlet-name>-->
+    <!--<servlet-class>ua.nike.project.servlets.ServletStart</servlet-class>-->
+  <!--</servlet>-->
 
-  <servlet-mapping>
-    <servlet-name>ServletStart</servlet-name>
-    <url-pattern>/operation_index</url-pattern>
-  </servlet-mapping>
+  <!--<servlet-mapping>-->
+    <!--<servlet-name>ServletStart</servlet-name>-->
+    <!--<url-pattern>/operation_index</url-pattern>-->
+  <!--</servlet-mapping>-->
 
 </web-app>
