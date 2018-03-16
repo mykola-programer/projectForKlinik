@@ -1,6 +1,5 @@
 package ua.nike.project.service;
 
-import javax.validation.constraints.Null;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -8,7 +7,8 @@ import java.sql.SQLException;
 public final class ConnectToBase {
 
 
-    private static Connection connect;
+    private static Connection connection;
+
     /**
      * Private constructor. Nobody can create instance this class
      */
@@ -16,12 +16,12 @@ public final class ConnectToBase {
     }
 
     /**
-     *
-     *
      * @return connection to database
      */
-    public static Connection getConnect() {
-
+    public static Connection getConnection() {
+        if (connection != null) {
+            return connection;
+        }
         final String URL = Settings.getSettings().value("jdbc.url");
         final String USERNAME = Settings.getSettings().value("jdbc.username");
         final String PASSWORD = Settings.getSettings().value("jdbc.password");
@@ -31,15 +31,15 @@ public final class ConnectToBase {
             e.printStackTrace();
         }
         try {
-            connect = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-            return connect;
+            connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+            return connection;
 
         } catch (SQLException e) {
             System.out.println("Wrong parameters to connection. Please, check your file 'my.properties' !");
             e.printStackTrace();
         }
 
-        return connect;
+        return connection;
     }
 
 }

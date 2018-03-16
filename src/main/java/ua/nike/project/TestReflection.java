@@ -1,7 +1,6 @@
 package ua.nike.project;
 
 import ua.nike.project.service.ConnectToBase;
-import ua.nike.project.service.JdbcStoragePatient;
 import ua.nike.project.struct.Patient;
 
 import java.lang.reflect.Field;
@@ -32,7 +31,7 @@ public class TestReflection {
 //            }
 
 // ----------------   Create table with fields from class Patient.    ----------------------
-        try (Statement statement = ConnectToBase.getConnect().createStatement()) {
+        try (Statement statement = ConnectToBase.getConnection().createStatement()) {
             statement.executeUpdate(String.format("create table test1 (%s serial primary key)", keys[0]));
             for (int j = 1; j <= keys.length - 1; j++) {
                 statement.executeUpdate(String.format("ALTER TABLE test1 ADD %s VARCHAR(25);", keys[j]));

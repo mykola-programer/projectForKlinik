@@ -21,7 +21,7 @@ public class JdbcStoragePatient {
      * to the database.
      */
     public JdbcStoragePatient() {
-        CONNECT = ConnectToBase.getConnect();
+        CONNECT = ConnectToBase.getConnection();
     }
 
     /**

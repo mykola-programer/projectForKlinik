@@ -22,7 +22,7 @@ public class JdbcStorageOperationDay {
      * to the database.
      */
     public JdbcStorageOperationDay() {
-        CONNECT = ConnectToBase.getConnect();
+        CONNECT = ConnectToBase.getConnection();
     }
 
     /**

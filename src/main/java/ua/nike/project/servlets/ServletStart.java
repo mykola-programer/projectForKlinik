@@ -2,21 +2,21 @@ package ua.nike.project.servlets;
 
 import ua.nike.project.service.ConnectToBase;
 
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.*;
+import java.sql.Date;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.TreeSet;
+import java.util.*;
 
 @WebServlet("/operation_index")
 public class ServletStart extends HttpServlet {
 
-    private String httpOutStart =
+    private final static String httpOutStart =
             "<!DOCTYPE HTML>\n" +
                     "<html>\n" +
                     "   <head>\n" +
@@ -24,95 +24,111 @@ public class ServletStart extends HttpServlet {
                     "       <title>Заїзд на операції</title>\n" +
                     "</head>\n" +
                     "<body>\n";
-    private String httpOutBody = "";
-    private String httpOutEnd = "" +
+    private final static String httpOutEnd = "" +
             "</body>\n" +
             "</html>\n";
 
-    private LocalDate selectedDate = LocalDate.now();
+    @Override
+    protected void doGet(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws IOException {
+        try {
+            String responseContentType = "text/html;charset=UTF-8";
+            httpServletResponse.setContentType(responseContentType);
+            httpServletResponse.getWriter().write(httpOutStart + getHeaderHtml() + httpOutEnd);
+        } catch (Exception e) {
+            httpServletResponse.getWriter().write(httpOutStart + "\n <div> Error 500 </div>" + httpOutEnd);
+        }
+    }
 
     @Override
-    protected void doGet(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws IOException {
         String responseContentType = "text/html;charset=UTF-8";
         httpServletResponse.setContentType(responseContentType);
-        String reqDate = httpServletRequest.getParameter("date");
-        if (reqDate != null & reqDate !="") {
-            DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            selectedDate = LocalDate.parse(reqDate, format);
-        } else {
-            selectedDate = LocalDate.now();
+        httpServletResponse.getWriter().write(httpOutStart);
+        try {
+            httpServletResponse.getWriter().write(getHeaderHtml());
+
+            String reqDate = httpServletRequest.getParameter("date");
+            if (reqDate != null && !reqDate.equals("")) {
+                DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                LocalDate selectedDate = LocalDate.parse(reqDate, format);
+
+                httpServletResponse.getWriter().write(getTableHtml(selectedDate));
+            } else {
+                httpServletResponse.getWriter().write("\n <div> Введіть обовязково дату! </div>");
+            }
+
+        } catch (Exception e) {
+            httpServletResponse.getWriter().write("\n <div> Error 500. " + e.getMessage() + "</div>");
+            e.printStackTrace();
+
+        } finally {
+            httpServletResponse.getWriter().write(httpOutEnd);
         }
-        httpServletResponse.getWriter().write(httpOutStart + getHttpOutBody(selectedDate) + httpOutEnd);
-        httpOutBody = "";
     }
 
-    @Override
-    protected void doPost(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws ServletException, IOException {
-        doGet(httpServletRequest, httpServletResponse);
-    }
+    private String getTableHtml(LocalDate selectedDate) throws SQLException {
+        StringBuilder result = new StringBuilder();
 
-    private String getHttpOutBody(LocalDate selectedDate) {
-
-        String sql = "SELECT operationday.operationdate, patient.surname, patient.firstname, patient.secondname, operation.operation_id, operation.eye, operationday.surgeon, operation.manager " +
-                "FROM operationday, operation, patient " +
-                "WHERE operationdate = ? AND operation.patient_id = patient.patient_id AND operation.operationday_id = operationday.\"operationDay_id\"";
-        try (Connection connection = ConnectToBase.getConnect();
-             PreparedStatement prepStat = connection.prepareStatement(sql)) {
+        String sql = "SELECT od.operationdate, p.surname, p.firstname, p.secondname, o.operation_id, o.eye, od.surgeon, o.manager " +
+                "FROM operation o " +
+                "INNER JOIN operationday od ON o.operationday_id = od.operationday_id " +
+                "INNER JOIN patient p ON o.patient_id = p.patient_id "+
+                "WHERE operationdate = ? ";
+        Connection connection = ConnectToBase.getConnection();
+        try (PreparedStatement prepStat = connection.prepareStatement(sql)) {
 
             prepStat.setDate(1, Date.valueOf(selectedDate));
             ResultSet resultSet = prepStat.executeQuery();
 
-
-            httpOutBody = httpOutBody.concat("" +
-                    "<form method='post'>\n" +
-                    "    <p>Виберіть дату: <input list=\"date\" name=\"date\">\n" +
-                    "        <datalist id=\"date\">\n");
-
-            TreeSet<Date> dateList = getOperationDates();
-            for (Date date : dateList) {
-                httpOutBody = httpOutBody.concat("<option value=\"" + date + "\">\n");
-            }
-
-            httpOutBody = httpOutBody.concat("" +
-                    "        </datalist>\n" +
-                    "        <input type=\"submit\" value=\"Отправить\"></p>\n" +
-                    "</form>\n" +
-                    "" +
+            result.append("\n" +
                     "<table border=\"1\">" +
                     "<tr><th> Дата </th><th> Пацієнт </th><th> Операція та око </th><th> Хірург </th><th> Менеджер </th></tr>\n");
 
             while (resultSet.next()) {
-                httpOutBody = httpOutBody.concat("<tr ><td > " + resultSet.getDate("operationdate") + " </td >" +
+                result.append("<tr ><td > " + resultSet.getDate("operationdate") + " </td >" +
                         "<td > " + resultSet.getString("surname") + " " + resultSet.getString("firstname") + " " + resultSet.getString("secondname") + " </td >" +
                         "<td > " + resultSet.getString("operation_id") + " " + resultSet.getString("eye") + " </td >" +
                         "<td > " + resultSet.getString("surgeon") + " </td >" +
                         "<td > " + resultSet.getString("manager") + " </td ></tr >\n");
             }
-            httpOutBody = httpOutBody.concat("</table>\n");
+            result.append("</table>\n");
 
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
 
-        return httpOutBody;
+        return result.toString();
     }
 
-    private TreeSet<Date> getOperationDates() {
+    private List<Date> getOperationDates() throws SQLException {
 
-        TreeSet<Date> listDate = new TreeSet<>();
-        String sqlDate = "SELECT operationday.operationdate " +
-                "FROM operationday ";
-        try (Connection connection = ConnectToBase.getConnect();
-             PreparedStatement prepStat = connection.prepareStatement(sqlDate)) {
+        List<Date> result = new ArrayList<>();
+        String sqlDate = "SELECT DISTINCT operationday.operationdate FROM operationday ORDER BY operationdate ";
+        Connection connection = ConnectToBase.getConnection();
+        try (PreparedStatement prepStat = connection.prepareStatement(sqlDate)) {
             ResultSet resultSet = prepStat.executeQuery();
             while (resultSet.next()) {
                 Date date = resultSet.getDate("operationdate");
-                listDate.add(date);
+                result.add(date);
             }
-            return listDate;
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
-        return listDate;
+        return result;
+    }
+
+    private String getHeaderHtml() throws SQLException {
+        StringBuilder result = new StringBuilder();
+        result.append("" +
+                "<form method='post'>\n" +
+                "    <p>Виберіть дату: <select name = 'date'> " +
+                "        ");
+
+        List<Date> dateList = getOperationDates();
+        for (Date date : dateList) {
+            result.append(String.format("<option value='%s'>%s</option>", date, date));
+        }
+
+        result.append("" +
+                "        </select>" +
+                "        <input type=\"submit\" value=\"Отправить\"></p>\n" +
+                "</form>\n");
+        return result.toString();
     }
 }
