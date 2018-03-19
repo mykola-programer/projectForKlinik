@@ -13,7 +13,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-@WebServlet("/operation_index")
+@WebServlet("/index")
 public class ServletStart extends HttpServlet {
 
     private final static String httpOutStart =
@@ -51,7 +51,6 @@ public class ServletStart extends HttpServlet {
             if (reqDate != null && !reqDate.equals("")) {
                 DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd");
                 LocalDate selectedDate = LocalDate.parse(reqDate, format);
-
                 httpServletResponse.getWriter().write(getTableHtml(selectedDate));
             } else {
                 httpServletResponse.getWriter().write("\n <div> Введіть обовязково дату! </div>");
@@ -72,7 +71,7 @@ public class ServletStart extends HttpServlet {
         String sql = "SELECT od.operationdate, p.surname, p.firstname, p.secondname, o.operation_id, o.eye, od.surgeon, o.manager " +
                 "FROM operation o " +
                 "INNER JOIN operationday od ON o.operationday_id = od.operationday_id " +
-                "INNER JOIN patient p ON o.patient_id = p.patient_id "+
+                "INNER JOIN patient p ON o.patient_id = p.patient_id " +
                 "WHERE operationdate = ? ";
         Connection connection = ConnectToBase.getConnection();
         try (PreparedStatement prepStat = connection.prepareStatement(sql)) {
@@ -80,8 +79,8 @@ public class ServletStart extends HttpServlet {
             prepStat.setDate(1, Date.valueOf(selectedDate));
             ResultSet resultSet = prepStat.executeQuery();
 
-            result.append("\n" +
-                    "<table border=\"1\">" +
+            result.append("Звіт по прооперованих пацієнтах за " + selectedDate + " :\n" +
+                    "<table border='1'>\n" +
                     "<tr><th> Дата </th><th> Пацієнт </th><th> Операція та око </th><th> Хірург </th><th> Менеджер </th></tr>\n");
 
             while (resultSet.next()) {
@@ -117,17 +116,17 @@ public class ServletStart extends HttpServlet {
         StringBuilder result = new StringBuilder();
         result.append("" +
                 "<form method='post'>\n" +
-                "    <p>Виберіть дату: <select name = 'date'> " +
-                "        ");
+                "    <p>Виберіть дату: <select name = 'date' autofocus> \n" +
+                " <option disabled selected value=Виберіть дату...>Виберіть дату...</option> \n");
 
         List<Date> dateList = getOperationDates();
         for (Date date : dateList) {
-            result.append(String.format("<option value='%s'>%s</option>", date, date));
+            result.append(String.format("<option value='%s'>%s</option>\n", date, date));
         }
 
         result.append("" +
-                "        </select>" +
-                "        <input type=\"submit\" value=\"Отправить\"></p>\n" +
+                "        </select>\n" +
+                "        <input type='submit' value='Отправить'></p>\n" +
                 "</form>\n");
         return result.toString();
     }
