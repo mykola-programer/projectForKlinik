@@ -47,6 +47,7 @@
     </c:forEach>
 
 </table>
-
+<br>
+<a href="/mvc/date.jsp" target="_blank" >на іншу сторінку</a>
 </body>
 </html>

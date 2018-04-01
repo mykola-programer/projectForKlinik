@@ -31,7 +31,8 @@ public class ControllerServlet extends HttpServlet {
             } else {
                 req.setAttribute("Massage", "Введіть обовязково дату!");
             }
-            req.setAttribute("date", date.getDate());
+            req.getSession().setAttribute("date", date.getDate());
+//            req.setAttribute("date", date.getDate());
 
             dates = modelDate.getOperationDates();
             req.setAttribute("dates", dates);
@@ -48,6 +49,10 @@ public class ControllerServlet extends HttpServlet {
             requestDispatcher.forward(req, resp);
         }
 
+        {
+            System.out.println(req.getAttribute("date"));
+            System.out.println(req.getSession().getAttribute("date"));
+        }
     }
 
     @Override
