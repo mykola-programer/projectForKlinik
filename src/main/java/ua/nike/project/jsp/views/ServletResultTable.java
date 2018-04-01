@@ -1,4 +1,4 @@
-package ua.nike.project.servlets.jsp;
+package ua.nike.project.jsp.views;
 
 import ua.nike.project.service.ConnectToBase;
 

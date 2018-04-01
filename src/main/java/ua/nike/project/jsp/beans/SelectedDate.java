@@ -1,7 +1,8 @@
-package ua.nike.project.servlets.jsp.beans;
+package ua.nike.project.jsp.beans;
+
 
 public class SelectedDate {
-    private String date;
+    private String date = "";
 
     public String getDate() {
         return date;

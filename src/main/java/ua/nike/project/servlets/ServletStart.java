@@ -13,7 +13,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-@WebServlet("/index")
+//@WebServlet("/test_servlet")
 public class ServletStart extends HttpServlet {
 
     private final static String httpOutStart =

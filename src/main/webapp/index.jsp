@@ -1,4 +1,6 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
 
 <html>
 <head>
@@ -8,17 +10,18 @@
 <form method='post'>
     <p>
         Виберіть дату: <select name = 'date' autofocus>
+
             <jsp:include page="/select_date"/>
-        </select>
-        <input type='submit' value='Отправить'>
 
-        <jsp:useBean id="SelectedDate" class="ua.nike.project.servlets.jsp.beans.SelectedDate" >
-            <% SelectedDate.setDate(request.getParameter("date"));%>
-        </jsp:useBean>
+    </select>
+        <input type='submit' value='Відправити'>
 
+        <jsp:useBean id="SelectedDate" class="ua.nike.project.jsp.beans.SelectedDate" scope="page"/>
+        <jsp:setProperty name="SelectedDate" property="date"/>
 
     </p>
 </form>
+
 
 <%--<% if (request.getParameter("date") != null) { %>--%>
 
