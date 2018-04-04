@@ -1,4 +1,8 @@
-package ua.nike.project.mvc;
+package ua.nike.project.klinika.jsp.controller;
+
+import ua.nike.project.klinika.jsp.model.OperationDateModel;
+import ua.nike.project.klinika.jsp.model.OperationBean;
+import ua.nike.project.klinika.jsp.model.OperationModel;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -8,50 +12,38 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.Date;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @WebServlet("/test_mvc")
 public class ControllerServlet extends HttpServlet {
 
-    private ModelDate modelDate = new ModelDate();
-
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
-        List<Date> dates;
-        BeanDate date = new BeanDate();
-        List<BeanResultTable> beanResultTableList;
+
         try {
             String reqDate = req.getParameter("date");
             if (reqDate != null && !reqDate.equals("")) {
                 DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-                date.setDate(java.sql.Date.valueOf((LocalDate.parse(reqDate, format))));
+                LocalDate date = LocalDate.parse(reqDate, format);
+                req.getSession().setAttribute("selected_date", java.sql.Date.valueOf(date));
+//              req.setAttribute("date", date.getDate());
+                List<OperationBean> operations = OperationModel.getResultOperation(date);
+                req.setAttribute("operations", operations);
 
             } else {
                 req.setAttribute("Massage", "Введіть обовязково дату!");
             }
-            req.getSession().setAttribute("date", date.getDate());
-//            req.setAttribute("date", date.getDate());
 
-            dates = modelDate.getOperationDates();
-            req.setAttribute("dates", dates);
-
-            beanResultTableList = modelDate.getResultOperation(date.getDate());
-            req.setAttribute("list_of_operation", beanResultTableList);
-
+            List<LocalDate> operation_dates = OperationDateModel.getOperationDates();
+            req.setAttribute("operation_dates", operation_dates);
         } catch (Exception e) {
             req.setAttribute("ErrorMassage", e.getMessage());
             e.printStackTrace();
         } finally {
-            RequestDispatcher requestDispatcher = req.getRequestDispatcher("/mvc/report_operations.jsp");
+            RequestDispatcher requestDispatcher = req.getRequestDispatcher("/klinika/jsp/operations_report.jsp");
             // Will need to write "try-catch" construction for ServletException.
             requestDispatcher.forward(req, resp);
-        }
-
-        {
-            System.out.println(req.getAttribute("date"));
-            System.out.println(req.getSession().getAttribute("date"));
         }
     }
 

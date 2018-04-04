@@ -1,4 +1,4 @@
-package ua.nike.project.mvc;
+package ua.nike.project.hibernate.bean;
 
 import java.io.Serializable;
 import java.util.Date;

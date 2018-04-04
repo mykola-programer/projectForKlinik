@@ -1,4 +1,4 @@
-package ua.nike.project.mvc;
+package ua.nike.project.klinika.jsp.model;
 
 import ua.nike.project.service.ConnectToBase;
 
@@ -6,27 +6,12 @@ import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Date;
 
 
-public class ModelDate {
-    public List<Date> getOperationDates() throws SQLException {
+public class OperationModel {
 
-        List<Date> result = new ArrayList<>();
-        String sqlDate = "SELECT DISTINCT operationday.operationdate FROM operationday ORDER BY operationdate ";
-        Connection connection = ConnectToBase.getConnection();
-        try (PreparedStatement prepStat = connection.prepareStatement(sqlDate)) {
-            ResultSet resultSet = prepStat.executeQuery();
-            while (resultSet.next()) {
-                Date date = resultSet.getDate("operationdate");
-                result.add(date);
-            }
-        }
-        return result;
-    }
-
-    public List<BeanResultTable> getResultOperation(Date selectedDate) throws SQLException {
-        List<BeanResultTable> result = new ArrayList<>();
+    public static List<OperationBean> getResultOperation(LocalDate selectedDate) throws SQLException {
+        List<OperationBean> result = new ArrayList<>();
 
         String sql = "SELECT od.operationdate, p.surname, p.firstname, p.secondname, o.operation_id, o.eye, od.surgeon, o.manager " +
                 "FROM operation o " +
@@ -36,11 +21,11 @@ public class ModelDate {
         Connection connection = ConnectToBase.getConnection();
         try (PreparedStatement prepStat = connection.prepareStatement(sql)) {
 
-            prepStat.setDate(1, (java.sql.Date)(selectedDate));
+            prepStat.setDate(1, Date.valueOf(selectedDate));
             ResultSet resultSet = prepStat.executeQuery();
 
             while (resultSet.next()) {
-                BeanResultTable resTable = new BeanResultTable();
+                OperationBean resTable = new OperationBean();
                 resTable.setOperationDate(resultSet.getDate("operationdate"));
                 resTable.setSurname(resultSet.getString("surname"));
                 resTable.setFirstname(resultSet.getString("firstname"));

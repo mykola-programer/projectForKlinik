@@ -1,4 +1,4 @@
-package ua.nike.project.servlets;
+package ua.nike.project.klinika.servlets;
 
 import ua.nike.project.service.ConnectToBase;
 
@@ -13,8 +13,8 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-//@WebServlet("/test_servlet")
-public class ServletStart extends HttpServlet {
+@WebServlet("/operations")
+public class OperationServlet extends HttpServlet {
 
     private final static String httpOutStart =
             "<!DOCTYPE HTML>\n" +

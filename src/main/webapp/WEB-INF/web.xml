@@ -7,6 +7,10 @@
         version="2.5">
 
   <display-name>Archetype Created Web Application</display-name>
-  <!-- Here you go. -->
+    <context-param>
+        <param-name>javax.hibernate.CONFIG_FILES</param-name>
+        <param-value>/hibernate.cfg.xml</param-value>
+    </context-param>
+
 
 </web-app>

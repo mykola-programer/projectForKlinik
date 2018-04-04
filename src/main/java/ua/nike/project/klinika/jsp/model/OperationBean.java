@@ -1,9 +1,9 @@
-package ua.nike.project.mvc;
+package ua.nike.project.klinika.jsp.model;
 
 import java.io.Serializable;
 import java.util.Date;
 
-public class BeanResultTable implements Serializable {
+public class OperationBean implements Serializable {
    private Date operationDate;
    private String surname;
    private String firstname;

@@ -16,7 +16,7 @@
     </select>
         <input type='submit' value='Відправити'>
 
-        <jsp:useBean id="SelectedDate" class="ua.nike.project.jsp.beans.SelectedDate" scope="page"/>
+        <jsp:useBean id="SelectedDate" class="ua.nike.project.klinika.jsp.beans.SelectedDate" scope="page"/>
         <jsp:setProperty name="SelectedDate" property="date"/>
 
     </p>
