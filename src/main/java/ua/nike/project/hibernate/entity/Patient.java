@@ -2,37 +2,40 @@ package ua.nike.project.hibernate.entity;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Set;
 
 @Entity
-@Table (name = "patients")
-public class Patient /*implements Serializable*/ {
+@Table(name = "patients")
+public class Patient implements Serializable {
 
     @Id
-    @GeneratedValue (strategy = GenerationType.AUTO)
-    @Column (name = "patient_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "patient_id")
     private Integer patientId;
 
-    @Column (name = "surname")
+    @Column(name = "surname")
     private String surname;
 
-    @Column (name = "first_name")
+    @Column(name = "first_name")
     private String firstName;
 
-    @Column (name = "second_name")
+    @Column(name = "second_name")
     private String secondName;
 
-    @Column (name = "sex")
+    @Column(name = "sex")
     private Character sex;
 
-    @Column (name = "status")
+    @Column(name = "status")
     private String status;
 
-    @Column (name = "relative_id", nullable = true)
-    @OneToOne (fetch = FetchType.LAZY)// , mappedBy = "patientId")
+    @OneToOne(fetch = FetchType.LAZY)
     private Patient relative;
 
-    @Column (name = "telephone")
+    @Column(name = "telephone")
     private String telephone;
+
+    @OneToMany(targetEntity = Operation.class, fetch = FetchType.LAZY, mappedBy = "patient")
+    private Set<Operation> operations;
 
     public Integer getPatientId() {
         return patientId;
@@ -82,20 +85,28 @@ public class Patient /*implements Serializable*/ {
         this.status = status;
     }
 
-    public Patient getRelativeId() {
-        return relative;
-    }
-
-    public void setRelativeId(Patient relative) {
-        this.relative = relative;
-    }
-
     public String getTelephone() {
         return telephone;
     }
 
     public void setTelephone(String telephone) {
         this.telephone = telephone;
+    }
+
+    public Patient getRelative() {
+        return relative;
+    }
+
+    public void setRelative(Patient relative) {
+        this.relative = relative;
+    }
+
+    public Set<Operation> getOperations() {
+        return operations;
+    }
+
+    public void setOperations(Set<Operation> operations) {
+        this.operations = operations;
     }
 
     @Override

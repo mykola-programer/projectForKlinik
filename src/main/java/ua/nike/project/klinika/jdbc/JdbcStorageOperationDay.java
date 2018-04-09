@@ -1,6 +1,6 @@
-package ua.nike.project.service;
+package ua.nike.project.klinika.jdbc;
 
-import ua.nike.project.struct.OperationDay;
+import ua.nike.project.klinika.service.ConnectToBase;
 
 import java.sql.*;
 import java.time.LocalDate;

@@ -1,4 +1,4 @@
-package ua.nike.project.struct;
+package ua.nike.project.klinika.jdbc;
 
 import java.time.LocalTime;
 import java.util.Objects;

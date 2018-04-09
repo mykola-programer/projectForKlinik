@@ -1,6 +1,6 @@
 package ua.nike.project.klinika.jsp.model;
 
-import ua.nike.project.service.ConnectToBase;
+import ua.nike.project.klinika.service.ConnectToBase;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

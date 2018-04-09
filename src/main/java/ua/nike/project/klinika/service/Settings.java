@@ -1,4 +1,4 @@
-package ua.nike.project.service;
+package ua.nike.project.klinika.service;
 
 import java.io.FileInputStream;
 import java.io.IOException;

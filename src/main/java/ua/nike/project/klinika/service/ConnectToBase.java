@@ -1,11 +1,11 @@
-package ua.nike.project.service;
+package ua.nike.project.klinika.service;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public final class ConnectToBase {
 
+public final class ConnectToBase {
 
     private static Connection connection;
 

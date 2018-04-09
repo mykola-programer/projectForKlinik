@@ -1,6 +1,6 @@
 package ua.nike.project.klinika.servlets;
 
-import ua.nike.project.service.ConnectToBase;
+import ua.nike.project.klinika.service.ConnectToBase;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
