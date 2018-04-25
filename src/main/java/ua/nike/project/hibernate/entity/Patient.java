@@ -2,11 +2,16 @@ package ua.nike.project.hibernate.entity;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
+@NamedQuery(name = "getPatients", query = "FROM Patient ")
 @Table(name = "patients")
-public class Patient implements Serializable {
+public class Patient implements Serializable, Comparable<Patient> {
+
+    @Version
+    private long version;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,7 +39,7 @@ public class Patient implements Serializable {
     @Column(name = "telephone")
     private String telephone;
 
-    @OneToMany(targetEntity = Operation.class, fetch = FetchType.LAZY, mappedBy = "patient")
+    @OneToMany(targetEntity = Operation.class, fetch = FetchType.LAZY, mappedBy = "patient", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Operation> operations;
 
     public Integer getPatientId() {
@@ -50,7 +55,7 @@ public class Patient implements Serializable {
     }
 
     public void setSurname(String surname) {
-        this.surname = surname;
+        this.surname = firstUpperCase(surname);
     }
 
     public String getFirstName() {
@@ -58,7 +63,7 @@ public class Patient implements Serializable {
     }
 
     public void setFirstName(String firstName) {
-        this.firstName = firstName;
+        this.firstName = firstUpperCase(firstName);
     }
 
     public String getSecondName() {
@@ -66,7 +71,7 @@ public class Patient implements Serializable {
     }
 
     public void setSecondName(String secondName) {
-        this.secondName = secondName;
+        this.secondName = firstUpperCase(secondName);
     }
 
     public Character getSex() {
@@ -74,7 +79,7 @@ public class Patient implements Serializable {
     }
 
     public void setSex(Character sex) {
-        this.sex = sex;
+        this.sex = Character.toUpperCase(sex);
     }
 
     public String getStatus() {
@@ -82,7 +87,7 @@ public class Patient implements Serializable {
     }
 
     public void setStatus(String status) {
-        this.status = status;
+        this.status = status.toLowerCase();
     }
 
     public String getTelephone() {
@@ -109,6 +114,13 @@ public class Patient implements Serializable {
         this.operations = operations;
     }
 
+    private String firstUpperCase(String word) {
+        if (word == null || word.isEmpty()) {
+            return "";
+        }
+        return word.substring(0, 1).toUpperCase() + word.substring(1).toLowerCase();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -120,23 +132,12 @@ public class Patient implements Serializable {
         if (surname != null ? !surname.equals(patient.surname) : patient.surname != null) return false;
         if (firstName != null ? !firstName.equals(patient.firstName) : patient.firstName != null) return false;
         if (secondName != null ? !secondName.equals(patient.secondName) : patient.secondName != null) return false;
-        if (sex != null ? !sex.equals(patient.sex) : patient.sex != null) return false;
-        if (status != null ? !status.equals(patient.status) : patient.status != null) return false;
-        if (relative != null ? !relative.equals(patient.relative) : patient.relative != null) return false;
-        return telephone != null ? telephone.equals(patient.telephone) : patient.telephone == null;
+        return sex != null ? !sex.equals(patient.sex) : patient.sex != null;
     }
 
     @Override
     public int hashCode() {
-        int result = patientId != null ? patientId.hashCode() : 0;
-        result = 31 * result + (surname != null ? surname.hashCode() : 0);
-        result = 31 * result + (firstName != null ? firstName.hashCode() : 0);
-        result = 31 * result + (secondName != null ? secondName.hashCode() : 0);
-        result = 31 * result + (sex != null ? sex.hashCode() : 0);
-        result = 31 * result + (status != null ? status.hashCode() : 0);
-        result = 31 * result + (relative != null ? relative.hashCode() : 0);
-        result = 31 * result + (telephone != null ? telephone.hashCode() : 0);
-        return result;
+        return Objects.hash(patientId, surname, firstName, secondName, sex);
     }
 
     @Override
@@ -151,5 +152,52 @@ public class Patient implements Serializable {
                 ", relativeId=" + relative +
                 ", telephone='" + telephone + '\'' +
                 '}';
+    }
+
+    @Override
+    public int compareTo(Patient patient) {
+        final int UP = -1;
+        final int DOWN = 1;
+        final int EQUALS = 0;
+
+        if (this.surname != null && patient.surname != null) {
+            if (this.surname.compareTo(patient.surname) != EQUALS) return this.surname.compareTo(patient.surname);
+        } else if (this.surname != null) return UP;
+        else if (patient.surname != null) return DOWN;
+
+        // ---------------------------------------------------------------- //
+
+        if (this.firstName != null && patient.firstName != null) {
+            if (this.firstName.compareTo(patient.firstName) != EQUALS)
+                return this.firstName.compareTo(patient.firstName);
+        } else if (this.firstName != null) return UP;
+        else if (patient.firstName != null) return DOWN;
+
+        // ---------------------------------------------------------------- //
+
+        if (this.secondName != null && patient.secondName != null) {
+            if (this.secondName.compareTo(patient.secondName) != EQUALS)
+                return this.secondName.compareTo(patient.secondName);
+        } else if (this.secondName != null) return UP;
+        else if (patient.secondName != null) return DOWN;
+
+        // ---------------------------------------------------------------- //
+
+        if (this.sex != null && patient.sex != null) {
+            if (this.sex.compareTo(patient.sex) != EQUALS) return this.sex.compareTo(patient.sex);
+        } else if (this.sex != null) return UP;
+        else if (patient.sex != null) return DOWN;
+
+        // ---------------------------------------------------------------- //
+
+        if (this.patientId != null && patient.patientId != null) {
+            if (this.patientId.compareTo(patient.patientId) != EQUALS)
+                return this.patientId.compareTo(patient.patientId);
+        } else if (this.patientId != null) return UP;
+        else if (patient.patientId != null) return DOWN;
+
+        // ---------------------------------------------------------------- //
+
+        return EQUALS;
     }
 }

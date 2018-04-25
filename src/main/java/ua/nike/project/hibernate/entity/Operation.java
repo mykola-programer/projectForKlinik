@@ -4,6 +4,16 @@ import javax.persistence.*;
 import java.sql.Time;
 
 @Entity
+@NamedQueries(value = {
+        @NamedQuery(name = "Operation.getOperations", query = "FROM Operation "),
+        @NamedQuery(name = "Operation.selectOperationInDate", query =
+                "SELECT new ua.nike.project.hibernate.model.OperationBean(od.operationDate, p.surname, p.firstName, p.secondName, op.operationName, op.eye, od.surgeon, op.manager) " +
+                        "FROM Operation op " +
+                        "INNER JOIN op.operationDay od " +
+                        "INNER JOIN op.patient p " +
+                        "WHERE op.operationDay.operationDate = :operationDate ")
+})
+
 @Table(name = "operations")
 public class Operation {
     @Id
@@ -75,7 +85,7 @@ public class Operation {
     }
 
     public void setOperationName(String operationName) {
-        this.operationName = operationName;
+        this.operationName = operationName.toUpperCase();
     }
 
     public String getEye() {
@@ -83,7 +93,7 @@ public class Operation {
     }
 
     public void setEye(String eye) {
-        this.eye = eye;
+        this.eye = eye.toUpperCase();
     }
 
     public String getManager() {
@@ -91,7 +101,7 @@ public class Operation {
     }
 
     public void setManager(String manager) {
-        this.manager = manager;
+        this.manager = firstUpperCase(manager);
     }
 
     public String getNote() {
@@ -102,6 +112,12 @@ public class Operation {
         this.note = note;
     }
 
+    private String firstUpperCase(String word) {
+        if (word == null || word.isEmpty()) {
+            return "";
+        }
+        return word.substring(0, 1).toUpperCase() + word.substring(1).toLowerCase();
+    }
 
     @Override
     public boolean equals(Object o) {

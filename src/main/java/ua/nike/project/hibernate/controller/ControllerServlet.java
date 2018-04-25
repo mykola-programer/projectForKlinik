@@ -1,4 +1,4 @@
-package ua.nike.project.hibernate.control;
+package ua.nike.project.hibernate.controller;
 
 import ua.nike.project.hibernate.model.EntityManagerFactorySingleton;
 import ua.nike.project.hibernate.model.OperationBean;
@@ -6,7 +6,6 @@ import ua.nike.project.hibernate.model.OperationDateModel;
 import ua.nike.project.hibernate.model.OperationModel;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -20,14 +19,13 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @WebServlet("/test_hibernate")
-public class ControllerHibernateServlet extends HttpServlet {
-    private static final EntityManagerFactory MANAGER_FACTORY = EntityManagerFactorySingleton.getEntityManagerFactory();
-    private static final EntityManager ENTITY_MANAGER = EntityManagerFactorySingleton.getEntityManager();
+public class ControllerServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
+        EntityManager entityManager = EntityManagerFactorySingleton.getEntityManagerFactory().createEntityManager();
         try {
-            List<Date> operation_dates = OperationDateModel.getOperationDates();
+            List<Date> operation_dates = OperationDateModel.getOperationDates(entityManager);
             req.setAttribute("operation_dates", operation_dates);
 
             String reqDate = req.getParameter("date");
@@ -35,7 +33,7 @@ public class ControllerHibernateServlet extends HttpServlet {
                 DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd");
                 LocalDate date = LocalDate.parse(reqDate, format);
                 req.getSession().setAttribute("selected_date", Date.valueOf(date));
-                List<OperationBean> operations = OperationModel.getResultOperation(date);
+                List<OperationBean> operations = OperationModel.getResultOperation(date, entityManager);
                 req.setAttribute("operations", operations);
 
             } else {
@@ -50,12 +48,12 @@ public class ControllerHibernateServlet extends HttpServlet {
             RequestDispatcher requestDispatcher = req.getRequestDispatcher("/klinika/hibernate/operations_report.jsp");
             // Will need to write "try-catch" construction for ServletException.
             requestDispatcher.forward(req, resp);
+            entityManager.close();
         }
     }
 
     @Override
     public void destroy() {
-        ENTITY_MANAGER.close();
-        MANAGER_FACTORY.close();
+        EntityManagerFactorySingleton.getEntityManagerFactory().close();
     }
 }

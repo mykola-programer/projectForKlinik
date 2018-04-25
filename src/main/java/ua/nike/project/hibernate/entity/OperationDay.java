@@ -6,6 +6,7 @@ import java.sql.Date;
 import java.util.Set;
 
 @Entity
+@NamedQuery(name = "getUniqueOperationDates", query = "SELECT DISTINCT od.operationDate FROM OperationDay od ORDER BY od.operationDate")
 @Table(name = "operation_days")
 public class OperationDay implements Serializable {
 
@@ -45,7 +46,7 @@ public class OperationDay implements Serializable {
     }
 
     public void setSurgeon(String surgeon) {
-        this.surgeon = surgeon;
+        this.surgeon = firstUpperCase(surgeon);
     }
 
     public Set<Operation> getOperations() {
@@ -54,6 +55,13 @@ public class OperationDay implements Serializable {
 
     public void setOperations(Set<Operation> operations) {
         this.operations = operations;
+    }
+
+    private String firstUpperCase(String word) {
+        if (word == null || word.isEmpty()) {
+            return "";
+        }
+        return word.substring(0, 1).toUpperCase() + word.substring(1).toLowerCase();
     }
 
     @Override
