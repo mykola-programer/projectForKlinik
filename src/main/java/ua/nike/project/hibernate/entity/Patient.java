@@ -6,7 +6,7 @@ import java.util.Objects;
 import java.util.Set;
 
 @Entity
-@NamedQuery(name = "getPatients", query = "FROM Patient ")
+@NamedQuery(name = "Patient.findAll", query = "FROM Patient ")
 @Table(name = "patients")
 public class Patient implements Serializable, Comparable<Patient> {
 
@@ -128,16 +128,21 @@ public class Patient implements Serializable, Comparable<Patient> {
 
         Patient patient = (Patient) o;
 
-        if (patientId != null ? !patientId.equals(patient.patientId) : patient.patientId != null) return false;
-        if (surname != null ? !surname.equals(patient.surname) : patient.surname != null) return false;
-        if (firstName != null ? !firstName.equals(patient.firstName) : patient.firstName != null) return false;
-        if (secondName != null ? !secondName.equals(patient.secondName) : patient.secondName != null) return false;
-        return sex != null ? !sex.equals(patient.sex) : patient.sex != null;
+        return Objects.equals(surname, patient.surname) &&
+                Objects.equals(firstName, patient.firstName) &&
+                Objects.equals(secondName, patient.secondName) &&
+                Objects.equals(sex, patient.sex);
+
+//        if (surname != null ? !surname.equals(patient.surname) : patient.surname != null) return false;
+//        if (firstName != null ? !firstName.equals(patient.firstName) : patient.firstName != null) return false;
+//        if (secondName != null ? !secondName.equals(patient.secondName) : patient.secondName != null) return false;
+//        return sex != null ? !sex.equals(patient.sex) : patient.sex != null;
+
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(patientId, surname, firstName, secondName, sex);
+        return Objects.hash(surname, firstName, secondName, sex);
     }
 
     @Override
@@ -156,48 +161,43 @@ public class Patient implements Serializable, Comparable<Patient> {
 
     @Override
     public int compareTo(Patient patient) {
-        final int UP = -1;
-        final int DOWN = 1;
-        final int EQUALS = 0;
+        final int BEFORE = -1;
+        final int EQUAL = 0;
+        final int AFTER = 1;
+
+        if (this == patient) return EQUAL;
+
 
         if (this.surname != null && patient.surname != null) {
-            if (this.surname.compareTo(patient.surname) != EQUALS) return this.surname.compareTo(patient.surname);
-        } else if (this.surname != null) return UP;
-        else if (patient.surname != null) return DOWN;
+            if (this.surname.compareTo(patient.surname) != EQUAL) return this.surname.compareTo(patient.surname);
+        } else if (this.surname != null) return BEFORE;
+        else if (patient.surname != null) return AFTER;
 
         // ---------------------------------------------------------------- //
 
         if (this.firstName != null && patient.firstName != null) {
-            if (this.firstName.compareTo(patient.firstName) != EQUALS)
+            if (this.firstName.compareTo(patient.firstName) != EQUAL)
                 return this.firstName.compareTo(patient.firstName);
-        } else if (this.firstName != null) return UP;
-        else if (patient.firstName != null) return DOWN;
+        } else if (this.firstName != null) return BEFORE;
+        else if (patient.firstName != null) return AFTER;
 
         // ---------------------------------------------------------------- //
 
         if (this.secondName != null && patient.secondName != null) {
-            if (this.secondName.compareTo(patient.secondName) != EQUALS)
+            if (this.secondName.compareTo(patient.secondName) != EQUAL)
                 return this.secondName.compareTo(patient.secondName);
-        } else if (this.secondName != null) return UP;
-        else if (patient.secondName != null) return DOWN;
+        } else if (this.secondName != null) return BEFORE;
+        else if (patient.secondName != null) return AFTER;
 
         // ---------------------------------------------------------------- //
 
         if (this.sex != null && patient.sex != null) {
-            if (this.sex.compareTo(patient.sex) != EQUALS) return this.sex.compareTo(patient.sex);
-        } else if (this.sex != null) return UP;
-        else if (patient.sex != null) return DOWN;
+            if (this.sex.compareTo(patient.sex) != EQUAL) return this.sex.compareTo(patient.sex);
+        } else if (this.sex != null) return BEFORE;
+        else if (patient.sex != null) return AFTER;
 
         // ---------------------------------------------------------------- //
 
-        if (this.patientId != null && patient.patientId != null) {
-            if (this.patientId.compareTo(patient.patientId) != EQUALS)
-                return this.patientId.compareTo(patient.patientId);
-        } else if (this.patientId != null) return UP;
-        else if (patient.patientId != null) return DOWN;
-
-        // ---------------------------------------------------------------- //
-
-        return EQUALS;
+        return EQUAL;
     }
 }

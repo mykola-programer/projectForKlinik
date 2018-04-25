@@ -34,6 +34,7 @@ public class ControllerServlet extends HttpServlet {
                 LocalDate date = LocalDate.parse(reqDate, format);
                 req.getSession().setAttribute("selected_date", Date.valueOf(date));
                 List<OperationBean> operations = OperationModel.getResultOperation(date, entityManager);
+
                 req.setAttribute("operations", operations);
 
             } else {
@@ -50,10 +51,5 @@ public class ControllerServlet extends HttpServlet {
             requestDispatcher.forward(req, resp);
             entityManager.close();
         }
-    }
-
-    @Override
-    public void destroy() {
-        EntityManagerFactorySingleton.getEntityManagerFactory().close();
     }
 }

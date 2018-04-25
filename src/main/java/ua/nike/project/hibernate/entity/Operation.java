@@ -5,13 +5,7 @@ import java.sql.Time;
 
 @Entity
 @NamedQueries(value = {
-        @NamedQuery(name = "Operation.getOperations", query = "FROM Operation "),
-        @NamedQuery(name = "Operation.selectOperationInDate", query =
-                "SELECT new ua.nike.project.hibernate.model.OperationBean(od.operationDate, p.surname, p.firstName, p.secondName, op.operationName, op.eye, od.surgeon, op.manager) " +
-                        "FROM Operation op " +
-                        "INNER JOIN op.operationDay od " +
-                        "INNER JOIN op.patient p " +
-                        "WHERE op.operationDay.operationDate = :operationDate ")
+        @NamedQuery(name = "Operation.findAll", query = "FROM Operation "),
 })
 
 @Table(name = "operations")
