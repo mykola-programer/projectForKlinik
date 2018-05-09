@@ -1,6 +1,6 @@
 package ua.nike.project.spring.dao;
 
-import ua.nike.project.spring.beans.entity.Operation;
+import ua.nike.project.hibernate.entity.Operation;
 
 import java.util.List;
 

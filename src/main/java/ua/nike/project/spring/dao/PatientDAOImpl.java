@@ -1,7 +1,7 @@
 package ua.nike.project.spring.dao;
 
 import org.springframework.transaction.PlatformTransactionManager;
-import ua.nike.project.spring.beans.entity.Patient;
+import ua.nike.project.hibernate.entity.Patient;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;

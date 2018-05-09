@@ -1,6 +1,6 @@
 package ua.nike.project.spring.dao;
 
-import ua.nike.project.spring.beans.entity.Patient;
+import ua.nike.project.hibernate.entity.Patient;
 
 import java.util.List;
 
