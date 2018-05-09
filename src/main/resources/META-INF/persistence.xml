@@ -12,9 +12,9 @@
 
         <mapping-file>/META-INF/operation_bean.orm.xml</mapping-file>
 
-        <class>ua.nike.project.hibernate.entity.Patient</class>
-        <class>ua.nike.project.hibernate.entity.OperationDay</class>
-        <class>ua.nike.project.hibernate.entity.Operation</class>
+        <class>ua.nike.project.spring.beans.entity.Patient</class>
+        <class>ua.nike.project.spring.beans.entity.OperationDay</class>
+        <class>ua.nike.project.spring.beans.entity.Operation</class>
 
         <properties>
             <property name="javax.persistence.jdbc.driver"

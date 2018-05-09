@@ -10,7 +10,7 @@ import java.util.List;
 public class OperationDateModel {
 
     public static List<Date> getOperationDates(EntityManager entityManager) throws NoResultException {
-        List<Date> result = new ArrayList<Date>(entityManager.createNamedQuery("getUniqueOperationDates").getResultList());
+        List<Date> result = new ArrayList<Date>(entityManager.createNamedQuery("OperationDay.getUniqueOperationDates").getResultList());
         if (result.isEmpty()) {
             throw new NoResultException("В базі даних, жодного запису по вашому запиту не знайдено!");
         }

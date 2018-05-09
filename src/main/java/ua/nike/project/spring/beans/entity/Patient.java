@@ -1,4 +1,4 @@
-package ua.nike.project.hibernate.entity;
+package ua.nike.project.spring.beans.entity;
 
 import javax.persistence.*;
 import java.io.Serializable;
