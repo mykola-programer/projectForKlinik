@@ -3,41 +3,32 @@ package ua.nike.project.spring.dao;
 import ua.nike.project.hibernate.entity.Operation;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import java.util.List;
 
 public class OperationDAOImpl implements OperationDAO {
 
-    private EntityManagerFactory entityManagerFactory;
+    private EntityManager entityManager;
 
-    public void setEntityManagerFactory(EntityManagerFactory entityManagerFactory) {
-        this.entityManagerFactory = entityManagerFactory;
+    public void setEntityManager(EntityManager entityManager) {
+        this.entityManager = entityManager;
     }
 
     @Override
     public void saveOperation(Operation operation) {
-        EntityManager entityManager = this.entityManagerFactory.createEntityManager();
-        EntityTransaction transaction = entityManager.getTransaction();
+        EntityTransaction transaction = this.entityManager.getTransaction();
         transaction.begin();
-        entityManager.persist(operation);
+        this.entityManager.persist(operation);
         transaction.commit();
-        entityManager.close();
     }
 
     @Override
     public Operation findOperation(int operationID) {
-        EntityManager entityManager = this.entityManagerFactory.createEntityManager();
-        Operation operation = entityManager.find(Operation.class, operationID);
-        entityManager.close();
-        return operation;
+        return this.entityManager.find(Operation.class, operationID);
     }
 
     @Override
     public List<Operation> list() {
-        EntityManager entityManager = this.entityManagerFactory.createEntityManager();
-        List<Operation> operations = entityManager.createNamedQuery("Operation.findAll").getResultList();
-        entityManager.close();
-        return operations;
+        return this.entityManager.createNamedQuery("Operation.findAll", Operation.class).getResultList();
     }
 }

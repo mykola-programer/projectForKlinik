@@ -6,32 +6,25 @@
     <import resource="jpa_hibernate.xml"/>
 
     <bean id="patient" name="relative" class="ua.nike.project.hibernate.entity.Patient" scope="prototype">
-        <!--<constructor-arg value="surname" index="0" type="java.lang.String"/>-->
-        <!--<constructor-arg value="firstName" index="1" type="java.lang.String"/>-->
-        <!--<constructor-arg value="secondName" index="2" type="java.lang.String"/>-->
-        <!--<constructor-arg value="status" index="3" type="java.lang.String"/>-->
-        <!--<constructor-arg ref="relative" index="4"/>-->
-        <!--<constructor-arg value="telephone" index="5" type="java.lang.String"/>-->
 
     </bean>
     <bean id="operation" class="ua.nike.project.hibernate.entity.Operation" scope="prototype"/>
     <bean id="operationDay" class="ua.nike.project.hibernate.entity.OperationDay" scope="prototype"/>
 
     <bean id="patientDAO" class="ua.nike.project.spring.dao.PatientDAOImpl">
-        <property name="entityManagerFactory" ref="entityManagerFactory"/>
-        <property name="transactionManager" ref="transactionManager"/>
+        <property name="entityManager" ref="entityManager"/>
     </bean>
 
     <bean id="operationDAO" class="ua.nike.project.spring.dao.OperationDAOImpl">
-        <property name="entityManagerFactory" ref="entityManagerFactory"/>
+        <property name="entityManager" ref="entityManager"/>
     </bean>
 
     <bean id="operationDayDAO" class="ua.nike.project.spring.dao.OperationDayDAOImpl">
-        <property name="entityManagerFactory" ref="entityManagerFactory"/>
+        <property name="entityManager" ref="entityManager"/>
     </bean>
 
     <bean id="operationBeanDAO" class="ua.nike.project.spring.dao.OperationBeanDAOImpl">
-        <property name="entityManagerFactory" ref="entityManagerFactory"/>
+        <property name="entityManager" ref="entityManager"/>
     </bean>
 
 </beans>

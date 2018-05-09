@@ -1,50 +1,34 @@
 package ua.nike.project.spring.dao;
 
-import org.springframework.transaction.PlatformTransactionManager;
 import ua.nike.project.hibernate.entity.Patient;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
-import java.util.ArrayList;
 import java.util.List;
 
 public class PatientDAOImpl implements PatientDAO {
 
-    private EntityManagerFactory entityManagerFactory;
-    private PlatformTransactionManager transactionManager;
+    private EntityManager entityManager;
 
-    public void setTransactionManager(PlatformTransactionManager transactionManager) {
-        this.transactionManager = transactionManager;
-    }
-
-    public void setEntityManagerFactory(EntityManagerFactory entityManagerFactory) {
-        this.entityManagerFactory = entityManagerFactory;
+    public void setEntityManager(EntityManager entityManager) {
+        this.entityManager = entityManager;
     }
 
     @Override
     public void savePatient(Patient patient) {
-        EntityManager entityManager = this.entityManagerFactory.createEntityManager();
-        EntityTransaction transaction = entityManager.getTransaction();
+        EntityTransaction transaction = this.entityManager.getTransaction();
         transaction.begin();
-        entityManager.persist(patient);
+        this.entityManager.persist(patient);
         transaction.commit();
-        entityManager.close();
     }
 
     @Override
     public Patient findPatient(int patientID) {
-        EntityManager entityManager = this.entityManagerFactory.createEntityManager();
-        Patient patient = entityManager.find(Patient.class, patientID);
-        entityManager.close();
-        return patient;
+        return this.entityManager.find(Patient.class, patientID);
     }
 
     @Override
     public List<Patient> list() {
-        EntityManager entityManager = this.entityManagerFactory.createEntityManager();
-        List<Patient> patients = new ArrayList<Patient>(entityManager.createNamedQuery("Patient.findAll").getResultList());
-        entityManager.close();
-        return patients;
+        return this.entityManager.createNamedQuery("Patient.findAll", Patient.class).getResultList();
     }
 }

@@ -1,0 +1,1 @@
+Another beans in package ..project.hibernate.entity.
