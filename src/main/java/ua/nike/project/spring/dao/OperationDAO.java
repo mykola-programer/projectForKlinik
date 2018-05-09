@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface OperationDAO {
 
-    void saveOperation(Operation operation);
+    int saveOperation(Operation operation);
 
     Operation findOperation(int operationID);
 

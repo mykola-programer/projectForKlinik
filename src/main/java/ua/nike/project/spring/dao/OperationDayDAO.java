@@ -2,13 +2,17 @@ package ua.nike.project.spring.dao;
 
 import ua.nike.project.hibernate.entity.OperationDay;
 
+import java.sql.Date;
 import java.util.List;
+import java.util.Set;
 
 public interface OperationDayDAO {
 
-    void saveOperationDay(OperationDay operationDay);
+    int saveOperationDay(OperationDay operationDay);
 
     OperationDay findOperationDay(int operationDayID);
 
-    List<OperationDay> list();
+    List<OperationDay> listOperationDays();
+
+    Set<Date> getOperationDates();
 }

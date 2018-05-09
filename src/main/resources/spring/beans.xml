@@ -12,19 +12,19 @@
     <bean id="operationDay" class="ua.nike.project.hibernate.entity.OperationDay" scope="prototype"/>
 
     <bean id="patientDAO" class="ua.nike.project.spring.dao.PatientDAOImpl">
-        <property name="entityManager" ref="entityManager"/>
+        <!--<property name="entityManager" ref="entityManager"/>-->
     </bean>
 
     <bean id="operationDAO" class="ua.nike.project.spring.dao.OperationDAOImpl">
-        <property name="entityManager" ref="entityManager"/>
+        <!--<property name="entityManager" ref="entityManager"/>-->
     </bean>
 
     <bean id="operationDayDAO" class="ua.nike.project.spring.dao.OperationDayDAOImpl">
-        <property name="entityManager" ref="entityManager"/>
+        <!--<property name="entityManager" ref="entityManager"/>-->
     </bean>
 
     <bean id="operationBeanDAO" class="ua.nike.project.spring.dao.OperationBeanDAOImpl">
-        <property name="entityManager" ref="entityManager"/>
+        <!--<property name="entityManager" ref="entityManager"/>-->
     </bean>
 
 </beans>
