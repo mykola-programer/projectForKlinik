@@ -158,10 +158,9 @@ public class Operation {
                 ", timeForCome=" + timeForCome +
                 ", numberOfOrder=" + numberOfOrder +
                 ", patient=" + patient +
-                ", operationName='" + operationName + '\'' +
-                ", eye='" + eye + '\'' +
-                ", manager='" + manager + '\'' +
-                ", note='" + note + '\'' +
-                '}';
+                ", operationName=" + operationName +
+                ", eye=" + eye +
+                ", manager=" + manager +
+                ", note=" + note + "}";
     }
 }
