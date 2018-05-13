@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Set;
 
 @Controller
-public class SpringMVC {
+public class ControllerSpringMVC {
 
     @Autowired
     ApplicationContext context;
@@ -44,9 +44,9 @@ public class SpringMVC {
             }
         } catch (Exception e) {
             model.addObject("ErrorMassage", e.getMessage());
-        } finally {
-            return model;
         }
+        return model;
+
     }
 
     @RequestMapping(value = "/", method = RequestMethod.GET)

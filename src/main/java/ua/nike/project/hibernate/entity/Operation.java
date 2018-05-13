@@ -1,6 +1,7 @@
 package ua.nike.project.hibernate.entity;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.sql.Time;
 
 @Entity
@@ -9,7 +10,7 @@ import java.sql.Time;
 })
 
 @Table(name = "operations")
-public class Operation {
+public class Operation implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer operationId;

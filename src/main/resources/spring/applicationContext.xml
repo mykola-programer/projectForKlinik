@@ -7,6 +7,7 @@
        http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
 
     <import resource="beans.xml"/>
+
     <context:component-scan base-package="ua.nike.project.spring.model"/>
 
 
