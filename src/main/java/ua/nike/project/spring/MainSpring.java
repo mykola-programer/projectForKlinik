@@ -10,7 +10,7 @@ import ua.nike.project.spring.dao.OperationDAO;
 import ua.nike.project.spring.dao.OperationDayDAO;
 import ua.nike.project.spring.dao.PatientDAO;
 
-import java.util.Date;
+import java.sql.Date;
 import java.util.List;
 
 public class MainSpring {

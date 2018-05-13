@@ -9,7 +9,6 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import java.sql.Date;
-import java.time.LocalDate;
 import java.util.List;
 
 public class OperationBeanDAOImpl implements OperationBeanDAO {
@@ -18,10 +17,10 @@ public class OperationBeanDAOImpl implements OperationBeanDAO {
     private EntityManager entityManager;
 
     @Override
-    @Transactional (propagation = Propagation.REQUIRED ,readOnly = true)
-    public List<OperationBean> list(LocalDate selectedDate) {
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = true)
+    public List<OperationBean> list(Date selectedDate) {
         Query query = this.entityManager.createNamedQuery("Operation.findAllOperationBeanByOperationDate", OperationBean.class);
-        query.setParameter("operationDate", Date.valueOf(selectedDate));
+        query.setParameter("operationDate", selectedDate);
         List<OperationBean> operationBeans = query.getResultList();
 
         if (operationBeans.isEmpty()) {

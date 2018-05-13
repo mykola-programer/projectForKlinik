@@ -11,9 +11,7 @@ import ua.nike.project.hibernate.model.OperationBean;
 import ua.nike.project.spring.dao.OperationBeanDAO;
 import ua.nike.project.spring.dao.OperationDayDAO;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.Date;
+import java.sql.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -31,9 +29,8 @@ public class ControllerSpringMVC {
             model.addObject("operation_dates", operation_dates);
 
             if (reqDate != null && !reqDate.equals("")) {
-                DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-                LocalDate date = LocalDate.parse(reqDate, format);
-                model.addObject("selected_date", java.sql.Date.valueOf(date));
+                Date date = Date.valueOf(reqDate);
+                model.addObject("selected_date", date);
 
                 OperationBeanDAO operationBeanDAO = context.getBean(OperationBeanDAO.class);
                 List<OperationBean> operations = operationBeanDAO.list(date);
@@ -42,8 +39,12 @@ public class ControllerSpringMVC {
             } else {
                 model.addObject("Massage", "Введіть обовязково дату!");
             }
+        } catch (IllegalArgumentException e) {
+            model.addObject("ErrorMassage", "Некорректна дата ! Введіть обовязково дату!");
+
         } catch (Exception e) {
             model.addObject("ErrorMassage", e.getMessage());
+
         }
         return model;
 

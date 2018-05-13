@@ -6,7 +6,7 @@ import ua.nike.project.hibernate.entity.OperationDay;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.util.Date;
+import java.sql.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -38,6 +38,6 @@ public class OperationDayDAOImpl implements OperationDayDAO {
     @Override
     @Transactional(propagation = Propagation.REQUIRED, readOnly = true)
     public Set<Date> getOperationDates() {
-        return new TreeSet<Date>(entityManager.createNamedQuery("OperationDay.getUniqueOperationDates", Date.class).getResultList());
+        return new TreeSet<Date>(entityManager.createNamedQuery("OperationDay.getUniqueOperationDates").getResultList());
     }
 }
