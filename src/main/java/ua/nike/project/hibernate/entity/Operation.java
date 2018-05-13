@@ -5,7 +5,7 @@ import java.sql.Time;
 
 @Entity
 @NamedQueries(value = {
-        @NamedQuery(name = "Operation.findAll", query = "FROM Operation "),
+        @NamedQuery(name = "Operation.findAll", query = "FROM Operation ")
 })
 
 @Table(name = "operations")
@@ -14,7 +14,7 @@ public class Operation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer operationId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "operation_day_id")
     private OperationDay operationDay;
 
@@ -22,7 +22,7 @@ public class Operation {
 
     private Integer numberOfOrder;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "patient_id")
     private Patient patient;
 

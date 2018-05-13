@@ -6,9 +6,9 @@ import java.util.List;
 
 public interface PatientDAO {
 
-    void savePatient(Patient patient);
+    int savePatient(Patient patient);
 
     Patient findPatient(int patientID);
 
-    List<Patient> list();
+    List<Patient> listPatients();
 }

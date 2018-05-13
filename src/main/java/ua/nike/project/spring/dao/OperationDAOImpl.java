@@ -1,34 +1,34 @@
 package ua.nike.project.spring.dao;
 
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import ua.nike.project.hibernate.entity.Operation;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
+import javax.persistence.PersistenceContext;
 import java.util.List;
 
 public class OperationDAOImpl implements OperationDAO {
 
+    @PersistenceContext
     private EntityManager entityManager;
 
-    public void setEntityManager(EntityManager entityManager) {
-        this.entityManager = entityManager;
-    }
-
     @Override
-    public void saveOperation(Operation operation) {
-        EntityTransaction transaction = this.entityManager.getTransaction();
-        transaction.begin();
+    @Transactional (propagation = Propagation.REQUIRES_NEW, readOnly = false)
+    public int saveOperation(Operation operation) {
         this.entityManager.persist(operation);
-        transaction.commit();
+        return operation.getOperationId();
     }
 
     @Override
+    @Transactional (propagation = Propagation.REQUIRED ,readOnly = true)
     public Operation findOperation(int operationID) {
         return this.entityManager.find(Operation.class, operationID);
     }
 
     @Override
-    public List<Operation> list() {
+    @Transactional (propagation = Propagation.REQUIRED ,readOnly = true)
+    public List<Operation> listOperations() {
         return this.entityManager.createNamedQuery("Operation.findAll", Operation.class).getResultList();
     }
 }
