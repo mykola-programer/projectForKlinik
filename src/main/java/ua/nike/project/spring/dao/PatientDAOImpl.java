@@ -35,4 +35,11 @@ public class PatientDAOImpl implements PatientDAO {
     public List<Patient> listPatients() {
         return this.entityManager.createNamedQuery("Patient.findAll", Patient.class).getResultList();
     }
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void removePatient(int patientId) {
+        this.entityManager.remove(findPatient(patientId));
+    }
+
 }

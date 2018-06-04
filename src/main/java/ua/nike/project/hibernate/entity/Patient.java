@@ -79,7 +79,7 @@ public class Patient implements Serializable, Comparable<Patient> {
     }
 
     public void setSex(Character sex) {
-        this.sex = Character.toUpperCase(sex);
+        if (sex != null) this.sex = Character.toUpperCase(sex);
     }
 
     public String getStatus() {

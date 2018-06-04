@@ -6,6 +6,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 import ua.nike.project.hibernate.model.OperationBean;
 import ua.nike.project.spring.dao.OperationBeanDAO;
@@ -50,10 +51,10 @@ public class ControllerSpringMVC {
 
     }
 
-    @RequestMapping(value = "/", method = RequestMethod.GET)
+    @RequestMapping(value = "/hello", method = RequestMethod.GET)
     public ModelAndView indexTest() {
         ModelAndView model = new ModelAndView();
-        model.setViewName("index");
+        model.setViewName("/start");
         model.addObject("name", "Spring MVC");
         return model;
     }

@@ -11,4 +11,6 @@ public interface PatientDAO {
     Patient findPatient(int patientID);
 
     List<Patient> listPatients();
+
+    void removePatient(int patientId);
 }

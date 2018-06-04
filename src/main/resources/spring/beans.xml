@@ -5,9 +5,7 @@
 
     <import resource="jpa_hibernate.xml"/>
 
-    <bean id="patient" name="relative" class="ua.nike.project.hibernate.entity.Patient" scope="prototype">
-
-    </bean>
+    <bean id="patient" name="relative" class="ua.nike.project.hibernate.entity.Patient" scope="prototype"/>
     <bean id="operation" class="ua.nike.project.hibernate.entity.Operation" scope="prototype"/>
     <bean id="operationDay" class="ua.nike.project.hibernate.entity.OperationDay" scope="prototype"/>
 
