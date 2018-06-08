@@ -52,28 +52,36 @@ public class ControllerPatientREST {
 
     @RequestMapping(value = "", method = RequestMethod.POST, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE, MediaType.APPLICATION_XML_VALUE},
             consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-    public Patient savePatient(
-            @RequestParam("surname") String surname,
-            @RequestParam("firstName") String firstName,
-            @RequestParam("secondName") String secondName,
-            @RequestParam("sex") String sex,
-            @RequestParam("status") String status,
-            @RequestParam("telephone") String telephone) {
+    public Patient savePatient( @ModelAttribute Patient patient
 
-        // Problems with UTF-8 !
-        // Problem with catch object Patient from RequestBody !
-        Patient patient = (Patient) context.getBean("patient");
-        patient.setSurname(surname);
-        patient.setFirstName(firstName);
-        patient.setSecondName(secondName);
-        patient.setSex(sex.isEmpty() ? null : sex.charAt(0));
-        patient.setStatus(status);
-        patient.setTelephone(telephone);
-        System.out.println();
-        System.out.println(patient);
-//        patientDAO.savePatient(patient);
+           // Problem with catch object Patient from RequestBody !
+//            @RequestBody Patient patient,
+
+//            @RequestParam("surname") String surname,
+//            @RequestParam("firstName") String firstName,
+//            @RequestParam("secondName") String secondName,
+//            @RequestParam("sex") String sex,
+//            @RequestParam("status") String status,
+//            @RequestParam("telephone") String telephone
+
+                                                                     ) {
+
+
+        // --------------- Problems with UTF-8 ! -----------------
+//        Patient patient1 = (Patient) context.getBean("patient");
+//        patient.setSurname(surname);
+//        patient.setFirstName(firstName);
+//        patient.setSecondName(secondName);
+//        patient.setSex(sex.isEmpty() ? null : sex.charAt(0));
+//        patient.setStatus(status);
+//        patient.setTelephone(telephone);
+
+/*        patientDAO.savePatient(patient);        */
+
         return patient;
     }
+
+
 
     @RequestMapping(value = "{id}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_XML_VALUE)
     public String removePatient(@PathVariable("id") int patientId) {

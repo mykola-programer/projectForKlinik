@@ -121,8 +121,6 @@ public class Operation implements Serializable {
 
         Operation operation = (Operation) o;
 
-        if (operationId != null ? !operationId.equals(operation.operationId) : operation.operationId != null)
-            return false;
         if (operationDay != null ? !operationDay.equals(operation.operationDay) : operation.operationDay != null)
             return false;
         if (timeForCome != null ? !timeForCome.equals(operation.timeForCome) : operation.timeForCome != null)
@@ -133,21 +131,18 @@ public class Operation implements Serializable {
         if (operationName != null ? !operationName.equals(operation.operationName) : operation.operationName != null)
             return false;
         if (eye != null ? !eye.equals(operation.eye) : operation.eye != null) return false;
-        if (manager != null ? !manager.equals(operation.manager) : operation.manager != null) return false;
-        return note != null ? note.equals(operation.note) : operation.note == null;
+        return manager != null ? manager.equals(operation.manager) : operation.manager == null;
     }
 
     @Override
     public int hashCode() {
-        int result = operationId != null ? operationId.hashCode() : 0;
-        result = 31 * result + (operationDay != null ? operationDay.hashCode() : 0);
+        int result = operationDay != null ? operationDay.hashCode() : 0;
         result = 31 * result + (timeForCome != null ? timeForCome.hashCode() : 0);
         result = 31 * result + (numberOfOrder != null ? numberOfOrder.hashCode() : 0);
         result = 31 * result + (patient != null ? patient.hashCode() : 0);
         result = 31 * result + (operationName != null ? operationName.hashCode() : 0);
         result = 31 * result + (eye != null ? eye.hashCode() : 0);
         result = 31 * result + (manager != null ? manager.hashCode() : 0);
-        result = 31 * result + (note != null ? note.hashCode() : 0);
         return result;
     }
 
