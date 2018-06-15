@@ -1,5 +1,10 @@
 package ua.nike.project.hibernate.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnoreType;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Objects;
@@ -8,6 +13,7 @@ import java.util.Set;
 @Entity
 @NamedQuery(name = "Patient.findAll", query = "FROM Patient ")
 @Table(name = "patients")
+@JsonIgnoreProperties (ignoreUnknown = true)
 public class Patient implements Serializable, Comparable<Patient> {
 
     @Version
@@ -36,11 +42,27 @@ public class Patient implements Serializable, Comparable<Patient> {
     @OneToOne(fetch = FetchType.LAZY)
     private Patient relative;
 
+    @JsonProperty("PhoneNumber")
     @Column(name = "telephone")
     private String telephone;
 
+    @JsonIgnore
     @OneToMany(targetEntity = Operation.class, fetch = FetchType.LAZY, mappedBy = "patient", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Operation> operations;
+
+
+    public Patient() {
+    }
+
+    public Patient(String surname, String firstName, String secondName, Character sex, String status, Patient relative, String telephone) {
+        this.surname = surname;
+        this.firstName = firstName;
+        this.secondName = secondName;
+        this.sex = sex;
+        this.status = status;
+        this.relative = relative;
+        this.telephone = telephone;
+    }
 
     public Integer getPatientId() {
         return patientId;

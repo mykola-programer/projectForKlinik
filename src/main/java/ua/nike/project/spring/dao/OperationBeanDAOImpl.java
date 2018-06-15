@@ -17,7 +17,7 @@ public class OperationBeanDAOImpl implements OperationBeanDAO {
     private EntityManager entityManager;
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED, readOnly = true)
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<OperationBean> list(Date selectedDate) {
         Query query = this.entityManager.createNamedQuery("Operation.findAllOperationBeanByOperationDate", OperationBean.class);
         query.setParameter("operationDate", selectedDate);

@@ -21,13 +21,13 @@ public class OperationDAOImpl implements OperationDAO {
     }
 
     @Override
-    @Transactional (propagation = Propagation.REQUIRED ,readOnly = true)
+    @Transactional (propagation = Propagation.SUPPORTS ,readOnly = true)
     public Operation findOperation(int operationID) {
         return this.entityManager.find(Operation.class, operationID);
     }
 
     @Override
-    @Transactional (propagation = Propagation.REQUIRED ,readOnly = true)
+    @Transactional (propagation = Propagation.SUPPORTS ,readOnly = true)
     public List<Operation> listOperations() {
         return this.entityManager.createNamedQuery("Operation.findAll", Operation.class).getResultList();
     }
