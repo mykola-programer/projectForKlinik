@@ -3,6 +3,7 @@ package ua.nike.project.spring.dao;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import ua.nike.project.hibernate.entity.Patient;
+import ua.nike.project.spring.exceptions.BusinessException;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -25,20 +26,24 @@ public class PatientDAOImpl implements PatientDAO {
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED, readOnly = true)
-    public Patient findPatient(int patientID) {
-        return this.entityManager.find(Patient.class, patientID);
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+    public Patient findPatient(int patientID) throws BusinessException {
+        Patient patient = this.entityManager.find(Patient.class, patientID);
+        if (patient == null) {
+            throw new BusinessException("This patient is not find in database !");
+        }
+        return patient;
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED, readOnly = true)
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<Patient> listPatients() {
         return this.entityManager.createNamedQuery("Patient.findAll", Patient.class).getResultList();
     }
 
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void removePatient(int patientId) {
+    public void removePatient(int patientId) throws BusinessException {
         this.entityManager.remove(findPatient(patientId));
     }
 

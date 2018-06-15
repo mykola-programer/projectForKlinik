@@ -6,6 +6,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import ua.nike.project.hibernate.entity.Patient;
 import ua.nike.project.spring.dao.PatientDAO;
+import ua.nike.project.spring.exceptions.BusinessException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +21,7 @@ public class ControllerPatientREST {
     @Autowired
     PatientDAO patientDAO;
 
-    @RequestMapping(value = "/", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE, MediaType.APPLICATION_XML_VALUE})
+    @RequestMapping(value = "", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public List<Patient> getPatients() {
         List<Patient> patients = patientDAO.listPatients();
 
@@ -28,63 +29,68 @@ public class ControllerPatientREST {
         //Corrected LazyLoading
         List<Patient> result = new ArrayList<>();
         for (Patient p : patients) {
-            p.setOperations(null);
+//            p.setOperations(null);
             result.add(p);
         }
 
         return result;
     }
 
-    @RequestMapping(value = "{id}", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE, MediaType.APPLICATION_XML_VALUE})
+    @RequestMapping(value = "{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public Patient getPatient(@PathVariable("id") int patientId) {
-        Patient patient = patientDAO.findPatient(patientId);
-
-        //IF Patient did not find in database
-        if (patient == null) {
-            patient = new Patient();
-            patient.setSurname("NOT FOUND");
-            return patient;
+        Patient patient = null;
+        try {
+            patient = patientDAO.findPatient(patientId);
+//            patient.setOperations(null);
+        } catch (BusinessException e) {
+//            return patient;  // ??????????
         }
 
-        patient.setOperations(null);
         return patient;
     }
 
-    @RequestMapping(value = "", method = RequestMethod.POST, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE, MediaType.APPLICATION_XML_VALUE},
+    @RequestMapping(value = "", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE,
             consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-    public Patient savePatient(
-            @RequestParam("surname") String surname,
-            @RequestParam("firstName") String firstName,
-            @RequestParam("secondName") String secondName,
-            @RequestParam("sex") String sex,
-            @RequestParam("status") String status,
-            @RequestParam("telephone") String telephone) {
+    public Patient savePatient(@ModelAttribute Patient patient
 
-        // Problems with UTF-8 !
-        // Problem with catch object Patient from RequestBody !
-        Patient patient = (Patient) context.getBean("patient");
-        patient.setSurname(surname);
-        patient.setFirstName(firstName);
-        patient.setSecondName(secondName);
-        patient.setSex(sex.isEmpty() ? null : sex.charAt(0));
-        patient.setStatus(status);
-        patient.setTelephone(telephone);
-        System.out.println();
-        System.out.println(patient);
-//        patientDAO.savePatient(patient);
+                               // Problem with catch object Patient from RequestBody !
+//            @RequestBody Patient patient,
+
+//            @RequestParam("surname") String surname,
+//            @RequestParam("firstName") String firstName,
+//            @RequestParam("secondName") String secondName,
+//            @RequestParam("sex") String sex,
+//            @RequestParam("status") String status,
+//            @RequestParam("telephone") String telephone
+
+    ) {
+
+
+        // --------------- Problems with UTF-8 ! -----------------
+//        Patient patient1 = (Patient) context.getBean("patient");
+//        patient.setSurname(surname);
+//        patient.setFirstName(firstName);
+//        patient.setSecondName(secondName);
+//        patient.setSex(sex.isEmpty() ? null : sex.charAt(0));
+//        patient.setStatus(status);
+//        patient.setTelephone(telephone);
+
+        /*        patientDAO.savePatient(patient);        */
+
         return patient;
     }
+
 
     @RequestMapping(value = "{id}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_XML_VALUE)
-    public String removePatient(@PathVariable("id") int patientId) {
+    public String deletePatient(@PathVariable("id") int patientId) {
 //        patientDAO.removePatient(patientId);
 
         return "Patient : " + patientId + " - was deleted successful !!!";
     }
 
     @RequestMapping(value = "", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_XML_VALUE)
-    public String removeAll() {
-        for (Patient patient : patientDAO.listPatients()){
+    public String deleteAll() {
+        for (Patient patient : patientDAO.listPatients()) {
 //            patientDAO.removePatient(patient.getPatientId());
             System.out.println(patient);
         }

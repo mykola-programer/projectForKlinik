@@ -24,13 +24,13 @@ public class OperationDayDAOImpl implements OperationDayDAO {
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED, readOnly = true)
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public OperationDay findOperationDay(int operationDayID) {
         return this.entityManager.find(OperationDay.class, operationDayID);
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED, readOnly = true)
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<OperationDay> listOperationDays() {
         return this.entityManager.createNamedQuery("OperationDay.findAll", OperationDay.class).getResultList();
     }
