@@ -8,7 +8,6 @@ import ua.nike.project.hibernate.entity.Patient;
 import ua.nike.project.spring.dao.PatientDAO;
 import ua.nike.project.spring.exceptions.BusinessException;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -23,30 +22,12 @@ public class ControllerPatientREST {
 
     @RequestMapping(value = "", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public List<Patient> getPatients() {
-        List<Patient> patients = patientDAO.listPatients();
-
-        // It's a bad code !!! Must to do more correctly!
-        //Corrected LazyLoading
-        List<Patient> result = new ArrayList<>();
-        for (Patient p : patients) {
-//            p.setOperations(null);
-            result.add(p);
-        }
-
-        return result;
+        return patientDAO.listPatients();
     }
 
     @RequestMapping(value = "{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public Patient getPatient(@PathVariable("id") int patientId) {
-        Patient patient = null;
-        try {
-            patient = patientDAO.findPatient(patientId);
-//            patient.setOperations(null);
-        } catch (BusinessException e) {
-//            return patient;  // ??????????
-        }
-
-        return patient;
+    public Patient getPatient(@PathVariable("id") int patientId) throws BusinessException, Exception {
+        return patientDAO.findPatient(patientId);
     }
 
     @RequestMapping(value = "", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE,

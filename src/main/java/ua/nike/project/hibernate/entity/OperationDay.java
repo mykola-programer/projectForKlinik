@@ -1,5 +1,8 @@
 package ua.nike.project.hibernate.entity;
 
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Date;
@@ -11,6 +14,8 @@ import java.util.Set;
         @NamedQuery(name = "OperationDay.findAll", query = "FROM OperationDay")
 })
 @Table(name = "operation_days")
+@Component
+@Scope("prototype")
 public class OperationDay implements Serializable {
 
     @Id

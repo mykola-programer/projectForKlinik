@@ -11,9 +11,4 @@
         <property name="suffix" value=".jsp"/>
     </bean>
 
-    <context:component-scan base-package="ua.nike.project.spring.controller"/>
-
-    <!-- Enables the Spring MVC @Controller programming model -->
-    <mvc:annotation-driven/>
-
 </beans>

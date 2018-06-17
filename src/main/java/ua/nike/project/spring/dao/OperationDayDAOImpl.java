@@ -1,5 +1,7 @@
 package ua.nike.project.spring.dao;
 
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import ua.nike.project.hibernate.entity.OperationDay;
@@ -11,6 +13,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+@Repository
 public class OperationDayDAOImpl implements OperationDayDAO {
 
     @PersistenceContext

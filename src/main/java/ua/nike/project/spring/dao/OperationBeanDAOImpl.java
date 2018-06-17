@@ -1,5 +1,7 @@
 package ua.nike.project.spring.dao;
 
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import ua.nike.project.hibernate.model.OperationBean;
@@ -11,6 +13,7 @@ import javax.persistence.Query;
 import java.sql.Date;
 import java.util.List;
 
+@Repository
 public class OperationBeanDAOImpl implements OperationBeanDAO {
 
     @PersistenceContext

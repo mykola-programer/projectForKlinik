@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import ua.nike.project.hibernate.model.OperationBean;
 import ua.nike.project.spring.dao.OperationBeanDAO;
 import ua.nike.project.spring.dao.OperationDayDAO;
@@ -16,16 +17,22 @@ import java.sql.Date;
 import java.util.List;
 import java.util.Set;
 
+@EnableWebMvc
 @Controller
 public class ControllerSpringMVC {
 
     @Autowired
     ApplicationContext context;
 
+    @Autowired
+    OperationDayDAO operationDayDAO;
+
+    @Autowired
+    OperationBeanDAO operationBeanDAO;
+
     @RequestMapping(value = "/operations_report", method = RequestMethod.GET)
     public ModelAndView methodGET(@ModelAttribute("date") String reqDate, ModelAndView model) {
         try {
-            OperationDayDAO operationDayDAO = context.getBean(OperationDayDAO.class);
             Set<Date> operation_dates = operationDayDAO.getOperationDates();
             model.addObject("operation_dates", operation_dates);
 
@@ -33,7 +40,6 @@ public class ControllerSpringMVC {
                 Date date = Date.valueOf(reqDate);
                 model.addObject("selected_date", date);
 
-                OperationBeanDAO operationBeanDAO = context.getBean(OperationBeanDAO.class);
                 List<OperationBean> operations = operationBeanDAO.list(date);
                 model.addObject("operations", operations);
 
@@ -47,6 +53,7 @@ public class ControllerSpringMVC {
             model.addObject("ErrorMassage", e.getMessage());
 
         }
+        model.setViewName("/operations_report");
         return model;
 
     }
