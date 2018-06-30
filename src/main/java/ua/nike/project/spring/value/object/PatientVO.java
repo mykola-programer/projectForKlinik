@@ -1,67 +1,17 @@
-package ua.nike.project.hibernate.entity;
+package ua.nike.project.spring.value.object;
 
-import com.fasterxml.jackson.annotation.*;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
-
-import javax.persistence.*;
-import java.io.Serializable;
 import java.util.Objects;
-import java.util.Set;
 
-@Entity
-@NamedQuery(name = "Patient.findAll", query = "FROM Patient ")
-@Table(name = "patients")
-//@JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="patientId")
+public class PatientVO implements Comparable<PatientVO>{
 
-public class Patient implements Serializable, Comparable<Patient> {
-
-    @Version
-    private long version;
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "patient_id")
     private Integer patientId;
-
-    @Column(name = "surname")
     private String surname;
-
-    @Column(name = "first_name")
     private String firstName;
-
-    @Column(name = "second_name")
     private String secondName;
-
-    @Column(name = "sex")
     private Character sex;
-
-    @Column(name = "status")
     private String status;
-
-    @OneToOne(fetch = FetchType.EAGER)
-    private Patient relative;
-
-    @JsonProperty("PhoneNumber")
-    @Column(name = "telephone")
+    private PatientVO relative;
     private String telephone;
-
-    @OneToMany(targetEntity = Operation.class, fetch = FetchType.LAZY, mappedBy = "patient", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Operation> operations;
-
-
-    public Patient() {
-    }
-
-    public Patient(String surname, String firstName, String secondName, Character sex, String status, Patient relative, String telephone) {
-        this.surname = surname;
-        this.firstName = firstName;
-        this.secondName = secondName;
-        this.sex = sex;
-        this.status = status;
-        this.relative = relative;
-        this.telephone = telephone;
-    }
 
     public Integer getPatientId() {
         return patientId;
@@ -76,7 +26,7 @@ public class Patient implements Serializable, Comparable<Patient> {
     }
 
     public void setSurname(String surname) {
-        this.surname = firstUpperCase(surname);
+        this.surname = surname;
     }
 
     public String getFirstName() {
@@ -84,7 +34,7 @@ public class Patient implements Serializable, Comparable<Patient> {
     }
 
     public void setFirstName(String firstName) {
-        this.firstName = firstUpperCase(firstName);
+        this.firstName = firstName;
     }
 
     public String getSecondName() {
@@ -92,7 +42,7 @@ public class Patient implements Serializable, Comparable<Patient> {
     }
 
     public void setSecondName(String secondName) {
-        this.secondName = firstUpperCase(secondName);
+        this.secondName = secondName;
     }
 
     public Character getSex() {
@@ -100,7 +50,7 @@ public class Patient implements Serializable, Comparable<Patient> {
     }
 
     public void setSex(Character sex) {
-        if (sex != null) this.sex = Character.toUpperCase(sex);
+        this.sex = sex;
     }
 
     public String getStatus() {
@@ -108,7 +58,15 @@ public class Patient implements Serializable, Comparable<Patient> {
     }
 
     public void setStatus(String status) {
-        this.status = status.toLowerCase();
+        this.status = status;
+    }
+
+    public PatientVO getRelative() {
+        return relative;
+    }
+
+    public void setRelative(PatientVO relative) {
+        this.relative = relative;
     }
 
     public String getTelephone() {
@@ -119,35 +77,12 @@ public class Patient implements Serializable, Comparable<Patient> {
         this.telephone = telephone;
     }
 
-    public Patient getRelative() {
-        return relative;
-    }
-
-    public void setRelative(Patient relative) {
-        this.relative = relative;
-    }
-
-    public Set<Operation> getOperations() {
-        return operations;
-    }
-
-    public void setOperations(Set<Operation> operations) {
-        this.operations = operations;
-    }
-
-    private String firstUpperCase(String word) {
-        if (word == null || word.isEmpty()) {
-            return "";
-        }
-        return word.substring(0, 1).toUpperCase() + word.substring(1).toLowerCase();
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        Patient patient = (Patient) o;
+        PatientVO patient = (PatientVO) o;
 
         return Objects.equals(surname, patient.surname) &&
                 Objects.equals(firstName, patient.firstName) &&
@@ -176,7 +111,7 @@ public class Patient implements Serializable, Comparable<Patient> {
     }
 
     @Override
-    public int compareTo(Patient patient) {
+    public int compareTo(PatientVO patient) {
         final int BEFORE = -1;
         final int EQUAL = 0;
         final int AFTER = 1;

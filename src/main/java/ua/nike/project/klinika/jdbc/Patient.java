@@ -17,13 +17,13 @@ public class Patient {
     private String telephone;
 
     /**
-     * Initializes a newly created {@code Patient} object.
+     * Initializes a newly created {@code PatientVO} object.
      */
     public Patient() {
     }
 
     /**
-     * Initializes a newly created {@code Patient} object with parameters.
+     * Initializes a newly created {@code PatientVO} object with parameters.
      *
      * @param patient_id  ID in the database
      * @param surname     patient.
@@ -216,7 +216,7 @@ public class Patient {
 
     @Override
     public String toString() {
-        return "Patient " + patient_id + ". {" +
+        return "PatientVO " + patient_id + ". {" +
                 " " + surname + " " + firstName + " " + secondName + " " +
                 "(" + sex + ")" +
                 " - " + status + ". " +

@@ -3,6 +3,7 @@ package ua.nike.project.spring.dao;
 import org.springframework.stereotype.Component;
 import ua.nike.project.hibernate.entity.Patient;
 import ua.nike.project.spring.exceptions.BusinessException;
+import ua.nike.project.spring.value.object.PatientVO;
 
 import java.util.List;
 
@@ -11,9 +12,9 @@ public interface PatientDAO {
 
     int savePatient(Patient patient);
 
-    Patient findPatient(int patientID) throws BusinessException;
+    PatientVO findPatient(int patientID) throws BusinessException;
 
-    List<Patient> listPatients();
+    List<PatientVO> listPatients();
 
-    void removePatient(int patientId) throws BusinessException;
+    void removePatient(int patientId);
 }

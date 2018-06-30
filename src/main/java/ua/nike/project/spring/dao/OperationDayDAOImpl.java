@@ -1,6 +1,5 @@
 package ua.nike.project.spring.dao;
 
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -9,9 +8,9 @@ import ua.nike.project.hibernate.entity.OperationDay;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.sql.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 
 @Repository
 public class OperationDayDAOImpl implements OperationDayDAO {
@@ -41,6 +40,6 @@ public class OperationDayDAOImpl implements OperationDayDAO {
     @Override
     @Transactional(propagation = Propagation.REQUIRED, readOnly = true)
     public Set<Date> getOperationDates() {
-        return new TreeSet<Date>(entityManager.createNamedQuery("OperationDay.getUniqueOperationDates").getResultList());
+        return new HashSet<Date>(entityManager.createNamedQuery("OperationDay.getUniqueOperationDates").getResultList());
     }
 }

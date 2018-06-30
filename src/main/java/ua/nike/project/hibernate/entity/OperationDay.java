@@ -1,5 +1,7 @@
 package ua.nike.project.hibernate.entity;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -14,8 +16,7 @@ import java.util.Set;
         @NamedQuery(name = "OperationDay.findAll", query = "FROM OperationDay")
 })
 @Table(name = "operation_days")
-@Component
-@Scope("prototype")
+//@JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="operationDayId")
 public class OperationDay implements Serializable {
 
     @Id

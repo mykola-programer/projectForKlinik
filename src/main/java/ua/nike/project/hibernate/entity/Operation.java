@@ -1,6 +1,8 @@
 package ua.nike.project.hibernate.entity;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -14,15 +16,13 @@ import java.sql.Time;
 })
 
 @Table(name = "operations")
-@Component
-@Scope("prototype")
+//@JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="operationId")
 public class Operation implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer operationId;
 
-    @JsonIgnore
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "operation_day_id")
     private OperationDay operationDay;
 
@@ -30,8 +30,7 @@ public class Operation implements Serializable {
 
     private Integer numberOfOrder;
 
-    @JsonIgnore
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "patient_id")
     private Patient patient;
 

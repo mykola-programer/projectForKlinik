@@ -9,6 +9,7 @@ import ua.nike.project.hibernate.entity.Patient;
 import ua.nike.project.spring.dao.OperationDAO;
 import ua.nike.project.spring.dao.OperationDayDAO;
 import ua.nike.project.spring.dao.PatientDAO;
+import ua.nike.project.spring.value.object.PatientVO;
 
 import java.sql.Date;
 import java.util.List;
@@ -21,7 +22,7 @@ public class MainSpring {
         PatientDAO patientDAO = applicationContext.getBean(PatientDAO.class);
 
         System.out.println("__________Patient___________");
-        for (Patient p : patientDAO.listPatients()) {
+        for (PatientVO p : patientDAO.listPatients()) {
             System.out.println(p);
         }
 

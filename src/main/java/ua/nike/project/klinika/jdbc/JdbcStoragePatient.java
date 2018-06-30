@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 /**
  * This {@code JdbcStoragePatient} class is used for creating connection to the database "projectForClinic".
- * The class {@code JdbcStoragePatient} includes methods for working with table "Patient"...
+ * The class {@code JdbcStoragePatient} includes methods for working with table "PatientVO"...
  */
 public class JdbcStoragePatient {
 
@@ -25,10 +25,10 @@ public class JdbcStoragePatient {
     }
 
     /**
-     * This method return record from database, instance of class {@code Patient} of the index.
+     * This method return record from database, instance of class {@code PatientVO} of the index.
      *
      * @param index Index in the database.
-     * @return Return instance of class {@code Patient}.
+     * @return Return instance of class {@code PatientVO}.
      * If generated exception, then return NULL.
      */
     public Patient getPatient(int index) {
@@ -51,11 +51,11 @@ public class JdbcStoragePatient {
     }
 
     /**
-     * This method return from database instance of class {@code Patient} of parameter and his value.
+     * This method return from database instance of class {@code PatientVO} of parameter and his value.
      *
      * @param parameter Parameter in the database.
      * @param value     Value of parameter.
-     * @return Return instance of class {@code Patient}.
+     * @return Return instance of class {@code PatientVO}.
      * If this method generated exception, then return NULL.
      */
     public Patient getPatient(String parameter, String value) {
@@ -78,9 +78,9 @@ public class JdbcStoragePatient {
     }
 
     /**
-     * This method insert to database instance of class {@code Patient} of parameter and his value.
+     * This method insert to database instance of class {@code PatientVO} of parameter and his value.
      *
-     * @param patient Instance of class {@code Patient}.
+     * @param patient Instance of class {@code PatientVO}.
      * @return - After insert to database, this method return patient_id from database.
      * If this method generated exception, then return 0.
      */
@@ -134,9 +134,9 @@ public class JdbcStoragePatient {
 
 
     /**
-     * Getting list of instance of class {@code Patient} from table patient in database.
+     * Getting list of instance of class {@code PatientVO} from table patient in database.
      *
-     * @return List of instance of class {@code Patient} from table patient in database.
+     * @return List of instance of class {@code PatientVO} from table patient in database.
      * If this method generated exception, then return NULL.
      */
     public ArrayList<Patient> getPatients() {
@@ -166,7 +166,7 @@ public class JdbcStoragePatient {
      * Correct record in the database.
      *
      * @param index   Index in the database.
-     * @param patient Instance of class {@code Patient}
+     * @param patient Instance of class {@code PatientVO}
      * @return true, if patient in database is successfully update.
      * If this method generated exception, then return false.
      */
