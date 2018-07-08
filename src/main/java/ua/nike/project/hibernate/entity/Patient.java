@@ -12,8 +12,6 @@ import java.util.Set;
 @Entity
 @NamedQuery(name = "Patient.findAll", query = "FROM Patient ")
 @Table(name = "patients")
-//@JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="patientId")
-
 public class Patient implements Serializable, Comparable<Patient> {
 
     @Version
@@ -49,7 +47,6 @@ public class Patient implements Serializable, Comparable<Patient> {
     @OneToMany(targetEntity = Operation.class, fetch = FetchType.LAZY, mappedBy = "patient", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Operation> operations;
 
-
     public Patient() {
     }
 
@@ -61,6 +58,14 @@ public class Patient implements Serializable, Comparable<Patient> {
         this.status = status;
         this.relative = relative;
         this.telephone = telephone;
+    }
+
+    public long getVersion() {
+        return version;
+    }
+
+    public void setVersion(long version) {
+        this.version = version;
     }
 
     public Integer getPatientId() {
@@ -134,6 +139,7 @@ public class Patient implements Serializable, Comparable<Patient> {
     public void setOperations(Set<Operation> operations) {
         this.operations = operations;
     }
+
 
     private String firstUpperCase(String word) {
         if (word == null || word.isEmpty()) {

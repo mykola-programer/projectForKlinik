@@ -1,4 +1,4 @@
-package ua.nike.project.spring.value.object;
+package ua.nike.project.spring.vo;
 
 import java.util.Objects;
 

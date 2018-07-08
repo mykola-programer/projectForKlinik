@@ -12,16 +12,19 @@
 
         <mapping-file>/META-INF/operation_bean.orm.xml</mapping-file>
 
-        <class>ua.nike.project.hibernate.entity.Patient</class>
-        <class>ua.nike.project.hibernate.entity.OperationDay</class>
+        <class>ua.nike.project.hibernate.entity.Hospitalization</class>
         <class>ua.nike.project.hibernate.entity.Operation</class>
+        <class>ua.nike.project.hibernate.entity.OperationDate</class>
+        <class>ua.nike.project.hibernate.entity.OperationDay</class>
+        <class>ua.nike.project.hibernate.entity.Patient</class>
+        <class>ua.nike.project.hibernate.entity.Procedure</class>
 
         <properties>
             <property name="javax.persistence.jdbc.driver"
                       value="org.postgresql.Driver"/>
 
             <property name="javax.persistence.jdbc.url"
-                      value="jdbc:postgresql://localhost:5432/testHibernate"/>
+                      value="jdbc:postgresql://localhost:5432/projectForClinic"/>
 
             <property name="javax.persistence.jdbc.user"
                       value="postgres"/>
@@ -45,7 +48,7 @@
             <property name="hibernate.dialect"
                       value="org.hibernate.dialect.PostgreSQL95Dialect"/>
 
-            <property name="hibernate.connection.pool_size" value="3"/>
+            <property name="hibernate.connection.pool_size" value="50"/>
 
             <!--<property name="hibernate.cache.use_query_cache" value="true"/>-->
 

@@ -5,7 +5,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import ua.nike.project.hibernate.entity.Patient;
 import ua.nike.project.spring.exceptions.BusinessException;
-import ua.nike.project.spring.value.object.PatientVO;
+import ua.nike.project.spring.vo.PatientVO;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;

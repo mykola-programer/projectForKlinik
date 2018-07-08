@@ -1,13 +1,12 @@
 package ua.nike.project.spring.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import ua.nike.project.hibernate.entity.Patient;
 import ua.nike.project.spring.dao.PatientDAO;
 import ua.nike.project.spring.exceptions.BusinessException;
-import ua.nike.project.spring.value.object.PatientVO;
+import ua.nike.project.spring.vo.PatientVO;
 
 import java.util.List;
 

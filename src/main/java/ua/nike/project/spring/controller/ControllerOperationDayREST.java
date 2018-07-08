@@ -1,16 +1,18 @@
 package ua.nike.project.spring.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-import ua.nike.project.hibernate.entity.Patient;
+import ua.nike.project.hibernate.entity.Hospitalization;
+import ua.nike.project.hibernate.model.HospitalizationBean;
+import ua.nike.project.spring.dao.HospitalizationBeanDAO;
 import ua.nike.project.spring.dao.OperationDayDAO;
 import ua.nike.project.spring.exceptions.BusinessException;
-import ua.nike.project.spring.value.object.PatientVO;
 
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @RestController

@@ -1,31 +1,25 @@
 package ua.nike.project.hibernate.entity;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
-
 import javax.persistence.*;
 import java.io.Serializable;
-import java.sql.Date;
 import java.util.Set;
 
 @Entity
-@NamedQueries(value = {
-        @NamedQuery(name = "OperationDay.getUniqueOperationDates", query = "SELECT DISTINCT od.operationDate FROM OperationDay od ORDER BY od.operationDate"),
-        @NamedQuery(name = "OperationDay.findAll", query = "FROM OperationDay")
-})
+@NamedQuery(name = "OperationDay.findAll", query = "FROM OperationDay")
 @Table(name = "operation_days")
-//@JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="operationDayId")
 public class OperationDay implements Serializable {
+
+    @Version
+    private long version;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "operation_day_id")
     private Integer operationDayId;
 
-    @Column(name = "operation_date", nullable = false)
-    private Date operationDate;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "operation_date")
+    private OperationDate operationDate;
 
     @Column(name = "surgeon", nullable = false)
     private String surgeon;
@@ -33,6 +27,13 @@ public class OperationDay implements Serializable {
     @OneToMany(targetEntity = Operation.class, fetch = FetchType.LAZY, mappedBy = "operationDay")
     private Set<Operation> operations;
 
+    public long getVersion() {
+        return version;
+    }
+
+    public void setVersion(long version) {
+        this.version = version;
+    }
 
     public Integer getOperationDayId() {
         return operationDayId;
@@ -42,11 +43,11 @@ public class OperationDay implements Serializable {
         this.operationDayId = operationDayId;
     }
 
-    public Date getOperationDate() {
+    public OperationDate getOperationDate() {
         return operationDate;
     }
 
-    public void setOperationDate(Date operationDate) {
+    public void setOperationDate(OperationDate operationDate) {
         this.operationDate = operationDate;
     }
 
@@ -55,7 +56,7 @@ public class OperationDay implements Serializable {
     }
 
     public void setSurgeon(String surgeon) {
-        this.surgeon = firstUpperCase(surgeon);
+        this.surgeon = surgeon;
     }
 
     public Set<Operation> getOperations() {
@@ -66,13 +67,6 @@ public class OperationDay implements Serializable {
         this.operations = operations;
     }
 
-    private String firstUpperCase(String word) {
-        if (word == null || word.isEmpty()) {
-            return "";
-        }
-        return word.substring(0, 1).toUpperCase() + word.substring(1).toLowerCase();
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -80,18 +74,14 @@ public class OperationDay implements Serializable {
 
         OperationDay that = (OperationDay) o;
 
-        if (operationDayId != null ? !operationDayId.equals(that.operationDayId) : that.operationDayId != null)
-            return false;
-        if (operationDate != null ? !operationDate.equals(that.operationDate) : that.operationDate != null)
-            return false;
-        return surgeon != null ? surgeon.equals(that.surgeon) : that.surgeon == null;
+        if (!operationDate.equals(that.operationDate)) return false;
+        return surgeon.equals(that.surgeon);
     }
 
     @Override
     public int hashCode() {
-        int result = operationDayId != null ? operationDayId.hashCode() : 0;
-        result = 31 * result + (operationDate != null ? operationDate.hashCode() : 0);
-        result = 31 * result + (surgeon != null ? surgeon.hashCode() : 0);
+        int result = operationDate.hashCode();
+        result = 31 * result + surgeon.hashCode();
         return result;
     }
 

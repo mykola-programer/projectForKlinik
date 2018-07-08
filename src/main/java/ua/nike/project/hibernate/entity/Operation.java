@@ -1,46 +1,64 @@
 package ua.nike.project.hibernate.entity;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
-
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Time;
+import java.time.LocalTime;
 
 @Entity
-@NamedQueries(value = {
-        @NamedQuery(name = "Operation.findAll", query = "FROM Operation ")
-})
-
+@NamedQuery(name = "Operation.findAll", query = "FROM Operation ")
 @Table(name = "operations")
-//@JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="operationId")
 public class Operation implements Serializable {
+
+    @Version
+    private long version;
+
     @Id
+    @Column(name = "operation_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer operationId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "operation_day_id")
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "operation_day")
     private OperationDay operationDay;
 
-    private Time timeForCome;
+    private LocalTime timeForCome;
 
     private Integer numberOfOrder;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "patient_id")
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "patient")
     private Patient patient;
 
-    private String operationName;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "procedure")
+    private Procedure procedure;
 
     private String eye;
 
     private String manager;
 
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "hospitalization")
+    private Hospitalization hospitalization;
+
     private String note;
+
+    public long getVersion() {
+        return version;
+    }
+
+    public void setVersion(long version) {
+        this.version = version;
+    }
+
+    public Hospitalization getHospitalization() {
+        return hospitalization;
+    }
+
+    public void setHospitalization(Hospitalization hospitalization) {
+        this.hospitalization = hospitalization;
+    }
 
     public Integer getOperationId() {
         return operationId;
@@ -58,11 +76,11 @@ public class Operation implements Serializable {
         this.operationDay = operationDay;
     }
 
-    public Time getTimeForCome() {
+    public LocalTime getTimeForCome() {
         return timeForCome;
     }
 
-    public void setTimeForCome(Time timeForCome) {
+    public void setTimeForCome(LocalTime timeForCome) {
         this.timeForCome = timeForCome;
     }
 
@@ -82,12 +100,12 @@ public class Operation implements Serializable {
         this.patient = patient;
     }
 
-    public String getOperationName() {
-        return operationName;
+    public Procedure getProcedure() {
+        return procedure;
     }
 
-    public void setOperationName(String operationName) {
-        this.operationName = operationName.toUpperCase();
+    public void setProcedure(Procedure procedure) {
+        this.procedure = procedure;
     }
 
     public String getEye() {
@@ -128,33 +146,26 @@ public class Operation implements Serializable {
 
         Operation operation = (Operation) o;
 
-        if (operationId != null ? !operationId.equals(operation.operationId) : operation.operationId != null)
-            return false;
-        if (operationDay != null ? !operationDay.equals(operation.operationDay) : operation.operationDay != null)
-            return false;
+        if (!operationDay.equals(operation.operationDay)) return false;
         if (timeForCome != null ? !timeForCome.equals(operation.timeForCome) : operation.timeForCome != null)
             return false;
         if (numberOfOrder != null ? !numberOfOrder.equals(operation.numberOfOrder) : operation.numberOfOrder != null)
             return false;
-        if (patient != null ? !patient.equals(operation.patient) : operation.patient != null) return false;
-        if (operationName != null ? !operationName.equals(operation.operationName) : operation.operationName != null)
-            return false;
-        if (eye != null ? !eye.equals(operation.eye) : operation.eye != null) return false;
-        if (manager != null ? !manager.equals(operation.manager) : operation.manager != null) return false;
-        return note != null ? note.equals(operation.note) : operation.note == null;
+        if (!patient.equals(operation.patient)) return false;
+        if (!procedure.equals(operation.procedure)) return false;
+        if (!eye.equals(operation.eye)) return false;
+        return manager != null ? manager.equals(operation.manager) : operation.manager == null;
     }
 
     @Override
     public int hashCode() {
-        int result = operationId != null ? operationId.hashCode() : 0;
-        result = 31 * result + (operationDay != null ? operationDay.hashCode() : 0);
+        int result = operationDay.hashCode();
         result = 31 * result + (timeForCome != null ? timeForCome.hashCode() : 0);
         result = 31 * result + (numberOfOrder != null ? numberOfOrder.hashCode() : 0);
-        result = 31 * result + (patient != null ? patient.hashCode() : 0);
-        result = 31 * result + (operationName != null ? operationName.hashCode() : 0);
-        result = 31 * result + (eye != null ? eye.hashCode() : 0);
+        result = 31 * result + patient.hashCode();
+        result = 31 * result + procedure.hashCode();
+        result = 31 * result + eye.hashCode();
         result = 31 * result + (manager != null ? manager.hashCode() : 0);
-        result = 31 * result + (note != null ? note.hashCode() : 0);
         return result;
     }
 
@@ -166,9 +177,10 @@ public class Operation implements Serializable {
                 ", timeForCome=" + timeForCome +
                 ", numberOfOrder=" + numberOfOrder +
                 ", patient=" + patient +
-                ", operationName=" + operationName +
-                ", eye=" + eye +
-                ", manager=" + manager +
-                ", note=" + note + "}";
+                ", procedure=" + procedure +
+                ", eye='" + eye + '\'' +
+                ", manager='" + manager + '\'' +
+                ", note='" + note + '\'' +
+                '}';
     }
 }

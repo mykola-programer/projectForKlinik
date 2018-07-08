@@ -3,13 +3,53 @@
                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                  xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm http://java.sun.com/xml/ns/persistence/orm_2_0.xsd"
                  version="2.0">
-    <named-query name="Operation.findAllOperationBeanByOperationDate">
-        <query>SELECT new ua.nike.project.hibernate.model.OperationBean(od.operationDate, p.surname, p.firstName,
-            p.secondName, op.operationName, op.eye, od.surgeon, op.manager)
+    <!--<named-query name="Operation.findAllOperationBeanByOperationDate">-->
+        <!--<query>SELECT new ua.nike.project.hibernate.model.OperationBean(od.operationDate, p.surname, p.firstName,-->
+            <!--p.secondName, op.procedureName, op.eye, od.surgeon, op.manager)-->
+            <!--FROM Operation op-->
+            <!--INNER JOIN op.operationDay od-->
+            <!--INNER JOIN op.patient p-->
+            <!--WHERE op.operationDay.operationDate = :operationDate-->
+        <!--</query>-->
+    <!--</named-query>-->
+
+
+
+
+
+
+    <named-query name="Hospitalization.findAllHospitalizationBeanByOperationDate">
+        <query>
+            SELECT new ua.nike.project.hibernate.model.HospitalizationBean(
+            hp.numberOfPlace, op.numberOfOrder,
+            p.surname, p.firstName, p.secondName, p.sex, p.status,
+            pr.name, op.eye, op.timeForCome,
+            od.surgeon, op.manager, op.note )
             FROM Operation op
             INNER JOIN op.operationDay od
+            INNER JOIN op.operationDay.operationDate ods
             INNER JOIN op.patient p
-            WHERE op.operationDay.operationDate = :operationDate
+            INNER JOIN op.procedure pr
+            INNER JOIN op.hospitalization hp
+            WHERE op.operationDay.operationDate.date = :operationDate and op.hospitalization is not null
+            ORDER BY hp.numberOfPlace
+        </query>
+    </named-query>
+
+    <named-query name="Hospitalization.findAllNotHospitalizationBeanByOperationDate">
+        <query>
+            SELECT new ua.nike.project.hibernate.model.HospitalizationBean(
+            op.numberOfOrder,
+            p.surname, p.firstName, p.secondName, p.sex, p.status,
+            pr.name, op.eye, op.timeForCome,
+            od.surgeon, op.manager, op.note )
+            FROM Operation op
+            INNER JOIN op.operationDay od
+            INNER JOIN op.operationDay.operationDate ods
+            INNER JOIN op.patient p
+            INNER JOIN op.procedure pr
+            WHERE op.operationDay.operationDate.date = :operationDate and op.hospitalization is null
+            ORDER BY op.numberOfOrder
         </query>
     </named-query>
 </entity-mappings>

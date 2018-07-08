@@ -2,14 +2,12 @@ package ua.nike.project.spring;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.web.context.support.XmlWebApplicationContext;
 import ua.nike.project.hibernate.entity.Operation;
 import ua.nike.project.hibernate.entity.OperationDay;
-import ua.nike.project.hibernate.entity.Patient;
 import ua.nike.project.spring.dao.OperationDAO;
 import ua.nike.project.spring.dao.OperationDayDAO;
 import ua.nike.project.spring.dao.PatientDAO;
-import ua.nike.project.spring.value.object.PatientVO;
+import ua.nike.project.spring.vo.PatientVO;
 
 import java.sql.Date;
 import java.util.List;

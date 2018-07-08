@@ -40,6 +40,6 @@ public class OperationDayDAOImpl implements OperationDayDAO {
     @Override
     @Transactional(propagation = Propagation.REQUIRED, readOnly = true)
     public Set<Date> getOperationDates() {
-        return new HashSet<Date>(entityManager.createNamedQuery("OperationDay.getUniqueOperationDates").getResultList());
+        return new HashSet<Date>(entityManager.createNamedQuery("OperationDate.getOperationDates").getResultList());
     }
 }
