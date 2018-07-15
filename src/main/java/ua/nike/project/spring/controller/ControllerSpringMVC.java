@@ -33,7 +33,7 @@ public class ControllerSpringMVC {
     @RequestMapping(value = "/operations_report", method = RequestMethod.GET)
     public ModelAndView methodGET(@ModelAttribute("date") String reqDate, ModelAndView model) {
         try {
-            Set<Date> operation_dates = operationDayDAO.getOperationDates();
+            List<Date> operation_dates = operationDayDAO.getOperationDates();
             model.addObject("operation_dates", operation_dates);
 
             if (reqDate != null && !reqDate.equals("")) {

@@ -36,19 +36,19 @@ public class PatientDAOImpl implements PatientDAO {
         if (patient == null) {
             throw new BusinessException("This patient is not find in database !");
         }
-        PatientVO patientVO = transformToPatientVO(patient);
-        return patientVO;
+        PatientVO result = transformToPatientVO(patient);
+        return result;
     }
 
     @Override
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<PatientVO> listPatients() {
         List<Patient> patients = this.entityManager.createNamedQuery("Patient.findAll", Patient.class).getResultList();
-        List<PatientVO> patientVOList = new ArrayList<>();
+        List<PatientVO> result = new ArrayList<>();
         for (Patient patient : patients) {
-            patientVOList.add(transformToPatientVO(patient));
+            result.add(transformToPatientVO(patient));
         }
-        return patientVOList;
+        return result;
     }
 
     @Override
@@ -59,16 +59,16 @@ public class PatientDAOImpl implements PatientDAO {
 
     private PatientVO transformToPatientVO(Patient patient) {
         if (patient == null) return null;
-        PatientVO patientVO = new PatientVO();
-        patientVO.setPatientId(patient.getPatientId());
-        patientVO.setSurname(patient.getSurname());
-        patientVO.setFirstName(patient.getFirstName());
-        patientVO.setSecondName(patient.getSecondName());
-        patientVO.setSex(patient.getSex());
-        patientVO.setStatus(patient.getStatus());
+        PatientVO result = new PatientVO();
+        result.setPatientId(patient.getPatientId());
+        result.setSurname(patient.getSurname());
+        result.setFirstName(patient.getFirstName());
+        result.setSecondName(patient.getSecondName());
+        result.setSex(patient.getSex());
+        result.setStatus(patient.getStatus());
 //        patientVO.setRelative(transformToPatientVO(patient.getRelative()));
-        patientVO.setTelephone(patient.getTelephone());
-        return patientVO;
+        result.setTelephone(patient.getTelephone());
+        return result;
     }
 
 }

@@ -21,9 +21,9 @@
     <named-query name="Hospitalization.findAllHospitalizationBeanByOperationDate">
         <query>
             SELECT new ua.nike.project.hibernate.model.HospitalizationBean(
-            hp.numberOfPlace, op.numberOfOrder,
-            p.surname, p.firstName, p.secondName, p.sex, p.status,
-            pr.name, op.eye, op.timeForCome,
+            op.id, hp.numberOfPlace, op.numberOfOrder,
+            p.id, p.surname, p.firstName, p.secondName, p.sex, p.status,
+            pr.id, pr.name, op.eye, op.timeForCome,
             od.surgeon, op.manager, op.note )
             FROM Operation op
             INNER JOIN op.operationDay od
@@ -39,9 +39,9 @@
     <named-query name="Hospitalization.findAllNotHospitalizationBeanByOperationDate">
         <query>
             SELECT new ua.nike.project.hibernate.model.HospitalizationBean(
-            op.numberOfOrder,
-            p.surname, p.firstName, p.secondName, p.sex, p.status,
-            pr.name, op.eye, op.timeForCome,
+            op.id, op.numberOfOrder,
+            p.id, p.surname, p.firstName, p.secondName, p.sex, p.status,
+            pr.id, pr.name, op.eye, op.timeForCome,
             od.surgeon, op.manager, op.note )
             FROM Operation op
             INNER JOIN op.operationDay od

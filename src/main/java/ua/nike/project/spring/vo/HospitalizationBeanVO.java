@@ -1,19 +1,30 @@
 package ua.nike.project.spring.vo;
 
 public class HospitalizationBeanVO {
+    private int operationID;
     private int numberOfPlace;
     private int numberOfOrder;
+    private int patientID;
     private String surname;
     private String firstName;
     private String secondName;
     private char sex;
     private String status;
+    private int procedureID;
     private String procedure;
     private String eye;
     private String timeForCome;
     private String surgeon;
     private String manager;
     private String note;
+
+    public int getOperationID() {
+        return operationID;
+    }
+
+    public void setOperationID(int operationID) {
+        this.operationID = operationID;
+    }
 
     public int getNumberOfPlace() {
         return numberOfPlace;
@@ -29,6 +40,14 @@ public class HospitalizationBeanVO {
 
     public void setNumberOfOrder(int numberOfOrder) {
         this.numberOfOrder = numberOfOrder;
+    }
+
+    public int getPatientID() {
+        return patientID;
+    }
+
+    public void setPatientID(int patientID) {
+        this.patientID = patientID;
     }
 
     public String getSurname() {
@@ -69,6 +88,14 @@ public class HospitalizationBeanVO {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public int getProcedureID() {
+        return procedureID;
+    }
+
+    public void setProcedureID(int procedureID) {
+        this.procedureID = procedureID;
     }
 
     public String getProcedure() {

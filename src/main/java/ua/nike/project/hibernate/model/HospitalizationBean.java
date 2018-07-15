@@ -4,19 +4,21 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
-import java.sql.Time;
 import java.time.LocalTime;
 
 @Component
 @Scope("prototype")
 public class HospitalizationBean implements Serializable {
+    private int operationID;
     private int numberOfPlace;
     private int numberOfOrder;
+    private int patientID;
     private String surname;
     private String firstName;
     private String secondName;
     private Character sex;
     private String status;
+    private int procedureID;
     private String procedure;
     private String eye;
     private LocalTime timeForCome;
@@ -27,14 +29,17 @@ public class HospitalizationBean implements Serializable {
     public HospitalizationBean() {
     }
 
-    public HospitalizationBean(int numberOfPlace, int numberOfOrder, String surname, String firstName, String secondName, Character sex, String status, String procedure, String eye, LocalTime timeForCome, String surgeon, String manager, String note) {
+    public HospitalizationBean(int operationID, int numberOfPlace, int numberOfOrder, int patientID, String surname, String firstName, String secondName, Character sex, String status, int procedureID, String procedure, String eye, LocalTime timeForCome, String surgeon, String manager, String note) {
+        this.operationID = operationID;
         this.numberOfPlace = numberOfPlace;
         this.numberOfOrder = numberOfOrder;
+        this.patientID = patientID;
         this.surname = surname;
         this.firstName = firstName;
         this.secondName = secondName;
         this.sex = sex;
         this.status = status;
+        this.procedureID = procedureID;
         this.procedure = procedure;
         this.eye = eye;
         this.timeForCome = timeForCome;
@@ -42,13 +47,17 @@ public class HospitalizationBean implements Serializable {
         this.manager = manager;
         this.note = note;
     }
-    public HospitalizationBean(int numberOfOrder, String surname, String firstName, String secondName, Character sex, String status, String procedure, String eye, LocalTime timeForCome, String surgeon, String manager, String note) {
+
+    public HospitalizationBean(int operationID, int numberOfOrder, int patientID, String surname, String firstName, String secondName, Character sex, String status, int procedureID, String procedure, String eye, LocalTime timeForCome, String surgeon, String manager, String note) {
+        this.operationID = operationID;
         this.numberOfOrder = numberOfOrder;
+        this.patientID = patientID;
         this.surname = surname;
         this.firstName = firstName;
         this.secondName = secondName;
         this.sex = sex;
         this.status = status;
+        this.procedureID = procedureID;
         this.procedure = procedure;
         this.eye = eye;
         this.timeForCome = timeForCome;
@@ -159,5 +168,29 @@ public class HospitalizationBean implements Serializable {
 
     public void setNote(String note) {
         this.note = note;
+    }
+
+    public int getOperationID() {
+        return operationID;
+    }
+
+    public void setOperationID(int operationID) {
+        this.operationID = operationID;
+    }
+
+    public int getPatientID() {
+        return patientID;
+    }
+
+    public void setPatientID(int patientID) {
+        this.patientID = patientID;
+    }
+
+    public int getProcedureID() {
+        return procedureID;
+    }
+
+    public void setProcedureID(int procedureID) {
+        this.procedureID = procedureID;
     }
 }

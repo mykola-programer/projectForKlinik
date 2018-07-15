@@ -30,11 +30,11 @@ public class HospitalizationBeanDAOImpl implements HospitalizationBeanDAO {
         if (hospitalizationBeans.isEmpty()) {
             throw new NoResultException("В базі даних, жодного запису по вашому запиту не знайдено!");
         }
-        List<HospitalizationBeanVO> hospitalizationBeansVO = new ArrayList<>();
+        List<HospitalizationBeanVO> result = new ArrayList<>();
         for (HospitalizationBean hospitalizationBean : hospitalizationBeans) {
-            hospitalizationBeansVO.add(transformToHospitalizationVO(hospitalizationBean));
+            result.add(transformToHospitalizationVO(hospitalizationBean));
         }
-        return hospitalizationBeansVO;
+        return result;
     }
 
     @Override
@@ -47,31 +47,35 @@ public class HospitalizationBeanDAOImpl implements HospitalizationBeanDAO {
         if (hospitalizationBeans.isEmpty()) {
             throw new NoResultException("В базі даних, жодного запису по вашому запиту не знайдено!");
         }
-        List<HospitalizationBeanVO> hospitalizationBeansVO = new ArrayList<>();
+        List<HospitalizationBeanVO> result = new ArrayList<>();
         for (HospitalizationBean hospitalizationBean : hospitalizationBeans) {
-            hospitalizationBeansVO.add(transformToHospitalizationVO(hospitalizationBean));
+            result.add(transformToHospitalizationVO(hospitalizationBean));
         }
-        return hospitalizationBeansVO;
+        return result;
     }
 
     private HospitalizationBeanVO transformToHospitalizationVO(HospitalizationBean hospitalizationBean) {
         if (hospitalizationBean == null) return null;
-        HospitalizationBeanVO hospitalizationBeanVO = new HospitalizationBeanVO();
+        HospitalizationBeanVO result = new HospitalizationBeanVO();
 
-        hospitalizationBeanVO.setNumberOfPlace(hospitalizationBean.getNumberOfPlace());
-        hospitalizationBeanVO.setNumberOfOrder(hospitalizationBean.getNumberOfOrder());
-        hospitalizationBeanVO.setSurname(hospitalizationBean.getSurname());
-        hospitalizationBeanVO.setFirstName(hospitalizationBean.getFirstName());
-        hospitalizationBeanVO.setSecondName(hospitalizationBean.getSecondName());
-        hospitalizationBeanVO.setSex(hospitalizationBean.getSex());
-        hospitalizationBeanVO.setStatus(hospitalizationBean.getStatus());
-        hospitalizationBeanVO.setProcedure(hospitalizationBean.getProcedure());
-        hospitalizationBeanVO.setEye(hospitalizationBean.getEye());
-        hospitalizationBeanVO.setTimeForCome(hospitalizationBean.getTimeForCome().toString());
-        hospitalizationBeanVO.setSurgeon(hospitalizationBean.getSurgeon());
-        hospitalizationBeanVO.setManager(hospitalizationBean.getManager());
-        hospitalizationBeanVO.setNote(hospitalizationBean.getNote());
+        result.setPatientID(hospitalizationBean.getPatientID());
+        result.setProcedureID(hospitalizationBean.getProcedureID());
+        result.setOperationID(hospitalizationBean.getOperationID());
+        result.setNumberOfPlace(hospitalizationBean.getNumberOfPlace());
+        result.setNumberOfOrder(hospitalizationBean.getNumberOfOrder());
+        result.setSurname(hospitalizationBean.getSurname());
+        result.setFirstName(hospitalizationBean.getFirstName());
+        result.setSecondName(hospitalizationBean.getSecondName());
+        result.setSex(hospitalizationBean.getSex());
+        result.setStatus(hospitalizationBean.getStatus());
+        result.setProcedure(hospitalizationBean.getProcedure());
+        result.setEye(hospitalizationBean.getEye());
+        result.setTimeForCome(hospitalizationBean.getTimeForCome().toString());
+        result.setSurgeon(hospitalizationBean.getSurgeon());
+        result.setManager(hospitalizationBean.getManager());
+        result.setNote(hospitalizationBean.getNote());
 
-        return hospitalizationBeanVO;
+        return result;
+
     }
 }

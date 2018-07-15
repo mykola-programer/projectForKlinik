@@ -16,5 +16,5 @@ public interface OperationDayDAO {
 
     List<OperationDay> listOperationDays();
 
-    Set<Date> getOperationDates();
+    List<Date> getOperationDates();
 }

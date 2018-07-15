@@ -24,12 +24,12 @@ public class OperationBeanDAOImpl implements OperationBeanDAO {
     public List<OperationBean> list(Date selectedDate) {
         Query query = this.entityManager.createNamedQuery("Operation.findAllOperationBeanByOperationDate", OperationBean.class);
         query.setParameter("operationDate", selectedDate);
-        List<OperationBean> operationBeans = query.getResultList();
+        List<OperationBean> result = query.getResultList();
 
-        if (operationBeans.isEmpty()) {
+        if (result.isEmpty()) {
             throw new NoResultException("В базі даних, жодного запису по вашому запиту не знайдено!");
         }
 
-        return operationBeans;
+        return result;
     }
 }

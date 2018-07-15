@@ -8,6 +8,7 @@ import ua.nike.project.hibernate.entity.OperationDay;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -39,7 +40,7 @@ public class OperationDayDAOImpl implements OperationDayDAO {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED, readOnly = true)
-    public Set<Date> getOperationDates() {
-        return new HashSet<Date>(entityManager.createNamedQuery("OperationDate.getOperationDates").getResultList());
+    public List<Date> getOperationDates() {
+        return new ArrayList<Date>(entityManager.createNamedQuery("OperationDate.getOperationDates").getResultList());
     }
 }
