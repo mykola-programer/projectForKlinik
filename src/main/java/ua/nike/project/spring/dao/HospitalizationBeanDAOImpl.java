@@ -28,7 +28,8 @@ public class HospitalizationBeanDAOImpl implements HospitalizationBeanDAO {
         List<HospitalizationBean> hospitalizationBeans = query.getResultList();
 
         if (hospitalizationBeans.isEmpty()) {
-            throw new NoResultException("В базі даних, жодного запису по вашому запиту не знайдено!");
+            return new ArrayList<>();
+//            throw new NoResultException("В базі даних, жодного запису по вашому запиту не знайдено!");
         }
         List<HospitalizationBeanVO> result = new ArrayList<>();
         for (HospitalizationBean hospitalizationBean : hospitalizationBeans) {
@@ -45,7 +46,8 @@ public class HospitalizationBeanDAOImpl implements HospitalizationBeanDAO {
         List<HospitalizationBean> hospitalizationBeans = query.getResultList();
 
         if (hospitalizationBeans.isEmpty()) {
-            throw new NoResultException("В базі даних, жодного запису по вашому запиту не знайдено!");
+            return new ArrayList<>();
+//            throw new NoResultException("В базі даних, жодного запису по вашому запиту не знайдено!");
         }
         List<HospitalizationBeanVO> result = new ArrayList<>();
         for (HospitalizationBean hospitalizationBean : hospitalizationBeans) {

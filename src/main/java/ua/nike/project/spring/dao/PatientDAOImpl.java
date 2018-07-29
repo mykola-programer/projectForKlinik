@@ -22,10 +22,25 @@ public class PatientDAOImpl implements PatientDAO {
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     /**
+     * Return patientID after edit to database.
+     */
+    public int editPatient(PatientVO patientVO) {
+        Patient patient = this.entityManager.find(Patient.class, patientVO.getPatientId());
+        this.copyToPatient(patientVO, patient);
+        this.entityManager.persist(patient);
+        return patient.getPatientId();
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    /**
      * Return patientID after add to database.
      */
-    public int savePatient(Patient patient) {
+    public int savePatient(PatientVO patientVO) {
+        Patient patient = new Patient();
+        this.copyToPatient(patientVO, patient);
         this.entityManager.persist(patient);
+        this.entityManager.flush();
         return patient.getPatientId();
     }
 
@@ -52,6 +67,17 @@ public class PatientDAOImpl implements PatientDAO {
     }
 
     @Override
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+    public List<PatientVO> listRelatives() {
+        List<Patient> patients = this.entityManager.createNamedQuery("Patient.findAllRelatives", Patient.class).getResultList();
+        List<PatientVO> result = new ArrayList<>();
+        for (Patient patient : patients) {
+            result.add(transformToPatientVO(patient));
+        }
+        return result;
+    }
+
+    @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void removePatient(int patientId) {
 //        this.entityManager.remove(entityManager.find(Patient.class, patientId));
@@ -66,9 +92,29 @@ public class PatientDAOImpl implements PatientDAO {
         result.setSecondName(patient.getSecondName());
         result.setSex(patient.getSex());
         result.setStatus(patient.getStatus());
-//        patientVO.setRelative(transformToPatientVO(patient.getRelative()));
+        if (patient.getRelative() != null) {
+            result.setRelativeID(patient.getRelative().getPatientId());
+        } else {
+            result.setRelativeID(0);
+        }
         result.setTelephone(patient.getTelephone());
         return result;
+    }
+
+    private void copyToPatient(PatientVO original, Patient result) {
+        if (original != null) {
+            result.setSurname(original.getSurname());
+            result.setFirstName(original.getFirstName());
+            result.setSecondName(original.getSecondName());
+            result.setSex(original.getSex());
+            result.setStatus(original.getStatus());
+            if (original.getRelativeID() > 0) {
+                result.setRelative(this.entityManager.find(Patient.class, original.getRelativeID()));
+            } else {
+                result.setRelative(null);
+            }
+            result.setTelephone(original.getTelephone());
+        }
     }
 
 }

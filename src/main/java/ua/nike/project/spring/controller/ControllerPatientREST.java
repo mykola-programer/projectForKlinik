@@ -17,26 +17,39 @@ public class ControllerPatientREST {
     @Autowired
     PatientDAO patientDAO;
 
+    @CrossOrigin(origins = "http://localhost:4200")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public List<PatientVO> getPatients() {
         return patientDAO.listPatients();
     }
 
+    @CrossOrigin(origins = "http://localhost:4200")
+    @RequestMapping(value = "/relatives", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public List<PatientVO> getRelatives() {
+        return patientDAO.listRelatives();
+    }
+
+    @CrossOrigin(origins = "http://localhost:4200")
     @RequestMapping(value = "{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public PatientVO getPatient(@PathVariable("id") int patientId) throws BusinessException, Exception {
         return patientDAO.findPatient(patientId);
     }
 
-    @RequestMapping(value = "", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE,
-            consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-    public Patient savePatient(@ModelAttribute Patient patient ) {
-
-        /*        patientDAO.savePatient(patient);        */
-
+    @CrossOrigin(origins = "http://localhost:4200")
+    @RequestMapping(value = "{id}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public PatientVO editPatient(@RequestBody PatientVO patient) {
+        patient.setPatientId(patientDAO.editPatient(patient));
         return patient;
     }
 
+    @CrossOrigin(origins = "http://localhost:4200")
+    @RequestMapping(value = "", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public PatientVO addPatient(@RequestBody PatientVO patient) {
+        patient.setPatientId(patientDAO.savePatient(patient));
+        return patient;
+    }
 
+    @CrossOrigin(origins = "http://localhost:4200")
     @RequestMapping(value = "{id}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_XML_VALUE)
     public String deletePatient(@PathVariable("id") int patientId) {
 
@@ -45,6 +58,7 @@ public class ControllerPatientREST {
         return "PatientVO : " + patientId + " - was deleted successful !!!";
     }
 
+    @CrossOrigin(origins = "http://localhost:4200")
     @RequestMapping(value = "", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_XML_VALUE)
     public String deleteAll() {
         for (PatientVO patient : patientDAO.listPatients()) {

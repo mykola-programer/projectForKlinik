@@ -6,8 +6,6 @@ import org.springframework.stereotype.Component;
 import java.io.Serializable;
 import java.time.LocalTime;
 
-@Component
-@Scope("prototype")
 public class HospitalizationBean implements Serializable {
     private int operationID;
     private int numberOfPlace;

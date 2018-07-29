@@ -3,7 +3,7 @@
          xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
          version="3.1">
 
-    <display-name>Test Spring MVC</display-name>
+    <display-name>FirstTest Spring MVC</display-name>
 
     <!-- Add Support for Spring -->
     <!-- Создает Spring Container, доступный всем сервлетам и фильтрам -->

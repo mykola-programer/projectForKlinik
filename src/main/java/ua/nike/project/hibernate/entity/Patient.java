@@ -10,7 +10,10 @@ import java.util.Objects;
 import java.util.Set;
 
 @Entity
-@NamedQuery(name = "Patient.findAll", query = "FROM Patient ")
+@NamedQueries(value = {
+        @NamedQuery(name = "Patient.findAll", query = "FROM Patient "),
+        @NamedQuery(name = "Patient.findAllRelatives", query = "FROM Patient p where p.status = 'супроводжуючий'")
+})
 @Table(name = "patients")
 public class Patient implements Serializable, Comparable<Patient> {
 

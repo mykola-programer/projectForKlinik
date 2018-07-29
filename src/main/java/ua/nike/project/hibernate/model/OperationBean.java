@@ -7,8 +7,6 @@ import org.springframework.stereotype.Component;
 import java.io.Serializable;
 import java.util.Date;
 
-@Component
-@Scope("prototype")
 public class OperationBean implements Serializable {
    private Date operationDate;
    private String surname;

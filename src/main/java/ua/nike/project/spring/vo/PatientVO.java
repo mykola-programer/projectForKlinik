@@ -10,7 +10,7 @@ public class PatientVO implements Comparable<PatientVO>{
     private String secondName;
     private Character sex;
     private String status;
-    private PatientVO relative;
+    private int relativeID;
     private String telephone;
 
     public Integer getPatientId() {
@@ -61,12 +61,12 @@ public class PatientVO implements Comparable<PatientVO>{
         this.status = status;
     }
 
-    public PatientVO getRelative() {
-        return relative;
+    public int getRelativeID() {
+        return relativeID;
     }
 
-    public void setRelative(PatientVO relative) {
-        this.relative = relative;
+    public void setRelativeID(int relativeID) {
+        this.relativeID = relativeID;
     }
 
     public String getTelephone() {
@@ -105,7 +105,7 @@ public class PatientVO implements Comparable<PatientVO>{
                 ", secondName='" + secondName + '\'' +
                 ", sex=" + sex +
                 ", status='" + status + '\'' +
-                ", relativeId=" + relative +
+                ", relativeId=" + relativeID +
                 ", telephone='" + telephone + '\'' +
                 '}';
     }

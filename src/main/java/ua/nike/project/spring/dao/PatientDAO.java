@@ -10,11 +10,15 @@ import java.util.List;
 @Component
 public interface PatientDAO {
 
-    int savePatient(Patient patient);
+    int editPatient(PatientVO patient);
+
+    int savePatient(PatientVO patient);
 
     PatientVO findPatient(int patientID) throws BusinessException;
 
     List<PatientVO> listPatients();
 
     void removePatient(int patientId);
+
+    List<PatientVO> listRelatives();
 }
