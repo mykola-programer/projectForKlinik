@@ -3,6 +3,7 @@ package ua.nike.project.hibernate.entity;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Date;
+import java.time.LocalDate;
 import java.util.Set;
 
 @Entity
@@ -19,7 +20,7 @@ public class OperationDate implements Serializable {
     private Integer operationDateId;
 
     @Column(name = "date", nullable = false)
-    private Date date;
+    private LocalDate date;
 
     @OneToMany(targetEntity = OperationDay.class, fetch = FetchType.LAZY, mappedBy = "operationDate")
     private Set<OperationDay> operationsDay;
@@ -43,11 +44,11 @@ public class OperationDate implements Serializable {
         this.operationDateId = operationDateId;
     }
 
-    public Date getDate() {
+    public LocalDate getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(LocalDate date) {
         this.date = date;
     }
 

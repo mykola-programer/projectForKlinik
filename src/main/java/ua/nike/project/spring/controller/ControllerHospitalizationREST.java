@@ -9,21 +9,25 @@ import ua.nike.project.spring.exceptions.BusinessException;
 import ua.nike.project.spring.vo.HospitalizationBeanVO;
 
 import java.sql.Date;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @RestController
 public class ControllerHospitalizationREST {
-
+private final String DATE_FORMAT = "dd.MM.yyyy";
     @Autowired
     HospitalizationBeanDAO hospitalizationBeanDAO;
 
 
     @CrossOrigin(origins = "http://localhost:4200")
-    @RequestMapping(value = "/hospitalizations/{date}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(value = "/hospitalizations/{date}/", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public List<HospitalizationBeanVO> getHospitalization(@PathVariable("date") String reqDate) throws BusinessException {
+        System.out.println(reqDate);
 
         if (reqDate != null && !reqDate.equals("")) {
-            Date date = Date.valueOf(reqDate);
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_FORMAT);
+            LocalDate date = LocalDate.parse(reqDate,formatter);
             return hospitalizationBeanDAO.listHospitalizations(date);
         } else {
             throw new BusinessException("Dates is not correct !");
@@ -31,11 +35,12 @@ public class ControllerHospitalizationREST {
     }
 
     @CrossOrigin(origins = "http://localhost:4200")
-    @RequestMapping(value = "/not_hospitalizations/{date}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(value = "/not_hospitalizations/{date}/", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public List<HospitalizationBeanVO> getNoHospitalization(@PathVariable("date") String reqDate) throws BusinessException {
 
         if (reqDate != null && !reqDate.equals("")) {
-            Date date = Date.valueOf(reqDate);
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_FORMAT);
+            LocalDate date = LocalDate.parse(reqDate,formatter);
             return hospitalizationBeanDAO.listNoHospitalizations(date);
         } else {
             throw new BusinessException("Dates is not correct !");

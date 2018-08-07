@@ -11,6 +11,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import java.sql.Date;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,7 +23,7 @@ public class HospitalizationBeanDAOImpl implements HospitalizationBeanDAO {
 
     @Override
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-    public List<HospitalizationBeanVO> listHospitalizations(Date selectedDate) {
+    public List<HospitalizationBeanVO> listHospitalizations(LocalDate selectedDate) {
         Query query = this.entityManager.createNamedQuery("Hospitalization.findAllHospitalizationBeanByOperationDate", HospitalizationBean.class);
         query.setParameter("operationDate", selectedDate);
         List<HospitalizationBean> hospitalizationBeans = query.getResultList();
@@ -40,7 +41,7 @@ public class HospitalizationBeanDAOImpl implements HospitalizationBeanDAO {
 
     @Override
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-    public List<HospitalizationBeanVO> listNoHospitalizations(Date selectedDate) {
+    public List<HospitalizationBeanVO> listNoHospitalizations(LocalDate selectedDate) {
         Query query = this.entityManager.createNamedQuery("Hospitalization.findAllNotHospitalizationBeanByOperationDate", HospitalizationBean.class);
         query.setParameter("operationDate", selectedDate);
         List<HospitalizationBean> hospitalizationBeans = query.getResultList();

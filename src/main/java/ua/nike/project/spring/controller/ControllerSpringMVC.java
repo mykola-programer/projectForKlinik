@@ -14,6 +14,7 @@ import ua.nike.project.spring.dao.OperationBeanDAO;
 import ua.nike.project.spring.dao.OperationDayDAO;
 
 import java.sql.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
@@ -33,7 +34,7 @@ public class ControllerSpringMVC {
     @RequestMapping(value = "/operations_report", method = RequestMethod.GET)
     public ModelAndView methodGET(@ModelAttribute("date") String reqDate, ModelAndView model) {
         try {
-            List<Date> operation_dates = operationDayDAO.getOperationDates();
+            List<LocalDate> operation_dates = operationDayDAO.getOperationDates();
             model.addObject("operation_dates", operation_dates);
 
             if (reqDate != null && !reqDate.equals("")) {

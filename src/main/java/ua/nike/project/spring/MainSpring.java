@@ -10,6 +10,7 @@ import ua.nike.project.spring.dao.PatientDAO;
 import ua.nike.project.spring.vo.PatientVO;
 
 import java.sql.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 public class MainSpring {
@@ -41,7 +42,7 @@ public class MainSpring {
         }
 
         System.out.println("__________Days___________");
-        for (Date p : operationDayDAO.getOperationDates()) {
+        for (LocalDate p : operationDayDAO.getOperationDates()) {
             System.out.println(p);
         }
 

@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 import ua.nike.project.hibernate.entity.OperationDay;
 
 import java.sql.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
@@ -16,5 +17,5 @@ public interface OperationDayDAO {
 
     List<OperationDay> listOperationDays();
 
-    List<Date> getOperationDates();
+    List<LocalDate> getOperationDates();
 }
