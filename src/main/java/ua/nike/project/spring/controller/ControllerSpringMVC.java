@@ -6,17 +6,15 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import ua.nike.project.hibernate.model.OperationBean;
 import ua.nike.project.spring.dao.OperationBeanDAO;
-import ua.nike.project.spring.dao.OperationDayDAO;
+import ua.nike.project.spring.dao.OperationDateDAO;
 
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Set;
 
 @EnableWebMvc
 @Controller
@@ -26,7 +24,7 @@ public class ControllerSpringMVC {
     ApplicationContext context;
 
     @Autowired
-    OperationDayDAO operationDayDAO;
+    OperationDateDAO operationDateDAO;
 
     @Autowired
     OperationBeanDAO operationBeanDAO;
@@ -34,7 +32,7 @@ public class ControllerSpringMVC {
     @RequestMapping(value = "/operations_report", method = RequestMethod.GET)
     public ModelAndView methodGET(@ModelAttribute("date") String reqDate, ModelAndView model) {
         try {
-            List<LocalDate> operation_dates = operationDayDAO.getOperationDates();
+            List<LocalDate> operation_dates = operationDateDAO.getDates();
             model.addObject("operation_dates", operation_dates);
 
             if (reqDate != null && !reqDate.equals("")) {

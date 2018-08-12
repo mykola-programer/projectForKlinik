@@ -3,13 +3,13 @@ package ua.nike.project.spring;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import ua.nike.project.hibernate.entity.Operation;
-import ua.nike.project.hibernate.entity.OperationDay;
+import ua.nike.project.hibernate.entity.OperationDate;
 import ua.nike.project.spring.dao.OperationDAO;
-import ua.nike.project.spring.dao.OperationDayDAO;
+import ua.nike.project.spring.dao.OperationDateDAO;
 import ua.nike.project.spring.dao.PatientDAO;
+import ua.nike.project.spring.vo.OperationDateVO;
 import ua.nike.project.spring.vo.PatientVO;
 
-import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -34,15 +34,15 @@ public class MainSpring {
             System.out.println(operation);
         }
 
-        OperationDayDAO operationDayDAO = applicationContext.getBean(OperationDayDAO.class);
+        OperationDateDAO operationDateDAO = applicationContext.getBean(OperationDateDAO.class);
 
         System.out.println("__________OperationDay___________");
-        for (OperationDay p : operationDayDAO.listOperationDays()) {
+        for (OperationDateVO p : operationDateDAO.getListOperationDates()) {
             System.out.println(p);
         }
 
         System.out.println("__________Days___________");
-        for (LocalDate p : operationDayDAO.getOperationDates()) {
+        for (LocalDate p : operationDateDAO.getDates()) {
             System.out.println(p);
         }
 

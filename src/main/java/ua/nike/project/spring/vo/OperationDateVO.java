@@ -1,41 +1,29 @@
-package ua.nike.project.hibernate.entity;
+package ua.nike.project.spring.vo;
+
+import ua.nike.project.hibernate.entity.Hospitalization;
+import ua.nike.project.hibernate.entity.Operation;
+import ua.nike.project.hibernate.entity.OperationDate;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Set;
 
-@Entity
-@Table(name = "operation_dates")
-@NamedQueries(value = {
-        @NamedQuery(name = "OperationDate.getOperationDates", query = "SELECT DISTINCT od.date FROM OperationDate od ORDER BY od.date"),
-        @NamedQuery(name = "OperationDate.findAll", query = "FROM OperationDate")
-})
-public class OperationDate implements Serializable {
+public class OperationDateVO implements Serializable {
 
-    @Version
-    private long version;
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "operation_date_id")
     private Integer operationDateId;
-
-    @Column(name = "date", nullable = false)
     private LocalDate date;
-
-    @OneToMany(targetEntity = Operation.class, fetch = FetchType.LAZY, mappedBy = "operationDate")
     private Set<Operation> operations;
-
-    @OneToMany(targetEntity = Hospitalization.class, fetch = FetchType.LAZY, mappedBy = "operationDate")
     private Set<Hospitalization> hospitalizations;
 
-    public long getVersion() {
-        return version;
+    public OperationDateVO() {
     }
 
-    public void setVersion(long version) {
-        this.version = version;
+    public OperationDateVO(Integer operationDateId, LocalDate date, Set<Operation> operations, Set<Hospitalization> hospitalizations) {
+        this.operationDateId = operationDateId;
+        this.date = date;
+        this.operations = operations;
+        this.hospitalizations = hospitalizations;
     }
 
     public Integer getOperationDateId() {
@@ -75,7 +63,7 @@ public class OperationDate implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        OperationDate that = (OperationDate) o;
+        OperationDateVO that = (OperationDateVO) o;
 
         return date.equals(that.date);
     }

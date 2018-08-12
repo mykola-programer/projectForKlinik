@@ -24,14 +24,13 @@
             op.id, hp.numberOfPlace, op.numberOfOrder,
             p.id, p.surname, p.firstName, p.secondName, p.sex, p.status,
             pr.id, pr.name, op.eye, op.timeForCome,
-            od.surgeon, op.manager, op.note )
+            op.surgeon, op.manager, op.note )
             FROM Operation op
-            INNER JOIN op.operationDay od
-            INNER JOIN op.operationDay.operationDate ods
+            INNER JOIN op.operationDate ods
             INNER JOIN op.patient p
             INNER JOIN op.procedure pr
             INNER JOIN op.hospitalization hp
-            WHERE op.operationDay.operationDate.date = :operationDate and op.hospitalization is not null
+            WHERE op.operationDate.date = :operationDate and op.hospitalization is not null
             ORDER BY hp.numberOfPlace
         </query>
     </named-query>
@@ -42,13 +41,12 @@
             op.id, op.numberOfOrder,
             p.id, p.surname, p.firstName, p.secondName, p.sex, p.status,
             pr.id, pr.name, op.eye, op.timeForCome,
-            od.surgeon, op.manager, op.note )
+            op.surgeon, op.manager, op.note )
             FROM Operation op
-            INNER JOIN op.operationDay od
-            INNER JOIN op.operationDay.operationDate ods
+            INNER JOIN op.operationDate ods
             INNER JOIN op.patient p
             INNER JOIN op.procedure pr
-            WHERE op.operationDay.operationDate.date = :operationDate and op.hospitalization is null
+            WHERE op.operationDate.date = :operationDate and op.hospitalization is null
             ORDER BY op.numberOfOrder
         </query>
     </named-query>

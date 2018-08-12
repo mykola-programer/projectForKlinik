@@ -15,7 +15,6 @@
         <class>ua.nike.project.hibernate.entity.Hospitalization</class>
         <class>ua.nike.project.hibernate.entity.Operation</class>
         <class>ua.nike.project.hibernate.entity.OperationDate</class>
-        <class>ua.nike.project.hibernate.entity.OperationDay</class>
         <class>ua.nike.project.hibernate.entity.Patient</class>
         <class>ua.nike.project.hibernate.entity.Procedure</class>
 

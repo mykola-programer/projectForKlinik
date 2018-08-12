@@ -2,7 +2,6 @@ package ua.nike.project.hibernate.entity;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.sql.Time;
 import java.time.LocalTime;
 
 @Entity
@@ -19,8 +18,8 @@ public class Operation implements Serializable {
     private Integer operationId;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "operation_day")
-    private OperationDay operationDay;
+    @JoinColumn(name = "operation_date")
+    private OperationDate operationDate;
 
     private LocalTime timeForCome;
 
@@ -35,6 +34,9 @@ public class Operation implements Serializable {
     private Procedure procedure;
 
     private String eye;
+
+    @Column(name = "surgeon", nullable = false)
+    private String surgeon;
 
     private String manager;
 
@@ -68,12 +70,12 @@ public class Operation implements Serializable {
         this.operationId = operationId;
     }
 
-    public OperationDay getOperationDay() {
-        return operationDay;
+    public OperationDate getOperationDate() {
+        return operationDate;
     }
 
-    public void setOperationDay(OperationDay operationDay) {
-        this.operationDay = operationDay;
+    public void setOperationDate(OperationDate operationDate) {
+        this.operationDate = operationDate;
     }
 
     public LocalTime getTimeForCome() {
@@ -116,6 +118,14 @@ public class Operation implements Serializable {
         this.eye = eye.toUpperCase();
     }
 
+    public String getSurgeon() {
+        return surgeon;
+    }
+
+    public void setSurgeon(String surgeon) {
+        this.surgeon = surgeon;
+    }
+
     public String getManager() {
         return manager;
     }
@@ -146,7 +156,7 @@ public class Operation implements Serializable {
 
         Operation operation = (Operation) o;
 
-        if (!operationDay.equals(operation.operationDay)) return false;
+        if (!operationDate.equals(operation.operationDate)) return false;
         if (timeForCome != null ? !timeForCome.equals(operation.timeForCome) : operation.timeForCome != null)
             return false;
         if (numberOfOrder != null ? !numberOfOrder.equals(operation.numberOfOrder) : operation.numberOfOrder != null)
@@ -159,7 +169,7 @@ public class Operation implements Serializable {
 
     @Override
     public int hashCode() {
-        int result = operationDay.hashCode();
+        int result = operationDate.hashCode();
         result = 31 * result + (timeForCome != null ? timeForCome.hashCode() : 0);
         result = 31 * result + (numberOfOrder != null ? numberOfOrder.hashCode() : 0);
         result = 31 * result + patient.hashCode();
@@ -173,7 +183,7 @@ public class Operation implements Serializable {
     public String toString() {
         return "Operation{" +
                 "operationId=" + operationId +
-                ", operationDay=" + operationDay +
+                ", operationDate=" + operationDate +
                 ", timeForCome=" + timeForCome +
                 ", numberOfOrder=" + numberOfOrder +
                 ", patient=" + patient +
