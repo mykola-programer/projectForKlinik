@@ -23,12 +23,12 @@ private final String DATE_FORMAT = "dd.MM.yyyy";
     @CrossOrigin(origins = "http://localhost:4200")
     @RequestMapping(value = "/hospitalizations/{date}/", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public List<HospitalizationBeanVO> getHospitalization(@PathVariable("date") String reqDate) throws BusinessException {
-        System.out.println(reqDate);
+//        System.out.println(reqDate);
 
         if (reqDate != null && !reqDate.equals("")) {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_FORMAT);
             LocalDate date = LocalDate.parse(reqDate,formatter);
-            return hospitalizationBeanDAO.listHospitalizations(date);
+            return hospitalizationBeanDAO.getListHospitalizations(date);
         } else {
             throw new BusinessException("Dates is not correct !");
         }
@@ -41,7 +41,7 @@ private final String DATE_FORMAT = "dd.MM.yyyy";
         if (reqDate != null && !reqDate.equals("")) {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_FORMAT);
             LocalDate date = LocalDate.parse(reqDate,formatter);
-            return hospitalizationBeanDAO.listNoHospitalizations(date);
+            return hospitalizationBeanDAO.getListNoHospitalizations(date);
         } else {
             throw new BusinessException("Dates is not correct !");
         }

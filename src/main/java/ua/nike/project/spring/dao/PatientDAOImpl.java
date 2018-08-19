@@ -28,6 +28,7 @@ public class PatientDAOImpl implements PatientDAO {
         Patient patient = this.entityManager.find(Patient.class, patientVO.getPatientId());
         this.copyToPatient(patientVO, patient);
         this.entityManager.persist(patient);
+        this.entityManager.flush();
         return patient.getPatientId();
     }
 
@@ -114,6 +115,8 @@ public class PatientDAOImpl implements PatientDAO {
                 result.setRelative(null);
             }
             result.setTelephone(original.getTelephone());
+        } else {
+            result = null;
         }
     }
 

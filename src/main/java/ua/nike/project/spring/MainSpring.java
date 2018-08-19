@@ -8,6 +8,7 @@ import ua.nike.project.spring.dao.OperationDAO;
 import ua.nike.project.spring.dao.OperationDateDAO;
 import ua.nike.project.spring.dao.PatientDAO;
 import ua.nike.project.spring.vo.OperationDateVO;
+import ua.nike.project.spring.vo.OperationVO;
 import ua.nike.project.spring.vo.PatientVO;
 
 import java.time.LocalDate;
@@ -29,9 +30,9 @@ public class MainSpring {
         OperationDAO operationDAO = applicationContext.getBean(OperationDAO.class);
 
         System.out.println("__________Operation___________");
-        List<Operation> operationList = operationDAO.listOperations();
-        for (Operation operation : operationList) {
-            System.out.println(operation);
+        List<OperationVO> operationList = operationDAO.listOperations();
+        for (OperationVO operationVO : operationList) {
+            System.out.println(operationVO);
         }
 
         OperationDateDAO operationDateDAO = applicationContext.getBean(OperationDateDAO.class);

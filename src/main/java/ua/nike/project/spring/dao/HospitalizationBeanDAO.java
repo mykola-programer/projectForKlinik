@@ -10,8 +10,8 @@ import java.util.List;
 @Component
 public interface HospitalizationBeanDAO {
 
-    List<HospitalizationBeanVO> listHospitalizations(LocalDate selectedDate);
+    List<HospitalizationBeanVO> getListHospitalizations(LocalDate selectedDate);
 
-    List<HospitalizationBeanVO> listNoHospitalizations(LocalDate selectedDate);
+    List<HospitalizationBeanVO> getListNoHospitalizations(LocalDate selectedDate);
 
 }

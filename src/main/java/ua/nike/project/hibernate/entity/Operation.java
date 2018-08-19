@@ -5,7 +5,11 @@ import java.io.Serializable;
 import java.time.LocalTime;
 
 @Entity
-@NamedQuery(name = "Operation.findAll", query = "FROM Operation ")
+@NamedQueries(value = {
+        @NamedQuery(name = "Operation.findAll", query = "FROM Operation "),
+        @NamedQuery(name = "Operation.findAllManagers", query = "SELECT distinct op.manager FROM Operation op WHERE op.manager is not null ORDER BY op.manager"),
+        @NamedQuery(name = "Operation.findAllSurgeons", query = "SELECT distinct op.surgeon FROM Operation op WHERE op.surgeon is not null ORDER BY op.surgeon"),
+})
 @Table(name = "operations")
 public class Operation implements Serializable {
 

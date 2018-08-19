@@ -1,16 +1,24 @@
 package ua.nike.project.spring.vo;
 
-public class HospitalizationBeanVO {
-    private int operationID;
-    private int numberOfPlace;
-    private int numberOfOrder;
-    private int patientID;
+import java.io.Serializable;
+import java.time.LocalTime;
+
+public class HospitalizationBeanVO implements Serializable {
+    private Integer dateID;
+
+    private Integer hospitalizationID;
+    private Integer numberOfPlace;
+
+    private Integer patientID;
     private String surname;
     private String firstName;
     private String secondName;
-    private char sex;
+    private Character sex;
     private String status;
-    private int procedureID;
+
+    private Integer operationID;
+    private Integer numberOfOrder;
+    private Integer procedureID;
     private String procedure;
     private String eye;
     private String timeForCome;
@@ -18,35 +26,35 @@ public class HospitalizationBeanVO {
     private String manager;
     private String note;
 
-    public int getOperationID() {
-        return operationID;
+    public Integer getDateID() {
+        return dateID;
     }
 
-    public void setOperationID(int operationID) {
-        this.operationID = operationID;
+    public void setDateID(Integer dateID) {
+        this.dateID = dateID;
     }
 
-    public int getNumberOfPlace() {
+    public Integer getHospitalizationID() {
+        return hospitalizationID;
+    }
+
+    public void setHospitalizationID(Integer hospitalizationID) {
+        this.hospitalizationID = hospitalizationID;
+    }
+
+    public Integer getNumberOfPlace() {
         return numberOfPlace;
     }
 
-    public void setNumberOfPlace(int numberOfPlace) {
+    public void setNumberOfPlace(Integer numberOfPlace) {
         this.numberOfPlace = numberOfPlace;
     }
 
-    public int getNumberOfOrder() {
-        return numberOfOrder;
-    }
-
-    public void setNumberOfOrder(int numberOfOrder) {
-        this.numberOfOrder = numberOfOrder;
-    }
-
-    public int getPatientID() {
+    public Integer getPatientID() {
         return patientID;
     }
 
-    public void setPatientID(int patientID) {
+    public void setPatientID(Integer patientID) {
         this.patientID = patientID;
     }
 
@@ -74,11 +82,11 @@ public class HospitalizationBeanVO {
         this.secondName = secondName;
     }
 
-    public char getSex() {
+    public Character getSex() {
         return sex;
     }
 
-    public void setSex(char sex) {
+    public void setSex(Character sex) {
         this.sex = sex;
     }
 
@@ -90,11 +98,27 @@ public class HospitalizationBeanVO {
         this.status = status;
     }
 
-    public int getProcedureID() {
+    public Integer getOperationID() {
+        return operationID;
+    }
+
+    public void setOperationID(Integer operationID) {
+        this.operationID = operationID;
+    }
+
+    public Integer getNumberOfOrder() {
+        return numberOfOrder;
+    }
+
+    public void setNumberOfOrder(Integer numberOfOrder) {
+        this.numberOfOrder = numberOfOrder;
+    }
+
+    public Integer getProcedureID() {
         return procedureID;
     }
 
-    public void setProcedureID(int procedureID) {
+    public void setProcedureID(Integer procedureID) {
         this.procedureID = procedureID;
     }
 

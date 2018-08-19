@@ -7,10 +7,8 @@ import ua.nike.project.hibernate.model.HospitalizationBean;
 import ua.nike.project.spring.vo.HospitalizationBeanVO;
 
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import java.sql.Date;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +21,7 @@ public class HospitalizationBeanDAOImpl implements HospitalizationBeanDAO {
 
     @Override
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-    public List<HospitalizationBeanVO> listHospitalizations(LocalDate selectedDate) {
+    public List<HospitalizationBeanVO> getListHospitalizations(LocalDate selectedDate) {
         Query query = this.entityManager.createNamedQuery("Hospitalization.findAllHospitalizationBeanByOperationDate", HospitalizationBean.class);
         query.setParameter("operationDate", selectedDate);
         List<HospitalizationBean> hospitalizationBeans = query.getResultList();
@@ -41,7 +39,7 @@ public class HospitalizationBeanDAOImpl implements HospitalizationBeanDAO {
 
     @Override
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-    public List<HospitalizationBeanVO> listNoHospitalizations(LocalDate selectedDate) {
+    public List<HospitalizationBeanVO> getListNoHospitalizations(LocalDate selectedDate) {
         Query query = this.entityManager.createNamedQuery("Hospitalization.findAllNotHospitalizationBeanByOperationDate", HospitalizationBean.class);
         query.setParameter("operationDate", selectedDate);
         List<HospitalizationBean> hospitalizationBeans = query.getResultList();
@@ -61,24 +59,36 @@ public class HospitalizationBeanDAOImpl implements HospitalizationBeanDAO {
         if (hospitalizationBean == null) return null;
         HospitalizationBeanVO result = new HospitalizationBeanVO();
 
-        result.setPatientID(hospitalizationBean.getPatientID());
-        result.setProcedureID(hospitalizationBean.getProcedureID());
-        result.setOperationID(hospitalizationBean.getOperationID());
+        result.setDateID(hospitalizationBean.getDateID());
+
+        result.setHospitalizationID(hospitalizationBean.getHospitalizationID());
         result.setNumberOfPlace(hospitalizationBean.getNumberOfPlace());
-        result.setNumberOfOrder(hospitalizationBean.getNumberOfOrder());
+
+        result.setPatientID(hospitalizationBean.getPatientID());
         result.setSurname(hospitalizationBean.getSurname());
         result.setFirstName(hospitalizationBean.getFirstName());
         result.setSecondName(hospitalizationBean.getSecondName());
         result.setSex(hospitalizationBean.getSex());
         result.setStatus(hospitalizationBean.getStatus());
+
+        result.setOperationID(hospitalizationBean.getOperationID());
+        result.setNumberOfOrder(hospitalizationBean.getNumberOfOrder());
+
+        if (hospitalizationBean.getProcedureID() != null) {
+            result.setProcedureID(hospitalizationBean.getProcedureID());
+        }else result.setProcedureID(0);
+
         result.setProcedure(hospitalizationBean.getProcedure());
         result.setEye(hospitalizationBean.getEye());
-        result.setTimeForCome(hospitalizationBean.getTimeForCome().toString());
+
+        if (hospitalizationBean.getTimeForCome() != null) {
+            result.setTimeForCome(hospitalizationBean.getTimeForCome().toString());
+        }else result.setTimeForCome(null);
+
         result.setSurgeon(hospitalizationBean.getSurgeon());
         result.setManager(hospitalizationBean.getManager());
         result.setNote(hospitalizationBean.getNote());
 
         return result;
-
     }
 }
