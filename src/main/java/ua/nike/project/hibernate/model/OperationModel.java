@@ -12,7 +12,7 @@ public class OperationModel {
 
     public static List<OperationBean> getResultOperation(LocalDate selectedDate, EntityManager entityManager) throws NoResultException {
 
-        Query query = entityManager.createNamedQuery("Operation.findAllOperationBeanByOperationDate", OperationBean.class);
+        Query query = entityManager.createNamedQuery("Visit.findAllOperationBeanByOperationDate", OperationBean.class);
         query.setParameter("operationDate", Date.valueOf(selectedDate));
         List<OperationBean> result = query.getResultList();
 

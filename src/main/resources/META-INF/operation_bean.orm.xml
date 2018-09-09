@@ -1,24 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <entity-mappings xmlns="http://java.sun.com/xml/ns/persistence/orm"
                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                  xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm http://java.sun.com/xml/ns/persistence/orm_2_0.xsd"
                  version="2.0">
 
-    <named-query name="Hospitalization.findAllHospitalizationBeanByOperationDate">
+<!--    <named-query name="Hospitalization.findAllHospitalizationBeanByOperationDate">
         <query>
             SELECT new ua.nike.project.hibernate.model.HospitalizationBean(
-            op.operationDate.id,
+            op.visitDate.id,
             hp.id, hp.numberOfPlace,
             p.id, p.surname, p.firstName, p.secondName, p.sex, p.status,
             op.id, op.numberOfOrder,
             pr.id, pr.name, op.eye, op.timeForCome,
             op.surgeon, op.manager, op.note )
-            FROM Operation op
-            INNER JOIN op.operationDate ods
-            INNER JOIN op.patient p
-            LEFT JOIN op.procedure pr
+            FROM Visit op
+            INNER JOIN op.visitDate ods
+            INNER JOIN op.client p
+            LEFT JOIN op.operationType pr
             INNER JOIN op.hospitalization hp
-            WHERE op.operationDate.date = :operationDate and hp.operationDate.id = op.operationDate.id and
+            WHERE op.visitDate.date = :visitDate and hp.visitDate.id = op.visitDate.id and
             op.hospitalization is not null
             ORDER BY hp.numberOfPlace
         </query>
@@ -27,20 +28,20 @@
     <named-query name="Hospitalization.findAllNotHospitalizationBeanByOperationDate">
         <query>
             SELECT new ua.nike.project.hibernate.model.HospitalizationBean(
-            op.operationDate.id,
+            op.visitDate.id,
             hp.id, hp.numberOfPlace,
             p.id, p.surname, p.firstName, p.secondName, p.sex, p.status,
             op.id, op.numberOfOrder,
             pr.id, pr.name, op.eye, op.timeForCome,
             op.surgeon, op.manager, op.note )
-            FROM Operation op
-            INNER JOIN op.operationDate ods
-            INNER JOIN op.patient p
-            LEFT JOIN op.procedure pr
+            FROM Visit op
+            INNER JOIN op.visitDate ods
+            INNER JOIN op.client p
+            LEFT JOIN op.operationType pr
             LEFT JOIN op.hospitalization hp
-            WHERE op.operationDate.date = :operationDate and
+            WHERE op.visitDate.date = :visitDate and
             op.hospitalization is null
             ORDER BY hp.numberOfPlace
         </query>
-    </named-query>
+    </named-query>-->
 </entity-mappings>

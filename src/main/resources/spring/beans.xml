@@ -5,15 +5,11 @@
 
     <import resource="jpa_hibernate.xml"/>
 
-    <bean id="patient" name="relative" class="ua.nike.project.hibernate.entity.Patient" scope="prototype"/>
-    <bean id="operation" class="ua.nike.project.hibernate.entity.Operation" scope="prototype"/>
-    <bean id="operationDate" class="ua.nike.project.hibernate.entity.OperationDate" scope="prototype"/>
+    <!--<bean id="accomodationDAO" class="ua.nike.project.spring.dao.AccomodationDAOImpl"/>-->
+    <!--<bean id="clientDAO" class="ua.nike.project.spring.dao.ClientDAOImpl"/>-->
+    <!--<bean id="managerDAO" class="ua.nike.project.spring.dao.ManagerDAOImpl"/>-->
+    <!--<bean id="visitDAO" class="ua.nike.project.spring.dao.VisitDAOImpl"/>-->
+    <!--<bean id="operationDateDAO" class="ua.nike.project.spring.dao.OperationDateDAOImpl"/>-->
 
-    <bean id="patientDAO" class="ua.nike.project.spring.dao.PatientDAOImpl"/>
 
-    <bean id="operationDAO" class="ua.nike.project.spring.dao.OperationDAOImpl"/>
-
-    <bean id="operationDateDAO" class="ua.nike.project.spring.dao.OperationDateDAOImpl"/>
-
-    <bean id="operationBeanDAO" class="ua.nike.project.spring.dao.OperationBeanDAOImpl"/>
 </beans>

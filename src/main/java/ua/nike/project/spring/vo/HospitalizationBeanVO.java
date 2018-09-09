@@ -1,7 +1,6 @@
 package ua.nike.project.spring.vo;
 
 import java.io.Serializable;
-import java.time.LocalTime;
 
 public class HospitalizationBeanVO implements Serializable {
     private Integer dateID;
@@ -18,8 +17,8 @@ public class HospitalizationBeanVO implements Serializable {
 
     private Integer operationID;
     private Integer numberOfOrder;
-    private Integer procedureID;
-    private String procedure;
+    private Integer operationTypeID;
+    private String operationType;
     private String eye;
     private String timeForCome;
     private String surgeon;
@@ -114,20 +113,20 @@ public class HospitalizationBeanVO implements Serializable {
         this.numberOfOrder = numberOfOrder;
     }
 
-    public Integer getProcedureID() {
-        return procedureID;
+    public Integer getOperationTypeID() {
+        return operationTypeID;
     }
 
-    public void setProcedureID(Integer procedureID) {
-        this.procedureID = procedureID;
+    public void setOperationTypeID(Integer operationTypeID) {
+        this.operationTypeID = operationTypeID;
     }
 
-    public String getProcedure() {
-        return procedure;
+    public String getOperationType() {
+        return operationType;
     }
 
-    public void setProcedure(String procedure) {
-        this.procedure = procedure;
+    public void setOperationType(String operationType) {
+        this.operationType = operationType;
     }
 
     public String getEye() {

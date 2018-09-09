@@ -12,11 +12,13 @@
 
         <mapping-file>/META-INF/operation_bean.orm.xml</mapping-file>
 
-        <class>ua.nike.project.hibernate.entity.Hospitalization</class>
-        <class>ua.nike.project.hibernate.entity.Operation</class>
-        <class>ua.nike.project.hibernate.entity.OperationDate</class>
-        <class>ua.nike.project.hibernate.entity.Patient</class>
-        <class>ua.nike.project.hibernate.entity.Procedure</class>
+        <class>ua.nike.project.hibernate.entity.Manager</class>
+        <class>ua.nike.project.hibernate.entity.Surgeon</class>
+        <class>ua.nike.project.hibernate.entity.Accomodation</class>
+        <class>ua.nike.project.hibernate.entity.Visit</class>
+        <class>ua.nike.project.hibernate.entity.VisitDate</class>
+        <class>ua.nike.project.hibernate.entity.Client</class>
+        <class>ua.nike.project.hibernate.entity.OperationType</class>
 
         <properties>
             <property name="javax.persistence.jdbc.driver"

@@ -1,6 +1,5 @@
 package ua.nike.project.hibernate.model;
 
-import java.io.Serializable;
 import java.time.LocalTime;
 
 public class HospitalizationBean {
@@ -18,8 +17,8 @@ public class HospitalizationBean {
 
     private Integer operationID;
     private Integer numberOfOrder;
-    private Integer procedureID;
-    private String procedure;
+    private Integer operationTypeID;
+    private String operationType;
     private String eye;
     private LocalTime timeForCome;
     private String surgeon;
@@ -29,7 +28,7 @@ public class HospitalizationBean {
     public HospitalizationBean() {
     }
 
-    public HospitalizationBean(Integer dateID, Integer hospitalizationID, Integer numberOfPlace, Integer patientID, String surname, String firstName, String secondName, Character sex, String status, Integer operationID, Integer numberOfOrder, Integer procedureID, String procedure, String eye, LocalTime timeForCome, String surgeon, String manager, String note) {
+    public HospitalizationBean(Integer dateID, Integer hospitalizationID, Integer numberOfPlace, Integer patientID, String surname, String firstName, String secondName, Character sex, String status, Integer operationID, Integer numberOfOrder, Integer operationTypeID, String operationType, String eye, LocalTime timeForCome, String surgeon, String manager, String note) {
         this.dateID = dateID;
         this.hospitalizationID = hospitalizationID;
         this.numberOfPlace = numberOfPlace;
@@ -41,8 +40,8 @@ public class HospitalizationBean {
         this.status = status;
         this.operationID = operationID;
         this.numberOfOrder = numberOfOrder;
-        this.procedureID = procedureID;
-        this.procedure = procedure;
+        this.operationTypeID = operationTypeID;
+        this.operationType = operationType;
         this.eye = eye;
         this.timeForCome = timeForCome;
         this.surgeon = surgeon;
@@ -138,20 +137,20 @@ public class HospitalizationBean {
         this.numberOfOrder = numberOfOrder;
     }
 
-    public Integer getProcedureID() {
-        return procedureID;
+    public Integer getOperationTypeID() {
+        return operationTypeID;
     }
 
-    public void setProcedureID(Integer procedureID) {
-        this.procedureID = procedureID;
+    public void setOperationTypeID(Integer operationTypeID) {
+        this.operationTypeID = operationTypeID;
     }
 
-    public String getProcedure() {
-        return procedure;
+    public String getOperationType() {
+        return operationType;
     }
 
-    public void setProcedure(String procedure) {
-        this.procedure = procedure;
+    public void setOperationType(String operationType) {
+        this.operationType = operationType;
     }
 
     public String getEye() {

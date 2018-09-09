@@ -3,90 +3,60 @@ package ua.nike.project.spring.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-import ua.nike.project.hibernate.entity.OperationDate;
-import ua.nike.project.spring.dao.OperationDateDAO;
-import ua.nike.project.spring.vo.OperationDateVO;
-import ua.nike.project.spring.vo.PatientVO;
+import ua.nike.project.spring.dao.VisitDateDAO;
+import ua.nike.project.spring.exceptions.BusinessException;
+import ua.nike.project.spring.vo.VisitDateVO;
+import ua.nike.project.spring.vo.VisitVO;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @RestController
-@RequestMapping("/dates")
+@RequestMapping("/visit_dates")
 public class ControllerDateREST {
 
     @Autowired
-    OperationDateDAO operationDateDAO;
+    VisitDateDAO visitDateDAO;
 
-    @CrossOrigin(origins = "http://localhost:4200")
+    @CrossOrigin
     @RequestMapping(value = "", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public List<NgbDateStruct> getDates() {
-        List<NgbDateStruct> result = new ArrayList<>();
-        for (LocalDate localDate : operationDateDAO.getDates()) {
-            result.add(new NgbDateStruct(localDate.getDayOfMonth(), localDate.getMonthValue(), localDate.getYear()));
-        }
-        return result;
-
+    public List<VisitDateVO> getVisitDates() {
+        return visitDateDAO.getListUnlockedVisitDates();
     }
 
-    @CrossOrigin(origins = "http://localhost:4200")
+    @CrossOrigin
+    @RequestMapping(value = "/all", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public List<VisitDateVO> getAllVisitDates() {
+        return visitDateDAO.getVisitDates();
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public VisitDateVO getVisitDate(@PathVariable("id") int visitDateID) throws BusinessException {
+        return visitDateDAO.findVisitDate(visitDateID);
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "{id}/visits", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public List<VisitVO> getListVisitsOfVisitDate(@PathVariable("id") int visitDateID) throws BusinessException {
+        return visitDateDAO.getListVisitsOfVisitDate(visitDateID);
+    }
+
+    @CrossOrigin
     @RequestMapping(value = "", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public List<OperationDateVO> addDates(@RequestBody List <NgbDateStruct> ngbDates) {
-        Set<LocalDate> localDates = new HashSet<>();
-        for (NgbDateStruct ngbDate : ngbDates) {
-            localDates.add(LocalDate.of(ngbDate.getYear(), ngbDate.getMonth(), ngbDate.getDay()));
-        }
-        return operationDateDAO.saveDates(localDates);
+    public List<VisitDateVO> addVisitDates(@RequestBody List<VisitDateVO> visitDateVOList) throws BusinessException {
+        return visitDateDAO.addVisitDates(visitDateVOList);
     }
 
-private static class NgbDateStruct {
-        private int day;
-        private int month;
-        private int year;
-
-    public NgbDateStruct() {
+    @CrossOrigin
+    @RequestMapping(value = "{id}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public boolean removeVisitDate(@PathVariable("id") int visitDateID) {
+        return visitDateDAO.lockVisitDate(visitDateID);
     }
 
-    public NgbDateStruct(int day, int month, int year) {
-        this.day = day;
-        this.month = month;
-        this.year = year;
+    @CrossOrigin
+    @RequestMapping(value = "", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public boolean removeVisitDates() {
+        return visitDateDAO.lockAllVisitDates();
     }
 
-    public int getDay() {
-        return day;
-    }
-
-    public void setDay(int day) {
-        this.day = day;
-    }
-
-    public int getMonth() {
-        return month;
-    }
-
-    public void setMonth(int month) {
-        this.month = month;
-    }
-
-    public int getYear() {
-        return year;
-    }
-
-    public void setYear(int year) {
-        this.year = year;
-    }
-
-    @Override
-    public String toString() {
-        return "NgbDateStruct{" +
-                "day=" + day +
-                ", month=" + month +
-                ", year=" + year +
-                '}';
-    }
-}
 }

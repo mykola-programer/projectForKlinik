@@ -37,13 +37,13 @@
             <th> Менеджер</th>
         </tr>
 
-        <c:forEach items="${operations}" var="operation">
+        <c:forEach items="${visits}" var="visit">
             <tr>
-                <td>${operation.operationDate}</td>
-                <td>${operation.surname} ${operation.firstname} ${operation.secondname} </td>
-                <td>${operation.operation} ${operation.eye}</td>
-                <td>${operation.surgeon}</td>
-                <td>${operation.manager}</td>
+                <td>${visit.visitDate}</td>
+                <td>${visit.surname} ${visit.firstname} ${visit.secondname} </td>
+                <td>${visit.visit} ${visit.eye}</td>
+                <td>${visit.surgeon}</td>
+                <td>${visit.manager}</td>
             </tr>
         </c:forEach>
 
