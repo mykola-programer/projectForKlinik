@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import ua.nike.project.hibernate.entity.Client;
 import ua.nike.project.hibernate.entity.Visit;
+import ua.nike.project.hibernate.type.Sex;
 import ua.nike.project.spring.exceptions.BusinessException;
 import ua.nike.project.spring.vo.ClientVO;
 import ua.nike.project.spring.vo.VisitVO;
@@ -27,12 +28,14 @@ public class ClientDAOImpl implements ClientDAO {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public int addClient(ClientVO clientVO) {
-        Client client = new Client();
-        this.copyToClient(clientVO, client);
-        this.entityManager.persist(client);
-        this.entityManager.flush();
-        return client.getClientId();
+    public List<ClientVO> addClients(List<ClientVO> clientVOList) {
+        List<ClientVO> result = new ArrayList<>();
+        for (ClientVO clientVO : clientVOList) {
+            if (clientVO != null && clientVO.getSurname() != null) {
+                result.add(addClient(clientVO));
+            }
+        }
+        return result;
     }
 
     @Override
@@ -71,10 +74,9 @@ public class ClientDAOImpl implements ClientDAO {
             this.entityManager.remove(entityManager.getReference(Client.class, clientId));
             return true;
 
-        }catch (EntityNotFoundException e){
+        } catch (EntityNotFoundException e) {
             return false;
         }
-
     }
 
     @Override
@@ -99,19 +101,55 @@ public class ClientDAOImpl implements ClientDAO {
         result.setSurname(client.getSurname());
         result.setFirstName(client.getFirstName());
         result.setSecondName(client.getSecondName());
-        result.setSex(client.getSex());
+        try {
+            switch (client.getSex().toString().charAt(0)) {
+                case 'M':
+                case 'm':
+                    result.setSex('Ч');
+                    break;
+                case 'W':
+                case 'w':
+                    result.setSex('Ж');
+                    break;
+                default:
+                    result.setSex(null);
+            }
+        } catch (IndexOutOfBoundsException e) {
+            result.setSex(null);
+        }
         result.setTelephone(client.getTelephone());
         return result;
     }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    protected ClientVO addClient(ClientVO clientVO) {
+        Client client = new Client();
+        this.copyToClient(clientVO, client);
+        this.entityManager.persist(client);
+        this.entityManager.flush();
+        return transformToClientVO(client);
+    }
+
 
     private void copyToClient(ClientVO original, Client result) {
         if (original != null) {
             result.setSurname(original.getSurname());
             result.setFirstName(original.getFirstName());
             result.setSecondName(original.getSecondName());
-            result.setSex(original.getSex());
-            result.setTelephone(original.getTelephone());
 
+            switch (original.getSex()) {
+                case 'Ч':
+                case 'ч':
+                    result.setSex(Sex.M);
+                    break;
+                case 'Ж':
+                case 'ж':
+                    result.setSex(Sex.W);
+                    break;
+                default:
+                    result.setSex(Sex.M);
+            }
+            result.setTelephone(original.getTelephone());
         }
     }
 

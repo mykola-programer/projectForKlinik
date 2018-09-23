@@ -11,13 +11,13 @@ import java.util.List;
 @Component
 public interface ClientDAO {
 
-    int addClient(ClientVO clientVO);
+    List<ClientVO> getClients();
 
     ClientVO editClient(int clientId, ClientVO clientVO) throws BusinessException;
 
-    ClientVO findClient(int clientID) throws BusinessException;
+    List<ClientVO> addClients(List<ClientVO> clientVOList);
 
-    List<ClientVO> getClients();
+    ClientVO findClient(int clientID) throws BusinessException;
 
     boolean removeClient(int clientId);
 

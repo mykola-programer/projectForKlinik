@@ -11,7 +11,7 @@ public class ClientVO implements Serializable{
     private String surname;
     private String firstName;
     private String secondName;
-    private Sex sex;
+    private Character sex;
     private String telephone;
 
     public Integer getClientId() {
@@ -46,11 +46,11 @@ public class ClientVO implements Serializable{
         this.secondName = secondName;
     }
 
-    public Sex getSex() {
+    public Character getSex() {
         return sex;
     }
 
-    public void setSex(Sex sex) {
+    public void setSex(Character sex) {
         this.sex = sex;
     }
 

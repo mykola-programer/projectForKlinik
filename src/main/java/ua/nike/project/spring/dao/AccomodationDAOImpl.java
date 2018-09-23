@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import ua.nike.project.hibernate.entity.Accomodation;
 import ua.nike.project.hibernate.entity.Visit;
+import ua.nike.project.hibernate.type.Ward;
 import ua.nike.project.spring.exceptions.BusinessException;
 import ua.nike.project.spring.vo.AccomodationVO;
 import ua.nike.project.spring.vo.VisitVO;
@@ -85,6 +86,17 @@ public class AccomodationDAOImpl implements AccomodationDAO {
 
     @Override
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+    public List<Integer> getListUnlockedWards() {
+        List<Ward> wards = this.entityManager.createNamedQuery("Accomodation.getAllUnlockWards", Ward.class).getResultList();
+        List<Integer> result = new ArrayList<>();
+        for (Ward ward : wards) {
+            result.add(Integer.valueOf(ward.toString().substring(1)));
+        }
+        return result;
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<AccomodationVO> getListAccomodations() {
         List<Accomodation> accomodations = this.entityManager.createNamedQuery("Accomodation.findAll", Accomodation.class).getResultList();
         List<AccomodationVO> result = new ArrayList<>();
@@ -112,7 +124,9 @@ public class AccomodationDAOImpl implements AccomodationDAO {
         if (accomodation == null) return null;
         AccomodationVO result = new AccomodationVO();
         result.setAccomodationId(accomodation.getAccomodationId());
-        result.setWard(accomodation.getWard());
+
+        result.setWard(Integer.valueOf(accomodation.getWard().toString().substring(1)));
+
         result.setWardPlace(accomodation.getWardPlace());
         result.setPlaceLocked(accomodation.isPlaceLocked());
         return result;
@@ -120,7 +134,7 @@ public class AccomodationDAOImpl implements AccomodationDAO {
 
     private void copyToAccomodation(AccomodationVO original, Accomodation result) {
         if (original != null) {
-            result.setWard(original.getWard());
+            result.setWard(Ward.valueOf("N" + original.getWard().toString()));
             result.setWardPlace(original.getWardPlace());
             result.setPlaceLocked(original.getPlaceLocked());
         }

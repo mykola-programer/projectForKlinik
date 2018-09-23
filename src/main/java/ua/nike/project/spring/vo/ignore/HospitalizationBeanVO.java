@@ -1,4 +1,4 @@
-package ua.nike.project.spring.vo;
+package ua.nike.project.spring.vo.ignore;
 
 import java.io.Serializable;
 

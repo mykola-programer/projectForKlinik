@@ -2,6 +2,7 @@ package ua.nike.project.spring.vo;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class VisitDateVO implements Serializable {
 

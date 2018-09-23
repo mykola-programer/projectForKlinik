@@ -30,16 +30,15 @@ public class ControllerClientREST {
     }
 
     @CrossOrigin
-    @RequestMapping(value = "{id}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(value = "{id}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ClientVO editClient(@PathVariable("id") int clientId, @RequestBody ClientVO clientVO) throws BusinessException {
         return clientDAO.editClient(clientId, clientVO);
     }
 
     @CrossOrigin
-    @RequestMapping(value = "", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ClientVO addClient(@RequestBody ClientVO client) {
-        client.setClientId(clientDAO.addClient(client));
-        return client;
+    @RequestMapping(value = "", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public List<ClientVO> addClients(@RequestBody List<ClientVO> clients) {
+        return clientDAO.addClients(clients);
     }
 
     @CrossOrigin
@@ -51,7 +50,7 @@ public class ControllerClientREST {
     @CrossOrigin
     @RequestMapping(value = "{id}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public boolean deleteClient(@PathVariable("id") int clientId) {
-         return clientDAO.removeClient(clientId);
+        return clientDAO.removeClient(clientId);
     }
 
 }

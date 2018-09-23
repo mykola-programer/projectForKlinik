@@ -1,4 +1,4 @@
-package ua.nike.project.hibernate.model;
+package ua.nike.project.hibernate.type;
 
 public enum ClientStatus {
     PATIENT,

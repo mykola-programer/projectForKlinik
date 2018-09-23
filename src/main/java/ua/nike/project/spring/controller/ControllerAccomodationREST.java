@@ -17,27 +17,34 @@ public class ControllerAccomodationREST {
     @Autowired
     AccomodationDAO accomodationDAO;
 
-    @CrossOrigin(origins = "http://localhost:4200")
+    @CrossOrigin
     @RequestMapping(value = "", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public List<AccomodationVO> getAccomodations() {
         return accomodationDAO.getListUnlockedAccomodations();
     }
 
-    @CrossOrigin(origins = "http://localhost:4200")
+    @CrossOrigin
     @RequestMapping(value = "{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public AccomodationVO getAccomodation(@PathVariable("id") int accomodationID) throws BusinessException {
         return accomodationDAO.findAccomodation(accomodationID);
     }
 
-    @CrossOrigin(origins = "http://localhost:4200")
+    @CrossOrigin
     @RequestMapping(value = "{id}/visits", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public List<VisitVO> getListVisitsOfAccomodation(@PathVariable("id") int accomodationID) throws BusinessException {
         return accomodationDAO.getListVisitsOfAccomodation(accomodationID);
     }
 
-    @CrossOrigin(origins = "http://localhost:4200")
+    @CrossOrigin
     @RequestMapping(value = "{id}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public boolean lockAccomodationPlace(@PathVariable("id") int accomodationID) throws BusinessException {
         return accomodationDAO.lockAccomodationPlace(accomodationID);
     }
+
+    @CrossOrigin
+    @RequestMapping(value = "wards", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public List<Integer> getWards() {
+        return accomodationDAO.getListUnlockedWards();
+    }
+
 }

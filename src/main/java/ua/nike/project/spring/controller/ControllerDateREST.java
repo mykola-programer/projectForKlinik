@@ -42,7 +42,7 @@ public class ControllerDateREST {
     }
 
     @CrossOrigin
-    @RequestMapping(value = "", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(value = "", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public List<VisitDateVO> addVisitDates(@RequestBody List<VisitDateVO> visitDateVOList) throws BusinessException {
         return visitDateDAO.addVisitDates(visitDateVOList);
     }

@@ -24,7 +24,8 @@ import java.util.Objects;
 @Entity
 @NamedQueries(value = {
         @NamedQuery(name = "Accomodation.findAll", query = "FROM Accomodation acc ORDER BY acc.ward, acc.wardPlace"),
-        @NamedQuery(name = "Accomodation.getAllUnlock", query = "FROM Accomodation acc where acc.placeLocked = false ORDER BY acc.ward, acc.wardPlace")
+        @NamedQuery(name = "Accomodation.getAllUnlock", query = "FROM Accomodation acc where acc.placeLocked = false ORDER BY acc.ward, acc.wardPlace"),
+        @NamedQuery(name = "Accomodation.getAllUnlockWards", query = "SELECT DISTINCT acc.ward FROM Accomodation acc where acc.placeLocked = false ORDER BY acc.ward")
 })
 @Table(name = "accomodation")
 @TypeDef(

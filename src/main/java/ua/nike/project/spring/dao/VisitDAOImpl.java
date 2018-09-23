@@ -5,10 +5,12 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import ua.nike.project.hibernate.entity.*;
+import ua.nike.project.hibernate.type.ClientStatus;
 import ua.nike.project.spring.vo.VisitVO;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,6 +66,36 @@ public class VisitDAOImpl implements VisitDAO {
     }
 
     @Override
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+    public List<VisitVO> getVisitsInDateOfWard(LocalDate date) {
+        List<Visit> visits = this.entityManager
+                .createQuery("FROM Visit v WHERE v.visitDate.date = :date AND v.accomodation IS NOT NULL ORDER BY v.accomodation.ward, v.accomodation.wardPlace", Visit.class)
+                .setParameter("date", date)
+                .getResultList();
+        List<VisitVO> result = new ArrayList<>();
+        for (Object visit : visits) {
+            result.add(transformToVisitVO((Visit) visit));
+        }
+        return result;
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+    public List<VisitVO> getVisitsInDateOfNoWard(LocalDate date) {
+        List<Visit> visits = this.entityManager
+                .createQuery("FROM Visit v WHERE v.visitDate.date = :date AND v.accomodation IS NULL order by v.orderForCome", Visit.class)
+                .setParameter("date", date)
+                .getResultList();
+
+        List<VisitVO> result = new ArrayList<>();
+        for (Visit visit : visits) {
+            result.add(transformToVisitVO(visit));
+        }
+        return result;
+    }
+
+
+    @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public Integer editVisit(VisitVO visitVO) {
         Visit visit = this.entityManager.find(Visit.class, visitVO.getVisitId());
@@ -82,7 +114,22 @@ public class VisitDAOImpl implements VisitDAO {
         result.setTimeForCome(visit.getTimeForCome());
         result.setOrderForCome(visit.getOrderForCome());
         result.setClient(this.clientDAO.transformToClientVO(visit.getClient()));
-        result.setStatus(visit.getStatus());
+
+        try {
+            switch (visit.getStatus().toString().toUpperCase()) {
+                case "PATIENT":
+                    result.setStatus("пацієнт");
+                    break;
+                case "RELATIVE":
+                    result.setStatus("супров.");
+                    break;
+                default:
+                    result.setStatus(null);
+            }
+        } catch (IndexOutOfBoundsException e) {
+            result.setStatus(null);
+        }
+
         result.setRelative(this.clientDAO.transformToClientVO(visit.getRelative()));
         result.setOperationType(this.operationTypeDAO.transformToOperationTypeVO(visit.getOperationType()));
         result.setEye(visit.getEye());
@@ -110,7 +157,17 @@ public class VisitDAOImpl implements VisitDAO {
                 result.setClient(null);
             }
 
-            result.setStatus(original.getStatus());
+            switch (original.getStatus().toLowerCase()) {
+                case "пацієнт":
+                    result.setStatus(ClientStatus.PATIENT);
+                    break;
+                case "супров.":
+                case "супроводжуючий":
+                    result.setStatus(ClientStatus.RELATIVE);
+                    break;
+                default:
+                    result.setStatus(ClientStatus.PATIENT);
+            }
 
             if (original.getRelative() != null) {
                 result.setRelative(this.entityManager.find(Client.class, original.getRelative().getClientId()));

@@ -1,7 +1,5 @@
 package ua.nike.project.spring.vo;
 
-import ua.nike.project.hibernate.entity.*;
-import ua.nike.project.hibernate.model.ClientStatus;
 import ua.nike.project.hibernate.type.Eye;
 
 import java.io.Serializable;
@@ -15,7 +13,7 @@ public class VisitVO implements Serializable {
     private LocalTime timeForCome;
     private Integer orderForCome;
     private ClientVO client;
-    private ClientStatus status;
+    private String status;
     private ClientVO relative;
     private OperationTypeVO operationType;
     private Eye eye;
@@ -64,11 +62,11 @@ public class VisitVO implements Serializable {
         this.client = client;
     }
 
-    public ClientStatus getStatus() {
+    public String getStatus() {
         return status;
     }
 
-    public void setStatus(ClientStatus status) {
+    public void setStatus(String status) {
         this.status = status;
     }
 

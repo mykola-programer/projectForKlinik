@@ -21,6 +21,8 @@ public interface AccomodationDAO {
 
     List<AccomodationVO> getListUnlockedAccomodations();
 
+    List<Integer> getListUnlockedWards();
+
     List<AccomodationVO> getListAccomodations();
 
     List<VisitVO> getListVisitsOfAccomodation(int accomodationID) throws BusinessException;

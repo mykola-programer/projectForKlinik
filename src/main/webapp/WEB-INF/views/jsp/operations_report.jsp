@@ -13,7 +13,7 @@
         ${Massage} <br>
         ${ErrorMassage} <br>
     </p>
-    <p>Виберіть дату: <select name='date' autofocus>
+    <p>Виберіть дату: <select name='day' autofocus>
         <option disabled selected value='#'>Виберіть дату...</option>
         <c:forEach items="${operation_dates}" var="operation_date">
             <option value="${operation_date}">${operation_date}</option>
@@ -26,7 +26,7 @@
 
 </form>
 <c:if test="${selected_date != null and ErrorMassage == null and Massage == null}">
-    Звіт по прооперованих пацієнтах за <fmt:formatDate value="${selected_date}" type="date" dateStyle="LONG"/> :
+    Звіт по прооперованих пацієнтах за <fmt:formatDate value="${selected_date}" type="day" dateStyle="LONG"/> :
 
     <table border='1'>
         <tr>

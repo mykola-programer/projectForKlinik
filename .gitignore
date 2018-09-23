@@ -1,3 +1,6 @@
 .idea/
 target/
 projectForKlinik.iml
+.idea/
+e2e/
+node_modules/

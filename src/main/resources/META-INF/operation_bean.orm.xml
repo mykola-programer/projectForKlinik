@@ -5,7 +5,7 @@
                  xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm http://java.sun.com/xml/ns/persistence/orm_2_0.xsd"
                  version="2.0">
 
-<!--    <named-query name="Hospitalization.findAllHospitalizationBeanByOperationDate">
+<!--    <named-query name="Visit.findAllHospitalizationBeanByOperationDate">
         <query>
             SELECT new ua.nike.project.hibernate.model.HospitalizationBean(
             op.visitDate.id,
@@ -19,13 +19,13 @@
             INNER JOIN op.client p
             LEFT JOIN op.operationType pr
             INNER JOIN op.hospitalization hp
-            WHERE op.visitDate.date = :visitDate and hp.visitDate.id = op.visitDate.id and
+            WHERE op.visitDate.day = :visitDate and hp.visitDate.id = op.visitDate.id and
             op.hospitalization is not null
             ORDER BY hp.numberOfPlace
         </query>
     </named-query>
 
-    <named-query name="Hospitalization.findAllNotHospitalizationBeanByOperationDate">
+    <named-query name="Visit.findAllNotHospitalizationBeanByOperationDate">
         <query>
             SELECT new ua.nike.project.hibernate.model.HospitalizationBean(
             op.visitDate.id,
@@ -39,7 +39,7 @@
             INNER JOIN op.client p
             LEFT JOIN op.operationType pr
             LEFT JOIN op.hospitalization hp
-            WHERE op.visitDate.date = :visitDate and
+            WHERE op.visitDate.day = :visitDate and
             op.hospitalization is null
             ORDER BY hp.numberOfPlace
         </query>

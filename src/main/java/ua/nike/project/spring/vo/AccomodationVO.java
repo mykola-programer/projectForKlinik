@@ -8,14 +8,14 @@ import java.util.Objects;
 public class AccomodationVO implements Serializable {
 
     private Integer accomodationId;
-    private Ward ward;
+    private Integer ward;
     private Integer wardPlace;
     private Boolean placeLocked;
 
     public AccomodationVO() {
     }
 
-    public AccomodationVO(Integer accomodationId, Ward ward, Integer wardPlace, Boolean placeLocked) {
+    public AccomodationVO(Integer accomodationId, Integer ward, Integer wardPlace, Boolean placeLocked) {
         this.accomodationId = accomodationId;
         this.ward = ward;
         this.wardPlace = wardPlace;
@@ -30,11 +30,11 @@ public class AccomodationVO implements Serializable {
         this.accomodationId = accomodationId;
     }
 
-    public Ward getWard() {
+    public Integer getWard() {
         return ward;
     }
 
-    public void setWard(Ward ward) {
+    public void setWard(Integer ward) {
         this.ward = ward;
     }
 

@@ -2,8 +2,7 @@ package ua.nike.project.hibernate.entity;
 
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
-import org.springframework.beans.factory.annotation.Value;
-import ua.nike.project.hibernate.model.ClientStatus;
+import ua.nike.project.hibernate.type.ClientStatus;
 import ua.nike.project.hibernate.type.Eye;
 import ua.nike.project.hibernate.type.PostgreSQLEnumType;
 
@@ -78,6 +77,25 @@ public class Visit implements Serializable {
     private Accomodation accomodation;
 
     private String note;
+
+    public Visit() {
+    }
+
+    public Visit(long version, VisitDate visitDate, LocalTime timeForCome, @Min(1) Integer orderForCome, Client client, ClientStatus status, Client relative, OperationType operationType, Eye eye, Surgeon surgeon, Manager manager, Accomodation accomodation, String note) {
+        this.version = version;
+        this.visitDate = visitDate;
+        this.timeForCome = timeForCome;
+        this.orderForCome = orderForCome;
+        this.client = client;
+        this.status = status;
+        this.relative = relative;
+        this.operationType = operationType;
+        this.eye = eye;
+        this.surgeon = surgeon;
+        this.manager = manager;
+        this.accomodation = accomodation;
+        this.note = note;
+    }
 
     public long getVersion() {
         return version;
