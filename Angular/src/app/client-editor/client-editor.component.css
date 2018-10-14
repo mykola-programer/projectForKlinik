@@ -1,0 +1,13 @@
+.btn-min-style {
+  margin-right: 5px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  min-width: 65px;
+}
+
+select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+.changed {background-color: #f5c6cb}

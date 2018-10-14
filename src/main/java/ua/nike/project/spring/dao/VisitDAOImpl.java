@@ -9,6 +9,7 @@ import ua.nike.project.hibernate.type.ClientStatus;
 import ua.nike.project.spring.vo.VisitVO;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityNotFoundException;
 import javax.persistence.PersistenceContext;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -39,14 +40,26 @@ public class VisitDAOImpl implements VisitDAO {
     private AccomodationDAO accomodationDAO;
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRES_NEW, readOnly = false)
-    public Integer saveVisit(VisitVO visitVO) {
+    @Transactional(propagation = Propagation.REQUIRED)
+    public VisitVO saveVisit(VisitVO visitVO) {
         Visit visit = new Visit();
         copyToVisit(visitVO, visit);
         this.entityManager.persist(visit);
         this.entityManager.flush();
-        return visit.getVisitId();
+        return transformToVisitVO(visit);
     }
+
+/*
+    @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public List<VisitVO> saveVisits(List<VisitVO> visitsVO) {
+        List<VisitVO> result = new ArrayList<>();
+        for (VisitVO visitVO : visitsVO) {
+            result.add(saveVisit(visitVO));
+        }
+        return result;
+    }
+*/
 
     @Override
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
@@ -97,10 +110,23 @@ public class VisitDAOImpl implements VisitDAO {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public Integer editVisit(VisitVO visitVO) {
-        Visit visit = this.entityManager.find(Visit.class, visitVO.getVisitId());
+    public VisitVO editVisit(int visitID, VisitVO visitVO) {
+        Visit visit = this.entityManager.find(Visit.class, visitID);
         copyToVisit(visitVO, visit);
-        return visit.getVisitId();
+        this.entityManager.flush();
+        return transformToVisitVO(visit);
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public boolean removeVisit(int visitID) {
+        try {
+            this.entityManager.remove(entityManager.getReference(Visit.class, visitID));
+            return true;
+
+        } catch (EntityNotFoundException e) {
+            return false;
+        }
     }
 
     @Override
@@ -142,7 +168,6 @@ public class VisitDAOImpl implements VisitDAO {
 
     private void copyToVisit(VisitVO original, Visit result) {
         if (original != null) {
-            result.setVisitId(original.getVisitId());
             if (original.getVisitDate() != null) {
                 result.setVisitDate(this.entityManager.find(VisitDate.class, original.getVisitDate().getVisitDateId()));
             } else {

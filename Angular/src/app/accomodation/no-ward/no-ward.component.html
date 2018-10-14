@@ -1,0 +1,169 @@
+<div class="container-fluid" style="min-width:500px;">
+ <h5> Без стаціонарні пацієнти </h5>
+  <div>
+    <button class="btn btn-min-style" (click)="onAdd()">Add</button>
+    <button class="btn btn-success btn-min-style" (click)="onSave()">Save</button>
+    <button class="btn btn-warning btn-min-style" (click)="onRefresh()">Refresh</button>
+    <button class="btn btn-dark btn-min-style" (click)="onDelete()">Delete</button>
+    <button class="btn btn-danger btn-min-style" (click)="onCancel()">Cancel</button>
+  </div>
+
+  <div class="table-responsive-lg">
+    <table class="table table-bordered table-sm table-hover">
+      <thead>
+      <tr class="table-info">
+        <th scope="col" style="width: 30px;"></th>
+        <th scope="col" style="width: 35px;"></th>
+        <th scope="col" style="width: 50px;">№п</th>
+        <th scope="col" style="width: 80px;">Час</th>
+        <th scope="col" style="min-width: 195px; max-width: 250px">ПІБ</th>
+        <th scope="col" style="width: 35px;">Ст.</th>
+        <th scope="col" style="width: 60px;">Статус</th>
+        <th scope="col" style="width: 150px;">Операція</th>
+        <th scope="col" style="width: 45px;">Око</th>
+        <th scope="col" style="width: 100px">Хірург</th>
+        <th scope="col" style="width: 100px">Менеджер</th>
+        <th scope="col">Примітки</th>
+      </tr>
+      </thead>
+      <tbody>
+
+      <tr *ngFor="let visit of visits_without_wards" [ngClass]="{changed:visit.isChanged}">
+
+        <!--Checkbox-->
+        <th>
+          <input type="checkbox" [ngModel]="visit.isChanged"
+                 (change)="visit.isChanged=!visit.isChanged">
+        </th>
+
+        <th></th>
+
+        <!--Order For Come-->
+        <td>
+          <input #orderForCome type="number" *ngIf="visit.orderForCome != null || visit.client != null"
+                 class="form-control font-weight-bold form-control-sm"
+                 style="border: none; background-color: rgba(255,255,255,0.5)"
+                 ngModel="{{visit.orderForCome}}" min="1" max="99"
+                 (change)="visit.orderForCome = orderForCome.value; visit.isChanged = true;">
+        </td>
+
+        <!--Time For Come-->
+        <td>
+          <input #timeForCome *ngIf="visit.client != null"
+                 type="time" [ngModel]="refactorTime(visit.timeForCome) | date : 'HH:mm'" min="09:00"
+                 max="17:30"
+                 (change)="changeTimeForCome(visit, timeForCome)"
+                 class="form-control font-weight-bold form-control-sm"
+                 style="border: none; background-color: rgba(255,255,255,0.5)"/>
+        </td>
+
+        <!--Client-->
+        <td>
+          <a *ngIf="visit.client != null" class="form-control font-weight-bold form-control-sm"
+             style="border: none; background-color: rgba(255,255,255,0.5)">
+            {{visit.client.surname}} {{visit.client.firstName}} {{visit.client.secondName}}
+          </a>
+
+          <input matInput #client_value class="form-control font-weight-bold form-control-sm"
+                 style="border: none; background-color: rgba(255,255,255,0.5)"
+                 type="text" [formControl]="myControlClients" [matAutocomplete]="autoClient"
+                 *ngIf="visit.client == null" (click)="filteringClients()">
+          <mat-autocomplete autoActiveFirstOption #autoClient="matAutocomplete" class="">
+            <mat-option *ngFor="let client of filteredClients | async"
+                        (click)="changeClient(visit, client.clientId)">
+              {{client.surname}} {{client.firstName}} {{client.secondName}} {{client.sex}}
+            </mat-option>
+          </mat-autocomplete>
+
+        </td>
+
+        <!--Sex-->
+        <td>
+          <a *ngIf="visit.client != null" class="form-control font-weight-bold form-control-sm"
+             style="border: none; background-color: rgba(255,255,255,0.5)">
+            {{visit.client.sex}}
+          </a>
+        </td>
+
+        <!--Status-->
+        <td>
+          <a class="form-control font-weight-bold form-control-sm"
+             style="border: none; background-color: rgba(0,0,0,0)"
+             *ngIf="visit.client != null">
+            {{visit.status}}
+          </a>
+        </td>
+
+        <!--Operation Type-->
+        <td>
+          <select #operation_type_id *ngIf="visit.status == 'пацієнт' && visit.client != null"
+                  class="form-control font-weight-bold form-control-sm"
+                  style="border: none; background-color: rgba(255,255,255,0.5)"
+                  (change)="changeOperationType(visit, operation_type_id.value)">
+
+            <option
+              [selected]="visit.operationType == null || visit.operationType.operationTypeId == null"></option>
+            <option *ngFor="let operationType of operation_types" [value]="operationType.operationTypeId"
+                    [selected]="visit.operationType != null && visit.operationType.operationTypeId == operationType.operationTypeId">
+              {{operationType.name}}
+            </option>
+          </select>
+        </td>
+
+        <!--EYE-->
+        <td>
+          <select #eye *ngIf="visit.status == 'пацієнт' && visit.client != null"
+                  class="form-control font-weight-bold form-control-sm"
+                  style="border: none; background-color: rgba(255,255,255,0.5)"
+                  (change)="changeEye(visit, eye.value)">
+
+            <option [selected]="visit.eye == null"></option>
+            <option *ngFor="let eye of eyes" [value]="eye"
+                    [selected]="visit.eye == eye">
+              {{eye}}
+            </option>
+          </select>
+        </td>
+
+        <!--Surgeon-->
+        <td>
+          <select #surgeon_id *ngIf="visit.status == 'пацієнт' && visit.client != null"
+                  class="form-control font-weight-bold form-control-sm"
+                  style="border: none; background-color: rgba(255,255,255,0.5)"
+                  (change)="changeSurgeon(visit, surgeon_id.value)">
+
+            <option [selected]="visit.surgeon == null || visit.surgeon.surgeonId == null"></option>
+            <option *ngFor="let surgeon of surgeons" [value]="surgeon.surgeonId"
+                    [selected]="visit.surgeon != null && visit.surgeon.surgeonId == surgeon.surgeonId">
+              {{surgeon.surname}} {{surgeon.firstName[0]}}.{{surgeon.secondName[0]}}.
+            </option>
+          </select>
+        </td>
+
+        <!--Manager-->
+        <td>
+          <select #manager_id *ngIf="visit.status == 'пацієнт' && visit.client != null"
+                  class="form-control font-weight-bold form-control-sm "
+                  style="border: none; background-color: rgba(255,255,255,0.5)"
+                  (change)="changeManager(visit, manager_id.value)">
+
+            <option [selected]="visit.manager == null || visit.manager.managerId == null"></option>
+            <option *ngFor="let manager of managers" [value]="manager.managerId"
+                    [selected]="visit.manager != null && visit.manager.managerId == manager.managerId">
+              {{manager.surname}} {{manager.firstName[0]}}.{{manager.secondName[0]}}.
+            </option>
+          </select>
+        </td>
+
+        <!--Note-->
+        <td>
+          <input #note type="text" (change)="visit.note = note.value; visit.isChanged = true;"
+                 class="form-control font-weight-bold form-control-sm"
+                 style="border: none; background-color: rgba(255,255,255,0.5)" ngModel="{{visit.note}}">
+        </td>
+      </tr>
+
+      </tbody>
+    </table>
+  </div>
+</div>

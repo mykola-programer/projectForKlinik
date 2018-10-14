@@ -1,0 +1,140 @@
+<br><br><br>
+<div class="left-container fixed-bottom bg-light">
+      <button class="btn btn-min-style" (click)="onAdd()">Add</button>
+      <button class="btn btn-success btn-min-style" (click)="onSave()">Save</button>
+      <button class="btn btn-warning btn-min-style" (click)="onRefresh()">Refresh</button>
+      <button class="btn btn-dark btn-min-style" (click)="onDelete()">Delete</button>
+      <button class="btn btn-danger btn-min-style" (click)="onCancel()">Cancel</button>
+</div>
+<div class="left-container" style="max-width: 800px; min-width: 550px; margin-left: 10px">
+  <p class="h3 text-center">Клієнти клініки :</p>
+
+  <div class="table-responsive-lg">
+    <table class="table table-bordered table-sm table-hover">
+      <thead>
+
+
+      <tr class="table-info">
+        <th scope="col" style="width: 30px;"></th>
+        <th scope="col" colspan="3">ПІБ Клієнта</th>
+        <th scope="col" style="width: 40px;">Ст.</th>
+        <th scope="col">Телефон</th>
+      </tr>
+
+
+      </thead>
+      <tbody>
+
+      <tr *ngFor="let client of clients" [ngClass]="{changed:client.isChanged}">
+        <th>
+          <input type="checkbox" [ngModel]="client.isChanged" (change)="client.isChanged=!client.isChanged">
+        </th>
+
+        <td>
+          <input #surname type="text" placeholder="  - Прізвище -  "
+                 class="form-control font-weight-bold form-control-sm"
+                 [ngModel]="client.surname" style="border: none; background-color: rgba(255,255,255,0.5)"
+                 (change)="client.isChanged=true; client.surname=surname.value">
+        </td>
+        <td>
+          <input #firstName type="text" placeholder="  - Ім'я -  " class="form-control font-weight-bold form-control-sm"
+                 [ngModel]="client.firstName" style="border: none; background-color: rgba(255,255,255,0.5)"
+                 (change)="client.isChanged=true; client.firstName=firstName.value">
+        </td>
+        <td>
+          <input #secondName type="text" placeholder="  - по-Батькові -  "
+                 class="form-control font-weight-bold form-control-sm"
+                 [ngModel]="client.secondName" style="border: none; background-color: rgba(255,255,255,0.5)"
+                 (change)="client.isChanged=true; client.secondName=secondName.value">
+        </td>
+
+        <td>
+          <select #sex class="form-control form-control-sm" [ngModel]="client.sex"
+                  style="border: none; background-color: rgba(255,255,255,0.5)"
+                  (change)="client.isChanged=true; client.sex=sex.value">
+            <option [selected]="client.sex == 'Ж'">Ж</option>
+            <option [selected]="client.sex == 'Ч'">Ч</option>
+          </select>
+        </td>
+        <td>
+          <input #telephone type="tel" placeholder="  - Телефон -  "
+                 class="form-control font-weight-bold form-control-sm"
+                 [ngModel]="client.telephone" style="border: none; background-color: rgba(255,255,255,0.5)"
+                 (change)="client.isChanged=true; client.telephone=telephone.value">
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<br><br>
+
+
+<!--
+
+<div>
+<mat-dialog-content>
+
+  <div class="input-group">
+    <div class="input-group-prepend">
+      <span class="input-group-text">ПІБ пацієнта</span>
+    </div>
+    <input #surname type="text" placeholder="Прізвище" class="form-control font-weight-bold"
+           [ngModel]="client.surname">
+    <input #firstName type="text" placeholder="Ім'я" class="form-control font-weight-bold"
+           [ngModel]="client.firstName">
+    <input #secondName type="text" placeholder="по-Батькові" class="form-control font-weight-bold"
+           [ngModel]="client.secondName">
+  </div>
+  <br>
+  <div class="input-group">
+    <div class="input-group-prepend">
+      <span class="input-group-text"> Стать </span>
+    </div>
+
+    <select #sex class="form-control" ([ngModel])="client.sex">
+      &lt;!&ndash;<option [selected]="client.sex == null" disabled >Виберіть стать</option>&ndash;&gt;
+      <option [selected]="client.sex == 'Ж'">Ж</option>
+      <option [selected]="client.sex == 'Ч'">Ч</option>
+    </select>
+
+    &lt;!&ndash;<span class="input-group-text"> Cтатус </span>&ndash;&gt;
+&lt;!&ndash;&ndash;&gt;
+    &lt;!&ndash;<select #status class="form-control" ([ngModel])="client.status">&ndash;&gt;
+      &lt;!&ndash;<option [selected]="client.sex == null" disabled >Виберіть стать</option>&ndash;&gt;
+      &lt;!&ndash;<option [selected]="client.status == 'пацієнт'">пацієнт</option>&ndash;&gt;
+      &lt;!&ndash;<option [selected]="client.status == 'супроводжуючий'">супроводжуючий</option>&ndash;&gt;
+    &lt;!&ndash;</select>&ndash;&gt;
+  </div>
+
+  <br>
+
+  <div class="input-group">
+    <div class="input-group-prepend">
+      <span class="input-group-text">Телефон</span>
+    </div>
+    <input #telephone type="tel" placeholder="Телефон" class="form-control" [ngModel]="client.telephone">
+  </div>
+
+  <br>
+
+  <div class="input-group" >
+    <div class="input-group-prepend">
+      <span class="input-group-text">Супроводжуючий</span>
+    </div>
+    <select #selected_relative class="form-control">
+      &lt;!&ndash;<option [selected]="client.relativeID == 0">Відсутній</option>&ndash;&gt;
+      &lt;!&ndash;<option *ngFor="let relative of relatives" [selected]="relative.clientId == client.relativeID">&ndash;&gt;
+        &lt;!&ndash;{{relative.clientId}} {{relative.surname}} {{relative.firstName}} {{relative.secondName}}&ndash;&gt;
+      &lt;!&ndash;</option>&ndash;&gt;
+
+    </select>
+  </div>
+
+</mat-dialog-content>
+
+
+
+</div>
+</div>
+-->

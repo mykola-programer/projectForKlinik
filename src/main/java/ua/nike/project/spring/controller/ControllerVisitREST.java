@@ -58,17 +58,27 @@ public class ControllerVisitREST {
     }
 
     @CrossOrigin
-    @RequestMapping(value = "{id}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public VisitVO editVisit(@RequestBody VisitVO visit) {
-        visit.setVisitId(visitDAO.editVisit(visit));
-        return visit;
+    @RequestMapping(value = "", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public VisitVO addVisit(@RequestBody VisitVO visit) {
+        return visitDAO.saveVisit(visit);
+    }
+
+/*    @CrossOrigin
+    @RequestMapping(value = "", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public List<VisitVO> addVisits(@RequestBody List<VisitVO> visitsVO) {
+        return visitDAO.saveVisits(visitsVO);
+    }*/
+
+    @CrossOrigin
+    @RequestMapping(value = "{id}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public VisitVO editVisit(@PathVariable("id") int visitID, @RequestBody VisitVO visit) {
+        return visitDAO.editVisit(visitID, visit);
     }
 
     @CrossOrigin
-    @RequestMapping(value = "", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public VisitVO addVisit(@RequestBody VisitVO visit) {
-        visit.setVisitId(visitDAO.saveVisit(visit));
-        return visit;
+    @RequestMapping(value = "{id}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public boolean deleteVisit(@PathVariable("id") int visitID) {
+        return visitDAO.removeVisit(visitID);
     }
 
 }

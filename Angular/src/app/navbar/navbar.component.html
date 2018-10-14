@@ -1,0 +1,60 @@
+<nav class="navbar navbar-expand-md navbar-dark bg-primary fixed-top">
+  <a class="navbar-brand" href="#" routerLink="" (click)="statusNavbar = 'accomodation'">Home</a>
+  <button class="navbar-toggler hidden-sm-up" type="button" (click)="isNavbarCollapsed = !isNavbarCollapsed"
+          data-target="#navbarsDefault" aria-controls="navbarsDefault" aria-expanded="false"
+          aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div [ngbCollapse]="!isNavbarCollapsed" class="collapse navbar-collapse" id="navbarsDefault">
+    <ul class="navbar-nav mr-auto">
+
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/dates" [ngClass]="{active:statusNavbar=='date'}"
+           (click)="statusNavbar = 'date'; isNavbarCollapsed = false">Дати</a>
+      </li>
+      <li class="nav-item ">
+        <a class="nav-link" routerLink="/client" [ngClass]="{active:statusNavbar=='client'}"
+           (click)="statusNavbar = 'client'; isNavbarCollapsed = false">Клієнти </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/accomodation" [ngClass]="{active:statusNavbar=='accomodation'}"
+           (click)="statusNavbar = 'accomodation'; isNavbarCollapsed = false">Поселення</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#" (click)="false" [ngClass]="{active:statusNavbar=='operation'}"
+           (click)="statusNavbar = 'operation'; isNavbarCollapsed = false">Види операцій</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#" (click)="false" [ngClass]="{active:statusNavbar=='surgeon'}"
+           (click)="statusNavbar = 'surgeon'; isNavbarCollapsed = false">Хірурги</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#" (click)="false" [ngClass]="{active:statusNavbar=='manager'}"
+           (click)="statusNavbar = 'manager'; isNavbarCollapsed = false">Менеджери</a>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link disabled" href="#" (click)="false" [ngClass]="{active:statusNavbar=='other'}"
+           (click)="statusNavbar = 'other'; isNavbarCollapsed = false">Інше</a>
+      </li>
+
+      <li>
+        <div *ngIf="statusNavbar=='accomodation'">
+          <app-date-selector></app-date-selector>
+        </div>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+
+<!--
+
+      <li class="nav-item dropdown" ngbDropdown>
+        <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" (click)="stop()" ngbDropdownToggle>Дати</a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown" ngbDropdownMenu>
+          <a class="dropdown-item" routerLink="/dates">Додати</a>
+          <a class="dropdown-item" (click)="stop()">Видалити</a>
+        </div>
+      </li>
+-->
