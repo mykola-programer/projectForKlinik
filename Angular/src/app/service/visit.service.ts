@@ -1,23 +1,27 @@
-import {Injectable} from '@angular/core';
+import {Injectable} from "@angular/core";
 import {Observable} from "rxjs/internal/Observable";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {Visit} from "../backend_types/visit";
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root"
 })
 export class VisitService {
-  private serverUrl = 'http://localhost:8080/';  // URL to REST-server
-  private visitUrl = 'visits/';
-  private isWardsUrl = 'all_wards/';
-  private noWardUrl = 'no_ward/';
+  private serverUrl = "http://localhost:8080/";  // URL to REST-server
+  private visitUrl = "visits/";
+  private isWardsUrl = "all_wards/";
+  private noWardUrl = "no_ward/";
   private readonly httpOptions = {
     headers: new HttpHeaders({
-      'Content-Type': 'application/json'
+      "Content-Type": "application/json"
     })
   };
 
   constructor(private http: HttpClient) {
+  }
+
+  getVisits(select_date: Date): Observable<Visit[]> {
+    return this.http.get<Visit[]>(this.serverUrl + this.visitUrl + select_date.toLocaleDateString() + "/");
   }
 
   getVisitsWithWard(select_date: Date): Observable<Visit[]> {
@@ -36,8 +40,8 @@ export class VisitService {
       return this.http.post<Visit[]>(this.serverUrl + this.visitUrl, JSON.stringify(visits), this.httpOptions);
     }*/
 
-  doUnplaced(visit: Visit): Observable<Visit>{
-    let visit_without_ward: Visit = new Visit();
+  doUnplaced(visit: Visit): Observable<Visit> {
+    const visit_without_ward: Visit = new Visit();
     visit_without_ward.visitId = visit.visitId;
     visit_without_ward.visitDate = visit.visitDate;
     visit_without_ward.accomodation = null;

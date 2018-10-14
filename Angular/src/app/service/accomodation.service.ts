@@ -1,15 +1,15 @@
-import { Injectable } from '@angular/core';
+import { Injectable } from "@angular/core";
 import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs/internal/Observable";
 import {Accomodation} from "../backend_types/accomodation";
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root"
 })
 export class AccomodationService {
-  private serverUrl = 'http://localhost:8080/';  // URL to REST-server
-  private accomodationUrl = 'accomodations/';
-  private wardsUrl = 'wards/';
+  private serverUrl = "http://localhost:8080/";  // URL to REST-server
+  private accomodationUrl = "accomodations/";
+  private wardsUrl = "wards/";
 
   constructor(private http: HttpClient) {
   }

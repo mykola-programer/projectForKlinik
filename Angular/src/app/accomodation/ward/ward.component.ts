@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit} from "@angular/core";
 import {Visit} from "../../backend_types/visit";
 import {DateService} from "../../service/date.service";
 import {VisitService} from "../../service/visit.service";
@@ -17,9 +17,9 @@ import {MatDialog} from "@angular/material";
 import {DateSelectorDialogComponent} from "../../date/date-selector-dialog/date-selector-dialog.component";
 
 @Component({
-  selector: 'app-ward',
-  templateUrl: './ward.component.html',
-  styleUrls: ['./ward.component.css']
+  selector: "app-ward",
+  templateUrl: "./ward.component.html",
+  styleUrls: ["./ward.component.css"]
 })
 export class WardComponent implements OnInit {
   visits_of_date: Visit[] = [];
@@ -68,7 +68,7 @@ export class WardComponent implements OnInit {
     this.accomodationService.getAccomodations().toPromise().then((placesOfWards: Accomodation[]) => {
       this.placesOfWards = [];
       placesOfWards.forEach((accomodation: Accomodation) => {
-        let isAdd: boolean = false;
+        let isAdd = false;
         this.visits_of_date.forEach((visit: Visit) => {
           if (visit.accomodation.ward == accomodation.ward && visit.accomodation.wardPlace == accomodation.wardPlace) {
             this.placesOfWards.push(visit);
@@ -122,24 +122,27 @@ export class WardComponent implements OnInit {
   changeSurgeon(place_in_ward: Visit, surgeon_id: number) {
     place_in_ward.isChanged = true;
     this.surgeons.forEach((surgeon: Surgeon) => {
-      if (surgeon.surgeonId == surgeon_id)
+      if (surgeon.surgeonId == surgeon_id) {
         place_in_ward.surgeon = surgeon;
+      }
     });
   }
 
   changeManager(place_in_ward: Visit, manager_id: number) {
     place_in_ward.isChanged = true;
     this.managers.forEach((manager: Manager) => {
-      if (manager.managerId == manager_id)
+      if (manager.managerId == manager_id) {
         place_in_ward.manager = manager;
+      }
     });
   }
 
   changeOperationType(place_in_ward: Visit, operation_type_id: number) {
     place_in_ward.isChanged = true;
     this.operation_types.forEach((operation_type: OperationType) => {
-      if (operation_type.operationTypeId == operation_type_id)
+      if (operation_type.operationTypeId == operation_type_id) {
         place_in_ward.operationType = operation_type;
+      }
     });
   }
 
@@ -168,7 +171,7 @@ export class WardComponent implements OnInit {
 
   filteringClients(client_value: string) {
     if (client_value) {
-      let filterValue: string[] = client_value.toLowerCase().split(" ");
+      const filterValue: string[] = client_value.toLowerCase().split(" ");
 
       console.log("filtering... : ");
       console.log(client_value);
@@ -185,11 +188,11 @@ export class WardComponent implements OnInit {
             return (client.surname.toLowerCase().indexOf(filterValue[0]) === 0 && client.firstName.toLowerCase().indexOf(filterValue[1]) === 0 && client.secondName.toLowerCase().indexOf(filterValue[2]) === 0);
         }
       });
-    }else this.filteredClients = this.clients;
+    } else { this.filteredClients = this.clients; }
   }
 
   displayFn(client?: Client): string | null {
-    return client ? (client.surname + ' ' + client.firstName + ' ' + client.secondName) : null;
+    return client ? (client.surname + " " + client.firstName + " " + client.secondName) : null;
   }
 
 
@@ -226,7 +229,7 @@ export class WardComponent implements OnInit {
           this.visitService.addVisit(this.placesOfWards[i]).toPromise().then((visit: Visit) => {
             this.placesOfWards.splice(i, 1, visit);
           });
-        } else this.placesOfWards[i].isChanged = true;
+        } else { this.placesOfWards[i].isChanged = true; }
       }
     }
   }
@@ -241,19 +244,19 @@ export class WardComponent implements OnInit {
       if (value.isChanged == true) {
         if (value.visitId > 0) {
           this.visitService.removeVisit(this.placesOfWards[i].visitId).toPromise().then(() => {
-            let visit: Visit = new Visit();
+            const visit: Visit = new Visit();
             visit.accomodation = this.placesOfWards[i].accomodation;
             visit.visitDate = this.placesOfWards[i].visitDate;
             this.placesOfWards.splice(i, 1, visit);
-          })
+          });
         } else {
-          let visit: Visit = new Visit();
+          const visit: Visit = new Visit();
           visit.accomodation = this.placesOfWards[i].accomodation;
           visit.visitDate = this.placesOfWards[i].visitDate;
           this.placesOfWards.splice(i, 1, visit);
         }
       }
-    })
+    });
   }
 
   onUnplaced() {
@@ -261,39 +264,39 @@ export class WardComponent implements OnInit {
       if (value.isChanged == true) {
         if (value.visitId > 0 && value.client != null && value.status == "пацієнт") {
           this.visitService.doUnplaced(this.placesOfWards[i]).toPromise().then(() => {
-            let visit: Visit = new Visit();
+            const visit: Visit = new Visit();
             visit.accomodation = this.placesOfWards[i].accomodation;
             visit.visitDate = this.placesOfWards[i].visitDate;
             this.placesOfWards.splice(i, 1, visit);
-          })
+          });
 
         } else if (value.visitId == 0 && value.client != null && value.status == "пацієнт") {
           this.visitService.addVisit(this.placesOfWards[i]).toPromise().then((visit: Visit) => {
             this.visitService.doUnplaced(visit).toPromise().then(() => {
-              let visit: Visit = new Visit();
+              const visit: Visit = new Visit();
               visit.accomodation = this.placesOfWards[i].accomodation;
               visit.visitDate = this.placesOfWards[i].visitDate;
               this.placesOfWards.splice(i, 1, visit);
-            })
-          })
+            });
+          });
 
         } else if (value.visitId > 0 && value.status != "пацієнт") {
           this.visitService.removeVisit(this.placesOfWards[i].visitId).toPromise().then(() => {
-            let visit: Visit = new Visit();
+            const visit: Visit = new Visit();
             visit.accomodation = this.placesOfWards[i].accomodation;
             visit.visitDate = this.placesOfWards[i].visitDate;
             this.placesOfWards.splice(i, 1, visit);
-          })
+          });
 
         } else {
-          let visit: Visit = new Visit();
+          const visit: Visit = new Visit();
           visit.accomodation = this.placesOfWards[i].accomodation;
           visit.visitDate = this.placesOfWards[i].visitDate;
           this.placesOfWards.splice(i, 1, visit);
 
         }
       }
-    })
+    });
   }
 
   moveToAnotherDatePlace() {
@@ -311,8 +314,8 @@ export class WardComponent implements OnInit {
   openDialogSelectVisitDate() {
 
     const dialogRef = this.dialog.open(DateSelectorDialogComponent, {
-      width: '700px',
-      height: '410px',
+      width: "700px",
+      height: "410px",
       data: {visit_date: this.selected_visit_date, accomodation: Accomodation}
     });
     dialogRef.afterClosed().subscribe((data: { visit_date: VisitDate, accomodation: Accomodation }) => {
@@ -321,14 +324,14 @@ export class WardComponent implements OnInit {
         this.placesOfWards.forEach((value, index) => {
           if (value.isChanged == true) {
 
-            let visit: Visit = new Visit();
+            const visit: Visit = new Visit();
             visit.accomodation = value.accomodation;
             visit.visitDate = this.selected_visit_date;
 
             value.visitDate = data.visit_date;
             if (data.accomodation != null) {
               value.accomodation = data.accomodation;
-            } else value.accomodation = null;
+            } else { value.accomodation = null; }
 
             if (value.visitId > 0) {
               this.visitService.editVisit(value).toPromise().then(() => {
@@ -339,11 +342,11 @@ export class WardComponent implements OnInit {
               this.visitService.addVisit(value).toPromise().then(() => {
                 this.placesOfWards.splice(index, 1, visit);
               });
-            } else value.isChanged = false;
+            } else { value.isChanged = false; }
           }
         });
       }
-    })
+    });
   }
 
 }
