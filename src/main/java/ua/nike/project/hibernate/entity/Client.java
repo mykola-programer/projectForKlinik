@@ -7,12 +7,14 @@ import ua.nike.project.hibernate.type.Sex;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
 @Entity
 @NamedQueries(value = {
-        @NamedQuery(name = "Client.findAll", query = "FROM Client ORDER BY surname,firstName,secondName"),
+        @NamedQuery(name = "Client.findAll", query = "FROM Client cl ORDER BY surname,firstName,secondName"),
+        @NamedQuery(name = "Client.findAllUnlock", query = "FROM Client cl WHERE cl.lock = false ORDER BY surname,firstName,secondName"),
 })
 
 @Table(name = "client")
@@ -44,8 +46,16 @@ public class Client implements Serializable, Comparable<Client> {
     @Type(type = "pgsql_enum")
     private Sex sex;
 
+    @Column(name = "birthday", nullable = false)
+    private LocalDate birthday;
+
+
     @Column(name = "telephone")
     private String telephone;
+
+    @Column(name = "lock")
+    private boolean lock = false;
+
 
     @OneToMany(targetEntity = Visit.class, fetch = FetchType.LAZY, mappedBy = "client")
     private List<Visit> visitsForClient;
@@ -101,12 +111,28 @@ public class Client implements Serializable, Comparable<Client> {
         this.sex = sex;
     }
 
+    public LocalDate getBirthday() {
+        return birthday;
+    }
+
+    public void setBirthday(LocalDate birthday) {
+        this.birthday = birthday;
+    }
+
     public String getTelephone() {
         return telephone;
     }
 
     public void setTelephone(String telephone) {
         this.telephone = telephone;
+    }
+
+    public boolean isLock() {
+        return lock;
+    }
+
+    public void setLock(boolean lock) {
+        this.lock = lock;
     }
 
     public List<Visit> getVisitsForClient() {
@@ -142,25 +168,27 @@ public class Client implements Serializable, Comparable<Client> {
         return Objects.equals(surname, client.surname) &&
                 Objects.equals(firstName, client.firstName) &&
                 Objects.equals(secondName, client.secondName) &&
-                Objects.equals(sex, client.sex);
+                Objects.equals(birthday, client.birthday);
 
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(surname, firstName, secondName, sex);
+        return Objects.hash(surname, firstName, secondName, birthday);
     }
 
     @Override
     public String toString() {
-        return "Client{" +
-                "clientId=" + clientId +
-                ", surname='" + surname + '\'' +
-                ", firstName='" + firstName + '\'' +
-                ", secondName='" + secondName + '\'' +
-                ", sex=" + sex +
-                ", telephone='" + telephone + '\'' +
-                '}';
+        final StringBuilder sb = new StringBuilder("Client{");
+        sb.append("clientId=").append(clientId);
+        sb.append(", surname='").append(surname).append('\'');
+        sb.append(", firstName='").append(firstName).append('\'');
+        sb.append(", secondName='").append(secondName).append('\'');
+        sb.append(", sex=").append(sex);
+        sb.append(", birthday=").append(birthday);
+        sb.append(", telephone='").append(telephone).append('\'');
+        sb.append('}');
+        return sb.toString();
     }
 
     @Override
@@ -204,5 +232,6 @@ public class Client implements Serializable, Comparable<Client> {
 
         return EQUAL;
     }
+
 
 }

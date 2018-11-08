@@ -1,10 +1,11 @@
 <br><br><br>
-<div class="left-container fixed-bottom bg-light">
-      <button class="btn btn-min-style" (click)="onAdd()">Add</button>
-      <button class="btn btn-success btn-min-style" (click)="onSave()">Save</button>
-      <button class="btn btn-warning btn-min-style" (click)="onRefresh()">Refresh</button>
-      <button class="btn btn-dark btn-min-style" (click)="onDelete()">Delete</button>
-      <button class="btn btn-danger btn-min-style" (click)="onCancel()">Cancel</button>
+<div class="left-container" style="max-width: 800px; min-width: 550px; margin-left: 10px">
+  <div class="input-group-prepend">
+      <span class="input-group-text">Пошук :</span>
+    <input #search type="search"
+           (input)="filteringClients(search.value)"
+           class="form-control border-left">
+  </div>
 </div>
 <div class="left-container" style="max-width: 800px; min-width: 550px; margin-left: 10px">
   <p class="h3 text-center">Клієнти клініки :</p>
@@ -18,6 +19,7 @@
         <th scope="col" style="width: 30px;"></th>
         <th scope="col" colspan="3">ПІБ Клієнта</th>
         <th scope="col" style="width: 40px;">Ст.</th>
+        <th scope="col" style="width: 40px;">Дата народж.</th>
         <th scope="col">Телефон</th>
       </tr>
 
@@ -25,42 +27,70 @@
       </thead>
       <tbody>
 
-      <tr *ngFor="let client of clients" [ngClass]="{changed:client.isChanged}">
+      <tr *ngFor="let client of filteredClients" [ngClass]="{changed:client.isChanged}">
         <th>
           <input type="checkbox" [ngModel]="client.isChanged" (change)="client.isChanged=!client.isChanged">
         </th>
 
         <td>
           <input #surname type="text" placeholder="  - Прізвище -  "
-                 class="form-control font-weight-bold form-control-sm"
-                 [ngModel]="client.surname" style="border: none; background-color: rgba(255,255,255,0.5)"
-                 (change)="client.isChanged=true; client.surname=surname.value">
+                 pattern="[A-Za-zА-Яа-яЁёІіЇїЄє]{3,50}" required
+                 class="form-control font-weight-bold form-control-sm input-style-active"
+                 [ngModel]="client.surname"
+                 (change)="changeSurname(client, surname)"
+                 (keydown.space)="firstName.focus(); false"
+                 (blur)="onBlur(client, surname)">
+          <div *ngIf="!surname.checkValidity()" class="invalid">Введіть коректне значення !</div>
         </td>
         <td>
-          <input #firstName type="text" placeholder="  - Ім'я -  " class="form-control font-weight-bold form-control-sm"
-                 [ngModel]="client.firstName" style="border: none; background-color: rgba(255,255,255,0.5)"
-                 (change)="client.isChanged=true; client.firstName=firstName.value">
+          <input #firstName type="text" placeholder="  - Ім'я -  "
+                 pattern="[A-Za-zА-Яа-яЁёІіЇїЄє]{3,50}" required
+                 class="form-control font-weight-bold form-control-sm input-style-active"
+                 [ngModel]="client.firstName"
+                 (change)="changeFirstName(client, firstName)"
+                 (keydown.space)="secondName.focus(); false"
+                 (blur)="onBlur(client, firstName)">
+
+          <div *ngIf="!firstName.checkValidity()" class="invalid">Введіть коректне значення !</div>
         </td>
         <td>
           <input #secondName type="text" placeholder="  - по-Батькові -  "
-                 class="form-control font-weight-bold form-control-sm"
-                 [ngModel]="client.secondName" style="border: none; background-color: rgba(255,255,255,0.5)"
-                 (change)="client.isChanged=true; client.secondName=secondName.value">
+                 pattern="[A-Za-zА-Яа-яЁёІіЇїЄє]{3,50}" required
+                 class="form-control font-weight-bold form-control-sm input-style-active"
+                 [ngModel]="client.secondName"
+                 (change)="changeSecondName(client, secondName)"
+                 (keydown.space)="sex.focus(); false"
+                 (blur)="onBlur(client, secondName)">
+
+          <div *ngIf="!secondName.checkValidity()" class="invalid">Введіть коректне значення !</div>
         </td>
 
         <td>
-          <select #sex class="form-control form-control-sm" [ngModel]="client.sex"
-                  style="border: none; background-color: rgba(255,255,255,0.5)"
-                  (change)="client.isChanged=true; client.sex=sex.value">
-            <option [selected]="client.sex == 'Ж'">Ж</option>
-            <option [selected]="client.sex == 'Ч'">Ч</option>
+          <select #sex class="form-control form-control-sm input-style-active"
+                  pattern="[ЧЖ]" required
+                  (change)="changeSex(client, sex)">
+            <option *ngFor="let sex of genders" [selected]="client.sex === sex" value="{{sex}}">{{sex}}</option>
           </select>
         </td>
+
+        <td>
+          <input #birthday type="date"
+                 class="form-control font-weight-bold form-control-sm input-style-active"
+                 min="{{min_date | date: 'yyyy-MM-dd'}}" max="{{max_date | date: 'yyyy-MM-dd'}}" required
+                 [ngModel]="refactorDate(client.birthday) | date: 'yyyy-MM-dd'"
+                 (change)="changeBirthday(client, birthday)"
+                 (blur)="onBlur(client, birthday)">
+          <div *ngIf="!birthday.checkValidity()" class="invalid">Введіть значення !</div>
+        </td>
+
         <td>
           <input #telephone type="tel" placeholder="  - Телефон -  "
-                 class="form-control font-weight-bold form-control-sm"
-                 [ngModel]="client.telephone" style="border: none; background-color: rgba(255,255,255,0.5)"
-                 (change)="client.isChanged=true; client.telephone=telephone.value">
+                 pattern="[ ()0-9+-]{10,19}"
+                 class="form-control font-weight-bold form-control-sm input-style-active"
+                 [ngModel]="client.telephone"
+                 (change)="changeTelephone(client, telephone)"
+                 (blur)="onBlur(client, telephone)">
+          <div *ngIf="!telephone.checkValidity()" class="invalid">Введіть коректне значення !</div>
         </td>
       </tr>
       </tbody>
@@ -68,6 +98,14 @@
   </div>
 </div>
 <br><br>
+
+<div class="left-container fixed-bottom bg-light">
+  <button class="btn btn-min-style" (click)="onAdd()">Add</button>
+  <button class="btn btn-success btn-min-style" (click)="onSave()">Save</button>
+  <button class="btn btn-warning btn-min-style" (click)="onRefresh()">Refresh</button>
+  <button class="btn btn-dark btn-min-style" (click)="onDelete()">Delete</button>
+  <button class="btn btn-danger btn-min-style" (click)="onCancel()">Cancel</button>
+</div>
 
 
 <!--

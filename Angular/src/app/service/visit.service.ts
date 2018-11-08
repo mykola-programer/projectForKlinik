@@ -21,7 +21,7 @@ export class VisitService {
   }
 
   getVisits(select_date: Date): Observable<Visit[]> {
-    return this.http.get<Visit[]>(this.serverUrl + this.visitUrl + select_date.toLocaleDateString() + "/");
+    return this.http.get<Visit[]>(this.serverUrl + this.visitUrl + "all/" + select_date.toLocaleDateString() + "/");
   }
 
   getVisitsWithWard(select_date: Date): Observable<Visit[]> {

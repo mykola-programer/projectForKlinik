@@ -24,34 +24,41 @@ public class ControllerSurgeonREST {
     }
 
     @CrossOrigin
+    @RequestMapping(value = "/unlock", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public List<SurgeonVO> getUnlockSurgeons() {
+        return surgeonDAO.getUnlockSurgeons();
+    }
+
+    @CrossOrigin
     @RequestMapping(value = "{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public SurgeonVO getSurgeon(@PathVariable("id") int surgeonId) throws BusinessException {
         return surgeonDAO.findSurgeon(surgeonId);
     }
 
     @CrossOrigin
-    @RequestMapping(value = "{id}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(value = "{id}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public SurgeonVO editSurgeon(@PathVariable("id") int surgeonId, @RequestBody SurgeonVO surgeonVO) throws BusinessException {
+        ControllerValidation.validate(surgeonVO);
         return surgeonDAO.editSurgeon(surgeonId, surgeonVO);
     }
 
     @CrossOrigin
-    @RequestMapping(value = "", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public SurgeonVO addSurgeon(@RequestBody SurgeonVO surgeon) {
-        surgeon.setSurgeonId(surgeonDAO.addSurgeon(surgeon));
-        return surgeon;
+    @RequestMapping(value = "", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public SurgeonVO addSurgeon(@RequestBody SurgeonVO surgeonVO) throws BusinessException {
+        ControllerValidation.validate(surgeonVO);
+        return surgeonDAO.addSurgeon(surgeonVO);
     }
 
     @CrossOrigin
     @RequestMapping(value = "{id}/visits", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public List<VisitVO> getListVisitsOfSurgeon(@PathVariable("id") int surgeonId) throws BusinessException {
-        return surgeonDAO.getListVisitsOfSurgeon(surgeonId);
+        return surgeonDAO.getVisitsOfSurgeon(surgeonId);
     }
 
     @CrossOrigin
     @RequestMapping(value = "{id}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public boolean deleteSurgeon(@PathVariable("id") int surgeonId) {
-         return surgeonDAO.removeSurgeon(surgeonId);
+        return surgeonDAO.removeSurgeon(surgeonId);
     }
 
 }

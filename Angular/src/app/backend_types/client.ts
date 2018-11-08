@@ -4,7 +4,9 @@ export class Client {
   public firstName: string;
   public secondName: string;
   public sex: string;
+  public birthday: number[];
   public telephone: string;
+  public lock: boolean;
   public isChanged: boolean = false;
 
 }

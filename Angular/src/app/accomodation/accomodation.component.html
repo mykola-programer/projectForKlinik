@@ -1,12 +1,392 @@
 <br><br>
 <div class="container-fluid" style="max-width: 1200px; min-width: 550px; margin-left: 10px">
   <br>
+
+  <!--            Wards             -->
+
   <!--<div class="row">-->
-    <!--<div class="col-lg-6">-->
-      <app-ward></app-ward>
-    <!--</div>-->
-    <!--<div class="col-lg-6">-->
-      <app-no-ward></app-no-ward>
-    <!--</div>-->
+  <!--<div class="col-lg-6">-->
+
+  <div>
+    <button class="btn btn-min-style" (click)="onAdd()">Add</button>
+    <button class="btn btn-success btn-min-style" (click)="onSave()">Save</button>
+    <button class="btn btn-warning btn-min-style" (click)="onRefresh()">Refresh</button>
+    <button class="btn btn-dark btn-min-style" (click)="onDelete()">Delete</button>
+    <button class="btn btn-info btn-min-style" (click)="onUnplaced()">Unplaced</button>
+    <button class="btn btn-info btn-min-style" (click)="moveToAnotherDatePlace()">Move to ...</button>
+    <button class="btn btn-danger btn-min-style" (click)="onCancel()">Cancel</button>
+  </div>
+  <div *ngFor="let ward of wards" class="container-fluid" style="min-width:500px;">
+    <h5>Палата {{ward}}</h5>
+
+    <div class="table-responsive-lg">
+      <table class="table table-bordered table-sm table-hover">
+        <thead>
+        <tr class="table-info">
+          <th scope="col" style="width: 30px;"></th>
+          <th scope="col" style="width: 35px;">№м</th>
+          <th scope="col" style="width: 50px;">№п</th>
+          <th scope="col" style="width: 80px;">Час</th>
+          <th scope="col" style="min-width: 195px; max-width: 250px">ПІБ</th>
+          <th scope="col" style="width: 35px;">Ст.</th>
+          <th scope="col" style="width: 60px;">Статус</th>
+          <th scope="col" style="width: 150px;">Операція</th>
+          <th scope="col" style="width: 45px;">Око</th>
+          <th scope="col" style="width: 100px">Хірург</th>
+          <th scope="col" style="width: 100px">Менеджер</th>
+          <th scope="col">Примітки</th>
+
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let visit_with_ward of visits_with_wards" [ngClass]="{changed:visit_with_ward.isChanged}">
+
+          <!--Checkbox-->
+          <th *ngIf="visit_with_ward.accomodation.ward == ward">
+            <input type="checkbox" [ngModel]="visit_with_ward.isChanged"
+                   (change)="visit_with_ward.isChanged=!visit_with_ward.isChanged">
+          </th>
+
+          <!--Ward Place-->
+          <th scope="row" *ngIf="visit_with_ward.accomodation.ward == ward">
+            <a class="form-control font-weight-bold form-control-sm input-style-passive">
+              {{visit_with_ward.accomodation.wardPlace}}
+            </a>
+          </th>
+
+          <!--Order For Come-->
+          <td *ngIf="visit_with_ward.accomodation.ward == ward">
+            <input #orderForCome type="number"
+                   *ngIf="visit_with_ward.orderForCome != null || visit_with_ward.client != null"
+                   [ngModel]="visit_with_ward.orderForCome" min="1" max="99" required
+                   (change)="changeOrderForCome(visit_with_ward, orderForCome.value)"
+                   class="form-control font-weight-bold form-control-sm input-style-active"
+                   [ngClass]="{'has-danger': !validOrderForCome(visit_with_ward, orderForCome.value)}">
+          </td>
+
+          <!--Time For Come-->
+          <td *ngIf="visit_with_ward.accomodation.ward == ward">
+            <input #timeForCome type="time"
+                   *ngIf="visit_with_ward.client != null"
+                   [ngModel]="refactorTime(visit_with_ward.timeForCome) | date : 'HH:mm'" required min="09:00"
+                   max="17:30"
+                   (change)="changeTimeForCome(visit_with_ward, timeForCome)"
+                   class="form-control font-weight-bold form-control-sm input-style-active">
+          </td>
+
+
+          <!--Client-->
+          <td *ngIf="visit_with_ward.accomodation.ward == ward">
+
+            <input matInput #client type="text" [matAutocomplete]="autoClient"
+                   [ngModel]="visit_with_ward.client" (input)="filteringClients(client.value)"
+                   (focus)="filteringClients(client.value)"
+                   class="form-control font-weight-bold form-control-sm input-style-active"
+                   [ngClass]="{'has-danger': !validClient(visit_with_ward.client, client.value)}">
+            <!--(blur)="((filteredClients.length > 0 && client.value) ? selectedClient(visit_with_ward, filteredClients[0]) : false)"-->
+
+            <mat-autocomplete autoActiveFirstOption [displayWith]="displayFn" #autoClient="matAutocomplete"
+                              (optionSelected)="selectedClient(visit_with_ward, $event.option.value)">
+              <mat-option *ngFor="let client of filteredClients"
+                          [value]="client">
+                {{client.surname}} {{client.firstName}} {{client.secondName}} {{client.sex}}
+              </mat-option>
+            </mat-autocomplete>
+          </td>
+
+          <!--Sex-->
+          <td *ngIf="visit_with_ward.accomodation.ward == ward">
+            <a *ngIf="visit_with_ward.client"
+               class="form-control font-weight-bold form-control-sm input-style-active">
+              {{visit_with_ward.client.sex}}
+            </a>
+          </td>
+
+
+          <!--Status-->
+          <td *ngIf="visit_with_ward.accomodation.ward == ward">
+            <select #status *ngIf="visit_with_ward.client != null"
+                    (change)="changeStatus(visit_with_ward, status.value)"
+                    class="form-control font-weight-bold form-control-sm input-style-active"
+              >
+
+              <option [selected]="visit_with_ward.status == null" [value]=null></option>
+              <option *ngFor="let status of statuses" [value]="status"
+                      [selected]="visit_with_ward.status == status">
+                {{status}}
+              </option>
+            </select>
+
+          </td>
+
+
+          <!--Operation Type-->
+          <td *ngIf="visit_with_ward.accomodation.ward == ward">
+
+            <select #operation_type_id *ngIf="visit_with_ward.status == 'пацієнт' && visit_with_ward.client != null"
+                    class="form-control font-weight-bold form-control-sm input-style-active"
+                    (change)="changeOperationType(visit_with_ward, operation_type_id.value)">
+
+              <option
+                [selected]="visit_with_ward.operationType == null || visit_with_ward.operationType.operationTypeId == null"></option>
+              <option *ngFor="let operationType of operation_types" [value]="operationType.operationTypeId"
+                      [selected]="visit_with_ward.operationType != null && visit_with_ward.operationType.operationTypeId == operationType.operationTypeId">
+                {{operationType.name}}
+              </option>
+            </select>
+
+          </td>
+
+
+          <!--EYE-->
+          <td *ngIf="visit_with_ward.accomodation.ward == ward">
+
+            <select #eye *ngIf="visit_with_ward.status == 'пацієнт' && visit_with_ward.client != null"
+                    class="form-control font-weight-bold form-control-sm"
+                    style="border: none; background-color: rgba(255,255,255,0.5)"
+                    (change)="changeEye(visit_with_ward, eye.value)">
+
+              <option [selected]="visit_with_ward.eye == null"></option>
+              <option *ngFor="let eye of eyes" [value]="eye"
+                      [selected]="visit_with_ward.eye == eye">
+                {{eye}}
+              </option>
+            </select>
+
+          </td>
+
+
+          <!--Surgeon-->
+          <td *ngIf="visit_with_ward.accomodation.ward == ward">
+
+            <select #surgeon_id *ngIf="visit_with_ward.status === 'пацієнт' && visit_with_ward.client != null"
+                    class="form-control font-weight-bold form-control-sm input-style-active"
+                    (change)="changeSurgeon(visit_with_ward, surgeon_id.value)">
+
+              <option
+                [selected]="visit_with_ward.surgeon == null || visit_with_ward.surgeon.surgeonId == null"></option>
+              <option *ngFor="let surgeon of surgeons" [value]="surgeon.surgeonId"
+                      [selected]="visit_with_ward.surgeon != null && visit_with_ward.surgeon.surgeonId == surgeon.surgeonId">
+                {{surgeon.surname}} {{surgeon.firstName[0]}}.{{surgeon.secondName[0]}}.
+              </option>
+            </select>
+          </td>
+
+
+          <!--Manager-->
+          <td *ngIf="visit_with_ward.accomodation.ward == ward">
+
+            <select #manager_id *ngIf="visit_with_ward.status == 'пацієнт' && visit_with_ward.client != null"
+                    class="form-control font-weight-bold form-control-sm input-style-active"
+                    (change)="changeManager(visit_with_ward, manager_id.value)">
+
+              <option
+                [selected]="visit_with_ward.manager == null || visit_with_ward.manager.managerId == null"></option>
+              <option *ngFor="let manager of managers" [value]="manager.managerId"
+                      [selected]="visit_with_ward.manager != null && visit_with_ward.manager.managerId == manager.managerId">
+                {{manager.surname}} {{manager.firstName[0]}}.{{manager.secondName[0]}}.
+              </option>
+            </select>
+
+          </td>
+
+
+          <!--Note-->
+          <td *ngIf="visit_with_ward.accomodation.ward == ward">
+            <input #note type="text" (change)="visit_with_ward.note = note.value; visit_with_ward.isChanged = true;"
+                   class="form-control font-weight-bold form-control-sm"
+                   style="border: none; background-color: rgba(255,255,255,0.5)" ngModel="{{visit_with_ward.note}}">
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!--</div>-->
+
+
+  <!--                    No Ward                    -->
+
+  <!--<div class="col-lg-6">-->
+
+  <div class="container-fluid" style="min-width:500px;">
+    <h5>Без стаціонарні</h5>
+
+    <div class="table-responsive-lg">
+      <table class="table table-bordered table-sm table-hover">
+        <thead>
+        <tr class="table-info">
+          <th scope="col" style="width: 30px;"></th>
+          <th scope="col" style="width: 35px;"></th>
+          <th scope="col" style="width: 50px;">№п</th>
+          <th scope="col" style="width: 80px;">Час</th>
+          <th scope="col" style="min-width: 195px; max-width: 250px">ПІБ</th>
+          <th scope="col" style="width: 35px;">Ст.</th>
+          <th scope="col" style="width: 60px;">Статус</th>
+          <th scope="col" style="width: 150px;">Операція</th>
+          <th scope="col" style="width: 45px;">Око</th>
+          <th scope="col" style="width: 100px">Хірург</th>
+          <th scope="col" style="width: 100px">Менеджер</th>
+          <th scope="col">Примітки</th>
+
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let visit of visits_without_wards" [ngClass]="{changed:visit.isChanged}">
+
+          <!--Checkbox-->
+          <th>
+            <input type="checkbox" [ngModel]="visit.isChanged"
+                   (change)="visit.isChanged=!visit.isChanged">
+          </th>
+
+          <th></th>
+
+          <!--Order For Come-->
+          <td>
+            <input #orderForCome type="number"
+                   *ngIf="visit.orderForCome != null || visit.client != null"
+                   [ngModel]="visit.orderForCome" min="1" max="99"
+                   (change)="changeOrderForCome(visit, orderForCome.value)"
+                   class="form-control font-weight-bold form-control-sm input-style-active"
+                   [ngClass]="{'has-danger': !validOrderForCome(visit, orderForCome.value)}">
+          </td>
+
+          <!--Time For Come-->
+          <td>
+            <input #timeForCome type="time"
+                   *ngIf="visit.client != null"
+                   [ngModel]="refactorTime(visit.timeForCome) | date : 'HH:mm'" min="09:00" max="17:30"
+                   (change)="changeTimeForCome(visit, timeForCome)"
+                   class="form-control font-weight-bold form-control-sm input-style-active">
+          </td>
+
+
+          <!--Client-->
+          <td>
+            <input matInput #client type="text" [matAutocomplete]="autoClient"
+                   [ngModel]="visit.client" (input)="filteringClients(client.value)"
+                   (focus)="filteringClients(client.value)"
+                   class="form-control font-weight-bold form-control-sm input-style-active"
+                   [ngClass]="{'has-danger': !validClient(visit.client, client.value)}">
+
+            <mat-autocomplete autoActiveFirstOption [displayWith]="displayFn" #autoClient="matAutocomplete"
+                              (optionSelected)="selectedClient(visit, $event.option.value)">
+              <mat-option *ngFor="let client of filteredClients"
+                          [value]="client">
+                {{client.surname}} {{client.firstName}} {{client.secondName}} {{client.sex}}
+              </mat-option>
+            </mat-autocomplete>
+          </td>
+
+
+          <!--Sex-->
+          <td>
+            <a *ngIf="visit.client" class="form-control font-weight-bold form-control-sm input-style-active">
+              {{visit.client.sex}}
+            </a>
+          </td>
+
+
+          <!--Status-->
+          <td>
+            <select #status *ngIf="visit.client != null"
+                    (change)="changeStatus(visit, status.value)"
+                    class="form-control font-weight-bold form-control-sm input-style-active"
+            >
+
+              <option [selected]="visit.status == null" [value]=null></option>
+              <option *ngFor="let status of statuses" [value]="status"
+                      [selected]="visit.status == status">
+                {{status}}
+              </option>
+            </select>
+
+          </td>
+
+
+          <!--Operation Type-->
+          <td>
+
+            <select #operation_type_id *ngIf="visit.status == 'пацієнт' && visit.client != null"
+                    class="form-control font-weight-bold form-control-sm input-style-active"
+                    (change)="changeOperationType(visit, operation_type_id.value)">
+
+              <option
+                [selected]="visit.operationType == null || visit.operationType.operationTypeId == null"></option>
+              <option *ngFor="let operationType of operation_types" [value]="operationType.operationTypeId"
+                      [selected]="visit.operationType != null && visit.operationType.operationTypeId == operationType.operationTypeId">
+                {{operationType.name}}
+              </option>
+            </select>
+
+          </td>
+
+
+          <!--EYE-->
+          <td>
+
+            <select #eye *ngIf="visit.status == 'пацієнт' && visit.client != null"
+                    class="form-control font-weight-bold form-control-sm input-style-active"
+                    (change)="changeEye(visit, eye.value)">
+
+              <option [selected]="visit.eye == null"></option>
+              <option *ngFor="let eye of eyes" [value]="eye"
+                      [selected]="visit.eye == eye">
+                {{eye}}
+              </option>
+            </select>
+
+          </td>
+
+
+          <!--Surgeon-->
+          <td>
+
+            <select #surgeon_id *ngIf="visit.status == 'пацієнт' && visit.client != null"
+                    class="form-control font-weight-bold form-control-sm input-style-active"
+                    (change)="changeSurgeon(visit, surgeon_id.value)">
+
+              <option [selected]="visit.surgeon == null || visit.surgeon.surgeonId == null"></option>
+              <option *ngFor="let surgeon of surgeons" [value]="surgeon.surgeonId"
+                      [selected]="visit.surgeon != null && visit.surgeon.surgeonId == surgeon.surgeonId">
+                {{surgeon.surname}} {{surgeon.firstName[0]}}.{{surgeon.secondName[0]}}.
+              </option>
+            </select>
+          </td>
+
+
+          <!--Manager-->
+          <td>
+
+            <select #manager_id *ngIf="visit.status == 'пацієнт' && visit.client != null"
+                    class="form-control font-weight-bold form-control-sm input-style-active"
+                    (change)="changeManager(visit, manager_id.value)">
+
+              <option [selected]="visit.manager == null || visit.manager.managerId == null"></option>
+              <option *ngFor="let manager of managers" [value]="manager.managerId"
+                      [selected]="visit.manager != null && visit.manager.managerId == manager.managerId">
+                {{manager.surname}} {{manager.firstName[0]}}.{{manager.secondName[0]}}.
+              </option>
+            </select>
+
+          </td>
+
+
+          <!--Note-->
+          <td>
+            <input #note type="text" (change)="visit.note = note.value; visit.isChanged = true;"
+                   class="form-control font-weight-bold form-control-sm input-style-active"
+                   ngModel="{{visit.note}}">
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+
+  <!--</div>-->
   <!--</div>-->
 </div>

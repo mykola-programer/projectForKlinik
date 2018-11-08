@@ -1,0 +1,87 @@
+<br><br><br>
+<div class="left-container" style="max-width: 800px; min-width: 550px; margin-left: 10px">
+  <div class="input-group-prepend">
+    <span class="input-group-text">Пошук :</span>
+    <input #search type="search"
+           (input)="filteringSurgeons(search.value)"
+           class="form-control border-left">
+  </div>
+</div>
+<div class="left-container" style="max-width: 800px; min-width: 550px; margin-left: 10px">
+  <p class="h3 text-center">Хірурги клініки :</p>
+
+  <div class="table-responsive-lg">
+    <table class="table table-bordered table-sm table-hover">
+      <thead>
+
+
+      <tr class="table-info">
+        <th scope="col" style="width: 30px;"></th>
+        <th scope="col" colspan="3">ПІБ Хірурга</th>
+        <th scope="col" style="width: 40px;">Ст.</th>
+      </tr>
+
+
+      </thead>
+      <tbody>
+
+      <tr *ngFor="let surgeon of filteredSurgeons" [ngClass]="{changed:surgeon.isChanged}">
+        <th>
+          <input type="checkbox" [ngModel]="surgeon.isChanged" (change)="surgeon.isChanged=!surgeon.isChanged">
+        </th>
+
+        <td>
+          <input #surname type="text" placeholder="  - Прізвище -  "
+                 pattern="[A-Za-zА-Яа-яЁёІіЇїЄє]{3,50}" required
+                 class="form-control font-weight-bold form-control-sm input-style-active"
+                 [ngModel]="surgeon.surname"
+                 (change)="changeSurname(surgeon, surname)"
+                 (keydown.space)="firstName.focus(); false"
+                 (blur)="onBlur(surgeon, surname)">
+          <div *ngIf="!surname.checkValidity()" class="invalid">Введіть коректне значення !</div>
+        </td>
+        <td>
+          <input #firstName type="text" placeholder="  - Ім'я -  "
+                 pattern="[A-Za-zА-Яа-яЁёІіЇїЄє]{3,50}" required
+                 class="form-control font-weight-bold form-control-sm input-style-active"
+                 [ngModel]="surgeon.firstName"
+                 (change)="changeFirstName(surgeon, firstName)"
+                 (keydown.space)="secondName.focus(); false"
+                 (blur)="onBlur(surgeon, firstName)">
+
+          <div *ngIf="!firstName.checkValidity()" class="invalid">Введіть коректне значення !</div>
+        </td>
+        <td>
+          <input #secondName type="text" placeholder="  - по-Батькові -  "
+                 pattern="[A-Za-zА-Яа-яЁёІіЇїЄє]{3,50}" required
+                 class="form-control font-weight-bold form-control-sm input-style-active"
+                 [ngModel]="surgeon.secondName"
+                 (change)="changeSecondName(surgeon, secondName)"
+                 (keydown.space)="sex.focus(); false"
+                 (blur)="onBlur(surgeon, secondName)">
+
+          <div *ngIf="!secondName.checkValidity()" class="invalid">Введіть коректне значення !</div>
+        </td>
+
+        <td>
+          <select #sex class="form-control form-control-sm input-style-active"
+                  pattern="[ЧЖ]" required
+                  (change)="changeSex(surgeon, sex)">
+            <option *ngFor="let sex of genders" [selected]="surgeon.sex === sex" value="{{sex}}">{{sex}}</option>
+          </select>
+        </td>
+
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<br><br>
+
+<div class="left-container fixed-bottom bg-light">
+  <button class="btn btn-min-style" (click)="onAdd()">Add</button>
+  <button class="btn btn-success btn-min-style" (click)="onSave()">Save</button>
+  <button class="btn btn-warning btn-min-style" (click)="onRefresh()">Refresh</button>
+  <button class="btn btn-dark btn-min-style" (click)="onDelete()">Delete</button>
+  <button class="btn btn-danger btn-min-style" (click)="onCancel()">Cancel</button>
+</div>

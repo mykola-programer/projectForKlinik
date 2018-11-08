@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import ua.nike.project.hibernate.entity.Surgeon;
 import ua.nike.project.hibernate.entity.Visit;
+import ua.nike.project.hibernate.type.Sex;
 import ua.nike.project.spring.exceptions.BusinessException;
 import ua.nike.project.spring.vo.SurgeonVO;
 import ua.nike.project.spring.vo.VisitVO;
@@ -26,13 +27,35 @@ public class SurgeonDAOImpl implements SurgeonDAO {
     private EntityManager entityManager;
 
     @Override
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+    public List<SurgeonVO> getSurgeons() {
+        List<Surgeon> surgeons = this.entityManager.createNamedQuery("Surgeon.findAll", Surgeon.class).getResultList();
+        List<SurgeonVO> result = new ArrayList<>();
+        for (Surgeon surgeon : surgeons) {
+            result.add(transformToSurgeonVO(surgeon));
+        }
+        return result;
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+    public List<SurgeonVO> getUnlockSurgeons() {
+        List<Surgeon> surgeons = this.entityManager.createNamedQuery("Surgeon.findAllUnlock", Surgeon.class).getResultList();
+        List<SurgeonVO> result = new ArrayList<>();
+        for (Surgeon surgeon : surgeons) {
+            result.add(transformToSurgeonVO(surgeon));
+        }
+        return result;
+    }
+
+    @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public int addSurgeon(SurgeonVO surgeonVO) {
+    public SurgeonVO addSurgeon(SurgeonVO surgeonVO) {
         Surgeon surgeon = new Surgeon();
         this.copyToSurgeon(surgeonVO, surgeon);
         this.entityManager.persist(surgeon);
         this.entityManager.flush();
-        return surgeon.getSurgeonId();
+        return transformToSurgeonVO(surgeon);
     }
 
     @Override
@@ -54,17 +77,6 @@ public class SurgeonDAOImpl implements SurgeonDAO {
     }
 
     @Override
-    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-    public List<SurgeonVO> getSurgeons() {
-        List<Surgeon> surgeons = this.entityManager.createNamedQuery("Surgeon.findAll", Surgeon.class).getResultList();
-        List<SurgeonVO> result = new ArrayList<>();
-        for (Surgeon surgeon : surgeons) {
-            result.add(transformToSurgeonVO(surgeon));
-        }
-        return result;
-    }
-
-    @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public boolean removeSurgeon(int surgeonId) {
         try {
@@ -79,7 +91,7 @@ public class SurgeonDAOImpl implements SurgeonDAO {
 
     @Override
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-    public List<VisitVO> getListVisitsOfSurgeon(int surgeonId) throws BusinessException {
+    public List<VisitVO> getVisitsOfSurgeon(int surgeonId) throws BusinessException {
         Surgeon surgeon = this.entityManager.find(Surgeon.class, surgeonId);
         if (surgeon == null) throw new BusinessException("This surgeon is not find in database !");
 
@@ -99,6 +111,22 @@ public class SurgeonDAOImpl implements SurgeonDAO {
         result.setSurname(surgeon.getSurname());
         result.setFirstName(surgeon.getFirstName());
         result.setSecondName(surgeon.getSecondName());
+        try {
+            switch (surgeon.getSex().toString().charAt(0)) {
+                case 'W':
+                case 'w':
+                    result.setSex('Ж');
+                    break;
+                case 'M':
+                case 'm':
+                default:
+                    result.setSex('Ч');
+            }
+        } catch (IndexOutOfBoundsException e) {
+            result.setSex('Ч');
+        }
+        result.setLock(surgeon.isLock());
+
         return result;
     }
 
@@ -107,7 +135,18 @@ public class SurgeonDAOImpl implements SurgeonDAO {
             result.setSurname(original.getSurname());
             result.setFirstName(original.getFirstName());
             result.setSecondName(original.getSecondName());
-        } else result = new Surgeon();
+            switch (original.getSex()) {
+                case 'Ж':
+                case 'ж':
+                    result.setSex(Sex.W);
+                    break;
+                case 'Ч':
+                case 'ч':
+                default:
+                    result.setSex(Sex.M);
+            }
+            result.setLock(original.isLock());
+        }
     }
 
 }

@@ -15,6 +15,8 @@ public interface VisitDAO {
 
     List<VisitVO> getVisits();
 
+    List<VisitVO> getVisitsInDate(LocalDate date);
+
     List<VisitVO> getVisitsInDateOfWard(LocalDate date);
 
     List<VisitVO> getVisitsInDateOfNoWard(LocalDate date);

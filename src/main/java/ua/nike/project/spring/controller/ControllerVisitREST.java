@@ -19,10 +19,24 @@ public class ControllerVisitREST {
     @Autowired
     VisitDAO visitDAO;
 
+/*
     @CrossOrigin
     @RequestMapping(value = "", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public List<VisitVO> getVisits() {
         return visitDAO.getVisits();
+    }
+*/
+
+    @CrossOrigin
+    @RequestMapping(value = "/all/{date}/", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public List<VisitVO> getVisitsInDate(@PathVariable("date") String reqDate) throws BusinessException {
+        if (reqDate != null && !reqDate.equals("")) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_FORMAT);
+            LocalDate date = LocalDate.parse(reqDate, formatter);
+            return visitDAO.getVisitsInDate(date);
+        } else {
+            throw new BusinessException("Dates is not correct !");
+        }
     }
 
     @CrossOrigin
@@ -31,7 +45,7 @@ public class ControllerVisitREST {
 
         if (reqDate != null && !reqDate.equals("")) {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_FORMAT);
-            LocalDate date = LocalDate.parse(reqDate,formatter);
+            LocalDate date = LocalDate.parse(reqDate, formatter);
             return visitDAO.getVisitsInDateOfWard(date);
         } else {
             throw new BusinessException("Dates is not correct !");
@@ -44,7 +58,7 @@ public class ControllerVisitREST {
 
         if (reqDate != null && !reqDate.equals("")) {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_FORMAT);
-            LocalDate date = LocalDate.parse(reqDate,formatter);
+            LocalDate date = LocalDate.parse(reqDate, formatter);
             return visitDAO.getVisitsInDateOfNoWard(date);
         } else {
             throw new BusinessException("Dates is not correct !");
@@ -52,7 +66,7 @@ public class ControllerVisitREST {
     }
 
     @CrossOrigin
-    @RequestMapping(value = "{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(value = "/{id}/", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public VisitVO getVisit(@PathVariable("id") int visitID) throws BusinessException {
         return visitDAO.findVisit(visitID);
     }

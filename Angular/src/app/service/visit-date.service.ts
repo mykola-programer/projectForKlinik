@@ -1,18 +1,18 @@
-import {Injectable} from '@angular/core';
+import {Injectable} from "@angular/core";
 import {Observable} from "rxjs/internal/Observable";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {VisitDate} from "../backend_types/visit-date";
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root"
 })
 export class VisitDateService {
-  private serverUrl = 'http://localhost:8080/';  // URL to REST-server
-  private visitDatesUrl = 'visit_dates/';  // URL to web api
+  private serverUrl = "http://localhost:8080/";  // URL to REST-server
+  private visitDatesUrl = "visit_dates/";  // URL to web api
 
   private readonly httpOptions = {
     headers: new HttpHeaders({
-      'Content-Type': 'application/json'
+      "Content-Type": "application/json"
     })
   };
 

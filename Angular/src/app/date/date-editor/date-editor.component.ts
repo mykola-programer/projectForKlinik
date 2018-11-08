@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Injectable, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Injectable, Input, OnInit, Output} from "@angular/core";
 import {NgbDatepickerConfig, NgbDatepickerI18n, NgbDateStruct} from "@ng-bootstrap/ng-bootstrap";
 import {VisitDateService} from "../../service/visit-date.service";
 import {Router} from "@angular/router";
@@ -7,9 +7,9 @@ import {MatDialog} from "@angular/material";
 import {NavbarService} from "../../service/navbar.service";
 
 const I18N_VALUES = {
-  'ua': {
-    weekdays: ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Нд'],
-    months: ['Січень', 'Лютий', 'Березень', 'Квітень', 'Травень', 'Червень', 'Липень', 'Серпень', 'Вересень', 'Жовтень', 'Листопад', 'Грудень'],
+  "ua": {
+    weekdays: ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Нд"],
+    months: ["Січень", "Лютий", "Березень", "Квітень", "Травень", "Червень", "Липень", "Серпень", "Вересень", "Жовтень", "Листопад", "Грудень"],
   }
   // other languages you would support
 };
@@ -18,7 +18,7 @@ const I18N_VALUES = {
 // use the Angular LOCALE_ID value
 @Injectable()
 export class I18n {
-  language = 'ua';
+  language = "ua";
 }
 
 // Define custom service providing the months and weekdays translations
@@ -47,13 +47,13 @@ export class EditedDatepickerI18n extends NgbDatepickerI18n {
 }
 
 @Component({
-  selector: 'app-date-editor',
-  templateUrl: './date-editor.component.html',
-  styleUrls: ['./date-editor.component.css'],
+  selector: "app-date-editor",
+  templateUrl: "./date-editor.component.html",
+  styleUrls: ["./date-editor.component.css"],
   providers: [I18n, {provide: NgbDatepickerI18n, useClass: EditedDatepickerI18n}] // define custom NgbDatepickerI18n provider
 
 })
-export class DateEditorComponent implements OnInit{
+export class DateEditorComponent implements OnInit {
   model;
   private readonly year_now: number = new Date(Date.now()).getFullYear();
   private readonly month_now: number = new Date(Date.now()).getMonth() + 1;
@@ -70,7 +70,7 @@ export class DateEditorComponent implements OnInit{
 
   ngOnInit(): void {
     this.getDates();
-    this.serviceNavbar.change('date');
+    this.serviceNavbar.change("date");
   }
 
 
@@ -84,9 +84,9 @@ export class DateEditorComponent implements OnInit{
       }
 
       this.selectedDates.sort((date1, date2) => {
-        if (date1.year != date2.year) {
+        if (date1.year !== date2.year) {
           return date1.year - date2.year;
-        } else if (date1.month != date2.month) {
+        } else if (date1.month !== date2.month) {
           return date1.month - date2.month;
         } else {
           return date1.day - date2.day;
@@ -97,10 +97,10 @@ export class DateEditorComponent implements OnInit{
 
 
   onSave() {
-    let visitDates: VisitDate[] = [];
+    const visitDates: VisitDate[] = [];
 
     this.selectedDates.forEach((value: NgbDateStruct) => {
-      let visit_date: VisitDate = new VisitDate();
+      const visit_date: VisitDate = new VisitDate();
       visit_date.visitDateId = 0;
       visit_date.date = [value.year, value.month, value.day];
       visit_date.lock = false;
@@ -118,7 +118,7 @@ export class DateEditorComponent implements OnInit{
   }
 
   onDelete() {
-    let visitDates: VisitDate[] = this.visitDates
+    const visitDates: VisitDate[] = this.visitDates
       .filter((value: VisitDate) => {
         return this.isInArray({year: value.date[0], month: value.date[1], day: value.date[2]}, this.selectedDates);
       });
@@ -137,7 +137,7 @@ export class DateEditorComponent implements OnInit{
   }
 
   private setNgbDatepickerConfig() {
-    this.config.outsideDays = 'hidden';
+    this.config.outsideDays = "hidden";
     this.config.displayMonths = 2;
     this.config.navigation = "select";
     this.config.showWeekNumbers = false;
@@ -151,7 +151,7 @@ export class DateEditorComponent implements OnInit{
 
   // This is selected dates
   isSelected(date: NgbDateStruct): boolean {
-    return this.selectedDates.indexOf(date) != -1;
+    return this.selectedDates.indexOf(date) !== -1;
   }
 
   isPresented(date: NgbDateStruct): boolean {
@@ -159,7 +159,7 @@ export class DateEditorComponent implements OnInit{
   }
 
   private isInArray(date: NgbDateStruct, dates: NgbDateStruct[]): boolean {
-    let isEqual: boolean = false;
+    let isEqual = false;
     dates.forEach((value: NgbDateStruct) => {
       if ((value.year == date.year) &&
         (value.month == date.month) &&
@@ -175,7 +175,7 @@ export class DateEditorComponent implements OnInit{
       this.visitDates = visitDates;
       this.dates.splice(0, this.dates.length);
       this.visitDates.forEach((value: VisitDate) => {
-        let d: NgbDateStruct = {year: value.date[0], month: value.date[1], day: value.date[2]};
+        const d: NgbDateStruct = {year: value.date[0], month: value.date[1], day: value.date[2]};
         this.dates.push(d);
       });
     });

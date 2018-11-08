@@ -80,6 +80,20 @@ public class VisitDAOImpl implements VisitDAO {
 
     @Override
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+    public List<VisitVO> getVisitsInDate(LocalDate date) {
+        List<Visit> visits = this.entityManager
+                .createQuery("FROM Visit v WHERE v.visitDate.date = :date", Visit.class)
+                .setParameter("date", date)
+                .getResultList();
+        List<VisitVO> result = new ArrayList<>();
+        for (Object visit : visits) {
+            result.add(transformToVisitVO((Visit) visit));
+        }
+        return result;
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<VisitVO> getVisitsInDateOfWard(LocalDate date) {
         List<Visit> visits = this.entityManager
                 .createQuery("FROM Visit v WHERE v.visitDate.date = :date AND v.accomodation IS NOT NULL ORDER BY v.accomodation.ward, v.accomodation.wardPlace", Visit.class)

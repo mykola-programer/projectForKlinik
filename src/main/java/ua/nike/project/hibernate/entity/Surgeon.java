@@ -1,5 +1,10 @@
 package ua.nike.project.hibernate.entity;
 
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
+import ua.nike.project.hibernate.type.PostgreSQLEnumType;
+import ua.nike.project.hibernate.type.Sex;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
@@ -7,9 +12,14 @@ import java.util.Objects;
 
 @Entity
 @NamedQueries(value = {
-        @NamedQuery(name = "Surgeon.findAll", query = "FROM Surgeon ORDER BY surname")
+        @NamedQuery(name = "Surgeon.findAll", query = "FROM Surgeon ORDER BY surname"),
+        @NamedQuery(name = "Surgeon.findAllUnlock", query = "FROM Surgeon s WHERE s.lock = false ORDER BY surname")
 })
 @Table(name = "surgeon")
+@TypeDef(
+        name = "pgsql_enum",
+        typeClass = PostgreSQLEnumType.class
+)
 public class Surgeon implements Serializable {
 
     @Id
@@ -25,6 +35,13 @@ public class Surgeon implements Serializable {
 
     @Column(name = "second_name", length = 50)
     private String secondName;
+
+    @Column(name = "sex")
+    @Enumerated(EnumType.STRING)
+    @Type(type = "pgsql_enum")
+    private Sex sex;
+
+    private boolean lock;
 
     @OneToMany(targetEntity = Visit.class, fetch = FetchType.LAZY, mappedBy = "surgeon", cascade = CascadeType.ALL)
     private List<Visit> visits;
@@ -59,6 +76,22 @@ public class Surgeon implements Serializable {
 
     public void setSecondName(String secondName) {
         this.secondName = firstUpperCase(secondName);
+    }
+
+    public Sex getSex() {
+        return sex;
+    }
+
+    public void setSex(Sex sex) {
+        this.sex = sex;
+    }
+
+    public boolean isLock() {
+        return lock;
+    }
+
+    public void setLock(boolean lock) {
+        this.lock = lock;
     }
 
     public List<Visit> getVisits() {
@@ -98,6 +131,7 @@ public class Surgeon implements Serializable {
         sb.append(", surname='").append(surname).append('\'');
         sb.append(", firstName='").append(firstName).append('\'');
         sb.append(", secondName='").append(secondName).append('\'');
+        sb.append(", sex=").append(sex);
         sb.append('}');
         return sb.toString();
     }

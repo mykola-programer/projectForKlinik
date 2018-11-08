@@ -70,12 +70,12 @@ export class WardComponent implements OnInit {
       placesOfWards.forEach((accomodation: Accomodation) => {
         let isAdd = false;
         this.visits_of_date.forEach((visit: Visit) => {
-          if (visit.accomodation.ward == accomodation.ward && visit.accomodation.wardPlace == accomodation.wardPlace) {
+          if (visit.accomodation.ward === accomodation.ward && visit.accomodation.wardPlace === accomodation.wardPlace) {
             this.placesOfWards.push(visit);
             isAdd = true;
           }
         });
-        if (isAdd == false) {
+        if (isAdd === false) {
           const visit = new Visit();
           visit.visitDate = this.selected_visit_date;
           visit.accomodation = accomodation;
@@ -87,7 +87,7 @@ export class WardComponent implements OnInit {
   }
 
   getVisits() {
-    if (this.selected_date != null) {
+    if (this.selected_date !== null) {
       this.visitService.getVisitsWithWard(this.selected_date)
         .toPromise().then(visits_of_date => {
         this.visits_of_date = visits_of_date;
@@ -122,7 +122,7 @@ export class WardComponent implements OnInit {
   changeSurgeon(place_in_ward: Visit, surgeon_id: number) {
     place_in_ward.isChanged = true;
     this.surgeons.forEach((surgeon: Surgeon) => {
-      if (surgeon.surgeonId == surgeon_id) {
+      if (surgeon.surgeonId === surgeon_id) {
         place_in_ward.surgeon = surgeon;
       }
     });
@@ -131,7 +131,7 @@ export class WardComponent implements OnInit {
   changeManager(place_in_ward: Visit, manager_id: number) {
     place_in_ward.isChanged = true;
     this.managers.forEach((manager: Manager) => {
-      if (manager.managerId == manager_id) {
+      if (manager.managerId === manager_id) {
         place_in_ward.manager = manager;
       }
     });
@@ -140,7 +140,7 @@ export class WardComponent implements OnInit {
   changeOperationType(place_in_ward: Visit, operation_type_id: number) {
     place_in_ward.isChanged = true;
     this.operation_types.forEach((operation_type: OperationType) => {
-      if (operation_type.operationTypeId == operation_type_id) {
+      if (operation_type.operationTypeId === operation_type_id) {
         place_in_ward.operationType = operation_type;
       }
     });
@@ -160,7 +160,7 @@ export class WardComponent implements OnInit {
   // Clients
 
   selectedClient(place_in_ward: Visit, client: Client) {
-    if (place_in_ward && client && (place_in_ward.client == null || place_in_ward.client.clientId != client.clientId)) {
+    if (place_in_ward && client && (place_in_ward.client === null || place_in_ward.client.clientId !== client.clientId)) {
       console.log("selectedClient : ");
       console.log(place_in_ward);
       console.log(client);
@@ -183,12 +183,17 @@ export class WardComponent implements OnInit {
           case 1:
             return (client.surname.toLowerCase().indexOf(filterValue[0]) === 0);
           case 2:
-            return (client.surname.toLowerCase().indexOf(filterValue[0]) === 0 && client.firstName.toLowerCase().indexOf(filterValue[1]) === 0);
+            return (client.surname.toLowerCase().indexOf(filterValue[0]) === 0
+              && client.firstName.toLowerCase().indexOf(filterValue[1]) === 0);
           default:
-            return (client.surname.toLowerCase().indexOf(filterValue[0]) === 0 && client.firstName.toLowerCase().indexOf(filterValue[1]) === 0 && client.secondName.toLowerCase().indexOf(filterValue[2]) === 0);
+            return (client.surname.toLowerCase().indexOf(filterValue[0]) === 0
+              && client.firstName.toLowerCase().indexOf(filterValue[1]) === 0
+              && client.secondName.toLowerCase().indexOf(filterValue[2]) === 0);
         }
       });
-    } else { this.filteredClients = this.clients; }
+    } else {
+      this.filteredClients = this.clients;
+    }
   }
 
   displayFn(client?: Client): string | null {
@@ -197,7 +202,7 @@ export class WardComponent implements OnInit {
 
 
   refactorTime(timeForCome: number[]): Date {
-    if (timeForCome != null) {
+    if (timeForCome !== null) {
       return new Date(1970, 0, 1, timeForCome[0], timeForCome[1]);
     }
   }
@@ -220,16 +225,18 @@ export class WardComponent implements OnInit {
 
   onSave() {
     for (let i = 0; i < this.placesOfWards.length; i++) {
-      if (this.placesOfWards[i].isChanged == true) {
+      if (this.placesOfWards[i].isChanged === true) {
         if (this.placesOfWards[i].visitId > 0) {
           this.visitService.editVisit(this.placesOfWards[i]).toPromise().then((visit: Visit) => {
             this.placesOfWards.splice(i, 1, visit);
           });
-        } else if (this.placesOfWards[i].client != null && this.placesOfWards[i].status != null) {
+        } else if (this.placesOfWards[i].client !== null && this.placesOfWards[i].status !== null) {
           this.visitService.addVisit(this.placesOfWards[i]).toPromise().then((visit: Visit) => {
             this.placesOfWards.splice(i, 1, visit);
           });
-        } else { this.placesOfWards[i].isChanged = true; }
+        } else {
+          this.placesOfWards[i].isChanged = true;
+        }
       }
     }
   }
@@ -241,7 +248,7 @@ export class WardComponent implements OnInit {
 
   onDelete() {
     this.placesOfWards.forEach((value: Visit, i: number) => {
-      if (value.isChanged == true) {
+      if (value.isChanged === true) {
         if (value.visitId > 0) {
           this.visitService.removeVisit(this.placesOfWards[i].visitId).toPromise().then(() => {
             const visit: Visit = new Visit();
@@ -261,8 +268,8 @@ export class WardComponent implements OnInit {
 
   onUnplaced() {
     this.placesOfWards.forEach((value: Visit, i: number) => {
-      if (value.isChanged == true) {
-        if (value.visitId > 0 && value.client != null && value.status == "пацієнт") {
+      if (value.isChanged === true) {
+        if (value.visitId > 0 && value.client !== null && value.status === "пацієнт") {
           this.visitService.doUnplaced(this.placesOfWards[i]).toPromise().then(() => {
             const visit: Visit = new Visit();
             visit.accomodation = this.placesOfWards[i].accomodation;
@@ -270,7 +277,7 @@ export class WardComponent implements OnInit {
             this.placesOfWards.splice(i, 1, visit);
           });
 
-        } else if (value.visitId == 0 && value.client != null && value.status == "пацієнт") {
+        } else if (value.visitId === 0 && value.client !== null && value.status === "пацієнт") {
           this.visitService.addVisit(this.placesOfWards[i]).toPromise().then((visit: Visit) => {
             this.visitService.doUnplaced(visit).toPromise().then(() => {
               const visit: Visit = new Visit();
@@ -280,7 +287,7 @@ export class WardComponent implements OnInit {
             });
           });
 
-        } else if (value.visitId > 0 && value.status != "пацієнт") {
+        } else if (value.visitId > 0 && value.status !== "пацієнт") {
           this.visitService.removeVisit(this.placesOfWards[i].visitId).toPromise().then(() => {
             const visit: Visit = new Visit();
             visit.accomodation = this.placesOfWards[i].accomodation;
@@ -319,30 +326,34 @@ export class WardComponent implements OnInit {
       data: {visit_date: this.selected_visit_date, accomodation: Accomodation}
     });
     dialogRef.afterClosed().subscribe((data: { visit_date: VisitDate, accomodation: Accomodation }) => {
-      if (data != null && data.visit_date != null) {
+      if (data !== null && data.visit_date !== null) {
 
         this.placesOfWards.forEach((value, index) => {
-          if (value.isChanged == true) {
+          if (value.isChanged === true) {
 
             const visit: Visit = new Visit();
             visit.accomodation = value.accomodation;
             visit.visitDate = this.selected_visit_date;
 
             value.visitDate = data.visit_date;
-            if (data.accomodation != null) {
+            if (data.accomodation !== null) {
               value.accomodation = data.accomodation;
-            } else { value.accomodation = null; }
+            } else {
+              value.accomodation = null;
+            }
 
             if (value.visitId > 0) {
               this.visitService.editVisit(value).toPromise().then(() => {
                 this.placesOfWards.splice(index, 1, visit);
               });
 
-            } else if (value.client != null && value.status != null) {
+            } else if (value.client !== null && value.status !== null) {
               this.visitService.addVisit(value).toPromise().then(() => {
                 this.placesOfWards.splice(index, 1, visit);
               });
-            } else { value.isChanged = false; }
+            } else {
+              value.isChanged = false;
+            }
           }
         });
       }
@@ -356,14 +367,14 @@ export class WardComponent implements OnInit {
   onSave() {
 
     let new_placesOfWards: Visit[] = this.placesOfWards.filter((visit: Visit) => {
-      return visit.isChanged && visit.visitId == 0;
+      return visit.isChanged && visit.visitId===0;
     });
     if (new_placesOfWards.length > 0) {
       this.visitService.addVisits(new_placesOfWards).toPromise().then((visits: Visit[]) => {
 
         visits.forEach((visit: Visit) => {
           for (let i = 0; i < this.placesOfWards.length; i++) {
-            if (this.placesOfWards[i].accomodation.ward == visit.accomodation.ward && this.placesOfWards[i].accomodation.wardPlace == visit.accomodation.wardPlace) {
+            if (this.placesOfWards[i].accomodation.ward===visit.accomodation.ward && this.placesOfWards[i].accomodation.wardPlace===visit.accomodation.wardPlace) {
               this.placesOfWards.splice(i, 1, visit);
             }
           }
@@ -416,7 +427,7 @@ export class WardComponent implements OnInit {
   }
 
   private _filterClients(value: string): Client[] {
-    if (value != null) {
+    if (value !== null) {
       let filterValue: string[] = value.toLowerCase().split(" ");
 
       return this.clients.filter(option => {
@@ -437,7 +448,7 @@ export class WardComponent implements OnInit {
   onSelect(countryId) {
     this.selectedClient = null;
     for (var i = 0; i < this.clients.length; i++) {
-      if (this.clients[i].clientId == countryId) {
+      if (this.clients[i].clientId===countryId) {
         this.selectedClient = this.clients[i];
       }
     }

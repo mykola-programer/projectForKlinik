@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit} from "@angular/core";
 import {DateService} from "../../service/date.service";
 import {VisitService} from "../../service/visit.service";
 import {NgbDateStruct} from "@ng-bootstrap/ng-bootstrap";
@@ -17,9 +17,9 @@ import {OperationType} from "../../backend_types/operation-type";
 import {VisitDate} from "../../backend_types/visit-date";
 
 @Component({
-  selector: 'app-no-ward',
-  templateUrl: './no-ward.component.html',
-  styleUrls: ['./no-ward.component.css']
+  selector: "app-no-ward",
+  templateUrl: "./no-ward.component.html",
+  styleUrls: ["./no-ward.component.css"]
 })
 export class NoWardComponent implements OnInit {
   visits_without_wards: Visit[] = [];
@@ -46,7 +46,7 @@ export class NoWardComponent implements OnInit {
 
   ngOnInit() {
     this.dateService.selected_date.subscribe((selected_visit_date: VisitDate) => {
-      this.selected_date = new Date(selected_visit_date.date[0], selected_visit_date.date[1]-1, selected_visit_date.date[2]);
+      this.selected_date = new Date(selected_visit_date.date[0], selected_visit_date.date[1] - 1, selected_visit_date.date[2]);
       this.selected_visit_date = selected_visit_date;
       this.getVisits();
     });
@@ -65,7 +65,7 @@ export class NoWardComponent implements OnInit {
         .toPromise().then(visits_with_wards => {
           if (visits_with_wards != null) {
             this.visits_without_wards = visits_with_wards;
-          }else this.visits_without_wards = [];
+          } else { this.visits_without_wards = []; }
       });
     }
   }
@@ -91,24 +91,27 @@ export class NoWardComponent implements OnInit {
   changeSurgeon(visit: Visit, surgeon_id: number) {
     visit.isChanged = true;
     this.surgeons.forEach((surgeon: Surgeon) => {
-      if (surgeon.surgeonId == surgeon_id)
+      if (surgeon.surgeonId == surgeon_id) {
         visit.surgeon = surgeon;
+      }
     });
   }
 
   changeManager(visit: Visit, manager_id: number) {
     visit.isChanged = true;
     this.managers.forEach((manager: Manager) => {
-      if (manager.managerId == manager_id)
+      if (manager.managerId == manager_id) {
         visit.manager = manager;
+      }
     });
   }
 
   changeOperationType(visit: Visit, operation_type_id: number) {
     visit.isChanged = true;
     this.operation_types.forEach((operation_type: OperationType) => {
-      if (operation_type.operationTypeId == operation_type_id)
+      if (operation_type.operationTypeId == operation_type_id) {
         visit.operationType = operation_type;
+      }
     });
   }
 
@@ -126,8 +129,9 @@ export class NoWardComponent implements OnInit {
   changeClient(visit: Visit, client_id: number) {
     visit.isChanged = true;
     this.clients.forEach((client: Client) => {
-      if (client.clientId == client_id)
+      if (client.clientId == client_id) {
         visit.client = client;
+      }
     });
   }
 
@@ -155,7 +159,7 @@ export class NoWardComponent implements OnInit {
 
   filteringClients() {
     this.filteredClients = this.myControlClients.valueChanges.pipe(
-      startWith(''),
+      startWith(""),
       map(value => {
         return this._filterClients(value);
       })
@@ -168,18 +172,19 @@ export class NoWardComponent implements OnInit {
       return this.clients.filter(option => {
         return (option.surname.toLowerCase().includes(filterValue) ||
           option.firstName.toLowerCase().includes(filterValue) ||
-          option.secondName.toLowerCase().includes(filterValue))
+          option.secondName.toLowerCase().includes(filterValue));
       });
-    } else return this.clients;
+    } else { return this.clients; }
   }
 
   onAdd() {
-    if (this.visits_without_wards == null) this.visits_without_wards = [];
-    if (this.visits_without_wards[0] == null) this.visits_without_wards[0] = new Visit();
+    if (this.visits_without_wards == null) { this.visits_without_wards = []; }
+    if (this.visits_without_wards[0] == null) { this.visits_without_wards[0] = new Visit(); }
     if (this.visits_without_wards[0].client != null) {
-      let visit = new Visit();
+      const visit = new Visit();
       visit.status = "пацієнт";
       this.visits_without_wards.unshift(visit);
+
     }
   }
 

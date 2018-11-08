@@ -6,6 +6,7 @@ import ua.nike.project.spring.exceptions.BusinessException;
 import ua.nike.project.spring.vo.ClientVO;
 import ua.nike.project.spring.vo.VisitVO;
 
+import javax.validation.Validator;
 import java.util.List;
 
 @Component
@@ -13,15 +14,17 @@ public interface ClientDAO {
 
     List<ClientVO> getClients();
 
+    List<ClientVO> getUnlockClients();
+
     ClientVO editClient(int clientId, ClientVO clientVO) throws BusinessException;
 
-    List<ClientVO> addClients(List<ClientVO> clientVOList);
+    ClientVO addClient(ClientVO clientVO);
 
     ClientVO findClient(int clientID) throws BusinessException;
 
     boolean removeClient(int clientId);
 
-    List<VisitVO> getListVisitsOfClient(int clientId) throws BusinessException;
+    List<VisitVO> getVisitsOfClient(int clientId) throws BusinessException;
 
     ClientVO transformToClientVO(Client client);
 

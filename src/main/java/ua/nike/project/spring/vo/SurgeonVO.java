@@ -1,14 +1,34 @@
 package ua.nike.project.spring.vo;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Objects;
 
 public class SurgeonVO implements Serializable {
 
     private Integer surgeonId;
+
+    @NotNull(message = "Прізвище повинно бути задано.")
+    @Size(min = 3, max = 50, message = "Прізвище повинно мати від 3 до 50 символів !")
+    @Pattern(regexp = "[A-Za-zА-Яа-яЁёІіЇїЄє]+", message = "Прізвище повинно мати тільки літери !")
     private String surname;
+
+    @NotNull(message = "Ім'я повинно бути задано.")
+    @Size(min = 3, max = 50, message = "Ім'я повинно мати від 3 до 50 символів !")
+    @Pattern(regexp = "[A-Za-zА-Яа-яЁёІіЇїЄє]+", message = "Ім'я повинно мати тільки літери !")
     private String firstName;
+
+    @NotNull(message = "По-Батькові повинно бути задано.")
+    @Size(min = 3, max = 50, message = "По-Батькові повинно мати від 3 до 50 символів !")
+    @Pattern(regexp = "[A-Za-zА-Яа-яЁёІіЇїЄє]+", message = "По-Батькові повинно мати тільки літери !")
     private String secondName;
+
+    @NotNull(message = "Стать повинна бути задана.")
+    private Character sex;
+
+    private boolean lock;
 
     public Integer getSurgeonId() {
         return surgeonId;
@@ -40,6 +60,22 @@ public class SurgeonVO implements Serializable {
 
     public void setSecondName(String secondName) {
         this.secondName = firstUpperCase(secondName);
+    }
+
+    public Character getSex() {
+        return sex;
+    }
+
+    public void setSex(Character sex) {
+        this.sex = sex;
+    }
+
+    public boolean isLock() {
+        return lock;
+    }
+
+    public void setLock(boolean lock) {
+        this.lock = lock;
     }
 
     private String firstUpperCase(String word) {

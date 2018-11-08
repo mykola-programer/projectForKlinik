@@ -25,7 +25,7 @@
            (click)="statusNavbar = 'operation'; isNavbarCollapsed = false">Види операцій</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="#" (click)="false" [ngClass]="{active:statusNavbar=='surgeon'}"
+        <a class="nav-link" routerLink="/surgeon" [ngClass]="{active:statusNavbar=='surgeon'}"
            (click)="statusNavbar = 'surgeon'; isNavbarCollapsed = false">Хірурги</a>
       </li>
       <li class="nav-item">

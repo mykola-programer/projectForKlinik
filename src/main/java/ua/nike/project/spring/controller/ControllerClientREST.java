@@ -17,10 +17,22 @@ public class ControllerClientREST {
     @Autowired
     ClientDAO clientDAO;
 
+    /**
+     * return all clients from database
+     */
     @CrossOrigin
     @RequestMapping(value = "", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public List<ClientVO> getClients() {
         return clientDAO.getClients();
+    }
+
+    /**
+     * return unlock clients from database
+     */
+    @CrossOrigin
+    @RequestMapping(value = "/unlock", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public List<ClientVO> getUnlockClients() {
+        return clientDAO.getUnlockClients();
     }
 
     @CrossOrigin
@@ -32,19 +44,21 @@ public class ControllerClientREST {
     @CrossOrigin
     @RequestMapping(value = "{id}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ClientVO editClient(@PathVariable("id") int clientId, @RequestBody ClientVO clientVO) throws BusinessException {
+        ControllerValidation.validate(clientVO);
         return clientDAO.editClient(clientId, clientVO);
     }
 
     @CrossOrigin
     @RequestMapping(value = "", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public List<ClientVO> addClients(@RequestBody List<ClientVO> clients) {
-        return clientDAO.addClients(clients);
+    public ClientVO addClient(@RequestBody ClientVO clientVO) throws BusinessException {
+        ControllerValidation.validate(clientVO);
+        return clientDAO.addClient(clientVO);
     }
 
     @CrossOrigin
     @RequestMapping(value = "{id}/visits", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public List<VisitVO> getListVisitsOfClient(@PathVariable("id") int clientId) throws BusinessException {
-        return clientDAO.getListVisitsOfClient(clientId);
+        return clientDAO.getVisitsOfClient(clientId);
     }
 
     @CrossOrigin

@@ -20,6 +20,7 @@ import {AccomodationComponent} from "./accomodation/accomodation.component";
 import {NavbarService} from "./service/navbar.service";
 import {OperationEditorComponent} from "./operation-editor/operation-editor.component";
 import { DateSelectorDialogComponent } from "./date/date-selector-dialog/date-selector-dialog.component";
+import { SurgeonEditorComponent } from './surgeon-editor/surgeon-editor.component';
 
 // import {ngContentDef} from "@angular/core/src/view";
 
@@ -35,6 +36,7 @@ import { DateSelectorDialogComponent } from "./date/date-selector-dialog/date-se
     AccomodationComponent,
     OperationEditorComponent,
     DateSelectorDialogComponent,
+    SurgeonEditorComponent,
   ],
   imports: [
     BrowserModule,
