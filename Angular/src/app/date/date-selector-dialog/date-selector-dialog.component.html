@@ -1,7 +1,10 @@
 <div class="left-container">
+  <p class="text-center h5">Поселення клієнта : {{data.visit.client.surname}} {{data.visit.client.firstName}} {{data.visit.client.secondName}} ({{refactorDate(data.visit.client.birthday) | date: 'dd.MM.yyyy'}}) </p>
+  <p class="text-center h5">Вибрана дата: {{refactorDate(selected_date.date) | date: 'dd.MM.yyyy'}} </p>
+  <br>
   <div class="row">
     <div class="col-lg-8">
-      <p class="text-center h4">Виберіть поточну або іншу дату :</p>
+      <p class="text-center h5">Виберіть поточну або іншу дату :</p>
 
       <ngb-datepicker [minDate]="minDate" [maxDate]="maxDate" [dayTemplate]="editedCustomDay">
       </ngb-datepicker>
@@ -9,22 +12,19 @@
       <ng-template #editedCustomDay let-date="date" let-currentMonth="currentMonth" let-selected="selected"
                    let-disabled="disabled" let-focused="focused">
           <span class="custom-day" [class.work-day]="isPresented(date)" [class.focused]="focused"
-                (click)="onSelect(date, disabled)"
+                (click)="onSelectDate(date, disabled)"
                 [class.bg-primary]="isSelected(date)" [class.hidden]="date.month !== currentMonth"
                 [class.text-muted]="disabled">
                   {{ date.day }}
           </span>
 
       </ng-template>
-      <div>
-        <button class="btn btn-success btn-min-style" (click)="onClose()">Select</button>
-        <button class="btn btn-danger btn-min-style" (click)="onCancel()">Cancel</button>
-      </div>
+
     </div>
 
     <div class="col-lg-4">
       <div class="left-container">
-        <p class="text-center h4">Виберіть інше місце поселення:</p>
+        <p class="text-center h5">Виберіть інше місце поселення:</p>
         <select #accomodation class="form-control form-control-sm"
                 (change)="changeAccomodation(accomodation.value)">
           <option [value]="null">Без стаціонару</option>
@@ -35,6 +35,10 @@
       </div>
     </div>
 
-
+    <div>
+      <button class="btn btn-success btn-min-style" (click)="onSelect()">Select</button>
+      <button class="btn btn-warning btn-min-style" (click)="onRefresh()">Refresh</button>
+      <button class="btn btn-danger btn-min-style" (click)="onCancel()">Cancel</button>
+    </div>
   </div>
 </div>

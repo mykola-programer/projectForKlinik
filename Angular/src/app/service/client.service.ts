@@ -22,10 +22,6 @@ export class ClientService {
     return this.http.get<Client[]>(this.serverUrl + this.clientsUrl);
   }
 
-  getUnlockClients(): Observable<Client[]> {
-    return this.http.get<Client[]>(this.serverUrl + this.clientsUrl + "unlock/");
-  }
-
   getClient(client_id: number): Observable<Client> {
     return this.http.get<Client>(this.serverUrl + this.clientsUrl + client_id);
   }
@@ -42,11 +38,7 @@ export class ClientService {
     return this.http.put<Client>(this.serverUrl + this.clientsUrl + client.clientId.toString(), JSON.stringify(client), this.httpOptions);
   }
 
-  lockClient(client: Client): Observable<Client> {
-    client.lock = true;
-    return this.http.put<Client>(this.serverUrl + this.clientsUrl + client.clientId.toString(), JSON.stringify(client), this.httpOptions);
-  }
-  removeClient(client_id: number): any {
-    return this.http.delete(this.serverUrl + this.clientsUrl + client_id.toString(), this.httpOptions);
+  removeClient(client_id: number): Observable<boolean> {
+    return this.http.delete<boolean>(this.serverUrl + this.clientsUrl + client_id.toString(), this.httpOptions);
   }
 }

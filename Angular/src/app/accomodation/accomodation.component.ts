@@ -102,7 +102,7 @@ export class AccomodationComponent implements OnInit {
   }
 
   private getVisitsWithoutWards() {
-    this.visits_without_wards = this.visits_of_date.filter((visit: Visit) => visit.accomodation === null);
+    this.visits_without_wards = this.visits_of_date.filter((visit: Visit) => visit.accomodation == null);
   }
 
   private getWards() {
@@ -116,7 +116,7 @@ export class AccomodationComponent implements OnInit {
   }
 
   private getSurgeons() {
-    this.surgeonService.getSurgeons().toPromise().then(surgeons => this.surgeons = surgeons);
+    this.surgeonService.getUnlockSurgeons().toPromise().then(surgeons => this.surgeons = surgeons);
   }
 
   private getManagers() {
@@ -158,6 +158,14 @@ export class AccomodationComponent implements OnInit {
   refactorTime(timeForCome: number[]): Date {
     if (timeForCome) {
       return new Date(1970, 0, 1, timeForCome[0], timeForCome[1]);
+    }
+  }
+
+  refactorDate(numbers: number[]): Date {
+    if (numbers) {
+      return new Date(numbers[0], numbers[1] - 1, numbers[2]);
+    } else {
+      return new Date();
     }
   }
 
@@ -242,7 +250,6 @@ export class AccomodationComponent implements OnInit {
   }
 
 
-
   changeSurgeon(place_in_ward: Visit, surgeon_id: number) {
     place_in_ward.isChanged = true;
     this.surgeons.forEach((surgeon: Surgeon) => {
@@ -277,18 +284,19 @@ export class AccomodationComponent implements OnInit {
 
 
   onAdd() {
-    if (this.visits_of_date === null) {
+    if (this.visits_of_date == null) {
       this.visits_of_date = [];
     }
-    if (this.visits_of_date[0] === null) {
+    if (this.visits_of_date[0] == null) {
       this.visits_of_date[0] = new Visit();
     }
-    if (this.visits_of_date[0].client !== null) {
+    if (this.visits_of_date[0].client != null) {
       const visit = new Visit();
       visit.status = "пацієнт";
       this.visits_of_date.unshift(visit);
       this.getVisitsWithoutWards();
     }
+    document.getElementById("table_no_ward").scrollIntoView();
   }
 
   onSave() {
@@ -334,10 +342,10 @@ export class AccomodationComponent implements OnInit {
     });
   }
 
-  onUnplaced() {
+  onUnplace() {
     this.visits_with_wards.forEach((value: Visit, i: number) => {
       if (value.isChanged === true) {
-        if (value.visitId > 0 && value.client !== null && value.status === "пацієнт") {
+        if (value.visitId > 0 && value.client !== null) {
           this.visitService.doUnplaced(this.visits_with_wards[i]).toPromise().then(() => {
             const visit: Visit = new Visit();
             visit.accomodation = this.visits_with_wards[i].accomodation;
@@ -345,7 +353,7 @@ export class AccomodationComponent implements OnInit {
             this.visits_with_wards.splice(i, 1, visit);
           });
 
-        } else if (value.visitId === 0 && value.client !== null && value.status === "пацієнт") {
+        } else if (value.visitId === 0 && value.client !== null) {
           this.visitService.addVisit(this.visits_with_wards[i]).toPromise().then((visit: Visit) => {
             this.visitService.doUnplaced(visit).toPromise().then(() => {
               const visit: Visit = new Visit();
@@ -355,13 +363,13 @@ export class AccomodationComponent implements OnInit {
             });
           });
 
-        } else if (value.visitId > 0 && value.status !== "пацієнт") {
+/*        } else if (value.visitId > 0 && value.status !== "пацієнт") {
           this.visitService.removeVisit(this.visits_with_wards[i].visitId).toPromise().then(() => {
             const visit: Visit = new Visit();
             visit.accomodation = this.visits_with_wards[i].accomodation;
             visit.visitDate = this.visits_with_wards[i].visitDate;
             this.visits_with_wards.splice(i, 1, visit);
-          });
+          });*/
 
         } else {
           const visit: Visit = new Visit();
@@ -375,9 +383,16 @@ export class AccomodationComponent implements OnInit {
   }
 
   moveToAnotherDatePlace() {
+
+    this.visits_of_date.forEach((visit: Visit) => {
+      if (visit.isChanged === true && visit.visitId > 0) {
+        this.openDialogSelectVisitDate(visit);
+      }
+    });
+
     // for (let i = 0; i < 5; i++) {
 
-      this.openDialogSelectVisitDate();
+    // this.openDialogSelectVisitDate();---------------------------------------------------
     // }
   }
 
@@ -385,47 +400,58 @@ export class AccomodationComponent implements OnInit {
     this.onRefresh();
   }
 
-
-  openDialogSelectVisitDate() {
+  openDialogSelectVisitDate(visit: Visit) {
 
     const dialogRef = this.dialog.open(DateSelectorDialogComponent, {
       width: "700px",
       height: "410px",
-      data: {visit_date: this.selected_visit_date, accomodation: Accomodation}
+      data: {visit: visit}
     });
-    dialogRef.afterClosed().subscribe((data: { visit_date: VisitDate, accomodation: Accomodation }) => {
-      if (data !== null && data.visit_date !== null) {
-
-        this.visits_of_date.forEach((value, index) => {
-          if (value.isChanged === true) {
-
-            const visit: Visit = new Visit();
-            visit.accomodation = value.accomodation;
-            visit.visitDate = this.selected_visit_date;
-
-            value.visitDate = data.visit_date;
-            if (data.accomodation !== null) {
-              value.accomodation = data.accomodation;
-            } else {
-              value.accomodation = null;
-            }
-
-            if (value.visitId > 0) {
-              this.visitService.editVisit(value).toPromise().then(() => {
-                this.visits_of_date.splice(index, 1, visit);
-              });
-
-            } else if (value.client !== null && value.status !== null) {
-              this.visitService.addVisit(value).toPromise().then(() => {
-                this.visits_of_date.splice(index, 1, visit);
-              });
-            } else {
-              value.isChanged = false;
-            }
-          }
-        });
-      }
+    dialogRef.afterClosed().subscribe((data: { visit: Visit }) => {
+      this.onRefresh();
     });
   }
+
+  /*  openDialogSelectVisitDate() {
+
+      const dialogRef = this.dialog.open(DateSelectorDialogComponent, {
+        width: "700px",
+        height: "410px",
+        data: {visit_date: this.selected_visit_date, accomodation: Accomodation}
+      });
+      dialogRef.afterClosed().subscribe((data: { visit_date: VisitDate, accomodation: Accomodation }) => {
+        if (data !== null && data.visit_date !== null) {
+
+          this.visits_of_date.forEach((value, index) => {
+            if (value.isChanged === true) {
+
+              const visit: Visit = new Visit();
+              visit.accomodation = value.accomodation;
+              visit.visitDate = this.selected_visit_date;
+
+              value.visitDate = data.visit_date;
+              if (data.accomodation !== null) {
+                value.accomodation = data.accomodation;
+              } else {
+                value.accomodation = null;
+              }
+
+              if (value.visitId > 0) {
+                this.visitService.editVisit(value).toPromise().then(() => {
+                  this.visits_of_date.splice(index, 1, visit);
+                });
+
+              } else if (value.client !== null && value.status !== null) {
+                this.visitService.addVisit(value).toPromise().then(() => {
+                  this.visits_of_date.splice(index, 1, visit);
+                });
+              } else {
+                value.isChanged = false;
+              }
+            }
+          });
+        }
+      });
+    }*/
 
 }

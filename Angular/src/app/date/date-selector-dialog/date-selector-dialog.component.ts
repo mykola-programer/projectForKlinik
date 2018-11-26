@@ -1,18 +1,19 @@
-import {Component, Inject, Injectable, OnInit} from '@angular/core';
+import {Component, Inject, Injectable, OnInit} from "@angular/core";
 import {NgbDatepickerConfig, NgbDatepickerI18n, NgbDateStruct} from "@ng-bootstrap/ng-bootstrap";
 import {VisitDateService} from "../../service/visit-date.service";
 import {Router} from "@angular/router";
 import {VisitDate} from "../../backend_types/visit-date";
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
+import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material";
 import {Accomodation} from "../../backend_types/accomodation";
 import {AccomodationService} from "../../service/accomodation.service";
 import {Visit} from "../../backend_types/visit";
 import {VisitService} from "../../service/visit.service";
+import {HttpErrorResponse} from "@angular/common/http";
 
 const I18N_VALUES = {
-  'ua': {
-    weekdays: ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Нд'],
-    months: ['Січень', 'Лютий', 'Березень', 'Квітень', 'Травень', 'Червень', 'Липень', 'Серпень', 'Вересень', 'Жовтень', 'Листопад', 'Грудень'],
+  "ua": {
+    weekdays: ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Нд"],
+    months: ["Січень", "Лютий", "Березень", "Квітень", "Травень", "Червень", "Липень", "Серпень", "Вересень", "Жовтень", "Листопад", "Грудень"],
   }
   // other languages you would support
 };
@@ -21,7 +22,7 @@ const I18N_VALUES = {
 // use the Angular LOCALE_ID value
 @Injectable()
 export class I18n {
-  language = 'ua';
+  language = "ua";
 }
 
 // Define custom service providing the months and weekdays translations
@@ -50,9 +51,9 @@ export class EditedDatepickerI18n extends NgbDatepickerI18n {
 }
 
 @Component({
-  selector: 'app-date-selector-dialog',
-  templateUrl: './date-selector-dialog.component.html',
-  styleUrls: ['./date-selector-dialog.component.css'],
+  selector: "app-date-selector-dialog",
+  templateUrl: "./date-selector-dialog.component.html",
+  styleUrls: ["./date-selector-dialog.component.css"],
   providers: [I18n, {provide: NgbDatepickerI18n, useClass: EditedDatepickerI18n}] // define custom NgbDatepickerI18n provider
 
 })
@@ -75,8 +76,9 @@ export class DateSelectorDialogComponent implements OnInit {
     private dateService: VisitDateService,
     private accomodationService: AccomodationService,
     private visitService: VisitService,
-    @Inject(MAT_DIALOG_DATA) public data: { visit_date: VisitDate, accomodation: Accomodation }) {
-    this.selected_date = this.data.visit_date;
+    @Inject(MAT_DIALOG_DATA) public data: { visit: Visit }) {
+    this.selected_date = this.data.visit.visitDate;
+    this.selected_accomodation = this.data.visit.accomodation;
   }
 
   ngOnInit(): void {
@@ -86,7 +88,7 @@ export class DateSelectorDialogComponent implements OnInit {
   }
 
 
-  onSelect(date: NgbDateStruct, disabled) {
+  onSelectDate(date: NgbDateStruct, disabled) {
 
     if (!disabled) {
       this.selected_date = this.visitDates.find((value: VisitDate) =>
@@ -98,7 +100,7 @@ export class DateSelectorDialogComponent implements OnInit {
   }
 
   private setNgbDatepickerConfig() {
-    this.config.outsideDays = 'hidden';
+    this.config.outsideDays = "hidden";
     this.config.displayMonths = 2;
     this.config.navigation = "select";
     this.config.showWeekNumbers = false;
@@ -112,11 +114,19 @@ export class DateSelectorDialogComponent implements OnInit {
     };
   }
 
+  refactorDate(numbers: number[]): Date {
+    if (numbers) {
+      return new Date(numbers[0], numbers[1] - 1, numbers[2]);
+    } else {
+      return new Date();
+    }
+  }
+
   // This is selected dates
   isSelected(date: NgbDateStruct): boolean {
     return this.selected_date != null && (this.selected_date.date[0] == date.year) &&
       (this.selected_date.date[1] == date.month) &&
-      (this.selected_date.date[2] == date.day)
+      (this.selected_date.date[2] == date.day);
   }
 
   isPresented(date: NgbDateStruct): boolean {
@@ -126,10 +136,33 @@ export class DateSelectorDialogComponent implements OnInit {
         (value.date[2] == date.day))) != -1;
   }
 
-  onClose() {
-    this.data.visit_date = this.selected_date;
-    this.data.accomodation = this.selected_accomodation;
-    this.dialogRef.close(this.data);
+  onSelect() {
+    this.data.visit.visitDate = this.selected_date;
+    this.data.visit.accomodation = this.selected_accomodation;
+    this.visitService.editVisit(this.data.visit).toPromise().then((visit: Visit) => {
+      if (visit
+        && this.data.visit.visitId === visit.visitId
+        && this.data.visit.client.clientId === visit.client.clientId) {
+        this.dialogRef.close(visit);
+      } else {
+        alert("Помилка запису в базу даних... Спробуйте ще !");
+        this.onRefresh();
+      }
+
+    }).catch((err: HttpErrorResponse) => {
+
+      const div = document.createElement("div");
+      div.innerHTML = err.error.text;
+      const text = div.textContent || div.innerText || "";
+
+      alert(text);
+    });
+  }
+
+  onRefresh() {
+    this.selected_date = this.data.visit.visitDate;
+    this.selected_accomodation = this.data.visit.accomodation;
+    this.ngOnInit();
   }
 
   onCancel() {
@@ -140,12 +173,14 @@ export class DateSelectorDialogComponent implements OnInit {
     if (accomodation_id > 0) {
       this.selected_accomodation = this.accomodations.find((accomodation: Accomodation) => {
         return accomodation.accomodationId == accomodation_id;
-      })
-    }else this.selected_accomodation = null;
+      });
+    } else {
+      this.selected_accomodation = null;
+    }
   }
 
   private getDates(): void {
-    this.dateService.getVisitDates().toPromise().then(visitDates => this.visitDates = visitDates)
+    this.dateService.getVisitDates().toPromise().then(visitDates => this.visitDates = visitDates);
   }
 
   private getVisits() {
@@ -162,14 +197,15 @@ export class DateSelectorDialogComponent implements OnInit {
       this.accomodations = accomodations;
 
       visits_of_date.forEach((visit: Visit) => {
-        let index = this.accomodations.findIndex((accomodation: Accomodation) => {
+        const index = this.accomodations.findIndex((accomodation: Accomodation) => {
           return visit != null && visit.accomodation != null && accomodation != null &&
-            visit.accomodation.ward == accomodation.ward && visit.accomodation.wardPlace == accomodation.wardPlace
+            visit.accomodation.ward == accomodation.ward && visit.accomodation.wardPlace == accomodation.wardPlace;
         });
         this.accomodations.splice(index, 1);
       });
 
 
-    })
+    });
   }
+
 }

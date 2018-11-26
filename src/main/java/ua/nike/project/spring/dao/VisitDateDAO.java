@@ -11,6 +11,9 @@ import java.util.List;
 @Component
 public interface VisitDateDAO {
 
+    VisitDateVO findVisitDate(int visitDateID) throws BusinessException;
+
+
     VisitDateVO addVisitDate(VisitDateVO visitDateVO) throws BusinessException;
 
     List<VisitDateVO> addVisitDates(List<VisitDateVO> visitDateVOList) throws BusinessException;
@@ -20,8 +23,6 @@ public interface VisitDateDAO {
     boolean lockAllVisitDates();
 
     boolean unlockVisitDate(int visitDateID);
-
-    VisitDateVO findVisitDate(int visitDateID) throws BusinessException;
 
     List<VisitDateVO> getListUnlockedVisitDates();
 

@@ -2,13 +2,12 @@ package ua.nike.project.spring.vo;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
-public class VisitDateVO implements Serializable {
+public class VisitDateVO implements Serializable, VisualObject {
 
     private Integer visitDateId;
     private LocalDate date;
-    private boolean lock = false;
+    private boolean inactive = false;
 
     public Integer getVisitDateId() {
         return visitDateId;
@@ -26,12 +25,12 @@ public class VisitDateVO implements Serializable {
         this.date = date;
     }
 
-    public boolean isLock() {
-        return lock;
+    public boolean isInactive() {
+        return inactive;
     }
 
-    public void setLock(boolean lock) {
-        this.lock = lock;
+    public void setInactive(boolean inactive) {
+        this.inactive = inactive;
     }
 
     @Override
@@ -54,7 +53,7 @@ public class VisitDateVO implements Serializable {
         final StringBuilder sb = new StringBuilder("VisitDateVO{");
         sb.append("visitDateId=").append(visitDateId);
         sb.append(", date=").append(date);
-        sb.append(", lock=").append(lock);
+        sb.append(", inactive=").append(inactive);
         sb.append('}');
         return sb.toString();
     }

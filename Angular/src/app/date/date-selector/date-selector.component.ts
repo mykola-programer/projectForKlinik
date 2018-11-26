@@ -1,21 +1,16 @@
-import {Component, Injectable, OnInit} from '@angular/core';
+import {Component, Injectable, OnInit} from "@angular/core";
 import {VisitDateService} from "../../service/visit-date.service";
 
-import {
-  NgbDateParserFormatter,
-  NgbDatepickerConfig,
-  NgbDatepickerI18n,
-  NgbDateStruct
-} from "@ng-bootstrap/ng-bootstrap";
+import {NgbDateParserFormatter, NgbDatepickerConfig, NgbDatepickerI18n, NgbDateStruct} from "@ng-bootstrap/ng-bootstrap";
 import {isNumber, padNumber, toInteger} from "@ng-bootstrap/ng-bootstrap/util/util";
 import {Router} from "@angular/router";
 import {VisitDate} from "../../backend_types/visit-date";
 import {DateService} from "../../service/date.service";
 
 const I18N_VALUES = {
-  'ua': {
-    weekdays: ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Нд'],
-    months: ['Січень', 'Лютий', 'Березень', 'Квітень', 'Травень', 'Червень', 'Липень', 'Серпень', 'Вересень', 'Жовтень', 'Листопад', 'Грудень'],
+  "ua": {
+    weekdays: ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Нд"],
+    months: ["Січень", "Лютий", "Березень", "Квітень", "Травень", "Червень", "Липень", "Серпень", "Вересень", "Жовтень", "Листопад", "Грудень"],
   }
   // other languages you would support
 };
@@ -24,7 +19,7 @@ const I18N_VALUES = {
 // use the Angular LOCALE_ID value
 @Injectable()
 export class I18n {
-  language = 'ua';
+  language = "ua";
 }
 
 // Define custom service providing the months and weekdays translations
@@ -56,7 +51,7 @@ export class SelectedDatepickerI18n extends NgbDatepickerI18n {
 export class NgbDateCustomParserFormatter extends NgbDateParserFormatter {
   parse(value: string): NgbDateStruct {
     if (value) {
-      const dateParts = value.trim().split('-');
+      const dateParts = value.trim().split("-");
       if (dateParts.length === 1 && isNumber(dateParts[0])) {
         return {day: toInteger(dateParts[0]), month: null, year: null};
       } else if (dateParts.length === 2 && isNumber(dateParts[0]) && isNumber(dateParts[1])) {
@@ -70,15 +65,15 @@ export class NgbDateCustomParserFormatter extends NgbDateParserFormatter {
 
   format(date: NgbDateStruct): string {
     return date ?
-      `${isNumber(date.day) ? padNumber(date.day) : ''}.${isNumber(date.month) ? padNumber(date.month) : ''}.${date.year}` :
-      '';
+      `${isNumber(date.day) ? padNumber(date.day) : ""}.${isNumber(date.month) ? padNumber(date.month) : ""}.${date.year}` :
+      "";
   }
 }
 
 @Component({
-  selector: 'app-date-selector',
-  templateUrl: './date-selector.component.html',
-  styleUrls: ['./date-selector.component.css'],
+  selector: "app-date-selector",
+  templateUrl: "./date-selector.component.html",
+  styleUrls: ["./date-selector.component.css"],
   providers: [I18n, {provide: NgbDatepickerI18n, useClass: SelectedDatepickerI18n}, {
     provide: NgbDateParserFormatter,
     useClass: NgbDateCustomParserFormatter
@@ -95,12 +90,16 @@ export class DateSelectorComponent implements OnInit {
   visitDates: VisitDate[] = [];
   dates: NgbDateStruct[] = [];
 
-  constructor(private visitDateService: VisitDateService, private config: NgbDatepickerConfig, private router: Router, private dateService: DateService) {
+  constructor(
+    private visitDateService: VisitDateService,
+    private config: NgbDatepickerConfig,
+    private router: Router,
+    private dateService: DateService) {
 
     {
-      let visit_date = new VisitDate();
+      const visit_date = new VisitDate();
       visit_date.visitDateId = 2;
-      visit_date.date = [2018, 9, 3];
+      visit_date.date = [2018, 12, 10];
       this.dateService.change(visit_date);
     }
   }
@@ -113,10 +112,10 @@ export class DateSelectorComponent implements OnInit {
 
   onChangeDate(date: NgbDateStruct, disabled): void {
     if (this.isPresented(date) && !disabled) {
-      let selected_visitDate: VisitDate = this.visitDates.find((value: VisitDate) => {
+      const selected_visitDate: VisitDate = this.visitDates.find((value: VisitDate) => {
         return (value.date[0] == date.year &&
           value.date[1] == date.month &&
-          value.date[2] == date.day)
+          value.date[2] == date.day);
       });
       this.dateService.change(selected_visitDate);
     }
@@ -126,8 +125,9 @@ export class DateSelectorComponent implements OnInit {
     for (let i = 0; i < this.dates.length; i++) {
       if ((this.dates[i].year == date.year) &&
         (this.dates[i].month == date.month) &&
-        (this.dates[i].day == date.day))
+        (this.dates[i].day == date.day)) {
         return true;
+      }
     }
     return false;
   }
@@ -143,7 +143,7 @@ export class DateSelectorComponent implements OnInit {
   }
 
   private setNgbDatepickerConfig() {
-    this.config.outsideDays = 'hidden';
+    this.config.outsideDays = "hidden";
     this.config.displayMonths = 2;
     this.config.navigation = "select";
     this.config.showWeekNumbers = false;
@@ -153,8 +153,9 @@ export class DateSelectorComponent implements OnInit {
       for (let i = 0; i < this.dates.length; i++) {
         if ((this.dates[i].year == date.year) &&
           (this.dates[i].month == date.month) &&
-          (this.dates[i].day == date.day))
+          (this.dates[i].day == date.day)) {
           return false;
+        }
       }
       return true;
     };
@@ -166,7 +167,7 @@ export class DateSelectorComponent implements OnInit {
 
       this.dates.splice(0, this.dates.length);
       this.visitDates.forEach((value: VisitDate) => {
-        let d: NgbDateStruct = {year: value.date[0], month: value.date[1], day: value.date[2]};
+        const d: NgbDateStruct = {year: value.date[0], month: value.date[1], day: value.date[2]};
         this.dates.push(d);
       });
     });

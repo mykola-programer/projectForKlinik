@@ -13,11 +13,12 @@ import java.util.List;
 @Component
 public interface ManagerDAO {
 
+    ManagerVO findManager(int managerId) throws BusinessException;
+
+
     int addManager(ManagerVO managerVO);
 
     ManagerVO editManager(int managerId, ManagerVO managerVO) throws BusinessException;
-
-    ManagerVO findManager(int managerId) throws BusinessException;
 
     List<ManagerVO> getManagers();
 

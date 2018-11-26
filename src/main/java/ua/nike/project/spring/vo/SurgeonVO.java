@@ -6,7 +6,7 @@ import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Objects;
 
-public class SurgeonVO implements Serializable {
+public class SurgeonVO implements Serializable, VisualObject {
 
     private Integer surgeonId;
 

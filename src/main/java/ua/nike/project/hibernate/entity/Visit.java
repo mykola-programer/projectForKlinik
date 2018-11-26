@@ -15,13 +15,15 @@ import java.util.Objects;
 @Entity
 @NamedQueries(value = {
         @NamedQuery(name = "Visit.findAll", query = "FROM Visit "),
+        @NamedQuery(name = "Visit.findByClient", query = "FROM Visit v WHERE v.client = :client"),
+        @NamedQuery(name = "Visit.findByPatient", query = "FROM Visit v WHERE v.patient = :patient")
 })
 @Table(name = "visit")
 @TypeDef(
         name = "pgsql_enum",
         typeClass = PostgreSQLEnumType.class
 )
-public class Visit implements Serializable {
+public class Visit implements EntityObject {
 
     @Version
     private long version;
@@ -52,8 +54,8 @@ public class Visit implements Serializable {
     private ClientStatus status;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "relative_id")
-    private Client relative;
+    @JoinColumn(name = "patient_id")
+    private Client patient;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "operation_type_id")
@@ -78,17 +80,20 @@ public class Visit implements Serializable {
 
     private String note;
 
+    @Column(name = "inactive")
+    private Boolean inactive;
+
     public Visit() {
     }
 
-    public Visit(long version, VisitDate visitDate, LocalTime timeForCome, @Min(1) Integer orderForCome, Client client, ClientStatus status, Client relative, OperationType operationType, Eye eye, Surgeon surgeon, Manager manager, Accomodation accomodation, String note) {
+    public Visit(long version, VisitDate visitDate, LocalTime timeForCome, @Min(1) Integer orderForCome, Client client, ClientStatus status, Client patient, OperationType operationType, Eye eye, Surgeon surgeon, Manager manager, Accomodation accomodation, String note) {
         this.version = version;
         this.visitDate = visitDate;
         this.timeForCome = timeForCome;
         this.orderForCome = orderForCome;
         this.client = client;
         this.status = status;
-        this.relative = relative;
+        this.patient = patient;
         this.operationType = operationType;
         this.eye = eye;
         this.surgeon = surgeon;
@@ -153,12 +158,12 @@ public class Visit implements Serializable {
         this.status = status;
     }
 
-    public Client getRelative() {
-        return relative;
+    public Client getPatient() {
+        return patient;
     }
 
-    public void setRelative(Client relative) {
-        this.relative = relative;
+    public void setPatient(Client relative) {
+        this.patient = relative;
     }
 
     public OperationType getOperationType() {
@@ -209,6 +214,14 @@ public class Visit implements Serializable {
         this.note = note;
     }
 
+    public Boolean getInactive() {
+        return inactive;
+    }
+
+    public void setInactive(Boolean inactive) {
+        this.inactive = inactive;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -219,7 +232,7 @@ public class Visit implements Serializable {
                 Objects.equals(orderForCome, visit.orderForCome) &&
                 Objects.equals(client, visit.client) &&
                 status == visit.status &&
-                Objects.equals(relative, visit.relative) &&
+                Objects.equals(patient, visit.patient) &&
                 Objects.equals(operationType, visit.operationType) &&
                 eye == visit.eye &&
                 Objects.equals(surgeon, visit.surgeon) &&
@@ -230,7 +243,7 @@ public class Visit implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(visitDate, timeForCome, orderForCome, client, status, relative, operationType, eye, surgeon, manager, accomodation, note);
+        return Objects.hash(visitDate, timeForCome, orderForCome, client, status, patient, operationType, eye, surgeon, manager, accomodation, note);
     }
 
     @Override
@@ -241,7 +254,7 @@ public class Visit implements Serializable {
         sb.append(", orderForCome=").append(orderForCome);
         sb.append(", client=").append(client);
         sb.append(", status=").append(status);
-        sb.append(", relative=").append(relative);
+        sb.append(", relative=").append(patient);
         sb.append(", operationType=").append(operationType);
         sb.append(", eye=").append(eye);
         sb.append(", surgeon=").append(surgeon);

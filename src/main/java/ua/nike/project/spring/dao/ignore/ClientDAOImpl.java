@@ -1,34 +1,34 @@
 package ua.nike.project.spring.dao;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-import ua.nike.project.hibernate.entity.Client;
-import ua.nike.project.hibernate.entity.Visit;
-import ua.nike.project.hibernate.type.Sex;
-import ua.nike.project.spring.exceptions.BusinessException;
-import ua.nike.project.spring.vo.ClientVO;
-import ua.nike.project.spring.vo.VisitVO;
-
-import javax.persistence.EntityManager;
-import javax.persistence.EntityNotFoundException;
-import javax.persistence.PersistenceContext;
-import javax.validation.ConstraintViolation;
-import javax.validation.Validator;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 
 @Repository
 public class ClientDAOImpl implements ClientDAO {
 
+/*
     @PersistenceContext
     private EntityManager entityManager;
 
     @Autowired
     private VisitDAO visitDAO;
 
+
+    @Override
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+    public List<VisitVO> getVisitsOfClient(int clientId) throws BusinessException {
+        Client client = this.entityManager.find(Client.class, clientId);
+        if (client == null) throw new BusinessException("This client is not find in database !");
+
+        List<VisitVO> result = new ArrayList<>();
+        for (Visit visit : client.getVisitsForClient()) {
+            result.add(this.visitDAO.transformToVisitVO(visit));
+        }
+        return result;
+    }
+*/
+
+
+/*
     @Override
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<ClientVO> getClients() {
@@ -43,7 +43,7 @@ public class ClientDAOImpl implements ClientDAO {
     @Override
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<ClientVO> getUnlockClients() {
-        List<Client> clients = this.entityManager.createNamedQuery("Client.findAllUnlock", Client.class).getResultList();
+        List<Client> clients = this.entityManager.createNamedQuery("Client.findAll", Client.class).getResultList();
         List<ClientVO> result = new ArrayList<>();
         for (Client client : clients) {
             result.add(transformToClientVO(client));
@@ -91,18 +91,7 @@ public class ClientDAOImpl implements ClientDAO {
         }
     }
 
-    @Override
-    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-    public List<VisitVO> getVisitsOfClient(int clientId) throws BusinessException {
-        Client client = this.entityManager.find(Client.class, clientId);
-        if (client == null) throw new BusinessException("This client is not find in database !");
 
-        List<VisitVO> result = new ArrayList<>();
-        for (Visit visit : client.getVisitsForClient()) {
-            result.add(this.visitDAO.transformToVisitVO(visit));
-        }
-        return result;
-    }
 
     @Override
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
@@ -129,7 +118,6 @@ public class ClientDAOImpl implements ClientDAO {
         }
         result.setBirthday(client.getBirthday());
         result.setTelephone(client.getTelephone());
-        result.setLock(client.isLock());
         return result;
     }
 
@@ -150,8 +138,8 @@ public class ClientDAOImpl implements ClientDAO {
             }
             result.setBirthday(original.getBirthday());
             result.setTelephone(original.getTelephone());
-            result.setLock(original.isLock());
         }
     }
+*/
 
 }

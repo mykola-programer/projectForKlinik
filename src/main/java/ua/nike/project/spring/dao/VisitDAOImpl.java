@@ -6,6 +6,9 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import ua.nike.project.hibernate.entity.*;
 import ua.nike.project.hibernate.type.ClientStatus;
+import ua.nike.project.spring.exceptions.BusinessException;
+import ua.nike.project.spring.service.ServiceDAO;
+import ua.nike.project.spring.vo.ClientVO;
 import ua.nike.project.spring.vo.VisitVO;
 
 import javax.persistence.EntityManager;
@@ -22,10 +25,13 @@ public class VisitDAOImpl implements VisitDAO {
     private EntityManager entityManager;
 
     @Autowired
-    private VisitDateDAO visitDateDAO;
+    ServiceDAO<ClientVO, Client> clientServiceDAO;
 
     @Autowired
-    private ClientDAO clientDAO;
+    private VisitDateDAO visitDateDAO;
+
+//    @Autowired
+//    private ClientDAO clientDAO;
 
     @Autowired
     private OperationTypeDAO operationTypeDAO;
@@ -153,7 +159,11 @@ public class VisitDAOImpl implements VisitDAO {
         result.setVisitDate(this.visitDateDAO.transformToVisitDateVO(visit.getVisitDate()));
         result.setTimeForCome(visit.getTimeForCome());
         result.setOrderForCome(visit.getOrderForCome());
-        result.setClient(this.clientDAO.transformToClientVO(visit.getClient()));
+        try {
+            result.setClient(clientServiceDAO.findByID(visit.getClient() != null ? visit.getClient().getClientId() : 0, Client.class));
+        } catch (BusinessException e) {
+            result.setClient(null);
+        }
 
         try {
             switch (visit.getStatus().toString().toUpperCase()) {
@@ -170,7 +180,14 @@ public class VisitDAOImpl implements VisitDAO {
             result.setStatus(null);
         }
 
-        result.setRelative(this.clientDAO.transformToClientVO(visit.getRelative()));
+        try {
+            result.setPatient(clientServiceDAO.findByID(visit.getPatient() != null ? visit.getPatient().getClientId() : 0, Client.class));
+        } catch (BusinessException e) {
+            result.setPatient(null);
+        }
+
+
+
         result.setOperationType(this.operationTypeDAO.transformToOperationTypeVO(visit.getOperationType()));
         result.setEye(visit.getEye());
         result.setSurgeon(this.surgeonDAO.transformToSurgeonVO(visit.getSurgeon()));
@@ -208,10 +225,10 @@ public class VisitDAOImpl implements VisitDAO {
                     result.setStatus(ClientStatus.PATIENT);
             }
 
-            if (original.getRelative() != null) {
-                result.setRelative(this.entityManager.find(Client.class, original.getRelative().getClientId()));
+            if (original.getPatient() != null) {
+                result.setPatient(this.entityManager.find(Client.class, original.getPatient().getClientId()));
             } else {
-                result.setRelative(null);
+                result.setPatient(null);
             }
 
             if (original.getOperationType() != null) {

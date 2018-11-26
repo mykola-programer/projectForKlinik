@@ -1,25 +1,23 @@
 package ua.nike.project.spring.vo;
 
-import ua.nike.project.hibernate.type.Ward;
-
 import java.io.Serializable;
 import java.util.Objects;
 
-public class AccomodationVO implements Serializable {
+public class AccomodationVO implements Serializable, VisualObject {
 
     private Integer accomodationId;
     private Integer ward;
     private Integer wardPlace;
-    private Boolean placeLocked;
+    private Boolean inactive;
 
     public AccomodationVO() {
     }
 
-    public AccomodationVO(Integer accomodationId, Integer ward, Integer wardPlace, Boolean placeLocked) {
+    public AccomodationVO(Integer accomodationId, Integer ward, Integer wardPlace, Boolean inactive) {
         this.accomodationId = accomodationId;
         this.ward = ward;
         this.wardPlace = wardPlace;
-        this.placeLocked = placeLocked;
+        this.inactive = inactive;
     }
 
     public Integer getAccomodationId() {
@@ -46,12 +44,12 @@ public class AccomodationVO implements Serializable {
         this.wardPlace = wardPlace;
     }
 
-    public Boolean getPlaceLocked() {
-        return placeLocked;
+    public Boolean getInactive() {
+        return inactive;
     }
 
-    public void setPlaceLocked(Boolean placeBlocked) {
-        this.placeLocked = placeBlocked;
+    public void setInactive(Boolean inactive) {
+        this.inactive = inactive;
     }
 
     @Override
@@ -61,12 +59,12 @@ public class AccomodationVO implements Serializable {
         AccomodationVO that = (AccomodationVO) o;
         return ward == that.ward &&
                 Objects.equals(wardPlace, that.wardPlace) &&
-                Objects.equals(placeLocked, that.placeLocked);
+                Objects.equals(inactive, that.inactive);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(ward, wardPlace, placeLocked);
+        return Objects.hash(ward, wardPlace, inactive);
     }
 
     @Override
@@ -75,7 +73,7 @@ public class AccomodationVO implements Serializable {
                 "accomodationId=" + accomodationId +
                 ", ward=" + ward +
                 ", wardPlace=" + wardPlace +
-                ", placeBlocked=" + placeLocked +
+                ", inactive=" + inactive +
                 '}';
     }
 

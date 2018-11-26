@@ -11,13 +11,14 @@ import java.util.List;
 @Component
 public interface AccomodationDAO {
 
+    AccomodationVO findAccomodation(int accomodationID) throws BusinessException;
+
+
     int addAccomodation(AccomodationVO accomodationVO);
 
     boolean lockAccomodationPlace(int accomodationID) throws BusinessException;
 
     boolean unlockAccomodationPlace(int accomodationID) throws BusinessException;
-
-    AccomodationVO findAccomodation(int accomodationID) throws BusinessException;
 
     List<AccomodationVO> getListUnlockedAccomodations();
 

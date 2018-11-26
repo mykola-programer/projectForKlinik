@@ -20,6 +20,7 @@ export class ClientEditorComponent implements OnInit {
   // "1" - ASC,
   // "-1" - DESC
   private sorting_order = 1;
+  public saveButtonActive = true;
 
   constructor(private router: Router, private clientService: ClientService, private serviceNavbar: NavbarService) {
   }
@@ -30,7 +31,7 @@ export class ClientEditorComponent implements OnInit {
   }
 
   getClients() {
-    this.clientService.getUnlockClients().toPromise().then((clients: Client[]) => {
+    this.clientService.getClients().toPromise().then((clients: Client[]) => {
       this.clients = clients;
       this.sortClients(this.clients);
       this.filteredClients = this.clients;
@@ -171,6 +172,9 @@ export class ClientEditorComponent implements OnInit {
         this.clientService.addClient(client).toPromise().then((returned_client: Client) => {
           this.copyClient(returned_client, client);
           client.isChanged = false;
+          alert("Клієнт : " + returned_client.surname + " " + returned_client.firstName + " "
+            + returned_client.secondName + " успішно збережений!");
+
         }).catch((err: HttpErrorResponse) => {
 
           const div = document.createElement("div");
@@ -187,8 +191,11 @@ export class ClientEditorComponent implements OnInit {
       return client.isChanged && client.clientId !== 0;
     });
     edit_clients.forEach((client: Client) => {
-      this.clientService.editClient(client).toPromise().then(() => {
+      this.clientService.editClient(client).toPromise().then((returned_client: Client) => {
+        this.copyClient(returned_client, client);
         client.isChanged = false;
+        alert("Клієнт : " + returned_client.surname + " " + returned_client.firstName + " "
+          + returned_client.secondName + " успішно оновлений!");
       }).catch((err: HttpErrorResponse) => {
 
         const div = document.createElement("div");
@@ -201,6 +208,7 @@ export class ClientEditorComponent implements OnInit {
     });
     if (isSuccess) {
       this.sortClients(this.filteredClients);
+      // alert("All record was save !");
     }
   }
 
@@ -209,10 +217,22 @@ export class ClientEditorComponent implements OnInit {
       return client.isChanged && client.clientId !== 0;
     });
     clients_for_lock.forEach((client: Client) => {
-      this.clientService.lockClient(client).toPromise().then((returned_client: Client) => {
-        if (returned_client.clientId === client.clientId && returned_client.lock === true) {
+      this.clientService.removeClient(client.clientId).toPromise().then((success: boolean) => {
+        if (success) {
+          alert("Клієнт : " + client.surname + " " + client.firstName + " "
+            + client.secondName + " успішно виделений!");
           this.filteredClients.splice(this.filteredClients.indexOf(client, 0), 1);
+        } else {
+          alert(client.surname + " " + client.firstName + " "
+            + client.secondName + "\n\n" + "Неможливо видалити! \n У клієнта є активні візити.");
         }
+      }).catch((err: HttpErrorResponse) => {
+
+        const div = document.createElement("div");
+        div.innerHTML = err.error.text;
+        const text = div.textContent || div.innerText || "";
+
+        alert(text);
       });
     });
   }
@@ -251,7 +271,6 @@ export class ClientEditorComponent implements OnInit {
     result.birthday = original.birthday;
     result.sex = original.sex;
     result.telephone = original.telephone;
-    result.lock = original.lock;
     result.isChanged = original.isChanged;
   }
 }

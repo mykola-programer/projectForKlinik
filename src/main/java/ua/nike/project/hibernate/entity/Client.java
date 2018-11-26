@@ -14,7 +14,6 @@ import java.util.Objects;
 @Entity
 @NamedQueries(value = {
         @NamedQuery(name = "Client.findAll", query = "FROM Client cl ORDER BY surname,firstName,secondName"),
-        @NamedQuery(name = "Client.findAllUnlock", query = "FROM Client cl WHERE cl.lock = false ORDER BY surname,firstName,secondName"),
 })
 
 @Table(name = "client")
@@ -22,7 +21,7 @@ import java.util.Objects;
         name = "pgsql_enum",
         typeClass = PostgreSQLEnumType.class
 )
-public class Client implements Serializable, Comparable<Client> {
+public class Client implements Serializable, Comparable<Client>, EntityObject {
 
     @Version
     private long version;
@@ -53,14 +52,11 @@ public class Client implements Serializable, Comparable<Client> {
     @Column(name = "telephone")
     private String telephone;
 
-    @Column(name = "lock")
-    private boolean lock = false;
-
 
     @OneToMany(targetEntity = Visit.class, fetch = FetchType.LAZY, mappedBy = "client")
     private List<Visit> visitsForClient;
 
-    @OneToMany(targetEntity = Visit.class, fetch = FetchType.LAZY, mappedBy = "relative")
+    @OneToMany(targetEntity = Visit.class, fetch = FetchType.LAZY, mappedBy = "patient")
     private List<Visit> visitsForRelative;
 
     public long getVersion() {
@@ -125,14 +121,6 @@ public class Client implements Serializable, Comparable<Client> {
 
     public void setTelephone(String telephone) {
         this.telephone = telephone;
-    }
-
-    public boolean isLock() {
-        return lock;
-    }
-
-    public void setLock(boolean lock) {
-        this.lock = lock;
     }
 
     public List<Visit> getVisitsForClient() {

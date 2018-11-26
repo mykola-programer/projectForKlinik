@@ -24,15 +24,15 @@ import java.util.Objects;
 @Entity
 @NamedQueries(value = {
         @NamedQuery(name = "Accomodation.findAll", query = "FROM Accomodation acc ORDER BY acc.ward, acc.wardPlace"),
-        @NamedQuery(name = "Accomodation.getAllUnlock", query = "FROM Accomodation acc where acc.placeLocked = false ORDER BY acc.ward, acc.wardPlace"),
-        @NamedQuery(name = "Accomodation.getAllUnlockWards", query = "SELECT DISTINCT acc.ward FROM Accomodation acc where acc.placeLocked = false ORDER BY acc.ward")
+        @NamedQuery(name = "Accomodation.getAllUnlock", query = "FROM Accomodation acc where acc.inactive = false ORDER BY acc.ward, acc.wardPlace"),
+        @NamedQuery(name = "Accomodation.getAllUnlockWards", query = "SELECT DISTINCT acc.ward FROM Accomodation acc where acc.inactive = false ORDER BY acc.ward")
 })
 @Table(name = "accomodation")
 @TypeDef(
         name = "pgsql_enum",
         typeClass = PostgreSQLEnumType.class
 )
-public class Accomodation implements Serializable {
+public class Accomodation implements Serializable, EntityObject {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -47,8 +47,8 @@ public class Accomodation implements Serializable {
     @Column(name = "ward_place")
     private Integer wardPlace;
 
-    @Column(name = "locked_place")
-    private Boolean placeLocked;
+    @Column(name = "inactive")
+    private Boolean inactive;
 
     @OneToMany(targetEntity = Visit.class, fetch = FetchType.LAZY, mappedBy = "accomodation")
     private List<Visit> visits;
@@ -78,11 +78,15 @@ public class Accomodation implements Serializable {
     }
 
     public Boolean isPlaceLocked() {
-        return placeLocked;
+        return inactive;
     }
 
-    public void setPlaceLocked(Boolean placeBlocked) {
-        this.placeLocked = placeBlocked;
+    public void setInactive(Boolean placeBlocked) {
+        this.inactive = placeBlocked;
+    }
+
+    public Boolean getInactive() {
+        return inactive;
     }
 
     public List<Visit> getVisits() {
@@ -100,12 +104,12 @@ public class Accomodation implements Serializable {
         Accomodation that = (Accomodation) o;
         return ward == that.ward &&
                 Objects.equals(wardPlace, that.wardPlace) &&
-                Objects.equals(placeLocked, that.placeLocked);
+                Objects.equals(inactive, that.inactive);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(ward, wardPlace, placeLocked);
+        return Objects.hash(ward, wardPlace, inactive);
     }
 
     @Override
@@ -114,7 +118,7 @@ public class Accomodation implements Serializable {
         sb.append("accomodationId=").append(accomodationId);
         sb.append(", ward=").append(ward);
         sb.append(", wardPlace=").append(wardPlace);
-        sb.append(", placeLocked=").append(placeLocked);
+        sb.append(", placeLocked=").append(inactive);
         sb.append('}');
         return sb.toString();
     }

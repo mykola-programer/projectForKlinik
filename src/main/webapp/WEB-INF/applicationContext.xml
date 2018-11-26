@@ -9,6 +9,7 @@
     <import resource="jpa_hibernate.xml"/>
 
     <context:component-scan base-package="ua.nike.project.spring.dao"/>
+    <context:component-scan base-package="ua.nike.project.spring.service"/>
     <context:component-scan base-package="ua.nike.project.spring.controller"/>
 
     <!-- Enables the Spring MVC @Controller programming model -->

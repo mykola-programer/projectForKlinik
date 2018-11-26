@@ -6,7 +6,6 @@ export class Client {
   public sex: string;
   public birthday: number[];
   public telephone: string;
-  public lock: boolean;
   public isChanged: boolean = false;
 
 }

@@ -9,10 +9,10 @@ import java.util.Set;
 @Table(name = "operation_type")
 @NamedQueries(value = {
         @NamedQuery(name = "OperationType.findAll", query = "FROM OperationType ORDER BY name"),
-        @NamedQuery(name = "OperationType.getAllUnlock", query = "FROM OperationType WHERE lockedType = false ORDER BY name")
+        @NamedQuery(name = "OperationType.getAllUnlock", query = "FROM OperationType WHERE inactive = false ORDER BY name")
 
 })
-public class OperationType implements Serializable {
+public class OperationType implements Serializable, EntityObject {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,8 +22,8 @@ public class OperationType implements Serializable {
     @Column(name = "name", length = 50, nullable = false)
     private String name;
 
-    @Column (name = "locked_type", nullable = false)
-    private boolean lockedType;
+    @Column (name = "inactive", nullable = false)
+    private boolean inactive;
 
     @OneToMany(targetEntity = Visit.class, fetch = FetchType.LAZY, mappedBy = "operationType")
     private Set<Visit> visits;
@@ -44,12 +44,12 @@ public class OperationType implements Serializable {
         this.name = name;
     }
 
-    public boolean isLockedType() {
-        return lockedType;
+    public boolean isInactive() {
+        return inactive;
     }
 
-    public void setLockedType(boolean lockType) {
-        this.lockedType = lockType;
+    public void setInactive(boolean lockType) {
+        this.inactive = lockType;
     }
 
     public Set<Visit> getVisits() {
@@ -79,7 +79,7 @@ public class OperationType implements Serializable {
         final StringBuilder sb = new StringBuilder("OperationType{");
         sb.append("operationTypeId=").append(operationTypeId);
         sb.append(", name='").append(name).append('\'');
-        sb.append(", lockType=").append(lockedType);
+        sb.append(", lockType=").append(inactive);
         sb.append('}');
         return sb.toString();
     }

@@ -34,11 +34,11 @@ public class AccomodationDAOImpl implements AccomodationDAO {
             accomodation = this.entityManager.createQuery("FROM Accomodation acc WHERE acc.ward=? AND acc.wardPlace=? ", Accomodation.class)
                     .setParameter(0, accomodationVO.getWard()).setParameter(1, accomodationVO.getWardPlace())
                     .getSingleResult();
-            accomodation.setPlaceLocked(false);
+            accomodation.setInactive(false);
 
         } catch (PersistenceException e) {
             this.copyToAccomodation(accomodationVO, accomodation);
-            accomodation.setPlaceLocked(false);
+            accomodation.setInactive(false);
             this.entityManager.persist(accomodation);
             this.entityManager.flush();
         }
@@ -50,7 +50,7 @@ public class AccomodationDAOImpl implements AccomodationDAO {
     public boolean lockAccomodationPlace(int accomodationID) throws BusinessException {
         Accomodation accomodation = this.entityManager.find(Accomodation.class, accomodationID);
         if (accomodation == null) throw new BusinessException("This accomodation is not find in database !");
-        accomodation.setPlaceLocked(true);
+        accomodation.setInactive(true);
         this.entityManager.flush();
         return accomodation.isPlaceLocked();
     }
@@ -60,7 +60,7 @@ public class AccomodationDAOImpl implements AccomodationDAO {
     public boolean unlockAccomodationPlace(int accomodationID) throws BusinessException {
         Accomodation accomodation = this.entityManager.find(Accomodation.class, accomodationID);
         if (accomodation == null) throw new BusinessException("This accomodation is not find in database !");
-        accomodation.setPlaceLocked(false);
+        accomodation.setInactive(false);
         this.entityManager.flush();
         return accomodation.isPlaceLocked();
     }
@@ -128,7 +128,7 @@ public class AccomodationDAOImpl implements AccomodationDAO {
         result.setWard(Integer.valueOf(accomodation.getWard().toString().substring(1)));
 
         result.setWardPlace(accomodation.getWardPlace());
-        result.setPlaceLocked(accomodation.isPlaceLocked());
+        result.setInactive(accomodation.isPlaceLocked());
         return result;
     }
 
@@ -136,7 +136,7 @@ public class AccomodationDAOImpl implements AccomodationDAO {
         if (original != null) {
             result.setWard(Ward.valueOf("N" + original.getWard().toString()));
             result.setWardPlace(original.getWardPlace());
-            result.setPlaceLocked(original.getPlaceLocked());
+            result.setInactive(original.getInactive());
         }
     }
 }

@@ -13,6 +13,7 @@ public interface VisitDAO {
 
     VisitVO findVisit(int visitID) throws BusinessException;
 
+
     List<VisitVO> getVisits();
 
     List<VisitVO> getVisitsInDate(LocalDate date);

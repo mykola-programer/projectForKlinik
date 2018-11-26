@@ -33,11 +33,11 @@ public class OperationTypeDAOImpl implements OperationTypeDAO {
             operationType = this.entityManager.createQuery("FROM OperationType acc WHERE acc.name=? ", OperationType.class)
                     .setParameter(0, operationTypeVO.getName())
                     .getSingleResult();
-            operationType.setLockedType(false);
+            operationType.setInactive(false);
 
         } catch (PersistenceException e) {
             this.copyToOperationType(operationTypeVO, operationType);
-            operationType.setLockedType(false);
+            operationType.setInactive(false);
             this.entityManager.persist(operationType);
             this.entityManager.flush();
         }
@@ -49,9 +49,9 @@ public class OperationTypeDAOImpl implements OperationTypeDAO {
     public boolean lockOperationType(int operationTypeID) throws BusinessException {
         OperationType operationType = this.entityManager.find(OperationType.class, operationTypeID);
         if (operationType == null) throw new BusinessException("This operationType is not find in database !");
-        operationType.setLockedType(true);
+        operationType.setInactive(true);
         this.entityManager.flush();
-        return operationType.isLockedType();
+        return operationType.isInactive();
     }
 
     @Override
@@ -59,9 +59,9 @@ public class OperationTypeDAOImpl implements OperationTypeDAO {
     public boolean unlockOperationType(int operationTypeID) throws BusinessException {
         OperationType operationType = this.entityManager.find(OperationType.class, operationTypeID);
         if (operationType == null) throw new BusinessException("This operationType is not find in database !");
-        operationType.setLockedType(false);
+        operationType.setInactive(false);
         this.entityManager.flush();
-        return operationType.isLockedType();
+        return operationType.isInactive();
     }
 
 
@@ -112,14 +112,14 @@ public class OperationTypeDAOImpl implements OperationTypeDAO {
         OperationTypeVO operationTypeVO = new OperationTypeVO();
         operationTypeVO.setOperationTypeId(operationType.getOperationTypeId());
         operationTypeVO.setName(operationType.getName());
-        operationTypeVO.setLockType(operationType.isLockedType());
+        operationTypeVO.setLockType(operationType.isInactive());
         return operationTypeVO;
     }
 
     private void copyToOperationType(OperationTypeVO original, OperationType result) {
         if (original != null) {
             result.setName(original.getName());
-            result.setLockedType(original.isLockType());
+            result.setInactive(original.isLockType());
         }
     }
 }

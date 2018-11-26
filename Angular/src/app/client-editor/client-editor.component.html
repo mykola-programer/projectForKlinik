@@ -34,7 +34,7 @@
 
         <td>
           <input #surname type="text" placeholder="  - Прізвище -  "
-                 pattern="[A-Za-zА-Яа-яЁёІіЇїЄє]{3,50}" required
+                 pattern="[A-Za-zА-Яа-яЁёІіЇїЄє]{1,50}" required
                  class="form-control font-weight-bold form-control-sm input-style-active"
                  [ngModel]="client.surname"
                  (change)="changeSurname(client, surname)"
@@ -44,7 +44,7 @@
         </td>
         <td>
           <input #firstName type="text" placeholder="  - Ім'я -  "
-                 pattern="[A-Za-zА-Яа-яЁёІіЇїЄє]{3,50}" required
+                 pattern="[A-Za-zА-Яа-яЁёІіЇїЄє]{1,50}" required
                  class="form-control font-weight-bold form-control-sm input-style-active"
                  [ngModel]="client.firstName"
                  (change)="changeFirstName(client, firstName)"
@@ -55,7 +55,7 @@
         </td>
         <td>
           <input #secondName type="text" placeholder="  - по-Батькові -  "
-                 pattern="[A-Za-zА-Яа-яЁёІіЇїЄє]{3,50}" required
+                 pattern="[A-Za-zА-Яа-яЁёІіЇїЄє]{1,50}" required
                  class="form-control font-weight-bold form-control-sm input-style-active"
                  [ngModel]="client.secondName"
                  (change)="changeSecondName(client, secondName)"
@@ -101,7 +101,7 @@
 
 <div class="left-container fixed-bottom bg-light">
   <button class="btn btn-min-style" (click)="onAdd()">Add</button>
-  <button class="btn btn-success btn-min-style" (click)="onSave()">Save</button>
+  <button class="btn btn-success btn-min-style" (click)="onSave()" [disabled]="!saveButtonActive">Save</button>
   <button class="btn btn-warning btn-min-style" (click)="onRefresh()">Refresh</button>
   <button class="btn btn-dark btn-min-style" (click)="onDelete()">Delete</button>
   <button class="btn btn-danger btn-min-style" (click)="onCancel()">Cancel</button>

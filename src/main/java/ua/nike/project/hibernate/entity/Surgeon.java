@@ -13,14 +13,14 @@ import java.util.Objects;
 @Entity
 @NamedQueries(value = {
         @NamedQuery(name = "Surgeon.findAll", query = "FROM Surgeon ORDER BY surname"),
-        @NamedQuery(name = "Surgeon.findAllUnlock", query = "FROM Surgeon s WHERE s.lock = false ORDER BY surname")
+        @NamedQuery(name = "Surgeon.findAllUnlock", query = "FROM Surgeon s WHERE s.inactive = false ORDER BY surname")
 })
 @Table(name = "surgeon")
 @TypeDef(
         name = "pgsql_enum",
         typeClass = PostgreSQLEnumType.class
 )
-public class Surgeon implements Serializable {
+public class Surgeon implements Serializable, EntityObject {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,7 +41,7 @@ public class Surgeon implements Serializable {
     @Type(type = "pgsql_enum")
     private Sex sex;
 
-    private boolean lock;
+    private boolean inactive;
 
     @OneToMany(targetEntity = Visit.class, fetch = FetchType.LAZY, mappedBy = "surgeon", cascade = CascadeType.ALL)
     private List<Visit> visits;
@@ -86,12 +86,12 @@ public class Surgeon implements Serializable {
         this.sex = sex;
     }
 
-    public boolean isLock() {
-        return lock;
+    public boolean isInactive() {
+        return inactive;
     }
 
-    public void setLock(boolean lock) {
-        this.lock = lock;
+    public void setInactive(boolean inactive) {
+        this.inactive = inactive;
     }
 
     public List<Visit> getVisits() {

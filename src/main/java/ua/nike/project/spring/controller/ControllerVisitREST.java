@@ -29,7 +29,7 @@ public class ControllerVisitREST {
 
     @CrossOrigin
     @RequestMapping(value = "/all/{date}/", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public List<VisitVO> getVisitsInDate(@PathVariable("date") String reqDate) throws BusinessException {
+    public List<VisitVO> getVisitsByDate(@PathVariable("date") String reqDate) throws BusinessException {
         if (reqDate != null && !reqDate.equals("")) {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_FORMAT);
             LocalDate date = LocalDate.parse(reqDate, formatter);

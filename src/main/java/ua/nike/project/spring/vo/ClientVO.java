@@ -1,44 +1,40 @@
 package ua.nike.project.spring.vo;
 
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Null;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Objects;
 
-public class ClientVO implements Serializable {
+public class ClientVO implements Serializable, VisualObject {
 
     private Integer clientId;
 
-    @NotNull (message = "Прізвище повинно бути задано.")
-    @Size(min = 3, max = 50, message = "Прізвище повинно мати від 3 до 50 символів !")
+    @NotNull(message = "Прізвище повинно бути задано.")
+    @Size(min = 1, max = 50, message = "Прізвище повинно мати від 1 до 50 символів !")
     @Pattern(regexp = "[A-Za-zА-Яа-яЁёІіЇїЄє]+", message = "Прізвище повинно мати тільки літери !")
     private String surname;
 
-    @NotNull (message = "Ім'я повинно бути задано.")
-    @Size(min = 3, max = 50, message = "Ім'я повинно мати від 3 до 50 символів !")
+    @NotNull(message = "Ім'я повинно бути задано.")
+    @Size(min = 1, max = 50, message = "Ім'я повинно мати від 1 до 50 символів !")
     @Pattern(regexp = "[A-Za-zА-Яа-яЁёІіЇїЄє]+", message = "Ім'я повинно мати тільки літери !")
     private String firstName;
 
-    @NotNull (message = "По-Батькові повинно бути задано.")
-    @Size(min = 3, max = 50, message = "По-Батькові повинно мати від 3 до 50 символів !")
+    @NotNull(message = "По-Батькові повинно бути задано.")
+    @Size(min = 1, max = 50, message = "По-Батькові повинно мати від 1 до 50 символів !")
     @Pattern(regexp = "[A-Za-zА-Яа-яЁёІіЇїЄє]+", message = "По-Батькові повинно мати тільки літери !")
     private String secondName;
 
-    @NotNull (message = "Стать повинна бути задана.")
+    @NotNull(message = "Стать повинна бути задана.")
     private Character sex;
 
-    @NotNull (message = "Дата народження повинна бути задана.")
+    @NotNull(message = "Дата народження повинна бути задана.")
     private LocalDate birthday;
 
     @Size(max = 19, message = "Телефон повинен бути не більше 19 символів !")
     @Pattern(regexp = "[ ()0-9+-]*")
     private String telephone;
-
-    private boolean lock;
-
 
     public Integer getClientId() {
         return clientId;
@@ -94,14 +90,6 @@ public class ClientVO implements Serializable {
 
     public void setTelephone(String telephone) {
         this.telephone = telephone;
-    }
-
-    public boolean isLock() {
-        return lock;
-    }
-
-    public void setLock(boolean lock) {
-        this.lock = lock;
     }
 
     @Override

@@ -34,12 +34,12 @@ public class VisitDateDAOImpl implements VisitDateDAO {
                 visitDate = this.entityManager.createQuery("FROM VisitDate WHERE date=? ", VisitDate.class)
                         .setParameter(0, visitDateVO.getDate())
                         .getSingleResult();
-                visitDate.setLock(false);
+                visitDate.setInactive(false);
 
             } catch (NoResultException e) {
                 visitDate = new VisitDate();
                 this.copyToVisitDate(visitDateVO, visitDate);
-                visitDate.setLock(false);
+                visitDate.setInactive(false);
                 this.entityManager.persist(visitDate);
             }
             this.entityManager.flush();
@@ -70,16 +70,16 @@ public class VisitDateDAOImpl implements VisitDateDAO {
     public boolean lockVisitDate(int visitDateID) {
         VisitDate visitDate = this.entityManager.find(VisitDate.class, visitDateID);
         if (visitDate == null) return false;
-        visitDate.setLock(true);
+        visitDate.setInactive(true);
         this.entityManager.flush();
-        return visitDate.isLock();
+        return visitDate.isInactive();
     }
 
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public boolean lockAllVisitDates() {
         for (VisitDate visitDate : this.entityManager.createNamedQuery("VisitDate.getAllUnlock", VisitDate.class).getResultList()) {
-            visitDate.setLock(true);
+            visitDate.setInactive(true);
         }
         this.entityManager.flush();
         return true;
@@ -95,9 +95,9 @@ public class VisitDateDAOImpl implements VisitDateDAO {
     public boolean unlockVisitDate(int visitDateID) {
         VisitDate visitDate = this.entityManager.find(VisitDate.class, visitDateID);
         if (visitDate == null) return false;
-        visitDate.setLock(false);
+        visitDate.setInactive(false);
         this.entityManager.flush();
-        return !visitDate.isLock();
+        return !visitDate.isInactive();
     }
 
     @Override
@@ -149,7 +149,7 @@ public class VisitDateDAOImpl implements VisitDateDAO {
         VisitDateVO result = new VisitDateVO();
         result.setVisitDateId(visitDate.getVisitDateId());
         result.setDate(visitDate.getDate());
-        result.setLock(visitDate.isLock());
+        result.setInactive(visitDate.isInactive());
 
         return result;
     }
@@ -157,7 +157,7 @@ public class VisitDateDAOImpl implements VisitDateDAO {
     private void copyToVisitDate(VisitDateVO original, VisitDate result) {
         if (original != null) {
             result.setDate(original.getDate());
-            result.setLock(original.isLock());
+            result.setInactive(original.isInactive());
         }
     }
 

@@ -11,11 +11,12 @@ import java.util.List;
 @Component
 public interface SurgeonDAO {
 
+    SurgeonVO findSurgeon(int surgeonId) throws BusinessException;
+
+
     SurgeonVO addSurgeon(SurgeonVO surgeonVO);
 
     SurgeonVO editSurgeon(int surgeonId, SurgeonVO surgeonVO) throws BusinessException;
-
-    SurgeonVO findSurgeon(int surgeonId) throws BusinessException;
 
     List<SurgeonVO> getSurgeons();
     List<SurgeonVO> getUnlockSurgeons();

@@ -11,13 +11,14 @@ import java.util.List;
 @Component
 public interface OperationTypeDAO {
 
+    OperationTypeVO findOperationType(int operationTypeID) throws BusinessException;
+
+
     int addOperationType(OperationTypeVO operationTypeVO);
 
     boolean lockOperationType(int operationTypeID) throws BusinessException;
 
     boolean unlockOperationType(int operationTypeID) throws BusinessException;
-
-    OperationTypeVO findOperationType(int operationTypeID) throws BusinessException;
 
     List<OperationTypeVO> getListUnlockedOperationTypes();
 

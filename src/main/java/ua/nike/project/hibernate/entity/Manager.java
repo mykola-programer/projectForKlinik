@@ -10,7 +10,7 @@ import java.util.Objects;
         @NamedQuery(name = "Manager.findAll", query = "FROM Manager ORDER BY surname")
 })
 @Table(name = "manager")
-public class Manager implements Serializable {
+public class Manager implements Serializable, EntityObject {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,6 +28,9 @@ public class Manager implements Serializable {
 
     @Column(name = "city_from", length = 50)
     private String cityFrom;
+
+    @Column(name = "inactive")
+    private Boolean inactive;
 
     @OneToMany(targetEntity = Visit.class, fetch = FetchType.LAZY, mappedBy = "manager", cascade = CascadeType.ALL)
     private List<Visit> visits;
@@ -70,6 +73,14 @@ public class Manager implements Serializable {
 
     public void setCityFrom(String cityFrom) {
         this.cityFrom = firstUpperCase(cityFrom);
+    }
+
+    public Boolean getInactive() {
+        return inactive;
+    }
+
+    public void setInactive(Boolean inactive) {
+        this.inactive = inactive;
     }
 
     public List<Visit> getVisits() {

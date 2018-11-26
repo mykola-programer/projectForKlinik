@@ -125,7 +125,7 @@ public class SurgeonDAOImpl implements SurgeonDAO {
         } catch (IndexOutOfBoundsException e) {
             result.setSex('Ч');
         }
-        result.setLock(surgeon.isLock());
+        result.setLock(surgeon.isInactive());
 
         return result;
     }
@@ -145,7 +145,7 @@ public class SurgeonDAOImpl implements SurgeonDAO {
                 default:
                     result.setSex(Sex.M);
             }
-            result.setLock(original.isLock());
+            result.setInactive(original.isLock());
         }
     }
 

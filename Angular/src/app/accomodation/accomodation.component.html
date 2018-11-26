@@ -7,15 +7,6 @@
   <!--<div class="row">-->
   <!--<div class="col-lg-6">-->
 
-  <div>
-    <button class="btn btn-min-style" (click)="onAdd()">Add</button>
-    <button class="btn btn-success btn-min-style" (click)="onSave()">Save</button>
-    <button class="btn btn-warning btn-min-style" (click)="onRefresh()">Refresh</button>
-    <button class="btn btn-dark btn-min-style" (click)="onDelete()">Delete</button>
-    <button class="btn btn-info btn-min-style" (click)="onUnplaced()">Unplaced</button>
-    <button class="btn btn-info btn-min-style" (click)="moveToAnotherDatePlace()">Move to ...</button>
-    <button class="btn btn-danger btn-min-style" (click)="onCancel()">Cancel</button>
-  </div>
   <div *ngFor="let ward of wards" class="container-fluid" style="min-width:500px;">
     <h5>Палата {{ward}}</h5>
 
@@ -89,7 +80,7 @@
                               (optionSelected)="selectedClient(visit_with_ward, $event.option.value)">
               <mat-option *ngFor="let client of filteredClients"
                           [value]="client">
-                {{client.surname}} {{client.firstName}} {{client.secondName}} {{client.sex}}
+                {{client.surname}} {{client.firstName}} {{client.secondName}}  ({{refactorDate(client.birthday) | date: 'yyyy.MM.dd'}})
               </mat-option>
             </mat-autocomplete>
           </td>
@@ -214,7 +205,7 @@
     <h5>Без стаціонарні</h5>
 
     <div class="table-responsive-lg">
-      <table class="table table-bordered table-sm table-hover">
+      <table id="table_no_ward" class="table table-bordered table-sm table-hover">
         <thead>
         <tr class="table-info">
           <th scope="col" style="width: 30px;"></th>
@@ -269,7 +260,8 @@
                    [ngModel]="visit.client" (input)="filteringClients(client.value)"
                    (focus)="filteringClients(client.value)"
                    class="form-control font-weight-bold form-control-sm input-style-active"
-                   [ngClass]="{'has-danger': !validClient(visit.client, client.value)}">
+                   [ngClass]="{'has-danger': !validClient(visit.client, client.value)}"
+                   required>
 
             <mat-autocomplete autoActiveFirstOption [displayWith]="displayFn" #autoClient="matAutocomplete"
                               (optionSelected)="selectedClient(visit, $event.option.value)">
@@ -385,7 +377,17 @@
       </table>
     </div>
   </div>
-
+<br>
+<br>
+  <div class="left-container fixed-bottom bg-light">
+    <button class="btn btn-min-style" (click)="onAdd()">Add</button>
+    <button class="btn btn-success btn-min-style" (click)="onSave()">Save</button>
+    <button class="btn btn-warning btn-min-style" (click)="onRefresh()">Refresh</button>
+    <button class="btn btn-dark btn-min-style" (click)="onDelete()">Delete</button>
+    <button class="btn btn-info btn-min-style" (click)="onUnplace()">Unplace</button>
+    <button class="btn btn-info btn-min-style" (click)="moveToAnotherDatePlace()">Move to ...</button>
+    <button class="btn btn-danger btn-min-style" (click)="onCancel()">Cancel</button>
+  </div>
 
   <!--</div>-->
   <!--</div>-->

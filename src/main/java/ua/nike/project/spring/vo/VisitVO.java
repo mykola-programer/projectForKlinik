@@ -6,7 +6,7 @@ import java.io.Serializable;
 import java.time.LocalTime;
 import java.util.Objects;
 
-public class VisitVO implements Serializable {
+public class VisitVO implements Serializable, VisualObject {
 
     private Integer visitId;
     private VisitDateVO visitDate;
@@ -14,7 +14,7 @@ public class VisitVO implements Serializable {
     private Integer orderForCome;
     private ClientVO client;
     private String status;
-    private ClientVO relative;
+    private ClientVO patient;
     private OperationTypeVO operationType;
     private Eye eye;
     private SurgeonVO surgeon;
@@ -70,12 +70,12 @@ public class VisitVO implements Serializable {
         this.status = status;
     }
 
-    public ClientVO getRelative() {
-        return relative;
+    public ClientVO getPatient() {
+        return patient;
     }
 
-    public void setRelative(ClientVO relative) {
-        this.relative = relative;
+    public void setPatient(ClientVO patient) {
+        this.patient = patient;
     }
 
     public OperationTypeVO getOperationType() {
@@ -136,7 +136,7 @@ public class VisitVO implements Serializable {
                 Objects.equals(orderForCome, visitVO.orderForCome) &&
                 Objects.equals(client, visitVO.client) &&
                 status == visitVO.status &&
-                Objects.equals(relative, visitVO.relative) &&
+                Objects.equals(patient, visitVO.patient) &&
                 Objects.equals(operationType, visitVO.operationType) &&
                 eye == visitVO.eye &&
                 Objects.equals(surgeon, visitVO.surgeon) &&
@@ -147,7 +147,7 @@ public class VisitVO implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(visitDate, timeForCome, orderForCome, client, status, relative, operationType, eye, surgeon, manager, accomodation, note);
+        return Objects.hash(visitDate, timeForCome, orderForCome, client, status, patient, operationType, eye, surgeon, manager, accomodation, note);
     }
 
     @Override
@@ -159,7 +159,7 @@ public class VisitVO implements Serializable {
         sb.append(", orderForCome=").append(orderForCome);
         sb.append(", client=").append(client);
         sb.append(", status=").append(status);
-        sb.append(", relative=").append(relative);
+        sb.append(", patient=").append(patient);
         sb.append(", operationType=").append(operationType);
         sb.append(", eye=").append(eye);
         sb.append(", surgeon=").append(surgeon);

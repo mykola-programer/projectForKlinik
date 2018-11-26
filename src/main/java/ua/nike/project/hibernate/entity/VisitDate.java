@@ -8,11 +8,11 @@ import java.util.Set;
 @Entity
 @Table(name = "visit_date")
 @NamedQueries(value = {
-        @NamedQuery(name = "VisitDate.getVisitDates", query = "SELECT DISTINCT od.date FROM VisitDate od WHERE lock = false ORDER BY od.date"),
+        @NamedQuery(name = "VisitDate.getVisitDates", query = "SELECT DISTINCT od.date FROM VisitDate od WHERE inactive = false ORDER BY od.date"),
         @NamedQuery(name = "VisitDate.findAll", query = "FROM VisitDate ORDER BY date"),
-        @NamedQuery(name = "VisitDate.getAllUnlock", query = "FROM VisitDate WHERE lock=false ORDER BY date")
+        @NamedQuery(name = "VisitDate.getAllUnlock", query = "FROM VisitDate WHERE inactive=false ORDER BY date")
 })
-public class VisitDate implements Serializable {
+public class VisitDate implements Serializable, EntityObject {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,8 +22,8 @@ public class VisitDate implements Serializable {
     @Column(name = "date", nullable = false)
     private LocalDate date;
 
-    @Column(name = "lock", nullable = false)
-    private boolean lock = false;
+    @Column(name = "inactive", nullable = false)
+    private boolean inactive = false;
 
     @OneToMany(targetEntity = Visit.class, fetch = FetchType.LAZY, mappedBy = "visitDate")
     private Set<Visit> visits;
@@ -44,12 +44,12 @@ public class VisitDate implements Serializable {
         this.date = date;
     }
 
-    public boolean isLock() {
-        return lock;
+    public boolean isInactive() {
+        return inactive;
     }
 
-    public void setLock(boolean lock) {
-        this.lock = lock;
+    public void setInactive(boolean inactive) {
+        this.inactive = inactive;
     }
 
     public Set<Visit> getVisits() {
@@ -80,7 +80,7 @@ public class VisitDate implements Serializable {
         final StringBuilder sb = new StringBuilder("VisitDate{");
         sb.append("visitDateId=").append(visitDateId);
         sb.append(", date=").append(date);
-        sb.append(", lock=").append(lock);
+        sb.append(", lock=").append(inactive);
         sb.append('}');
         return sb.toString();
     }

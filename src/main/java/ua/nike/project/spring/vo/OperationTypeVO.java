@@ -3,7 +3,7 @@ package ua.nike.project.spring.vo;
 import java.io.Serializable;
 import java.util.Objects;
 
-public class OperationTypeVO implements Serializable {
+public class OperationTypeVO implements Serializable, VisualObject {
 
     private Integer operationTypeId;
     private String name;
