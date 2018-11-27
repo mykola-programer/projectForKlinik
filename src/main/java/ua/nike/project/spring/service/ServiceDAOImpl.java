@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ua.nike.project.hibernate.entity.*;
 import ua.nike.project.hibernate.type.Sex;
+import ua.nike.project.hibernate.type.Ward;
 import ua.nike.project.spring.dao.DAO;
 import ua.nike.project.spring.exceptions.BusinessException;
 import ua.nike.project.spring.vo.*;
@@ -64,7 +65,7 @@ public class ServiceDAOImpl<T1 extends VisualObject, T2 extends EntityObject> im
 
     @Override
     public List<T1> getListByNamedQuery(String nQuery, Map<String, Object> parameters, Class<T2> eoClass) throws BusinessException {
-        List<T2> entities = dao.getListByNamedQuery(nQuery, parameters, eoClass);
+        List<T2> entities = dao.getEntitiesByNamedQuery(nQuery, parameters, eoClass);
         List<T1> result = new ArrayList<>();
         for (T2 entity : entities) {
             result.add(transformToVisualObject(entity));
@@ -74,12 +75,22 @@ public class ServiceDAOImpl<T1 extends VisualObject, T2 extends EntityObject> im
 
     @Override
     public List<T1> getListByQuery(String hqlQuery, Map<String, Object> parameters, Class<T2> eoClass) throws BusinessException {
-        List<T2> entities = dao.getListByQuery(hqlQuery, parameters, eoClass);
+        List<T2> entities = dao.getEntitiesByQuery(hqlQuery, parameters, eoClass);
         List<T1> result = new ArrayList<>();
         for (T2 entity : entities) {
             result.add(transformToVisualObject(entity));
         }
         return result;
+    }
+
+    @Override
+    public List<? extends Object> getObjectsByQuery(String hqlQuery, Map<String, Object> parameters, Class<? extends Object> oClass) {
+        return dao.getObjectsByQuery(hqlQuery, parameters, oClass);
+    }
+
+    @Override
+    public Object getObjectByQuery(String hqlQuery, Map<String, Object> parameters) {
+        return dao.getObjectByQuery(hqlQuery, parameters);
     }
 
     // ------------------------------------------------ //
@@ -91,9 +102,9 @@ public class ServiceDAOImpl<T1 extends VisualObject, T2 extends EntityObject> im
                 return (T1) transformToClientVO((Client) entity);
             case "Visit":
                 return (T1) transformToVisitVO((Visit) entity);
-/*            case "Accomodation":
-//                return transformToAccomodationVO(obj);
-
+            case "Accomodation":
+                return (T1) transformToAccomodationVO((Accomodation) entity);
+/*
             case "Manager":
 //                return transformToManagerVO(obj);
             case "OperationType":
@@ -173,7 +184,13 @@ public class ServiceDAOImpl<T1 extends VisualObject, T2 extends EntityObject> im
     }
 
     private AccomodationVO transformToAccomodationVO(Accomodation accomodation) {
-        return null;
+        if (accomodation == null) return null;
+        AccomodationVO result = new AccomodationVO();
+        result.setAccomodationId(accomodation.getAccomodationId());
+        result.setWard(Integer.valueOf(accomodation.getWard().toString().substring(1)));
+        result.setWardPlace(accomodation.getWardPlace());
+        result.setInactive(accomodation.isInactive());
+        return result;
     }
 
     private ManagerVO transformToManagerVO(Manager manager) {
@@ -199,11 +216,24 @@ public class ServiceDAOImpl<T1 extends VisualObject, T2 extends EntityObject> im
                 if (entity == null) entity = (T2) new Client();
                 return (T2) copyToClient((ClientVO) objectVO, (Client) entity);
             }
+            case "AccomodationVO": {
+                if (entity == null) entity = (T2) new Accomodation();
+                return (T2) copyToAccomodation((AccomodationVO) objectVO, (Accomodation) entity);
+            }
 //-----------------------------------------------------------
 
             default:
                 throw new BusinessException("Class not find.");
         }
+    }
+
+    private Accomodation copyToAccomodation(AccomodationVO original, Accomodation result) {
+        if (original != null) {
+            result.setWard(Ward.valueOf("N" + original.getWard()));
+            result.setWardPlace(original.getWardPlace());
+            result.setInactive(original.isInactive());
+        }
+        return result;
     }
 
     private Client copyToClient(ClientVO original, Client result) {
@@ -228,15 +258,15 @@ public class ServiceDAOImpl<T1 extends VisualObject, T2 extends EntityObject> im
     }
 
     private boolean isRelated(T2 entity) throws BusinessException {
-        if (entity == null) throw new BusinessException("Entity not correct.");
+        if (entity == null) throw new BusinessException("Entity is not correct.");
         switch (entity.getClass().getSimpleName()) {
             case "Client": {
                 Map<String, Object> parametersClient = new HashMap<>();
                 parametersClient.put("client", (Client) entity);
                 Map<String, Object> parametersPatient = new HashMap<>();
                 parametersPatient.put("patient", (Client) entity);
-                return (dao.getListByNamedQuery("Visit.findByClient", parametersClient, (Class<T2>) Visit.class).size() != 0
-                        || dao.getListByNamedQuery("Visit.findByPatient", parametersPatient, (Class<T2>) Visit.class).size() != 0);
+                return ((Long) dao.getObjectByQuery("SELECT count(*) FROM Visit v WHERE v.client = :client", parametersClient) != 0
+                        || dao.getEntitiesByNamedQuery("Visit.findByPatient", parametersPatient, (Class<T2>) Visit.class).size() != 0);
             }
 //-----------------------------------------------------------
 

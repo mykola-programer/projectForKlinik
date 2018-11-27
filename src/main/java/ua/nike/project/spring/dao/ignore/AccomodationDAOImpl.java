@@ -52,7 +52,7 @@ public class AccomodationDAOImpl implements AccomodationDAO {
         if (accomodation == null) throw new BusinessException("This accomodation is not find in database !");
         accomodation.setInactive(true);
         this.entityManager.flush();
-        return accomodation.isPlaceLocked();
+        return accomodation.isInactive();
     }
 
     @Override
@@ -62,7 +62,7 @@ public class AccomodationDAOImpl implements AccomodationDAO {
         if (accomodation == null) throw new BusinessException("This accomodation is not find in database !");
         accomodation.setInactive(false);
         this.entityManager.flush();
-        return accomodation.isPlaceLocked();
+        return accomodation.isInactive();
     }
 
     @Override
@@ -128,7 +128,7 @@ public class AccomodationDAOImpl implements AccomodationDAO {
         result.setWard(Integer.valueOf(accomodation.getWard().toString().substring(1)));
 
         result.setWardPlace(accomodation.getWardPlace());
-        result.setInactive(accomodation.isPlaceLocked());
+        result.setInactive(accomodation.isInactive());
         return result;
     }
 

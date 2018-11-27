@@ -8,10 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ua.nike.project.hibernate.entity.EntityObject;
 import ua.nike.project.spring.exceptions.BusinessException;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TransactionRequiredException;
-import javax.persistence.TypedQuery;
+import javax.persistence.*;
 import java.util.List;
 import java.util.Map;
 
@@ -64,7 +61,7 @@ public class DAOImpl<T extends EntityObject> implements DAO<T> {
 
     @Override
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-    public List<T> getListByNamedQuery(String nQuery, Map<String, Object> parameters, Class<T> tClass) {
+    public List<T> getEntitiesByNamedQuery(String nQuery, Map<String, Object> parameters, Class<T> tClass) {
         TypedQuery<T> namedQuery = entityManager.createNamedQuery(nQuery, tClass);
         if (parameters != null) {
             for (Map.Entry<String, Object> parameter : parameters.entrySet()) {
@@ -77,7 +74,7 @@ public class DAOImpl<T extends EntityObject> implements DAO<T> {
 
     @Override
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-    public List<T> getListByQuery(String hqlQuery, Map<String, Object> parameters, Class<T> tClass) {
+    public List<T> getEntitiesByQuery(String hqlQuery, Map<String, Object> parameters, Class<T> tClass) {
         TypedQuery<T> query = entityManager.createQuery(hqlQuery, tClass);
         if (parameters != null) {
             for (Map.Entry<String, Object> parameter : parameters.entrySet()) {
@@ -85,5 +82,29 @@ public class DAOImpl<T extends EntityObject> implements DAO<T> {
             }
         }
         return query.getResultList();
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+    public List<? extends Object> getObjectsByQuery(String hqlQuery, Map<String, Object> parameters, Class<? extends Object> oClass) {
+        TypedQuery<? extends Object> query = entityManager.createQuery(hqlQuery, oClass);
+        if (parameters != null) {
+            for (Map.Entry<String, Object> parameter : parameters.entrySet()) {
+                query.setParameter(parameter.getKey(), parameter.getValue());
+            }
+        }
+        return query.getResultList();
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+    public Object getObjectByQuery(String hqlQuery, Map<String, Object> parameters) {
+        Query query = entityManager.createQuery(hqlQuery);
+        if (parameters != null) {
+            for (Map.Entry<String, Object> parameter : parameters.entrySet()) {
+                query.setParameter(parameter.getKey(), parameter.getValue());
+            }
+        }
+        return query.getSingleResult();
     }
 }

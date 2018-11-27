@@ -1,6 +1,5 @@
 package ua.nike.project.spring.dao;
 
-import javafx.beans.property.MapProperty;
 import ua.nike.project.hibernate.entity.EntityObject;
 import ua.nike.project.spring.exceptions.BusinessException;
 
@@ -19,8 +18,13 @@ public interface DAO<T extends EntityObject> {
 
     boolean remove(int entityID, Class<T> tClass) throws BusinessException;
 
-    List<T> getListByNamedQuery(String query, Map<String, Object> parameters, Class<T> tClass);
+    List<T> getEntitiesByNamedQuery(String query, Map<String, Object> parameters, Class<T> tClass);
 
-    List<T> getListByQuery(String query, Map<String, Object> parameters, Class<T> tClass);
+    List<T> getEntitiesByQuery(String query, Map<String, Object> parameters, Class<T> tClass);
+
+    List<? extends Object> getObjectsByQuery(String hqlQuery, Map<String, Object> parameters, Class<? extends Object> oClass);
+
+    Object getObjectByQuery(String hqlQuery, Map<String, Object> parameters);
+
 
 }

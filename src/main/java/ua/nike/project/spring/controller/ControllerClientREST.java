@@ -84,7 +84,7 @@ public class ControllerClientREST {
 
     @CrossOrigin
     @RequestMapping(value = "{id}/visits", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public List<VisitVO> getListVisitsOfClient(@PathVariable("id") int clientId) throws BusinessException {
+    public List<VisitVO> getVisitsByClient(@PathVariable("id") int clientId) throws BusinessException {
         Client client = clientServiceDAO.getEntityByID(clientId, Client.class);
 
         Map<String, Object> parameters = new HashMap<>();

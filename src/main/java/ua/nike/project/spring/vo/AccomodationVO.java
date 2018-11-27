@@ -10,16 +10,6 @@ public class AccomodationVO implements Serializable, VisualObject {
     private Integer wardPlace;
     private Boolean inactive;
 
-    public AccomodationVO() {
-    }
-
-    public AccomodationVO(Integer accomodationId, Integer ward, Integer wardPlace, Boolean inactive) {
-        this.accomodationId = accomodationId;
-        this.ward = ward;
-        this.wardPlace = wardPlace;
-        this.inactive = inactive;
-    }
-
     public Integer getAccomodationId() {
         return accomodationId;
     }
@@ -44,7 +34,7 @@ public class AccomodationVO implements Serializable, VisualObject {
         this.wardPlace = wardPlace;
     }
 
-    public Boolean getInactive() {
+    public Boolean isInactive() {
         return inactive;
     }
 
@@ -58,13 +48,12 @@ public class AccomodationVO implements Serializable, VisualObject {
         if (o == null || getClass() != o.getClass()) return false;
         AccomodationVO that = (AccomodationVO) o;
         return ward == that.ward &&
-                Objects.equals(wardPlace, that.wardPlace) &&
-                Objects.equals(inactive, that.inactive);
+                Objects.equals(wardPlace, that.wardPlace);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(ward, wardPlace, inactive);
+        return Objects.hash(ward, wardPlace);
     }
 
     @Override

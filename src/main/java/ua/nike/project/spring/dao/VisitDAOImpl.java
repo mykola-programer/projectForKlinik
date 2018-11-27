@@ -8,6 +8,7 @@ import ua.nike.project.hibernate.entity.*;
 import ua.nike.project.hibernate.type.ClientStatus;
 import ua.nike.project.spring.exceptions.BusinessException;
 import ua.nike.project.spring.service.ServiceDAO;
+import ua.nike.project.spring.vo.AccomodationVO;
 import ua.nike.project.spring.vo.ClientVO;
 import ua.nike.project.spring.vo.VisitVO;
 
@@ -21,12 +22,12 @@ import java.util.List;
 @Repository
 public class VisitDAOImpl implements VisitDAO {
 
-    @PersistenceContext
-    private EntityManager entityManager;
-
     @Autowired
     ServiceDAO<ClientVO, Client> clientServiceDAO;
-
+    @Autowired
+    ServiceDAO<AccomodationVO, Accomodation> accomodationServiceDAO;
+    @PersistenceContext
+    private EntityManager entityManager;
     @Autowired
     private VisitDateDAO visitDateDAO;
 
@@ -42,8 +43,8 @@ public class VisitDAOImpl implements VisitDAO {
     @Autowired
     private ManagerDAO managerDAO;
 
-    @Autowired
-    private AccomodationDAO accomodationDAO;
+//    @Autowired
+//    private AccomodationDAO accomodationDAO;
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
@@ -187,12 +188,17 @@ public class VisitDAOImpl implements VisitDAO {
         }
 
 
-
         result.setOperationType(this.operationTypeDAO.transformToOperationTypeVO(visit.getOperationType()));
         result.setEye(visit.getEye());
         result.setSurgeon(this.surgeonDAO.transformToSurgeonVO(visit.getSurgeon()));
         result.setManager(this.managerDAO.transformToManagerVO(visit.getManager()));
-        result.setAccomodation(this.accomodationDAO.transformToAccomodationVO(visit.getAccomodation()));
+
+        try {
+            result.setAccomodation(accomodationServiceDAO.findByID(visit.getAccomodation() != null ? visit.getAccomodation().getAccomodationId() : 0, Accomodation.class));
+        } catch (BusinessException e) {
+            result.setAccomodation(null);
+        }
+
         result.setNote(visit.getNote());
         return result;
     }

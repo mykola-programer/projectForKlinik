@@ -24,8 +24,8 @@ import java.util.Objects;
 @Entity
 @NamedQueries(value = {
         @NamedQuery(name = "Accomodation.findAll", query = "FROM Accomodation acc ORDER BY acc.ward, acc.wardPlace"),
-        @NamedQuery(name = "Accomodation.getAllUnlock", query = "FROM Accomodation acc where acc.inactive = false ORDER BY acc.ward, acc.wardPlace"),
-        @NamedQuery(name = "Accomodation.getAllUnlockWards", query = "SELECT DISTINCT acc.ward FROM Accomodation acc where acc.inactive = false ORDER BY acc.ward")
+        @NamedQuery(name = "Accomodation.getAllActive", query = "FROM Accomodation acc where acc.inactive = false ORDER BY acc.ward, acc.wardPlace"),
+        @NamedQuery(name = "Accomodation.getActiveWards", query = "SELECT DISTINCT acc.ward FROM Accomodation acc where acc.inactive = false ORDER BY acc.ward")
 })
 @Table(name = "accomodation")
 @TypeDef(
@@ -77,7 +77,7 @@ public class Accomodation implements Serializable, EntityObject {
         this.wardPlace = wardPlace;
     }
 
-    public Boolean isPlaceLocked() {
+    public Boolean isInactive() {
         return inactive;
     }
 
@@ -103,13 +103,12 @@ public class Accomodation implements Serializable, EntityObject {
         if (o == null || getClass() != o.getClass()) return false;
         Accomodation that = (Accomodation) o;
         return ward == that.ward &&
-                Objects.equals(wardPlace, that.wardPlace) &&
-                Objects.equals(inactive, that.inactive);
+                Objects.equals(wardPlace, that.wardPlace);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(ward, wardPlace, inactive);
+        return Objects.hash(ward, wardPlace);
     }
 
     @Override

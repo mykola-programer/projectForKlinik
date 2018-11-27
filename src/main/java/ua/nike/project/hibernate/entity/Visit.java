@@ -16,7 +16,8 @@ import java.util.Objects;
 @NamedQueries(value = {
         @NamedQuery(name = "Visit.findAll", query = "FROM Visit "),
         @NamedQuery(name = "Visit.findByClient", query = "FROM Visit v WHERE v.client = :client"),
-        @NamedQuery(name = "Visit.findByPatient", query = "FROM Visit v WHERE v.patient = :patient")
+        @NamedQuery(name = "Visit.findByPatient", query = "FROM Visit v WHERE v.patient = :patient"),
+        @NamedQuery(name = "Visit.findByAccomodation", query = "FROM Visit v WHERE v.accomodation = :accomodation")
 })
 @Table(name = "visit")
 @TypeDef(

@@ -25,4 +25,8 @@ public interface ServiceDAO<T1 extends VisualObject, T2 extends EntityObject> {
 
     List<T1> getListByQuery(String hqlQuery, Map<String, Object> parameters, Class<T2> eoClass) throws BusinessException;
 
+    List<? extends Object> getObjectsByQuery(String hqlQuery, Map<String, Object> parameters, Class<? extends Object> oClass);
+
+    Object getObjectByQuery(String hqlQuery, Map<String, Object> parameters);
+
 }
