@@ -29,7 +29,7 @@ export class SurgeonEditorComponent implements OnInit {
 
 
   getSurgeons() {
-    this.surgeonService.getUnlockSurgeons().toPromise().then((surgeons: Surgeon[]) => {
+    this.surgeonService.getActiveSurgeons().toPromise().then((surgeons: Surgeon[]) => {
       this.surgeons = surgeons;
       this.sortSurgeons(this.surgeons);
       this.filteredSurgeons = this.surgeons;
@@ -181,8 +181,8 @@ export class SurgeonEditorComponent implements OnInit {
       return surgeon.isChanged && surgeon.surgeonId !== 0;
     });
     surgeons_for_lock.forEach((surgeon: Surgeon) => {
-      this.surgeonService.lockSurgeon(surgeon).toPromise().then((returned_surgeon: Surgeon) => {
-        if (returned_surgeon.surgeonId === surgeon.surgeonId && returned_surgeon.lock === true) {
+      this.surgeonService.deleteSurgeon(surgeon.surgeonId).toPromise().then((value: boolean) => {
+        if (value === true) {
           this.filteredSurgeons.splice(this.filteredSurgeons.indexOf(surgeon, 0), 1);
         }
       });
@@ -213,7 +213,7 @@ export class SurgeonEditorComponent implements OnInit {
     result.firstName = original.firstName;
     result.secondName = original.secondName;
     result.sex = original.sex;
-    result.lock = original.lock;
+    result.inactive = original.inactive;
     result.isChanged = original.isChanged;
   }
 }

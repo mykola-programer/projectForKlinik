@@ -193,7 +193,7 @@ export class DateSelectorDialogComponent implements OnInit {
   }
 
   private getAllFreeAccomodations(visits_of_date: Visit[]) {
-    this.accomodationService.getAccomodations().toPromise().then((accomodations: Accomodation[]) => {
+    this.accomodationService.getActiveAccomodations().toPromise().then((accomodations: Accomodation[]) => {
       this.accomodations = accomodations;
 
       visits_of_date.forEach((visit: Visit) => {

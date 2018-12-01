@@ -162,8 +162,8 @@
     </div>
     <select #selected_relative class="form-control">
       &lt;!&ndash;<option [selected]="client.relativeID == 0">Відсутній</option>&ndash;&gt;
-      &lt;!&ndash;<option *ngFor="let relative of relatives" [selected]="relative.clientId == client.relativeID">&ndash;&gt;
-        &lt;!&ndash;{{relative.clientId}} {{relative.surname}} {{relative.firstName}} {{relative.secondName}}&ndash;&gt;
+      &lt;!&ndash;<option *ngFor="let patient of relatives" [selected]="patient.clientId == client.relativeID">&ndash;&gt;
+        &lt;!&ndash;{{patient.clientId}} {{patient.surname}} {{patient.firstName}} {{patient.secondName}}&ndash;&gt;
       &lt;!&ndash;</option>&ndash;&gt;
 
     </select>

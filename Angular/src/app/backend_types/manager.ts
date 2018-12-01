@@ -4,5 +4,7 @@ export class Manager {
   public firstName: string;
   public secondName: string;
   public cityFrom: string;
+  public sex: string;
+  public inactive: boolean;
 
 }

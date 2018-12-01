@@ -11,24 +11,24 @@ public class SurgeonVO implements Serializable, VisualObject {
     private Integer surgeonId;
 
     @NotNull(message = "Прізвище повинно бути задано.")
-    @Size(min = 3, max = 50, message = "Прізвище повинно мати від 3 до 50 символів !")
+    @Size(min = 1, max = 50, message = "Прізвище повинно мати до 50 символів !")
     @Pattern(regexp = "[A-Za-zА-Яа-яЁёІіЇїЄє]+", message = "Прізвище повинно мати тільки літери !")
     private String surname;
 
     @NotNull(message = "Ім'я повинно бути задано.")
-    @Size(min = 3, max = 50, message = "Ім'я повинно мати від 3 до 50 символів !")
+    @Size(min = 1, max = 50, message = "Ім'я повинно мати від 50 символів !")
     @Pattern(regexp = "[A-Za-zА-Яа-яЁёІіЇїЄє]+", message = "Ім'я повинно мати тільки літери !")
     private String firstName;
 
     @NotNull(message = "По-Батькові повинно бути задано.")
-    @Size(min = 3, max = 50, message = "По-Батькові повинно мати від 3 до 50 символів !")
+    @Size(min = 1, max = 50, message = "По-Батькові повинно мати до 50 символів !")
     @Pattern(regexp = "[A-Za-zА-Яа-яЁёІіЇїЄє]+", message = "По-Батькові повинно мати тільки літери !")
     private String secondName;
 
     @NotNull(message = "Стать повинна бути задана.")
     private Character sex;
 
-    private boolean lock;
+    private boolean inactive;
 
     public Integer getSurgeonId() {
         return surgeonId;
@@ -70,12 +70,12 @@ public class SurgeonVO implements Serializable, VisualObject {
         this.sex = sex;
     }
 
-    public boolean isLock() {
-        return lock;
+    public boolean isInactive() {
+        return inactive;
     }
 
-    public void setLock(boolean lock) {
-        this.lock = lock;
+    public void setInactive(boolean inactive) {
+        this.inactive = inactive;
     }
 
     private String firstUpperCase(String word) {
@@ -102,11 +102,13 @@ public class SurgeonVO implements Serializable, VisualObject {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("Surgeon{");
+        final StringBuilder sb = new StringBuilder("SurgeonVO{");
         sb.append("surgeonId=").append(surgeonId);
         sb.append(", surname='").append(surname).append('\'');
         sb.append(", firstName='").append(firstName).append('\'');
         sb.append(", secondName='").append(secondName).append('\'');
+        sb.append(", sex=").append(sex);
+        sb.append(", inactive=").append(inactive);
         sb.append('}');
         return sb.toString();
     }

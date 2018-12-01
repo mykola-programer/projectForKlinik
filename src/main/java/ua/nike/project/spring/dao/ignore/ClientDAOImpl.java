@@ -1,11 +1,23 @@
 package ua.nike.project.spring.dao;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import ua.nike.project.hibernate.entity.Client;
+import ua.nike.project.hibernate.entity.Visit;
+import ua.nike.project.spring.exceptions.BusinessException;
+import ua.nike.project.spring.vo.VisitVO;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import java.util.ArrayList;
+import java.util.List;
 
 @Repository
 public class ClientDAOImpl implements ClientDAO {
 
-/*
+
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -25,7 +37,7 @@ public class ClientDAOImpl implements ClientDAO {
         }
         return result;
     }
-*/
+
 
 
 /*

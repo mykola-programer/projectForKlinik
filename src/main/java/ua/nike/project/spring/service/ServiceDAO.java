@@ -15,7 +15,7 @@ public interface ServiceDAO<T1 extends VisualObject, T2 extends EntityObject> {
 
     List<T1> findAll(String namedQuery, Class<T2> eoClass) throws BusinessException;
 
-    T1 create(final T1 entity) throws BusinessException;
+    T1 create(final T1 objectVO) throws BusinessException;
 
     T1 update(final int entityID, final T1 objectVO, Class<T2> eoClass) throws BusinessException;
 

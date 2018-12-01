@@ -1,5 +1,7 @@
 package ua.nike.project.spring.vo;
 
+import ua.nike.project.hibernate.type.Sex;
+
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -10,6 +12,8 @@ public class ManagerVO implements Serializable, VisualObject {
     private String firstName;
     private String secondName;
     private String cityFrom;
+    private Character sex;
+    private Boolean inactive;
 
     public Integer getManagerId() {
         return managerId;
@@ -51,6 +55,22 @@ public class ManagerVO implements Serializable, VisualObject {
         this.cityFrom = firstUpperCase(cityFrom);
     }
 
+    public Character getSex() {
+        return sex;
+    }
+
+    public void setSex(Character sex) {
+        this.sex = sex;
+    }
+
+    public Boolean isInactive() {
+        return inactive;
+    }
+
+    public void setInactive(Boolean inactive) {
+        this.inactive = inactive;
+    }
+
     private String firstUpperCase(String word) {
         if (word == null || word.isEmpty()) {
             return "";
@@ -76,12 +96,15 @@ public class ManagerVO implements Serializable, VisualObject {
 
     @Override
     public String toString() {
-        return "Manager{" +
-                "managerId=" + managerId +
-                ", surname='" + surname + '\'' +
-                ", firstName='" + firstName + '\'' +
-                ", secondName='" + secondName + '\'' +
-                ", cityFrom='" + cityFrom + '\'' +
-                '}';
+        final StringBuilder sb = new StringBuilder("ManagerVO{");
+        sb.append("managerId=").append(managerId);
+        sb.append(", surname='").append(surname).append('\'');
+        sb.append(", firstName='").append(firstName).append('\'');
+        sb.append(", secondName='").append(secondName).append('\'');
+        sb.append(", cityFrom='").append(cityFrom).append('\'');
+        sb.append(", sex=").append(sex);
+        sb.append(", inactive=").append(inactive);
+        sb.append('}');
+        return sb.toString();
     }
 }

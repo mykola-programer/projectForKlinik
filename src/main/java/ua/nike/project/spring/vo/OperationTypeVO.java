@@ -3,11 +3,11 @@ package ua.nike.project.spring.vo;
 import java.io.Serializable;
 import java.util.Objects;
 
-public class OperationTypeVO implements Serializable, VisualObject {
+public class OperationTypeVO implements VisualObject {
 
     private Integer operationTypeId;
     private String name;
-    private boolean lockType;
+    private boolean inactive;
 
     public Integer getOperationTypeId() {
         return operationTypeId;
@@ -25,12 +25,12 @@ public class OperationTypeVO implements Serializable, VisualObject {
         this.name = name;
     }
 
-    public boolean isLockType() {
-        return lockType;
+    public boolean isInactive() {
+        return inactive;
     }
 
-    public void setLockType(boolean lockType) {
-        this.lockType = lockType;
+    public void setInactive(boolean inactive) {
+        this.inactive = inactive;
     }
 
     @Override
@@ -51,7 +51,7 @@ public class OperationTypeVO implements Serializable, VisualObject {
         final StringBuilder sb = new StringBuilder("OperationTypeVO{");
         sb.append("operationTypeId=").append(operationTypeId);
         sb.append(", name='").append(name).append('\'');
-        sb.append(", lockType=").append(lockType);
+        sb.append(", inactive=").append(inactive);
         sb.append('}');
         return sb.toString();
     }

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import ua.nike.project.hibernate.entity.EntityObject;
+import ua.nike.project.hibernate.entity.Visit;
 import ua.nike.project.spring.exceptions.BusinessException;
 
 import javax.persistence.*;
@@ -42,9 +43,9 @@ public class DAOImpl<T extends EntityObject> implements DAO<T> {
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public T update(T entity) {
-        entityManager.flush();  // maybe not need
+        entityManager.merge(entity);
         return entity;
     }
 

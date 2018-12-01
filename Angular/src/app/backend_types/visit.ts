@@ -12,12 +12,13 @@ export class Visit {
   public orderForCome: number;
   public client: Client;
   public status: string;
-  public relative: Client;
+  public patient: Client;
   public operationType: OperationType;
   public eye: string;
   public surgeon: Surgeon;
   public manager: Manager;
   public accomodation: Accomodation;
+  public inactive: boolean;
   public note: string;
   public isChanged: boolean = false;
 

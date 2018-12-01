@@ -2,10 +2,14 @@ package ua.nike.project.spring.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import ua.nike.project.hibernate.entity.*;
+import ua.nike.project.hibernate.type.ClientStatus;
 import ua.nike.project.hibernate.type.Sex;
 import ua.nike.project.hibernate.type.Ward;
 import ua.nike.project.spring.dao.DAO;
+import ua.nike.project.spring.dao.DAOImpl;
 import ua.nike.project.spring.exceptions.BusinessException;
 import ua.nike.project.spring.vo.*;
 
@@ -50,7 +54,6 @@ public class ServiceDAOImpl<T1 extends VisualObject, T2 extends EntityObject> im
     public T1 update(int entityID, T1 objectVO, Class<T2> eoClass) throws BusinessException {
         T2 originalEntity = getEntityByID(entityID, eoClass);
         T2 updatedEntity = copyToEntity(objectVO, originalEntity);
-        // maybe we should not do "dao.update", because entity auto update(flash) to database
         return transformToVisualObject(dao.update(updatedEntity));
     }
 
@@ -93,7 +96,6 @@ public class ServiceDAOImpl<T1 extends VisualObject, T2 extends EntityObject> im
         return dao.getObjectByQuery(hqlQuery, parameters);
     }
 
-    // ------------------------------------------------ //
 
     private T1 transformToVisualObject(T2 entity) throws BusinessException {
         if (entity == null) return null;
@@ -104,45 +106,18 @@ public class ServiceDAOImpl<T1 extends VisualObject, T2 extends EntityObject> im
                 return (T1) transformToVisitVO((Visit) entity);
             case "Accomodation":
                 return (T1) transformToAccomodationVO((Accomodation) entity);
-/*
             case "Manager":
-//                return transformToManagerVO(obj);
+                return (T1) transformToManagerVO((Manager) entity);
             case "OperationType":
-//                return transformToOperationTypeVO(obj);
+                return (T1) transformToOperationTypeVO((OperationType) entity);
             case "Surgeon":
-//                return transformToSurgeonVO(obj);
+                return (T1) transformToSurgeonVO((Surgeon) entity);
             case "VisitDate":
-//                return transformToVisitDateVO(obj);
-             */
+                return (T1) transformToVisitDateVO((VisitDate) entity);
+
             default:
                 throw new BusinessException("Class not find.");
         }
-    }
-
-    private ClientVO transformToClientVO(Client client) {
-        if (client == null) return null;
-        ClientVO result = new ClientVO();
-        result.setClientId(client.getClientId());
-        result.setSurname(client.getSurname());
-        result.setFirstName(client.getFirstName());
-        result.setSecondName(client.getSecondName());
-        try {
-            switch (client.getSex().toString().charAt(0)) {
-                case 'W':
-                case 'w':
-                    result.setSex('Ж');
-                    break;
-                case 'M':
-                case 'm':
-                default:
-                    result.setSex('Ч');
-            }
-        } catch (IndexOutOfBoundsException e) {
-            result.setSex('Ч');
-        }
-        result.setBirthday(client.getBirthday());
-        result.setTelephone(client.getTelephone());
-        return result;
     }
 
     private VisitVO transformToVisitVO(Visit visit) {
@@ -153,33 +128,29 @@ public class ServiceDAOImpl<T1 extends VisualObject, T2 extends EntityObject> im
         result.setVisitDate(transformToVisitDateVO(visit.getVisitDate()));
         result.setTimeForCome(visit.getTimeForCome());
         result.setOrderForCome(visit.getOrderForCome());
-        try {
-            result.setClient((ClientVO) findByID(visit.getClient() != null ? visit.getClient().getClientId() : 0, (Class<T2>) Client.class));
-        } catch (BusinessException e) {
-            result.setClient(null);
-        }
-
-        switch (visit.getStatus().toString().toUpperCase()) {
-            case "RELATIVE":
-                result.setStatus("супров.");
-                break;
-            case "PATIENT":
-            default:
-                result.setStatus("пацієнт");
-        }
-
-        try {
-            result.setPatient((ClientVO) findByID(visit.getPatient() != null ? visit.getPatient().getClientId() : 0, (Class<T2>) Client.class));
-        } catch (BusinessException e) {
-            result.setPatient(null);
-        }
-
+        result.setClient(transformToClientVO(visit.getClient()));
+        result.setPatient(transformToClientVO(visit.getPatient()));
+        result.setStatus(convertClientStatus(visit.getStatus()));
         result.setOperationType(transformToOperationTypeVO(visit.getOperationType()));
         result.setEye(visit.getEye());
         result.setSurgeon(transformToSurgeonVO(visit.getSurgeon()));
         result.setManager(transformToManagerVO(visit.getManager()));
         result.setAccomodation(transformToAccomodationVO(visit.getAccomodation()));
         result.setNote(visit.getNote());
+        result.setInactive(visit.getInactive());
+        return result;
+    }
+
+    private ClientVO transformToClientVO(Client client) {
+        if (client == null) return null;
+        ClientVO result = new ClientVO();
+        result.setClientId(client.getClientId());
+        result.setSurname(client.getSurname());
+        result.setFirstName(client.getFirstName());
+        result.setSecondName(client.getSecondName());
+        result.setSex(convertSex(client.getSex()));
+        result.setBirthday(client.getBirthday());
+        result.setTelephone(client.getTelephone());
         return result;
     }
 
@@ -194,19 +165,46 @@ public class ServiceDAOImpl<T1 extends VisualObject, T2 extends EntityObject> im
     }
 
     private ManagerVO transformToManagerVO(Manager manager) {
-        return null;
+        if (manager == null) return null;
+        ManagerVO result = new ManagerVO();
+        result.setManagerId(manager.getManagerId());
+        result.setSurname(manager.getSurname());
+        result.setFirstName(manager.getFirstName());
+        result.setSecondName(manager.getSecondName());
+        result.setSex(convertSex(manager.getSex()));
+        result.setCityFrom(manager.getCityFrom());
+        result.setInactive(manager.isInactive());
+        return result;
     }
 
     private SurgeonVO transformToSurgeonVO(Surgeon surgeon) {
-        return null;
+        if (surgeon == null) return null;
+        SurgeonVO result = new SurgeonVO();
+        result.setSurgeonId(surgeon.getSurgeonId());
+        result.setSurname(surgeon.getSurname());
+        result.setFirstName(surgeon.getFirstName());
+        result.setSecondName(surgeon.getSecondName());
+        result.setSex(convertSex(surgeon.getSex()));
+        result.setInactive(surgeon.isInactive());
+        return result;
     }
 
     private OperationTypeVO transformToOperationTypeVO(OperationType operationType) {
-        return null;
+        if (operationType == null) return null;
+        OperationTypeVO operationTypeVO = new OperationTypeVO();
+        operationTypeVO.setOperationTypeId(operationType.getOperationTypeId());
+        operationTypeVO.setName(operationType.getName());
+        operationTypeVO.setInactive(operationType.isInactive());
+        return operationTypeVO;
     }
 
     private VisitDateVO transformToVisitDateVO(VisitDate visitDate) {
-        return null;
+        if (visitDate == null) return null;
+        VisitDateVO result = new VisitDateVO();
+        result.setVisitDateId(visitDate.getVisitDateId());
+        result.setDate(visitDate.getDate());
+        result.setInactive(visitDate.isInactive());
+        return result;
     }
 
     private T2 copyToEntity(T1 objectVO, T2 entity) throws BusinessException {
@@ -220,11 +218,127 @@ public class ServiceDAOImpl<T1 extends VisualObject, T2 extends EntityObject> im
                 if (entity == null) entity = (T2) new Accomodation();
                 return (T2) copyToAccomodation((AccomodationVO) objectVO, (Accomodation) entity);
             }
-//-----------------------------------------------------------
+            case "ManagerVO": {
+                if (entity == null) entity = (T2) new Manager();
+                return (T2) copyToManager((ManagerVO) objectVO, (Manager) entity);
+            }
+            case "OperationTypeVO": {
+                if (entity == null) entity = (T2) new OperationType();
+                return (T2) copyToOperationType((OperationTypeVO) objectVO, (OperationType) entity);
+            }
+            case "SurgeonVO": {
+                if (entity == null) entity = (T2) new Surgeon();
+                return (T2) copyToSurgeon((SurgeonVO) objectVO, (Surgeon) entity);
+            }
+            case "VisitVO": {
+                if (entity == null) entity = (T2) new Visit();
+                return (T2) copyToVisit((VisitVO) objectVO, (Visit) entity);
+            }
+            case "VisitDateVO": {
+                if (entity == null) entity = (T2) new VisitDate();
+                return (T2) copyToVisitDate((VisitDateVO) objectVO, (VisitDate) entity);
+            }
 
             default:
                 throw new BusinessException("Class not find.");
         }
+    }
+
+    private Visit copyToVisit(VisitVO original, Visit result) {
+
+        if (original != null) {
+
+            result.setTimeForCome(original.getTimeForCome());
+            result.setOrderForCome(original.getOrderForCome());
+            result.setStatus(convertClientStatus(original.getStatus()));
+            result.setEye(original.getEye());
+            result.setNote(original.getNote());
+            result.setInactive(original.getInactive());
+
+            if (original.getVisitDate() != null && original.getVisitDate().getVisitDateId() > 0) {
+                VisitDate visitDate = new VisitDate();
+                visitDate.setVisitDateId(original.getVisitDate().getVisitDateId());
+                result.setVisitDate(copyToVisitDate(original.getVisitDate(), visitDate));
+            }else result.setVisitDate(null);
+
+            if (original.getPatient() != null && original.getPatient().getClientId() > 0) {
+                Client patient = new Client();
+                patient.setClientId(original.getPatient().getClientId());
+                result.setPatient(copyToClient(original.getPatient(), patient));
+            }else result.setPatient(null);
+
+            if (original.getClient() != null && original.getClient().getClientId() > 0) {
+                Client client = new Client();
+                client.setClientId(original.getClient().getClientId());
+                result.setClient(copyToClient(original.getClient(), client));
+            }else result.setClient(null);
+
+
+            if (original.getOperationType() != null && original.getOperationType().getOperationTypeId() > 0) {
+                OperationType operationType = new OperationType();
+                operationType.setOperationTypeId(original.getOperationType().getOperationTypeId());
+                result.setOperationType(copyToOperationType(original.getOperationType(), operationType));
+            }else result.setOperationType(null);
+
+            if (original.getSurgeon() != null && original.getSurgeon().getSurgeonId() > 0) {
+                Surgeon surgeon = new Surgeon();
+                surgeon.setSurgeonId(original.getSurgeon().getSurgeonId());
+                result.setSurgeon(copyToSurgeon(original.getSurgeon(), surgeon));
+            }else result.setSurgeon(null);
+
+            if (original.getManager() != null && original.getManager().getManagerId() > 0) {
+                Manager manager = new Manager();
+                manager.setManagerId(original.getManager().getManagerId());
+                result.setManager(copyToManager(original.getManager(), manager));
+            }else result.setManager(null);
+
+            if (original.getAccomodation() != null && original.getAccomodation().getAccomodationId() > 0) {
+                Accomodation accomodation = new Accomodation();
+                accomodation.setAccomodationId(original.getAccomodation().getAccomodationId());
+                result.setAccomodation(copyToAccomodation(original.getAccomodation(), accomodation));
+            }else result.setAccomodation(null);
+
+        }
+        return result;
+    }
+
+    private VisitDate copyToVisitDate(VisitDateVO original, VisitDate result) {
+        if (original != null) {
+            result.setDate(original.getDate());
+            result.setInactive(original.isInactive());
+        }
+        return result;
+    }
+
+    private Surgeon copyToSurgeon(SurgeonVO original, Surgeon result) {
+        if (original != null) {
+            result.setSurname(original.getSurname());
+            result.setFirstName(original.getFirstName());
+            result.setSecondName(original.getSecondName());
+            result.setSex(convertSex(original.getSex()));
+            result.setInactive(original.isInactive());
+        }
+        return result;
+    }
+
+    private OperationType copyToOperationType(OperationTypeVO original, OperationType result) {
+        if (original != null) {
+            result.setName(original.getName());
+            result.setInactive(original.isInactive());
+        }
+        return result;
+    }
+
+    private Manager copyToManager(ManagerVO original, Manager result) {
+        if (original != null) {
+            result.setSurname(original.getSurname());
+            result.setFirstName(original.getFirstName());
+            result.setSecondName(original.getSecondName());
+            result.setCityFrom(original.getCityFrom());
+            result.setSex(convertSex(original.getSex()));
+            result.setInactive(original.isInactive());
+        }
+        return result;
     }
 
     private Accomodation copyToAccomodation(AccomodationVO original, Accomodation result) {
@@ -241,20 +355,64 @@ public class ServiceDAOImpl<T1 extends VisualObject, T2 extends EntityObject> im
             result.setSurname(original.getSurname());
             result.setFirstName(original.getFirstName());
             result.setSecondName(original.getSecondName());
-            switch (original.getSex()) {
-                case 'Ж':
-                case 'ж':
-                    result.setSex(Sex.W);
-                    break;
-                case 'Ч':
-                case 'ч':
-                default:
-                    result.setSex(Sex.M);
-            }
+            result.setSex(convertSex(original.getSex()));
             result.setBirthday(original.getBirthday());
             result.setTelephone(original.getTelephone());
         }
         return result;
+    }
+
+    private Character convertSex(Sex sex) {
+        if (sex == null) return null;
+        try {
+            switch (sex.toString().charAt(0)) {
+                case 'W':
+                case 'w':
+                    return 'Ж';
+                case 'M':
+                case 'm':
+                default:
+                    return 'Ч';
+            }
+        } catch (IndexOutOfBoundsException e) {
+            return 'Ч';
+        }
+    }
+
+    private Sex convertSex(Character symbol) {
+        if (symbol == null) return null;
+        switch (symbol) {
+            case 'Ж':
+            case 'ж':
+                return Sex.W;
+            case 'Ч':
+            case 'ч':
+            default:
+                return Sex.M;
+        }
+    }
+
+    private ClientStatus convertClientStatus(String status) {
+        switch (status) {
+            case "пацієнт":
+                return ClientStatus.PATIENT;
+            case "супров.":
+            case "супроводжуючий":
+            default:
+                return ClientStatus.RELATIVE;
+        }
+    }
+
+    private String convertClientStatus(ClientStatus status) {
+        if (status == null) return null;
+
+        switch (status.toString().toUpperCase()) {
+            case "RELATIVE":
+                return "супров.";
+            case "PATIENT":
+            default:
+                return "пацієнт";
+        }
     }
 
     private boolean isRelated(T2 entity) throws BusinessException {
@@ -267,6 +425,34 @@ public class ServiceDAOImpl<T1 extends VisualObject, T2 extends EntityObject> im
                 parametersPatient.put("patient", (Client) entity);
                 return ((Long) dao.getObjectByQuery("SELECT count(*) FROM Visit v WHERE v.client = :client", parametersClient) != 0
                         || dao.getEntitiesByNamedQuery("Visit.findByPatient", parametersPatient, (Class<T2>) Visit.class).size() != 0);
+            }
+            case "Manager": {
+                Map<String, Object> parameters = new HashMap<>();
+                parameters.put("manager", entity);
+                return dao.getEntitiesByNamedQuery("Visit.findByManager", parameters, (Class<T2>) Visit.class).size() != 0;
+            }
+            case "OperationType": {
+                Map<String, Object> parameters = new HashMap<>();
+                parameters.put("operationType", entity);
+                return dao.getEntitiesByNamedQuery("Visit.findByOperationType", parameters, (Class<T2>) Visit.class).size() != 0;
+            }
+            case "Surgeon": {
+                Map<String, Object> parameters = new HashMap<>();
+                parameters.put("surgeon", entity);
+                return dao.getEntitiesByNamedQuery("Visit.findBySurgeon", parameters, (Class<T2>) Visit.class).size() != 0;
+            }
+            case "VisitDate": {
+                Map<String, Object> parameters = new HashMap<>();
+                parameters.put("visitDate", entity);
+                return dao.getEntitiesByNamedQuery("Visit.findByVisitDate", parameters, (Class<T2>) Visit.class).size() != 0;
+            }
+            case "Accomodation": {
+                Map<String, Object> parameters = new HashMap<>();
+                parameters.put("accomodation", entity);
+                return dao.getEntitiesByNamedQuery("Visit.findByAccomodation", parameters, (Class<T2>) Visit.class).size() != 0;
+            }
+            case "Visit": {
+                return false;
             }
 //-----------------------------------------------------------
 

@@ -38,7 +38,7 @@ export class ClientService {
     return this.http.put<Client>(this.serverUrl + this.clientsUrl + client.clientId.toString(), JSON.stringify(client), this.httpOptions);
   }
 
-  removeClient(client_id: number): Observable<boolean> {
+  deleteClient(client_id: number): Observable<boolean> {
     return this.http.delete<boolean>(this.serverUrl + this.clientsUrl + client_id.toString(), this.httpOptions);
   }
 }

@@ -10,7 +10,7 @@ export class VisitService {
   private serverUrl = "http://localhost:8080/";  // URL to REST-server
   private visitUrl = "visits/";
   private isWardsUrl = "all_wards/";
-  private noWardUrl = "no_ward/";
+  private noWardUrl = "no_wards/";
   private readonly httpOptions = {
     headers: new HttpHeaders({
       "Content-Type": "application/json"
@@ -54,7 +54,7 @@ export class VisitService {
     visit_without_ward.surgeon = visit.surgeon;
     visit_without_ward.manager = visit.manager;
     visit_without_ward.orderForCome = visit.orderForCome;
-    visit_without_ward.relative = visit.relative;
+    visit_without_ward.patient = visit.patient;
     return this.editVisit(visit_without_ward);
   }
 

@@ -1,18 +1,17 @@
 package ua.nike.project.hibernate.entity;
 
 import javax.persistence.*;
-import java.io.Serializable;
+import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 @Entity
 @Table(name = "operation_type")
 @NamedQueries(value = {
         @NamedQuery(name = "OperationType.findAll", query = "FROM OperationType ORDER BY name"),
-        @NamedQuery(name = "OperationType.getAllUnlock", query = "FROM OperationType WHERE inactive = false ORDER BY name")
+        @NamedQuery(name = "OperationType.getAllActive", query = "FROM OperationType WHERE inactive = false ORDER BY name")
 
 })
-public class OperationType implements Serializable, EntityObject {
+public class OperationType implements EntityObject {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,11 +21,11 @@ public class OperationType implements Serializable, EntityObject {
     @Column(name = "name", length = 50, nullable = false)
     private String name;
 
-    @Column (name = "inactive", nullable = false)
+    @Column(name = "inactive", nullable = false)
     private boolean inactive;
 
     @OneToMany(targetEntity = Visit.class, fetch = FetchType.LAZY, mappedBy = "operationType")
-    private Set<Visit> visits;
+    private List<Visit> visits;
 
     public Integer getOperationTypeId() {
         return operationTypeId;
@@ -52,14 +51,13 @@ public class OperationType implements Serializable, EntityObject {
         this.inactive = lockType;
     }
 
-    public Set<Visit> getVisits() {
+    public List<Visit> getVisits() {
         return visits;
     }
 
-    public void setVisits(Set<Visit> visits) {
+    public void setVisits(List<Visit> visits) {
         this.visits = visits;
     }
-
 
     @Override
     public boolean equals(Object o) {
@@ -79,7 +77,7 @@ public class OperationType implements Serializable, EntityObject {
         final StringBuilder sb = new StringBuilder("OperationType{");
         sb.append("operationTypeId=").append(operationTypeId);
         sb.append(", name='").append(name).append('\'');
-        sb.append(", lockType=").append(inactive);
+        sb.append(", inactive=").append(inactive);
         sb.append('}');
         return sb.toString();
     }

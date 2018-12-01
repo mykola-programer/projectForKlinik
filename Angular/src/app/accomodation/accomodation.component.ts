@@ -78,7 +78,7 @@ export class AccomodationComponent implements OnInit {
   }
 
   private getVisitsWithWards() {
-    this.accomodationService.getAccomodations().toPromise().then((accomodations: Accomodation[]) => {
+    this.accomodationService.getActiveAccomodations().toPromise().then((accomodations: Accomodation[]) => {
       this.visits_with_wards = [];
       accomodations.forEach((accomodation: Accomodation) => {
         let isAdd = false;
@@ -116,7 +116,7 @@ export class AccomodationComponent implements OnInit {
   }
 
   private getSurgeons() {
-    this.surgeonService.getUnlockSurgeons().toPromise().then(surgeons => this.surgeons = surgeons);
+    this.surgeonService.getActiveSurgeons().toPromise().then(surgeons => this.surgeons = surgeons);
   }
 
   private getManagers() {
@@ -124,7 +124,7 @@ export class AccomodationComponent implements OnInit {
   }
 
   private getOperationTypes() {
-    this.operationTypeService.getProcedures().toPromise().then(operation_types => this.operation_types = operation_types);
+    this.operationTypeService.getActiveProcedures().toPromise().then(operation_types => this.operation_types = operation_types);
   }
 
   /*             Order For Come              */

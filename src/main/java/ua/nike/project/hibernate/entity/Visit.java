@@ -15,8 +15,15 @@ import java.util.Objects;
 @Entity
 @NamedQueries(value = {
         @NamedQuery(name = "Visit.findAll", query = "FROM Visit "),
+        @NamedQuery(name = "Visit.findAllByDate", query = "FROM Visit v WHERE v.visitDate.date = :date"),
+        @NamedQuery(name = "Visit.findAllByDateWithWards", query = "FROM Visit v WHERE v.visitDate.date = :date AND v.accomodation IS NOT NULL ORDER BY v.accomodation.ward, v.accomodation.wardPlace"),
+        @NamedQuery(name = "Visit.findAllByDateWithoutWards", query = "FROM Visit v WHERE v.visitDate.date = :date AND v.accomodation IS NULL order by v.orderForCome"),
         @NamedQuery(name = "Visit.findByClient", query = "FROM Visit v WHERE v.client = :client"),
         @NamedQuery(name = "Visit.findByPatient", query = "FROM Visit v WHERE v.patient = :patient"),
+        @NamedQuery(name = "Visit.findByManager", query = "FROM Visit v WHERE v.manager = :manager"),
+        @NamedQuery(name = "Visit.findByOperationType", query = "FROM Visit v WHERE v.operationType = :operationType"),
+        @NamedQuery(name = "Visit.findBySurgeon", query = "FROM Visit v WHERE v.surgeon = :surgeon"),
+        @NamedQuery(name = "Visit.findByVisitDate", query = "FROM Visit v WHERE v.visitDate = :visitDate"),
         @NamedQuery(name = "Visit.findByAccomodation", query = "FROM Visit v WHERE v.accomodation = :accomodation")
 })
 @Table(name = "visit")
@@ -83,25 +90,6 @@ public class Visit implements EntityObject {
 
     @Column(name = "inactive")
     private Boolean inactive;
-
-    public Visit() {
-    }
-
-    public Visit(long version, VisitDate visitDate, LocalTime timeForCome, @Min(1) Integer orderForCome, Client client, ClientStatus status, Client patient, OperationType operationType, Eye eye, Surgeon surgeon, Manager manager, Accomodation accomodation, String note) {
-        this.version = version;
-        this.visitDate = visitDate;
-        this.timeForCome = timeForCome;
-        this.orderForCome = orderForCome;
-        this.client = client;
-        this.status = status;
-        this.patient = patient;
-        this.operationType = operationType;
-        this.eye = eye;
-        this.surgeon = surgeon;
-        this.manager = manager;
-        this.accomodation = accomodation;
-        this.note = note;
-    }
 
     public long getVersion() {
         return version;
@@ -229,39 +217,33 @@ public class Visit implements EntityObject {
         if (o == null || getClass() != o.getClass()) return false;
         Visit visit = (Visit) o;
         return Objects.equals(visitDate, visit.visitDate) &&
-                Objects.equals(timeForCome, visit.timeForCome) &&
-                Objects.equals(orderForCome, visit.orderForCome) &&
                 Objects.equals(client, visit.client) &&
-                status == visit.status &&
-                Objects.equals(patient, visit.patient) &&
                 Objects.equals(operationType, visit.operationType) &&
-                eye == visit.eye &&
-                Objects.equals(surgeon, visit.surgeon) &&
-                Objects.equals(manager, visit.manager) &&
-                Objects.equals(accomodation, visit.accomodation) &&
-                Objects.equals(note, visit.note);
+                eye == visit.eye;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(visitDate, timeForCome, orderForCome, client, status, patient, operationType, eye, surgeon, manager, accomodation, note);
+        return Objects.hash(visitDate, client, operationType, eye);
     }
 
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("Visit{");
-        sb.append("visitDate=").append(visitDate);
+        sb.append("visitId=").append(visitId);
+        sb.append(", visitDate=").append(visitDate);
         sb.append(", timeForCome=").append(timeForCome);
         sb.append(", orderForCome=").append(orderForCome);
         sb.append(", client=").append(client);
         sb.append(", status=").append(status);
-        sb.append(", relative=").append(patient);
+        sb.append(", patient=").append(patient);
         sb.append(", operationType=").append(operationType);
         sb.append(", eye=").append(eye);
         sb.append(", surgeon=").append(surgeon);
         sb.append(", manager=").append(manager);
         sb.append(", accomodation=").append(accomodation);
         sb.append(", note='").append(note).append('\'');
+        sb.append(", inactive=").append(inactive);
         sb.append('}');
         return sb.toString();
     }

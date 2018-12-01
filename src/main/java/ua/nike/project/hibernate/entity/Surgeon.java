@@ -13,14 +13,14 @@ import java.util.Objects;
 @Entity
 @NamedQueries(value = {
         @NamedQuery(name = "Surgeon.findAll", query = "FROM Surgeon ORDER BY surname"),
-        @NamedQuery(name = "Surgeon.findAllUnlock", query = "FROM Surgeon s WHERE s.inactive = false ORDER BY surname")
+        @NamedQuery(name = "Surgeon.findAllActive", query = "FROM Surgeon s WHERE s.inactive = false ORDER BY surname")
 })
 @Table(name = "surgeon")
 @TypeDef(
         name = "pgsql_enum",
         typeClass = PostgreSQLEnumType.class
 )
-public class Surgeon implements Serializable, EntityObject {
+public class Surgeon implements EntityObject {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -132,6 +132,7 @@ public class Surgeon implements Serializable, EntityObject {
         sb.append(", firstName='").append(firstName).append('\'');
         sb.append(", secondName='").append(secondName).append('\'');
         sb.append(", sex=").append(sex);
+        sb.append(", inactive=").append(inactive);
         sb.append('}');
         return sb.toString();
     }

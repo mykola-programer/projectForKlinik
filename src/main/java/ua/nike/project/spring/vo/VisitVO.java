@@ -21,6 +21,7 @@ public class VisitVO implements Serializable, VisualObject {
     private ManagerVO manager;
     private AccomodationVO accomodation;
     private String note;
+    private Boolean inactive;
 
     public Integer getVisitId() {
         return visitId;
@@ -126,28 +127,28 @@ public class VisitVO implements Serializable, VisualObject {
         this.note = note;
     }
 
+    public Boolean getInactive() {
+        return inactive;
+    }
+
+    public void setInactive(Boolean inactive) {
+        this.inactive = inactive;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         VisitVO visitVO = (VisitVO) o;
         return Objects.equals(visitDate, visitVO.visitDate) &&
-                Objects.equals(timeForCome, visitVO.timeForCome) &&
-                Objects.equals(orderForCome, visitVO.orderForCome) &&
                 Objects.equals(client, visitVO.client) &&
-                status == visitVO.status &&
-                Objects.equals(patient, visitVO.patient) &&
                 Objects.equals(operationType, visitVO.operationType) &&
-                eye == visitVO.eye &&
-                Objects.equals(surgeon, visitVO.surgeon) &&
-                Objects.equals(manager, visitVO.manager) &&
-                Objects.equals(accomodation, visitVO.accomodation) &&
-                Objects.equals(note, visitVO.note);
+                eye == visitVO.eye;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(visitDate, timeForCome, orderForCome, client, status, patient, operationType, eye, surgeon, manager, accomodation, note);
+        return Objects.hash(visitDate, client, operationType, eye);
     }
 
     @Override
@@ -158,7 +159,7 @@ public class VisitVO implements Serializable, VisualObject {
         sb.append(", timeForCome=").append(timeForCome);
         sb.append(", orderForCome=").append(orderForCome);
         sb.append(", client=").append(client);
-        sb.append(", status=").append(status);
+        sb.append(", status='").append(status).append('\'');
         sb.append(", patient=").append(patient);
         sb.append(", operationType=").append(operationType);
         sb.append(", eye=").append(eye);
@@ -166,6 +167,7 @@ public class VisitVO implements Serializable, VisualObject {
         sb.append(", manager=").append(manager);
         sb.append(", accomodation=").append(accomodation);
         sb.append(", note='").append(note).append('\'');
+        sb.append(", inactive=").append(inactive);
         sb.append('}');
         return sb.toString();
     }

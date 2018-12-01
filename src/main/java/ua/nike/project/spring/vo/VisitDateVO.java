@@ -1,13 +1,12 @@
 package ua.nike.project.spring.vo;
 
-import java.io.Serializable;
 import java.time.LocalDate;
 
-public class VisitDateVO implements Serializable, VisualObject {
+public class VisitDateVO implements VisualObject {
 
     private Integer visitDateId;
     private LocalDate date;
-    private boolean inactive = false;
+    private boolean inactive;
 
     public Integer getVisitDateId() {
         return visitDateId;

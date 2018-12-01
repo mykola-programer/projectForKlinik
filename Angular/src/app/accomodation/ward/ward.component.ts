@@ -65,7 +65,7 @@ export class WardComponent implements OnInit {
 
 
   getAllPlacesOfWards() {
-    this.accomodationService.getAccomodations().toPromise().then((placesOfWards: Accomodation[]) => {
+    this.accomodationService.getActiveAccomodations().toPromise().then((placesOfWards: Accomodation[]) => {
       this.placesOfWards = [];
       placesOfWards.forEach((accomodation: Accomodation) => {
         let isAdd = false;

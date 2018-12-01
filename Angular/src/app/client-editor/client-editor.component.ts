@@ -217,7 +217,7 @@ export class ClientEditorComponent implements OnInit {
       return client.isChanged && client.clientId !== 0;
     });
     clients_for_lock.forEach((client: Client) => {
-      this.clientService.removeClient(client.clientId).toPromise().then((success: boolean) => {
+      this.clientService.deleteClient(client.clientId).toPromise().then((success: boolean) => {
         if (success) {
           alert("Клієнт : " + client.surname + " " + client.firstName + " "
             + client.secondName + " успішно виделений!");

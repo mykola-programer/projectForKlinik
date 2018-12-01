@@ -1,16 +1,18 @@
 package ua.nike.project.hibernate.entity;
 
+import org.hibernate.annotations.Type;
+import ua.nike.project.hibernate.type.Sex;
+
 import javax.persistence.*;
-import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
 @Entity
 @NamedQueries(value = {
-        @NamedQuery(name = "Manager.findAll", query = "FROM Manager ORDER BY surname")
+        @NamedQuery(name = "Manager.findAll", query = "FROM Manager ORDER BY surname, firstName, secondName")
 })
 @Table(name = "manager")
-public class Manager implements Serializable, EntityObject {
+public class Manager implements EntityObject {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,6 +27,11 @@ public class Manager implements Serializable, EntityObject {
 
     @Column(name = "second_name", length = 50)
     private String secondName;
+
+    @Column(name = "sex")
+    @Enumerated(EnumType.STRING)
+    @Type(type = "pgsql_enum")
+    private Sex sex;
 
     @Column(name = "city_from", length = 50)
     private String cityFrom;
@@ -67,6 +74,14 @@ public class Manager implements Serializable, EntityObject {
         this.secondName = firstUpperCase(secondName);
     }
 
+    public Sex getSex() {
+        return sex;
+    }
+
+    public void setSex(Sex sex) {
+        this.sex = sex;
+    }
+
     public String getCityFrom() {
         return cityFrom;
     }
@@ -75,7 +90,7 @@ public class Manager implements Serializable, EntityObject {
         this.cityFrom = firstUpperCase(cityFrom);
     }
 
-    public Boolean getInactive() {
+    public Boolean isInactive() {
         return inactive;
     }
 
@@ -116,12 +131,15 @@ public class Manager implements Serializable, EntityObject {
 
     @Override
     public String toString() {
-        return "Manager{" +
-                "managerId=" + managerId +
-                ", surname='" + surname + '\'' +
-                ", firstName='" + firstName + '\'' +
-                ", secondName='" + secondName + '\'' +
-                ", cityFrom='" + cityFrom + '\'' +
-                '}';
+        final StringBuilder sb = new StringBuilder("Manager{");
+        sb.append("managerId=").append(managerId);
+        sb.append(", surname='").append(surname).append('\'');
+        sb.append(", firstName='").append(firstName).append('\'');
+        sb.append(", secondName='").append(secondName).append('\'');
+        sb.append(", sex=").append(sex);
+        sb.append(", cityFrom='").append(cityFrom).append('\'');
+        sb.append(", inactive=").append(inactive);
+        sb.append('}');
+        return sb.toString();
     }
 }

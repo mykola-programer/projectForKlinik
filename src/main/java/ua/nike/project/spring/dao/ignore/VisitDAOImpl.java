@@ -8,9 +8,7 @@ import ua.nike.project.hibernate.entity.*;
 import ua.nike.project.hibernate.type.ClientStatus;
 import ua.nike.project.spring.exceptions.BusinessException;
 import ua.nike.project.spring.service.ServiceDAO;
-import ua.nike.project.spring.vo.AccomodationVO;
-import ua.nike.project.spring.vo.ClientVO;
-import ua.nike.project.spring.vo.VisitVO;
+import ua.nike.project.spring.vo.*;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
@@ -26,25 +24,18 @@ public class VisitDAOImpl implements VisitDAO {
     ServiceDAO<ClientVO, Client> clientServiceDAO;
     @Autowired
     ServiceDAO<AccomodationVO, Accomodation> accomodationServiceDAO;
+    @Autowired
+    ServiceDAO<ManagerVO, Manager> managerServiceDAO;
+    @Autowired
+    ServiceDAO<OperationTypeVO, OperationType> operationTypeServiceDAO;
+    @Autowired
+    ServiceDAO<SurgeonVO, Surgeon> surgeonServiceDAO;
+
     @PersistenceContext
     private EntityManager entityManager;
+
     @Autowired
     private VisitDateDAO visitDateDAO;
-
-//    @Autowired
-//    private ClientDAO clientDAO;
-
-    @Autowired
-    private OperationTypeDAO operationTypeDAO;
-
-    @Autowired
-    private SurgeonDAO surgeonDAO;
-
-    @Autowired
-    private ManagerDAO managerDAO;
-
-//    @Autowired
-//    private AccomodationDAO accomodationDAO;
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
@@ -186,12 +177,26 @@ public class VisitDAOImpl implements VisitDAO {
         } catch (BusinessException e) {
             result.setPatient(null);
         }
+        try {
+            result.setOperationType(operationTypeServiceDAO.findByID(visit.getOperationType() != null ? visit.getOperationType().getOperationTypeId() : 0, OperationType.class));
+        } catch (BusinessException e) {
+            result.setOperationType(null);
+        }
 
-
-        result.setOperationType(this.operationTypeDAO.transformToOperationTypeVO(visit.getOperationType()));
         result.setEye(visit.getEye());
-        result.setSurgeon(this.surgeonDAO.transformToSurgeonVO(visit.getSurgeon()));
-        result.setManager(this.managerDAO.transformToManagerVO(visit.getManager()));
+
+        try {
+            result.setSurgeon(surgeonServiceDAO.findByID(visit.getSurgeon() != null ? visit.getSurgeon().getSurgeonId() : 0, Surgeon.class));
+        } catch (BusinessException e) {
+            result.setSurgeon(null);
+        }
+
+
+        try {
+            result.setManager(managerServiceDAO.findByID(visit.getManager() != null ? visit.getManager().getManagerId() : 0, Manager.class));
+        } catch (BusinessException e) {
+            result.setManager(null);
+        }
 
         try {
             result.setAccomodation(accomodationServiceDAO.findByID(visit.getAccomodation() != null ? visit.getAccomodation().getAccomodationId() : 0, Accomodation.class));
