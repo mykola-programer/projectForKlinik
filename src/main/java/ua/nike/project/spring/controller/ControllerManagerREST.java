@@ -2,69 +2,70 @@ package ua.nike.project.spring.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import ua.nike.project.hibernate.entity.Manager;
-import ua.nike.project.hibernate.entity.Visit;
-import ua.nike.project.spring.exceptions.BusinessException;
-import ua.nike.project.spring.service.ServiceDAO;
+import ua.nike.project.spring.exceptions.ApplicationException;
+import ua.nike.project.spring.service.ServiceManager;
 import ua.nike.project.spring.vo.ManagerVO;
-import ua.nike.project.spring.vo.VisitVO;
 
-import java.util.HashMap;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/managers")
 public class ControllerManagerREST {
 
     @Autowired
-    ServiceDAO<ManagerVO, Manager> managerServiceDAO;
-
-    @Autowired
-    ServiceDAO<VisitVO, Visit> visitServiceDAO;
+    private ServiceManager serviceManager;
 
     @CrossOrigin
     @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ManagerVO getManager(@PathVariable("id") int managerId) throws BusinessException {
-        return managerServiceDAO.findByID(managerId, Manager.class);
+    public ManagerVO getManager(@PathVariable("id") int managerID) throws ApplicationException {
+        return serviceManager.findByID(managerID);
     }
 
     @CrossOrigin
     @RequestMapping(value = "", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public List<ManagerVO> getManagers() throws BusinessException {
-        return managerServiceDAO.findAll("Manager.findAll", Manager.class);
+    public List<ManagerVO> getManagers() {
+        return serviceManager.findAll();
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "/active", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public List<ManagerVO> getActiveSurgeons() {
+        return serviceManager.findAllActive();
     }
 
     @CrossOrigin
     @RequestMapping(value = "", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ManagerVO addManager(@RequestBody ManagerVO managerVO) throws BusinessException {
-        ControllerValidation.validate(managerVO);
-        return managerServiceDAO.create(managerVO);
+    public ManagerVO addManager(@RequestBody @NotNull @Valid ManagerVO managerVO, BindingResult bindingResult) {
+        //TODO Valid
+        return serviceManager.create(managerVO);
     }
 
     @CrossOrigin
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ManagerVO editManager(@PathVariable("id") int managerId, @RequestBody ManagerVO managerVO) throws BusinessException {
-        ControllerValidation.validate(managerVO);
-        return managerServiceDAO.update(managerId, managerVO, Manager.class);
+    public ManagerVO editManager(@PathVariable("id") int managerID, @RequestBody @NotNull @Valid ManagerVO managerVO, BindingResult bindingResult) throws ApplicationException {
+        //TODO Valid
+        return serviceManager.update(managerID, managerVO);
     }
 
     @CrossOrigin
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public boolean deleteManagerByID(@PathVariable("id") int managerId) throws BusinessException {
-        return managerServiceDAO.deleteById(managerId, Manager.class);
+    public boolean deleteByID(@PathVariable("id") int managerID) {
+        return serviceManager.deleteById(managerID);
+    }
+    @CrossOrigin
+    @RequestMapping(value = "/{id}/deactivate", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ManagerVO deactivateByID(@PathVariable("id") int managerID) throws ApplicationException {
+        return serviceManager.deactivateByID(managerID);
     }
 
     @CrossOrigin
-    @RequestMapping(value = "/{id}/visits", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public List<VisitVO> getListVisitsOfManager(@PathVariable("id") int managerId) throws BusinessException {
-        Manager manager = managerServiceDAO.getEntityByID(managerId, Manager.class);
-
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put("manager", manager);
-
-        return visitServiceDAO.getListByNamedQuery("Visit.findByManager", parameters, Visit.class);
+    @RequestMapping(value = "/{id}/activate", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ManagerVO activateByID(@PathVariable("id") int managerID) throws ApplicationException {
+        return serviceManager.activateByID(managerID);
     }
 
 }

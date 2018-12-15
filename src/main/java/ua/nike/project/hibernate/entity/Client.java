@@ -21,7 +21,7 @@ import java.util.Objects;
         name = "pgsql_enum",
         typeClass = PostgreSQLEnumType.class
 )
-public class Client implements Serializable, Comparable<Client>, EntityObject {
+public class Client implements Comparable<Client>, EntityObject {
 
     @Version
     private long version;
@@ -29,6 +29,7 @@ public class Client implements Serializable, Comparable<Client>, EntityObject {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "client_id")
+    @Access(AccessType.PROPERTY) // TODO Play with it
     private Integer clientId;
 
     @Column(name = "surname", length = 50)

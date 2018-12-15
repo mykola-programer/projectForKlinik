@@ -2,7 +2,7 @@ package ua.nike.project.spring.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import ua.nike.project.spring.exceptions.ApplicationException;
+import ua.nike.project.spring.exceptions.BusinessException;
 import ua.nike.project.spring.service.ServiceValidationMassage;
 
 import javax.validation.ConstraintViolation;
@@ -18,7 +18,7 @@ final class ControllerValidation {
     @Autowired
     ServiceValidationMassage serviceValidationMassage;
 
-    void validate(Object object) throws ApplicationException {
+    void validate(Object object) throws BusinessException {
 
         Set<ConstraintViolation<Object>> constraintViolations = VALIDATOR.validate(object);
 
@@ -57,7 +57,7 @@ final class ControllerValidation {
                         .append(" \n");
             }
             sb.append(object).append(" \n");
-            throw new ApplicationException(sb.toString());
+            throw new BusinessException(sb.toString());
         }
     }
 }

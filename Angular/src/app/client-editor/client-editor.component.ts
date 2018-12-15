@@ -177,6 +177,9 @@ export class ClientEditorComponent implements OnInit {
 
         }).catch((err: HttpErrorResponse) => {
 
+          console.log(err);
+          alert(err);
+
           const div = document.createElement("div");
           div.innerHTML = err.error.text;
           const text = div.textContent || div.innerText || "";

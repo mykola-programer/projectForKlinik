@@ -9,7 +9,8 @@ import java.util.Objects;
 
 @Entity
 @NamedQueries(value = {
-        @NamedQuery(name = "Manager.findAll", query = "FROM Manager ORDER BY surname, firstName, secondName")
+        @NamedQuery(name = "Manager.findAll", query = "FROM Manager ORDER BY surname, firstName, secondName"),
+        @NamedQuery(name = "Manager.findAllActive", query = "FROM Manager WHERE inactive = false  ORDER BY surname, firstName, secondName")
 })
 @Table(name = "manager")
 public class Manager implements EntityObject {

@@ -1,30 +1,35 @@
 package ua.nike.project.spring.dao;
 
 import ua.nike.project.hibernate.entity.EntityObject;
-import ua.nike.project.spring.exceptions.BusinessException;
+import ua.nike.project.hibernate.entity.Visit;
+import ua.nike.project.hibernate.type.Ward;
+import ua.nike.project.spring.exceptions.ApplicationException;
 
+import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 
 public interface DAO<T extends EntityObject> {
 
-    T findByID(int entityID, Class<T> tClass) throws BusinessException;
+    T findByID(int entityID) throws ApplicationException;
 
-    List<T> findAll(String namedQuery, Class<T> tClass);
+    List<T> findAll();
+
+    default List<T> findAllActive() {
+        return findAll();
+    }
 
     T save(T entity);
 
     T update(T entity);
 
-    boolean remove(int entityID, Class<T> tClass) throws BusinessException;
+    boolean remove(int entityID);
 
-    List<T> getEntitiesByNamedQuery(String query, Map<String, Object> parameters, Class<T> tClass);
+    default List<Ward> getActiveWards() {
+        return null;
+    }
 
-    List<T> getEntitiesByQuery(String query, Map<String, Object> parameters, Class<T> tClass);
-
-    List<? extends Object> getObjectsByQuery(String hqlQuery, Map<String, Object> parameters, Class<? extends Object> oClass);
-
-    Object getObjectByQuery(String hqlQuery, Map<String, Object> parameters);
-
+    default List<Visit> getVisitsByDate(LocalDate date) {
+        return null;
+    }
 
 }

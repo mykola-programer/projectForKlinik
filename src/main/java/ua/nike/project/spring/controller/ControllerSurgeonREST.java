@@ -2,95 +2,71 @@ package ua.nike.project.spring.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import ua.nike.project.hibernate.entity.Accomodation;
-import ua.nike.project.hibernate.entity.Surgeon;
-import ua.nike.project.hibernate.entity.Visit;
-import ua.nike.project.spring.exceptions.BusinessException;
-import ua.nike.project.spring.service.ServiceDAO;
+import ua.nike.project.spring.exceptions.ApplicationException;
+import ua.nike.project.spring.service.ServiceSurgeon;
 import ua.nike.project.spring.vo.SurgeonVO;
-import ua.nike.project.spring.vo.VisitVO;
 
-import java.util.HashMap;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/surgeons")
 public class ControllerSurgeonREST {
 
     @Autowired
-    ServiceDAO<SurgeonVO, Surgeon> surgeonServiceDAO;
-
-    @Autowired
-    ServiceDAO<VisitVO, Visit> visitServiceDAO;
-
+    private ServiceSurgeon serviceSurgeon;
 
     @CrossOrigin
     @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public SurgeonVO getSurgeon(@PathVariable("id") int surgeonId) throws BusinessException {
-        return surgeonServiceDAO.findByID(surgeonId, Surgeon.class);
+    public SurgeonVO getSurgeon(@PathVariable("id") int surgeonID) throws ApplicationException {
+        return serviceSurgeon.findByID(surgeonID);
     }
 
     @CrossOrigin
     @RequestMapping(value = "", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public List<SurgeonVO> getSurgeons() throws BusinessException {
-        return surgeonServiceDAO.findAll("Surgeon.findAll", Surgeon.class);
+    public List<SurgeonVO> getSurgeons() {
+        return serviceSurgeon.findAll();
     }
 
     @CrossOrigin
     @RequestMapping(value = "/active", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public List<SurgeonVO> getActiveSurgeons() throws BusinessException {
-        return surgeonServiceDAO.findAll("Surgeon.findAllActive", Surgeon.class);
+    public List<SurgeonVO> getActiveSurgeons() {
+        return serviceSurgeon.findAllActive();
     }
 
 
     @CrossOrigin
     @RequestMapping(value = "", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public SurgeonVO addSurgeon(@RequestBody SurgeonVO surgeonVO) throws BusinessException {
-        ControllerValidation.validate(surgeonVO);
-        return surgeonServiceDAO.create(surgeonVO);
+    public SurgeonVO addSurgeon(@RequestBody @NotNull @Valid SurgeonVO surgeonVO, BindingResult bindingResult) {
+        //TODO Valid
+        return serviceSurgeon.create(surgeonVO);
     }
 
     @CrossOrigin
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public SurgeonVO editSurgeon(@PathVariable("id") int surgeonId, @RequestBody SurgeonVO surgeonVO) throws BusinessException {
-        ControllerValidation.validate(surgeonVO);
-        return surgeonServiceDAO.update(surgeonId, surgeonVO, Surgeon.class);
+    public SurgeonVO editSurgeon(@PathVariable("id") int surgeonID, @RequestBody @NotNull @Valid SurgeonVO surgeonVO, BindingResult bindingResult) throws ApplicationException {
+        //TODO Valid
+        return serviceSurgeon.update(surgeonID, surgeonVO);
     }
 
     @CrossOrigin
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public boolean deleteSurgeonByID(@PathVariable("id") int surgeonId) throws BusinessException {
-        return surgeonServiceDAO.deleteById(surgeonId, Surgeon.class);
+    public boolean deleteByID(@PathVariable("id") int surgeonID) {
+        return serviceSurgeon.deleteById(surgeonID);
     }
 
     @CrossOrigin
-    @RequestMapping(value = "/{id}/deactivate", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public SurgeonVO deactivateSurgeonByID(@PathVariable("id") int surgeonId) throws BusinessException {
-        SurgeonVO surgeonVO = getSurgeon(surgeonId);
-        surgeonVO.setInactive(true);
-        return surgeonServiceDAO.update(surgeonId, surgeonVO, Surgeon.class);
+    @RequestMapping(value = "/{id}/deactivate", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public SurgeonVO deactivateByID(@PathVariable("id") int surgeonID) throws ApplicationException {
+        return serviceSurgeon.deactivateByID(surgeonID);
     }
 
     @CrossOrigin
-    @RequestMapping(value = "/{id}/activate", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public SurgeonVO activateSurgeonByID(@PathVariable("id") int surgeonId) throws BusinessException {
-        SurgeonVO surgeonVO = getSurgeon(surgeonId);
-        surgeonVO.setInactive(false);
-        return surgeonServiceDAO.update(surgeonId, surgeonVO, Surgeon.class);
+    @RequestMapping(value = "/{id}/activate", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public SurgeonVO activateByID(@PathVariable("id") int surgeonID) throws ApplicationException {
+        return serviceSurgeon.activateByID(surgeonID);
     }
-
-
-    @CrossOrigin
-    @RequestMapping(value = "/{id}/visits", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public List<VisitVO> getVisitsBySurgeon(@PathVariable("id") int surgeonId) throws BusinessException {
-        Surgeon surgeon = surgeonServiceDAO.getEntityByID(surgeonId, Surgeon.class);
-
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put("surgeon", surgeon);
-
-        return visitServiceDAO.getListByNamedQuery("Visit.findBySurgeon", parameters, Visit.class);
-    }
-
 }

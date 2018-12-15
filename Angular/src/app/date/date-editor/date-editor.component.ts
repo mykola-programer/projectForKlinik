@@ -1,9 +1,8 @@
-import {Component, EventEmitter, Injectable, Input, OnInit, Output} from "@angular/core";
+import {Component, Injectable, OnInit} from "@angular/core";
 import {NgbDatepickerConfig, NgbDatepickerI18n, NgbDateStruct} from "@ng-bootstrap/ng-bootstrap";
 import {VisitDateService} from "../../service/visit-date.service";
 import {Router} from "@angular/router";
 import {VisitDate} from "../../backend_types/visit-date";
-import {MatDialog} from "@angular/material";
 import {NavbarService} from "../../service/navbar.service";
 
 const I18N_VALUES = {
@@ -103,7 +102,7 @@ export class DateEditorComponent implements OnInit {
       const visit_date: VisitDate = new VisitDate();
       visit_date.visitDateId = 0;
       visit_date.date = [value.year, value.month, value.day];
-      visit_date.lock = false;
+      visit_date.inactive = false;
       visitDates.push(visit_date);
     });
 

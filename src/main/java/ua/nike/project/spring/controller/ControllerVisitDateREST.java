@@ -2,107 +2,82 @@ package ua.nike.project.spring.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import ua.nike.project.hibernate.entity.Accomodation;
-import ua.nike.project.hibernate.entity.Visit;
-import ua.nike.project.hibernate.entity.VisitDate;
-import ua.nike.project.spring.exceptions.BusinessException;
-import ua.nike.project.spring.service.ServiceDAO;
-import ua.nike.project.spring.vo.AccomodationVO;
+import ua.nike.project.spring.exceptions.ApplicationException;
+import ua.nike.project.spring.service.ServiceVisitDate;
 import ua.nike.project.spring.vo.VisitDateVO;
-import ua.nike.project.spring.vo.VisitVO;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/visit_dates")
 public class ControllerVisitDateREST {
 
     @Autowired
-    ServiceDAO<VisitDateVO, VisitDate> visitDateServiceDAO;
-
-    @Autowired
-    ServiceDAO<VisitVO, Visit> visitServiceDAO;
+    private ServiceVisitDate serviceVisitDate;
 
     @CrossOrigin
     @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public VisitDateVO getVisitDate(@PathVariable("id") int visitDateID) throws BusinessException {
-        return visitDateServiceDAO.findByID(visitDateID, VisitDate.class);
+    public VisitDateVO getVisitDate(@PathVariable("id") int visitDateID) throws ApplicationException {
+        return serviceVisitDate.findByID(visitDateID);
     }
 
     @CrossOrigin
     @RequestMapping(value = "", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public List<VisitDateVO> getVisitDates() throws BusinessException {
-        return visitDateServiceDAO.findAll("VisitDate.findAll", VisitDate.class);
+    public List<VisitDateVO> getVisitDates() {
+        return serviceVisitDate.findAll();
     }
 
     @CrossOrigin
     @RequestMapping(value = "/active", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public List<VisitDateVO> getActiveVisitDates() throws BusinessException {
-        return visitDateServiceDAO.findAll("VisitDate.getAllActive", VisitDate.class);
+    public List<VisitDateVO> getActiveVisitDates() {
+        return serviceVisitDate.findAllActive();
     }
 
-//    @CrossOrigin
-//    @RequestMapping(value = "", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public VisitDateVO addVisitDate(@RequestBody VisitDateVO visitDateVO) throws BusinessException {
-        ControllerValidation.validate(visitDateVO);
-        return visitDateServiceDAO.create(visitDateVO);
+    private VisitDateVO addVisitDate(@RequestBody @NotNull @Valid VisitDateVO visitDateVO, BindingResult bindingResult) {
+        //TODO Valid
+        return serviceVisitDate.create(visitDateVO);
     }
 
     @CrossOrigin
     @RequestMapping(value = "", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public List<VisitDateVO> addVisitDates(@RequestBody List<VisitDateVO> visitDateVOList) throws BusinessException {
+    public List<VisitDateVO> addVisitDates(@RequestBody @NotNull List<VisitDateVO> visitDatesVO, BindingResult bindingResult) {
         List<VisitDateVO> result = new ArrayList<>();
-        for (VisitDateVO visitDateVO : visitDateVOList) {
+        for (VisitDateVO visitDateVO : visitDatesVO) {
             if (visitDateVO != null && visitDateVO.getDate() != null) {
-                result.add(addVisitDate(visitDateVO));
+                result.add(addVisitDate(visitDateVO, bindingResult));
             }
         }
-
         return result;
     }
 
     @CrossOrigin
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public VisitDateVO editVisitDate(@PathVariable("id") int visitDateID, @RequestBody VisitDateVO visitDateVO) throws BusinessException {
-        ControllerValidation.validate(visitDateVO);
-        return visitDateServiceDAO.update(visitDateID, visitDateVO, VisitDate.class);
+    public VisitDateVO editVisitDate(@PathVariable("id") int visitDateID, @RequestBody @NotNull @Valid VisitDateVO visitDateVO, BindingResult bindingResult) throws ApplicationException {
+        //TODO Valid
+        return serviceVisitDate.update(visitDateID, visitDateVO);
     }
 
     @CrossOrigin
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public boolean deleteVisitDateByID(@PathVariable("id") int visitDateID) throws BusinessException {
-        return visitDateServiceDAO.deleteById(visitDateID, VisitDate.class);
+    public boolean deleteByID(@PathVariable("id") int visitDateID) {
+        return serviceVisitDate.deleteById(visitDateID);
     }
 
     @CrossOrigin
-    @RequestMapping(value = "/{id}/deactivate", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public VisitDateVO deactivateVisitDate(@PathVariable("id") int visitDateID) throws BusinessException {
-        VisitDateVO visitDateVO = getVisitDate(visitDateID);
-        visitDateVO.setInactive(true);
-        return visitDateServiceDAO.update(visitDateID, visitDateVO, VisitDate.class);
+    @RequestMapping(value = "/{id}/deactivate", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public VisitDateVO deactivateByID(@PathVariable("id") int visitDateID) throws ApplicationException {
+        return serviceVisitDate.deactivateByID(visitDateID);
     }
 
     @CrossOrigin
-    @RequestMapping(value = "/{id}/activate", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public VisitDateVO activateVisitDate(@PathVariable("id") int visitDateID) throws BusinessException {
-        VisitDateVO visitDateVO = getVisitDate(visitDateID);
-        visitDateVO.setInactive(false);
-        return visitDateServiceDAO.update(visitDateID, visitDateVO, VisitDate.class);
-    }
-
-    @CrossOrigin
-    @RequestMapping(value = "/{id}/visits", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public List<VisitVO> getVisitsByVisitDate(@PathVariable("id") int visitDateID) throws BusinessException {
-        VisitDate visitDate = visitDateServiceDAO.getEntityByID(visitDateID, VisitDate.class);
-
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put("visitDate", visitDate);
-
-        return visitServiceDAO.getListByNamedQuery("Visit.findByVisitDate", parameters, Visit.class);
+    @RequestMapping(value = "/{id}/activate", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public VisitDateVO activateByID(@PathVariable("id") int visitDateID) throws ApplicationException {
+        return serviceVisitDate.activateByID(visitDateID);
     }
 
 }

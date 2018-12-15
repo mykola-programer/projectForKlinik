@@ -32,7 +32,7 @@ import java.util.Objects;
         name = "pgsql_enum",
         typeClass = PostgreSQLEnumType.class
 )
-public class Accomodation implements Serializable, EntityObject {
+public class Accomodation implements EntityObject {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

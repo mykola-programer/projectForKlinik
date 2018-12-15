@@ -3,17 +3,16 @@ package ua.nike.project.spring.vo;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
-import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Objects;
 
-public class ClientVO implements Serializable, VisualObject {
+public class ClientVO implements VisualObject {
 
     private Integer clientId;
 
-    @NotNull(message = "Прізвище повинно бути задано.")
-    @Size(min = 1, max = 50, message = "Прізвище повинно мати від 1 до 50 символів !")
-    @Pattern(regexp = "[A-Za-zА-Яа-яЁёІіЇїЄє]+", message = "Прізвище повинно мати тільки літери !")
+    @NotNull(message = "client.surname.null")
+    @Size(min = 1, max = 50, message = "client.surname.size")
+    @Pattern(regexp = "[A-Za-zА-Яа-яЁёІіЇїЄє]+", message = "client.surname.pattern")
     private String surname;
 
     @NotNull(message = "Ім'я повинно бути задано.")

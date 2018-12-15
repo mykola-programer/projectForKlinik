@@ -34,12 +34,12 @@
 
         <td>
           <input #surname type="text" placeholder="  - Прізвище -  "
-                 pattern="[A-Za-zА-Яа-яЁёІіЇїЄє]{1,50}" required
                  class="form-control font-weight-bold form-control-sm input-style-active"
                  [ngModel]="client.surname"
                  (change)="changeSurname(client, surname)"
                  (keydown.space)="firstName.focus(); false"
                  (blur)="onBlur(client, surname)">
+          <!--pattern="[A-Za-zА-Яа-яЁёІіЇїЄє]{1,50}" required-->
           <div *ngIf="!surname.checkValidity()" class="invalid">Введіть коректне значення !</div>
         </td>
         <td>

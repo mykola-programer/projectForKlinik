@@ -2,14 +2,16 @@ package ua.nike.project.spring.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ua.nike.project.hibernate.entity.OperationType;
-import ua.nike.project.hibernate.entity.Visit;
-import ua.nike.project.spring.exceptions.BusinessException;
-import ua.nike.project.spring.service.ServiceDAO;
+import ua.nike.project.spring.exceptions.ApplicationException;
+import ua.nike.project.spring.service.ServiceOperationType;
 import ua.nike.project.spring.vo.OperationTypeVO;
 import ua.nike.project.spring.vo.VisitVO;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,75 +21,56 @@ import java.util.Map;
 public class ControllerOperationTypeREST {
 
     @Autowired
-    ServiceDAO<OperationTypeVO, OperationType> operationTypeServiceDAO;
-
-    @Autowired
-    ServiceDAO<VisitVO, Visit> visitServiceDAO;
+    private ServiceOperationType serviceOperationType;
 
     @CrossOrigin
     @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public OperationTypeVO getOperationType(@PathVariable("id") int operationTypeID) throws BusinessException {
-        return operationTypeServiceDAO.findByID(operationTypeID, OperationType.class);
-    }
-
-    @CrossOrigin
-    @RequestMapping(value = "/active", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public List<OperationTypeVO> getActiveOperationTypes() throws BusinessException {
-        return operationTypeServiceDAO.findAll("OperationType.getAllActive", OperationType.class);
+    public OperationTypeVO getOperationType(@PathVariable("id") int operationTypeID) throws ApplicationException {
+        return serviceOperationType.findByID(operationTypeID);
     }
 
     @CrossOrigin
     @RequestMapping(value = "", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public List<OperationTypeVO> getOperationTypes() throws BusinessException {
-        return operationTypeServiceDAO.findAll("OperationType.findAll", OperationType.class);
+    public List<OperationTypeVO> getOperationTypes() {
+        return serviceOperationType.findAll();
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "/active", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public List<OperationTypeVO> getActiveOperationTypes() {
+        return serviceOperationType.findAllActive();
     }
 
     @CrossOrigin
     @RequestMapping(value = "", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public OperationTypeVO addOperationType(@RequestBody OperationTypeVO operationTypeVO) throws BusinessException {
-        ControllerValidation.validate(operationTypeVO);
-        return operationTypeServiceDAO.create(operationTypeVO);
+    public OperationTypeVO addOperationType(@RequestBody @NotNull @Valid OperationTypeVO operationTypeVO, BindingResult bindingResult) {
+        // TODO Validate
+        return serviceOperationType.create(operationTypeVO);
     }
 
     @CrossOrigin
-    @RequestMapping(value = "{id}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public OperationTypeVO editOperationType(@PathVariable("id") int operationTypeID, @RequestBody OperationTypeVO operationTypeVO) throws BusinessException {
-        ControllerValidation.validate(operationTypeVO);
-        return operationTypeServiceDAO.update(operationTypeID, operationTypeVO, OperationType.class);
+    @RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public OperationTypeVO editOperationType(@PathVariable("id") int operationTypeID, @RequestBody @NotNull @Valid OperationTypeVO operationTypeVO, BindingResult bindingResult) throws ApplicationException {
+        // TODO Validate
+        return serviceOperationType.update(operationTypeID, operationTypeVO);
     }
 
 
     @CrossOrigin
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public boolean deleteOperationTypeByID(@PathVariable("id") int operationTypeID) throws BusinessException {
-        return operationTypeServiceDAO.deleteById(operationTypeID, OperationType.class);
+    public boolean deleteByID(@PathVariable("id") int operationTypeID) {
+        return serviceOperationType.deleteById(operationTypeID);
     }
 
     @CrossOrigin
-    @RequestMapping(value = "/{id}/deactivate", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public OperationTypeVO deactivateOperationType(@PathVariable("id") int operationTypeID) throws BusinessException {
-        OperationTypeVO operationTypeVO = getOperationType(operationTypeID);
-        operationTypeVO.setInactive(true);
-        return operationTypeServiceDAO.update(operationTypeID, operationTypeVO, OperationType.class);
+    @RequestMapping(value = "/{id}/deactivate", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public OperationTypeVO deactivateByID(@PathVariable("id") int operationTypeID) throws ApplicationException {
+        return serviceOperationType.deactivateByID(operationTypeID);
     }
 
     @CrossOrigin
-    @RequestMapping(value = "/{id}/activate", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public OperationTypeVO activateOperationType(@PathVariable("id") int operationTypeID) throws BusinessException {
-        OperationTypeVO operationTypeVO = getOperationType(operationTypeID);
-        operationTypeVO.setInactive(false);
-        return operationTypeServiceDAO.update(operationTypeID, operationTypeVO, OperationType.class);
-    }
-
-
-    @CrossOrigin
-    @RequestMapping(value = "/{id}/visits", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public List<VisitVO> getVisitsByOperationType(@PathVariable("id") int operationTypeID) throws BusinessException {
-        OperationType operationType = operationTypeServiceDAO.getEntityByID(operationTypeID, OperationType.class);
-
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put("operationType", operationType);
-
-        return visitServiceDAO.getListByNamedQuery("Visit.findByOperationType", parameters, Visit.class);
+    @RequestMapping(value = "/{id}/activate", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public OperationTypeVO activateByID(@PathVariable("id") int operationTypeID) throws ApplicationException {
+        return serviceOperationType.activateByID(operationTypeID);
     }
 }

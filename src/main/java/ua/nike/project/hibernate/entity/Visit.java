@@ -15,16 +15,10 @@ import java.util.Objects;
 @Entity
 @NamedQueries(value = {
         @NamedQuery(name = "Visit.findAll", query = "FROM Visit "),
-        @NamedQuery(name = "Visit.findAllByDate", query = "FROM Visit v WHERE v.visitDate.date = :date"),
-        @NamedQuery(name = "Visit.findAllByDateWithWards", query = "FROM Visit v WHERE v.visitDate.date = :date AND v.accomodation IS NOT NULL ORDER BY v.accomodation.ward, v.accomodation.wardPlace"),
-        @NamedQuery(name = "Visit.findAllByDateWithoutWards", query = "FROM Visit v WHERE v.visitDate.date = :date AND v.accomodation IS NULL order by v.orderForCome"),
-        @NamedQuery(name = "Visit.findByClient", query = "FROM Visit v WHERE v.client = :client"),
-        @NamedQuery(name = "Visit.findByPatient", query = "FROM Visit v WHERE v.patient = :patient"),
-        @NamedQuery(name = "Visit.findByManager", query = "FROM Visit v WHERE v.manager = :manager"),
-        @NamedQuery(name = "Visit.findByOperationType", query = "FROM Visit v WHERE v.operationType = :operationType"),
-        @NamedQuery(name = "Visit.findBySurgeon", query = "FROM Visit v WHERE v.surgeon = :surgeon"),
-        @NamedQuery(name = "Visit.findByVisitDate", query = "FROM Visit v WHERE v.visitDate = :visitDate"),
-        @NamedQuery(name = "Visit.findByAccomodation", query = "FROM Visit v WHERE v.accomodation = :accomodation")
+        @NamedQuery(name = "Visit.findAllActive", query = "FROM Visit WHERE inactive = false "),
+        @NamedQuery(name = "Visit.findAllActiveByDate", query = "FROM Visit v WHERE v.visitDate.date = :date AND v.inactive = false "),
+//        @NamedQuery(name = "Visit.findAllByDateWithWards", query = "FROM Visit v WHERE v.visitDate.date = :date AND v.accomodation IS NOT NULL ORDER BY v.accomodation.ward, v.accomodation.wardPlace"),
+//        @NamedQuery(name = "Visit.findAllByDateWithoutWards", query = "FROM Visit v WHERE v.visitDate.date = :date AND v.accomodation IS NULL order by v.orderForCome")
 })
 @Table(name = "visit")
 @TypeDef(

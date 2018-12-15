@@ -8,9 +8,9 @@ import java.util.Set;
 @Entity
 @Table(name = "visit_date")
 @NamedQueries(value = {
-        @NamedQuery(name = "VisitDate.getUniqueDates", query = "SELECT DISTINCT od.date FROM VisitDate od WHERE inactive = false ORDER BY od.date"),
+//        @NamedQuery(name = "VisitDate.getUniqueDates", query = "SELECT DISTINCT od.date FROM VisitDate od WHERE inactive = false ORDER BY od.date"),
         @NamedQuery(name = "VisitDate.findAll", query = "FROM VisitDate ORDER BY date"),
-        @NamedQuery(name = "VisitDate.getAllActive", query = "FROM VisitDate vd WHERE vd.inactive = false ORDER BY date")
+        @NamedQuery(name = "VisitDate.findAllActive", query = "FROM VisitDate vd WHERE vd.inactive = false ORDER BY date")
 })
 public class VisitDate implements Serializable, EntityObject {
 

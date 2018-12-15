@@ -11,7 +11,7 @@
     <context:component-scan base-package="ua.nike.project.spring.dao"/>
     <context:component-scan base-package="ua.nike.project.spring.service"/>
     <context:component-scan base-package="ua.nike.project.spring.controller"/>
-    <context:annotation-config />
+    <!--<context:annotation-config />-->
 
     <!-- Enables the Spring MVC @Controller programming model -->
     <mvc:annotation-driven/>
