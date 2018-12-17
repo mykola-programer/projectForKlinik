@@ -1,7 +1,6 @@
 package ua.nike.project.spring.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
@@ -20,8 +19,13 @@ import java.util.List;
 @Scope(BeanDefinition.SCOPE_SINGLETON)
 public class ServiceManager {
 
-    @Autowired
     private DAO<Manager> dao;
+
+    @Autowired
+    public void setDao(DAO<Manager> dao) {
+        this.dao = dao;
+        this.dao.setClassEO(Manager.class);
+    }
 
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public ManagerVO findByID(int managerID) throws ApplicationException {
@@ -34,7 +38,7 @@ public class ServiceManager {
 
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<ManagerVO> findAll() {
-        List<Manager> entities = dao.findAll();
+        List<Manager> entities = dao.findAll("Manager.findAll",null);
         if (entities == null) return null;
         List<ManagerVO> result = new ArrayList<>();
         for (Manager entity : entities) {
@@ -45,7 +49,7 @@ public class ServiceManager {
 
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<ManagerVO> findAllActive() {
-        List<Manager> entities = dao.findAllActive();
+        List<Manager> entities = dao.findAll("Manager.findAllActive", null);
         if (entities == null) return null;
         List<ManagerVO> result = new ArrayList<>();
         for (Manager entity : entities) {

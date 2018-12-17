@@ -1,10 +1,9 @@
-package ua.nike.project.spring.dao;
+package ua.nike.project.spring.dao.implementatoins;
 
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Repository;
-import ua.nike.project.hibernate.entity.OperationType;
-import ua.nike.project.hibernate.type.Ward;
+import ua.nike.project.hibernate.entity.Surgeon;
 import ua.nike.project.spring.exceptions.ApplicationException;
 
 import javax.persistence.EntityManager;
@@ -13,44 +12,42 @@ import java.util.List;
 
 @Repository
 @Scope(BeanDefinition.SCOPE_SINGLETON)
-public class DAOOperationTypeImpl implements DAO<OperationType> {
+public class DAOSurgeonImpl implements DAO<Surgeon> {
 
     @PersistenceContext
     private EntityManager entityManager;
 
     @Override
-    public OperationType findByID(int entityID) throws ApplicationException {
-        OperationType entity = this.entityManager.find(OperationType.class, entityID);
+    public Surgeon findByID(int entityID) throws ApplicationException {
+        Surgeon entity = entityManager.find(Surgeon.class, entityID);
         if (entity == null) throw new ApplicationException("This object is not find in database !");
         return entity;
     }
 
     @Override
-    public List<OperationType> findAll() {
-        return entityManager.createNamedQuery("OperationType.findAll", OperationType.class).getResultList();
+    public List<Surgeon> findAll() {
+        return entityManager.createNamedQuery("Surgeon.findAll", Surgeon.class).getResultList();
     }
 
     @Override
-    public List<OperationType> findAllActive() {
-        return entityManager.createNamedQuery("OperationType.getAllActive", OperationType.class).getResultList();
+    public List<Surgeon> findAllActive() {
+        return entityManager.createNamedQuery("Surgeon.findAllActive", Surgeon.class).getResultList();
     }
-
     @Override
-    public OperationType save(OperationType entity) {
+    public Surgeon save(Surgeon entity) {
         entityManager.persist(entity);
         return entity;
     }
 
     @Override
-    public OperationType update(OperationType entity) {
+    public Surgeon update(Surgeon entity) {
         entityManager.merge(entity);
         return entity;
     }
 
     @Override
     public boolean remove(int entityID) {
-        entityManager.remove(entityManager.getReference(OperationType.class, entityID));
+        entityManager.remove(entityManager.getReference(Surgeon.class, entityID));
         return true;
     }
-
 }

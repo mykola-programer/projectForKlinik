@@ -5,6 +5,7 @@ import org.springframework.http.MediaType;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ua.nike.project.spring.exceptions.ApplicationException;
+import ua.nike.project.spring.exceptions.ValidationException;
 import ua.nike.project.spring.service.ServiceSurgeon;
 import ua.nike.project.spring.vo.SurgeonVO;
 
@@ -40,15 +41,15 @@ public class ControllerSurgeonREST {
 
     @CrossOrigin
     @RequestMapping(value = "", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public SurgeonVO addSurgeon(@RequestBody @NotNull @Valid SurgeonVO surgeonVO, BindingResult bindingResult) {
-        //TODO Valid
+    public SurgeonVO addSurgeon(@RequestBody @NotNull @Valid SurgeonVO surgeonVO, BindingResult bindingResult) throws ValidationException {
+        if (bindingResult != null) throw  new ValidationException("Object is not valid", bindingResult);
         return serviceSurgeon.create(surgeonVO);
     }
 
     @CrossOrigin
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public SurgeonVO editSurgeon(@PathVariable("id") int surgeonID, @RequestBody @NotNull @Valid SurgeonVO surgeonVO, BindingResult bindingResult) throws ApplicationException {
-        //TODO Valid
+    public SurgeonVO editSurgeon(@PathVariable("id") int surgeonID, @RequestBody @NotNull @Valid SurgeonVO surgeonVO, BindingResult bindingResult) throws ApplicationException, ValidationException {
+        if (bindingResult != null) throw  new ValidationException("Object is not valid", bindingResult);
         return serviceSurgeon.update(surgeonID, surgeonVO);
     }
 

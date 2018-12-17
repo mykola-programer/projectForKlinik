@@ -1,31 +1,31 @@
 package ua.nike.project.spring.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import ua.nike.project.hibernate.entity.Client;
-import ua.nike.project.hibernate.entity.Visit;
 import ua.nike.project.hibernate.type.Sex;
 import ua.nike.project.spring.dao.DAO;
 import ua.nike.project.spring.exceptions.ApplicationException;
 import ua.nike.project.spring.vo.ClientVO;
-import ua.nike.project.spring.vo.VisitVO;
 
-import javax.persistence.TransactionRequiredException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @Service
 @Scope(BeanDefinition.SCOPE_SINGLETON)
 public class ServiceClient {
 
-    @Autowired
     private DAO<Client> dao;
+
+    @Autowired
+    public void setDao(DAO<Client> dao) {
+        this.dao = dao;
+        this.dao.setClassEO(Client.class);
+    }
 
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public ClientVO findByID(int clientID) throws ApplicationException {
@@ -33,14 +33,14 @@ public class ServiceClient {
     }
 
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-    public Client findEntytiByID(int entityID) throws ApplicationException {
+    public Client findEntityByID(int entityID) throws ApplicationException {
         return dao.findByID(entityID);
     }
 
 
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<ClientVO> findAll() {
-        List<Client> entities = dao.findAll();
+        List<Client> entities = dao.findAll("Client.findAll",null);
         if (entities == null) return null;
         List<ClientVO> result = new ArrayList<>();
         for (Client entity : entities) {

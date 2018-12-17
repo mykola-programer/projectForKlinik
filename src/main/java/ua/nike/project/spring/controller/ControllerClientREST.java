@@ -5,6 +5,7 @@ import org.springframework.http.MediaType;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ua.nike.project.spring.exceptions.ApplicationException;
+import ua.nike.project.spring.exceptions.ValidationException;
 import ua.nike.project.spring.service.ServiceClient;
 import ua.nike.project.spring.vo.ClientVO;
 import ua.nike.project.spring.vo.VisitVO;
@@ -17,8 +18,6 @@ import java.util.List;
 @RequestMapping("/clients")
 public class ControllerClientREST {
 
-//    @Autowired
-//    private ControllerValidation controllerValidation;
     @Autowired
     private ServiceClient serviceClient;
 
@@ -36,18 +35,15 @@ public class ControllerClientREST {
 
     @CrossOrigin
     @RequestMapping(value = "", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ClientVO addClient(@RequestBody @NotNull @Valid ClientVO clientVO, BindingResult bindingResult) {
-//        controllerValidation.validate(clientVO); // TODO Validate
+    public ClientVO addClient(@RequestBody @NotNull @Valid ClientVO clientVO, BindingResult bindingResult) throws ValidationException {
+        if (bindingResult != null) throw  new ValidationException("Object is not valid", bindingResult);
         return serviceClient.create(clientVO);
     }
 
     @CrossOrigin
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ClientVO editClient(@PathVariable("id") int clientId, @RequestBody @NotNull @Valid ClientVO clientVO, BindingResult bindingResult) throws ApplicationException {
-//        System.out.println(bindingResult);
-//        controllerValidation.validate(clientVO);
-// TODO Validate
-
+    public ClientVO editClient(@PathVariable("id") int clientId, @RequestBody @NotNull @Valid ClientVO clientVO, BindingResult bindingResult) throws ApplicationException, ValidationException {
+        if (bindingResult != null) throw  new ValidationException("Object is not valid", bindingResult);
         return serviceClient.update(clientId, clientVO);
     }
 
@@ -56,19 +52,4 @@ public class ControllerClientREST {
     public boolean deleteClientByID(@PathVariable("id") int clientId) {
         return serviceClient.deleteById(clientId);
     }
-
 }
-
-//    @CrossOrigin
-//    @RequestMapping(value = "{id}/visits", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-//    public List<VisitVO> getListVisitsOfClient(@PathVariable("id") int clientId) throws ApplicationException {
-//        return clientDAO.getVisitsOfClient(clientId);
-//    }
-//    @CrossOrigin
-//    @RequestMapping(value = "{id}/visits", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-//    public List<VisitVO> getVisitsByClient(@PathVariable("id") int clientId) throws ApplicationException {
-//        return serviceClient.getVisitsByClient(clientId);
-//        Client client = serviceClient.getEntityByID(clientId);
-//        Map<String, Object> parameters = new HashMap<>();
-//        parameters.put("client", client);
-//        return visitServiceDAO.getListByNamedQuery("Visit.findByClient", parameters);

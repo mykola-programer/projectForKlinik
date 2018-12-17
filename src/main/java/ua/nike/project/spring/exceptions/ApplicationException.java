@@ -1,19 +1,12 @@
 package ua.nike.project.spring.exceptions;
 
-import org.springframework.http.HttpStatus;
-
-import java.util.ArrayList;
-import java.util.List;
-
 public class ApplicationException extends Exception {
     private String errUserMsgs;
     private String errExceptMsg;
-    private HttpStatus httpStatus;
 
-    public ApplicationException(String errUserMsgs/*, HttpStatus httpStatus*/) {
+    public ApplicationException(String errUserMsgs) {
         this.errUserMsgs = errUserMsgs;
         this.errExceptMsg = super.getMessage();
-        this.httpStatus = httpStatus;
     }
 
     public String getErrUserMsgs() {
@@ -24,7 +17,4 @@ public class ApplicationException extends Exception {
         return errExceptMsg;
     }
 
-    public HttpStatus getHttpStatus() {
-        return httpStatus;
-    }
 }

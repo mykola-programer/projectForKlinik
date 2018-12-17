@@ -1,4 +1,4 @@
-package ua.nike.project.spring.service;
+package ua.nike.project.spring.service.implementatoins;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -6,108 +6,102 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import ua.nike.project.hibernate.entity.Surgeon;
+import ua.nike.project.hibernate.entity.Manager;
 import ua.nike.project.hibernate.type.Sex;
-import ua.nike.project.spring.dao.DAO;
+import ua.nike.project.spring.dao.implementatoins.DAO;
 import ua.nike.project.spring.exceptions.ApplicationException;
-import ua.nike.project.spring.vo.SurgeonVO;
+import ua.nike.project.spring.vo.ManagerVO;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @Scope(BeanDefinition.SCOPE_SINGLETON)
-public class ServiceSurgeon {
-
-    private DAO<Surgeon> dao;
+public class ServiceManager {
 
     @Autowired
-    public void setDao(DAO<Surgeon> dao) {
-        this.dao = dao;
-        this.dao.setClassEO(Surgeon.class);
-    }
+    private DAO<Manager> dao;
 
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-    public SurgeonVO findByID(int surgeonID) throws ApplicationException {
-        return convertToSurgeonVO(dao.findByID(surgeonID));
+    public ManagerVO findByID(int managerID) throws ApplicationException {
+        return convertToManagerVO(dao.findByID(managerID));
     }
-
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-    public Surgeon findEntityByID(int entityID) throws ApplicationException {
+    public Manager findEntytiByID(int entityID) throws ApplicationException {
         return dao.findByID(entityID);
     }
 
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-    public List<SurgeonVO> findAll() {
-        List<Surgeon> entities = dao.findAll("Surgeon.findAll", null);
+    public List<ManagerVO> findAll() {
+        List<Manager> entities = dao.findAll();
         if (entities == null) return null;
-        List<SurgeonVO> result = new ArrayList<>();
-        for (Surgeon entity : entities) {
-            result.add(convertToSurgeonVO(entity));
+        List<ManagerVO> result = new ArrayList<>();
+        for (Manager entity : entities) {
+            result.add(convertToManagerVO(entity));
         }
         return result;
     }
 
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-    public List<SurgeonVO> findAllActive() {
-        List<Surgeon> entities = dao.findAll("Surgeon.findAllActive", null);
+    public List<ManagerVO> findAllActive() {
+        List<Manager> entities = dao.findAllActive();
         if (entities == null) return null;
-        List<SurgeonVO> result = new ArrayList<>();
-        for (Surgeon entity : entities) {
-            result.add(convertToSurgeonVO(entity));
+        List<ManagerVO> result = new ArrayList<>();
+        for (Manager entity : entities) {
+            result.add(convertToManagerVO(entity));
         }
         return result;
     }
-
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public SurgeonVO create(SurgeonVO surgeonVO) {
-        Surgeon entity = copyToSurgeon(surgeonVO, null);
-        return convertToSurgeonVO(dao.save(entity));
+    public ManagerVO create(ManagerVO managerVO) {
+        Manager entity = copyToManager(managerVO, null);
+        return convertToManagerVO(dao.save(entity));
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public SurgeonVO update(int surgeonID, SurgeonVO surgeonVO) throws ApplicationException {
-        Surgeon originalEntity = dao.findByID(surgeonID);
-        Surgeon updatedEntity = copyToSurgeon(surgeonVO, originalEntity);
-        return convertToSurgeonVO(dao.update(updatedEntity));
+    public ManagerVO update(int managerID, ManagerVO managerVO) throws ApplicationException {
+        Manager originalEntity = dao.findByID(managerID);
+        Manager updatedEntity = copyToManager(managerVO, originalEntity);
+        return convertToManagerVO(dao.update(updatedEntity));
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public boolean deleteById(int surgeonID) {
-        return dao.remove(surgeonID);
+    public boolean deleteById(int managerID) {
+        return dao.remove(managerID);
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public SurgeonVO deactivateByID(int surgeonID) throws ApplicationException {
-        Surgeon surgeon = dao.findByID(surgeonID);
-        surgeon.setInactive(true);
-        return convertToSurgeonVO(dao.update(surgeon));
+    public ManagerVO deactivateByID(int managerID) throws ApplicationException {
+        Manager manager = dao.findByID(managerID);
+        manager.setInactive(true);
+        return convertToManagerVO(dao.update(manager));
     }
-
     @Transactional(propagation = Propagation.REQUIRED)
-    public SurgeonVO activateByID(int surgeonID) throws ApplicationException {
-        Surgeon surgeon = dao.findByID(surgeonID);
-        surgeon.setInactive(false);
-        return convertToSurgeonVO(dao.update(surgeon));
+    public ManagerVO activateByID(int managerID) throws ApplicationException {
+        Manager manager = dao.findByID(managerID);
+        manager.setInactive(false);
+        return convertToManagerVO(dao.update(manager));
     }
 
-    private SurgeonVO convertToSurgeonVO(Surgeon surgeon) {
-        if (surgeon == null) return null;
-        SurgeonVO result = new SurgeonVO();
-        result.setSurgeonId(surgeon.getSurgeonId());
-        result.setSurname(surgeon.getSurname());
-        result.setFirstName(surgeon.getFirstName());
-        result.setSecondName(surgeon.getSecondName());
-        result.setSex(surgeon.getSex().toCharacter());
-        result.setInactive(surgeon.isInactive());
+    private ManagerVO convertToManagerVO(Manager manager) {
+        if (manager == null) return null;
+        ManagerVO result = new ManagerVO();
+        result.setManagerId(manager.getManagerId());
+        result.setSurname(manager.getSurname());
+        result.setFirstName(manager.getFirstName());
+        result.setSecondName(manager.getSecondName());
+        result.setSex(manager.getSex().toCharacter());
+        result.setCityFrom(manager.getCityFrom());
+        result.setInactive(manager.isInactive());
         return result;
     }
 
-    private Surgeon copyToSurgeon(SurgeonVO original, Surgeon result) {
+    private Manager copyToManager(ManagerVO original, Manager result) {
         if (original != null) {
             result.setSurname(original.getSurname());
             result.setFirstName(original.getFirstName());
             result.setSecondName(original.getSecondName());
+            result.setCityFrom(original.getCityFrom());
             result.setSex(Sex.getInstance(original.getSex()));
             result.setInactive(original.isInactive());
         }
@@ -131,12 +125,12 @@ public class ServiceSurgeon {
 
     /*
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-    public List<SurgeonVO> getListByQuery(String hqlQuery, Map<String, Object> parameters) throws
+    public List<ManagerVO> getListByQuery(String hqlQuery, Map<String, Object> parameters) throws
             ApplicationException {
-        List<Surgeon> entities = dao.getEntitiesByQuery(hqlQuery, parameters);
-        List<SurgeonVO> result = new ArrayList<>();
-        for (Surgeon entity : entities) {
-            result.add(convertToSurgeonVO(entity));
+        List<Manager> entities = dao.getEntitiesByQuery(hqlQuery, parameters);
+        List<ManagerVO> result = new ArrayList<>();
+        for (Manager entity : entities) {
+            result.add(convertToManagerVO(entity));
         }
         return result;
     }
@@ -157,27 +151,27 @@ public class ServiceSurgeon {
     
 //    @Override
 //    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-//    public Surgeon getEntityByID(int surgeonID) throws ApplicationException {
-//        return dao.findByID(surgeonID);
+//    public Manager getEntityByID(int managerID) throws ApplicationException {
+//        return dao.findByID(managerID);
 //    }
 
-        private SurgeonVO convertToSurgeonVO(Surgeon entity) throws ApplicationException {
+        private ManagerVO convertToManagerVO(Manager entity) throws ApplicationException {
             if (entity == null) return null;
             switch (entity.getClass().getSimpleName()) {
-                case "Surgeon":
-                    return (SurgeonVO) transformToSurgeonVO((Surgeon) entity);
+                case "Manager":
+                    return (ManagerVO) transformToManagerVO((Manager) entity);
                 case "Visit":
-                    return (SurgeonVO) transformToVisitVO((Visit) entity);
+                    return (ManagerVO) transformToVisitVO((Visit) entity);
                 case "Accomodation":
-                    return (SurgeonVO) transformToAccomodationVO((Accomodation) entity);
-                case "Surgeon":
-                    return (SurgeonVO) transformToSurgeonVO((Surgeon) entity);
+                    return (ManagerVO) transformToAccomodationVO((Accomodation) entity);
+                case "Manager":
+                    return (ManagerVO) transformToManagerVO((Manager) entity);
                 case "OperationType":
-                    return (SurgeonVO) transformToOperationTypeVO((OperationType) entity);
+                    return (ManagerVO) transformToOperationTypeVO((OperationType) entity);
                 case "Surgeon":
-                    return (SurgeonVO) transformToSurgeonVO((Surgeon) entity);
+                    return (ManagerVO) transformToSurgeonVO((Surgeon) entity);
                 case "VisitDate":
-                    return (SurgeonVO) transformToVisitDateVO((VisitDate) entity);
+                    return (ManagerVO) transformToVisitDateVO((VisitDate) entity);
 
                 default:
                     throw new ApplicationException("Class not find.");
@@ -192,29 +186,29 @@ public class ServiceSurgeon {
             result.setVisitDate(transformToVisitDateVO(visit.getVisitDate()));
             result.setTimeForCome(visit.getTimeForCome());
             result.setOrderForCome(visit.getOrderForCome());
-            result.setSurgeon(transformToSurgeonVO(visit.getSurgeon()));
-            result.setPatient(transformToSurgeonVO(visit.getPatient()));
-            result.setStatus(convertSurgeonStatus(visit.getStatus()));
+            result.setManager(transformToManagerVO(visit.getManager()));
+            result.setPatient(transformToManagerVO(visit.getPatient()));
+            result.setStatus(convertManagerStatus(visit.getStatus()));
             result.setOperationType(transformToOperationTypeVO(visit.getOperationType()));
             result.setEye(visit.getEye());
             result.setSurgeon(transformToSurgeonVO(visit.getSurgeon()));
-            result.setSurgeon(transformToSurgeonVO(visit.getSurgeon()));
+            result.setManager(transformToManagerVO(visit.getManager()));
             result.setAccomodation(transformToAccomodationVO(visit.getAccomodation()));
             result.setNote(visit.getNote());
             result.setInactive(visit.getInactive());
             return result;
         }
 
-        private SurgeonVO transformToSurgeonVO(Surgeon surgeon) {
-            if (surgeon == null) return null;
-            SurgeonVO result = new SurgeonVO();
-            result.setSurgeonId(surgeon.getSurgeonId());
-            result.setSurname(surgeon.getSurname());
-            result.setFirstName(surgeon.getFirstName());
-            result.setSecondName(surgeon.getSecondName());
-            result.setSex(convertSex(surgeon.getSex()));
-            result.setBirthday(surgeon.getBirthday());
-            result.setTelephone(surgeon.getTelephone());
+        private ManagerVO transformToManagerVO(Manager manager) {
+            if (manager == null) return null;
+            ManagerVO result = new ManagerVO();
+            result.setManagerId(manager.getManagerId());
+            result.setSurname(manager.getSurname());
+            result.setFirstName(manager.getFirstName());
+            result.setSecondName(manager.getSecondName());
+            result.setSex(convertSex(manager.getSex()));
+            result.setBirthday(manager.getBirthday());
+            result.setTelephone(manager.getTelephone());
             return result;
         }
 
@@ -228,16 +222,16 @@ public class ServiceSurgeon {
             return result;
         }
 
-        private SurgeonVO transformToSurgeonVO(Surgeon surgeon) {
-            if (surgeon == null) return null;
-            SurgeonVO result = new SurgeonVO();
-            result.setSurgeonId(surgeon.getSurgeonId());
-            result.setSurname(surgeon.getSurname());
-            result.setFirstName(surgeon.getFirstName());
-            result.setSecondName(surgeon.getSecondName());
-            result.setSex(convertSex(surgeon.getSex()));
-            result.setCityFrom(surgeon.getCityFrom());
-            result.setInactive(surgeon.isInactive());
+        private ManagerVO transformToManagerVO(Manager manager) {
+            if (manager == null) return null;
+            ManagerVO result = new ManagerVO();
+            result.setManagerId(manager.getManagerId());
+            result.setSurname(manager.getSurname());
+            result.setFirstName(manager.getFirstName());
+            result.setSecondName(manager.getSecondName());
+            result.setSex(convertSex(manager.getSex()));
+            result.setCityFrom(manager.getCityFrom());
+            result.setInactive(manager.isInactive());
             return result;
         }
 
@@ -271,36 +265,36 @@ public class ServiceSurgeon {
             return result;
         }
 
-        private Surgeon copyToEntityObject(SurgeonVO surgeonVO, Surgeon entity) throws ApplicationException {
-            if (surgeonVO == null) return null;
-            switch (surgeonVO.getClass().getSimpleName()) {
-                case "SurgeonVO": {
-                    if (entity == null) entity = (Surgeon) new Surgeon();
-                    return (Surgeon) copyToSurgeon((SurgeonVO) surgeonVO, (Surgeon) entity);
+        private Manager copyToEntityObject(ManagerVO managerVO, Manager entity) throws ApplicationException {
+            if (managerVO == null) return null;
+            switch (managerVO.getClass().getSimpleName()) {
+                case "ManagerVO": {
+                    if (entity == null) entity = (Manager) new Manager();
+                    return (Manager) copyToManager((ManagerVO) managerVO, (Manager) entity);
                 }
                 case "AccomodationVO": {
-                    if (entity == null) entity = (Surgeon) new Accomodation();
-                    return (Surgeon) copyToAccomodation((AccomodationVO) surgeonVO, (Accomodation) entity);
+                    if (entity == null) entity = (Manager) new Accomodation();
+                    return (Manager) copyToAccomodation((AccomodationVO) managerVO, (Accomodation) entity);
                 }
-                case "SurgeonVO": {
-                    if (entity == null) entity = (Surgeon) new Surgeon();
-                    return (Surgeon) copyToSurgeon((SurgeonVO) surgeonVO, (Surgeon) entity);
+                case "ManagerVO": {
+                    if (entity == null) entity = (Manager) new Manager();
+                    return (Manager) copyToManager((ManagerVO) managerVO, (Manager) entity);
                 }
                 case "OperationTypeVO": {
-                    if (entity == null) entity = (Surgeon) new OperationType();
-                    return (Surgeon) copyToOperationType((OperationTypeVO) surgeonVO, (OperationType) entity);
+                    if (entity == null) entity = (Manager) new OperationType();
+                    return (Manager) copyToOperationType((OperationTypeVO) managerVO, (OperationType) entity);
                 }
                 case "SurgeonVO": {
-                    if (entity == null) entity = (Surgeon) new Surgeon();
-                    return (Surgeon) copyToSurgeon((SurgeonVO) surgeonVO, (Surgeon) entity);
+                    if (entity == null) entity = (Manager) new Surgeon();
+                    return (Manager) copyToSurgeon((SurgeonVO) managerVO, (Surgeon) entity);
                 }
                 case "VisitVO": {
-                    if (entity == null) entity = (Surgeon) new Visit();
-                    return (Surgeon) copyToVisit((VisitVO) surgeonVO, (Visit) entity);
+                    if (entity == null) entity = (Manager) new Visit();
+                    return (Manager) copyToVisit((VisitVO) managerVO, (Visit) entity);
                 }
                 case "VisitDateVO": {
-                    if (entity == null) entity = (Surgeon) new VisitDate();
-                    return (Surgeon) copyToVisitDate((VisitDateVO) surgeonVO, (VisitDate) entity);
+                    if (entity == null) entity = (Manager) new VisitDate();
+                    return (Manager) copyToVisitDate((VisitDateVO) managerVO, (VisitDate) entity);
                 }
 
                 default:
@@ -314,7 +308,7 @@ public class ServiceSurgeon {
 
                 result.setTimeForCome(original.getTimeForCome());
                 result.setOrderForCome(original.getOrderForCome());
-                result.setStatus(convertSurgeonStatus(original.getStatus()));
+                result.setStatus(convertManagerStatus(original.getStatus()));
                 result.setEye(original.getEye());
                 result.setNote(original.getNote());
                 result.setInactive(original.getInactive());
@@ -325,17 +319,17 @@ public class ServiceSurgeon {
                     result.setVisitDate(copyToVisitDate(original.getVisitDate(), visitDate));
                 } else result.setVisitDate(null);
 
-                if (original.getPatient() != null && original.getPatient().getSurgeonId() > 0) {
-                    Surgeon patient = new Surgeon();
-                    patient.setSurgeonId(original.getPatient().getSurgeonId());
-                    result.setPatient(copyToSurgeon(original.getPatient(), patient));
+                if (original.getPatient() != null && original.getPatient().getManagerId() > 0) {
+                    Manager patient = new Manager();
+                    patient.setManagerId(original.getPatient().getManagerId());
+                    result.setPatient(copyToManager(original.getPatient(), patient));
                 } else result.setPatient(null);
 
-                if (original.getSurgeon() != null && original.getSurgeon().getSurgeonId() > 0) {
-                    Surgeon surgeon = new Surgeon();
-                    surgeon.setSurgeonId(original.getSurgeon().getSurgeonId());
-                    result.setSurgeon(copyToSurgeon(original.getSurgeon(), surgeon));
-                } else result.setSurgeon(null);
+                if (original.getManager() != null && original.getManager().getManagerId() > 0) {
+                    Manager manager = new Manager();
+                    manager.setManagerId(original.getManager().getManagerId());
+                    result.setManager(copyToManager(original.getManager(), manager));
+                } else result.setManager(null);
 
 
                 if (original.getOperationType() != null && original.getOperationType().getOperationTypeId() > 0) {
@@ -350,11 +344,11 @@ public class ServiceSurgeon {
                     result.setSurgeon(copyToSurgeon(original.getSurgeon(), surgeon));
                 } else result.setSurgeon(null);
 
-                if (original.getSurgeon() != null && original.getSurgeon().getSurgeonId() > 0) {
-                    Surgeon surgeon = new Surgeon();
-                    surgeon.setSurgeonId(original.getSurgeon().getSurgeonId());
-                    result.setSurgeon(copyToSurgeon(original.getSurgeon(), surgeon));
-                } else result.setSurgeon(null);
+                if (original.getManager() != null && original.getManager().getManagerId() > 0) {
+                    Manager manager = new Manager();
+                    manager.setManagerId(original.getManager().getManagerId());
+                    result.setManager(copyToManager(original.getManager(), manager));
+                } else result.setManager(null);
 
                 if (original.getAccomodation() != null && original.getAccomodation().getAccomodationId() > 0) {
                     Accomodation accomodation = new Accomodation();
@@ -393,7 +387,7 @@ public class ServiceSurgeon {
             return result;
         }
 
-        private Surgeon copyToSurgeon(SurgeonVO original, Surgeon result) {
+        private Manager copyToManager(ManagerVO original, Manager result) {
             if (original != null) {
                 result.setSurname(original.getSurname());
                 result.setFirstName(original.getFirstName());
@@ -414,7 +408,7 @@ public class ServiceSurgeon {
             return result;
         }
 
-        private Surgeon copyToSurgeon(SurgeonVO original, Surgeon result) {
+        private Manager copyToManager(ManagerVO original, Manager result) {
             if (original != null) {
                 result.setSurname(original.getSurname());
                 result.setFirstName(original.getFirstName());
@@ -456,18 +450,18 @@ public class ServiceSurgeon {
             }
         }
 
-        private SurgeonStatus convertSurgeonStatus(String status) {
+        private ManagerStatus convertManagerStatus(String status) {
             switch (status) {
                 case "пацієнт":
-                    return SurgeonStatus.PATIENT;
+                    return ManagerStatus.PATIENT;
                 case "супров.":
                 case "супроводжуючий":
                 default:
-                    return SurgeonStatus.RELATIVE;
+                    return ManagerStatus.RELATIVE;
             }
         }
 
-        private String convertSurgeonStatus(SurgeonStatus status) {
+        private String convertManagerStatus(ManagerStatus status) {
             if (status == null) return null;
 
             switch (status.toString().toUpperCase()) {
@@ -479,41 +473,41 @@ public class ServiceSurgeon {
             }
         }
 
-    private boolean isRelated(Surgeon entity) throws ApplicationException {
+    private boolean isRelated(Manager entity) throws ApplicationException {
 //        if (entity == null) throw new ApplicationException("Entity is not correct.");
 //        switch (entity.getClass().getSimpleName()) {
-//            case "Surgeon": {
-//                Map<String, Object> parametersSurgeon = new HashMap<>();
-//                parametersSurgeon.put("surgeon", (Surgeon) entity);
+//            case "Manager": {
+//                Map<String, Object> parametersManager = new HashMap<>();
+//                parametersManager.put("manager", (Manager) entity);
 //                Map<String, Object> parametersPatient = new HashMap<>();
-//                parametersPatient.put("patient", (Surgeon) entity);
-//                return ((Long) dao.getObjectByQuery("SELECT count(*) FROM Visit v WHERE v.surgeon = :surgeon", parametersSurgeon) != 0
-//                        || dao.getEntitiesByNamedQuery("Visit.findByPatient", parametersPatient, (Class<Surgeon>) Visit.class).size() != 0);
+//                parametersPatient.put("patient", (Manager) entity);
+//                return ((Long) dao.getObjectByQuery("SELECT count(*) FROM Visit v WHERE v.manager = :manager", parametersManager) != 0
+//                        || dao.getEntitiesByNamedQuery("Visit.findByPatient", parametersPatient, (Class<Manager>) Visit.class).size() != 0);
 //            }
-//            case "Surgeon": {
+//            case "Manager": {
 //                Map<String, Object> parameters = new HashMap<>();
-//                parameters.put("surgeon", entity);
-//                return dao.getEntitiesByNamedQuery("Visit.findBySurgeon", parameters, (Class<Surgeon>) Visit.class).size() != 0;
+//                parameters.put("manager", entity);
+//                return dao.getEntitiesByNamedQuery("Visit.findByManager", parameters, (Class<Manager>) Visit.class).size() != 0;
 //            }
 //            case "OperationType": {
 //                Map<String, Object> parameters = new HashMap<>();
 //                parameters.put("operationType", entity);
-//                return dao.getEntitiesByNamedQuery("Visit.findByOperationType", parameters, (Class<Surgeon>) Visit.class).size() != 0;
+//                return dao.getEntitiesByNamedQuery("Visit.findByOperationType", parameters, (Class<Manager>) Visit.class).size() != 0;
 //            }
 //            case "Surgeon": {
 //                Map<String, Object> parameters = new HashMap<>();
 //                parameters.put("surgeon", entity);
-//                return dao.getEntitiesByNamedQuery("Visit.findBySurgeon", parameters, (Class<Surgeon>) Visit.class).size() != 0;
+//                return dao.getEntitiesByNamedQuery("Visit.findBySurgeon", parameters, (Class<Manager>) Visit.class).size() != 0;
 //            }
 //            case "VisitDate": {
 //                Map<String, Object> parameters = new HashMap<>();
 //                parameters.put("visitDate", entity);
-//                return dao.getEntitiesByNamedQuery("Visit.findByVisitDate", parameters, (Class<Surgeon>) Visit.class).size() != 0;
+//                return dao.getEntitiesByNamedQuery("Visit.findByVisitDate", parameters, (Class<Manager>) Visit.class).size() != 0;
 //            }
 //            case "Accomodation": {
 //                Map<String, Object> parameters = new HashMap<>();
 //                parameters.put("accomodation", entity);
-//                return dao.getEntitiesByNamedQuery("Visit.findByAccomodation", parameters, (Class<Surgeon>) Visit.class).size() != 0;
+//                return dao.getEntitiesByNamedQuery("Visit.findByAccomodation", parameters, (Class<Manager>) Visit.class).size() != 0;
 //            }
 //            case "Visit": {
 //                return false;

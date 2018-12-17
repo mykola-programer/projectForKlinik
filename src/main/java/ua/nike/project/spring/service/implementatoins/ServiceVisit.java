@@ -1,4 +1,4 @@
-package ua.nike.project.spring.service;
+package ua.nike.project.spring.service.implementatoins;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -8,21 +8,20 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import ua.nike.project.hibernate.entity.Visit;
 import ua.nike.project.hibernate.type.ClientStatus;
-import ua.nike.project.spring.dao.DAO;
+import ua.nike.project.spring.dao.implementatoins.DAO;
 import ua.nike.project.spring.exceptions.ApplicationException;
 import ua.nike.project.spring.vo.VisitVO;
 
 import javax.persistence.EntityNotFoundException;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 @Scope(BeanDefinition.SCOPE_SINGLETON)
 public class ServiceVisit {
 
+    @Autowired
     private DAO<Visit> dao;
     @Autowired
     private ServiceVisitDate serviceVisitDate;
@@ -37,12 +36,6 @@ public class ServiceVisit {
     @Autowired
     private ServiceAccomodation serviceAccomodation;
 
-    @Autowired
-    public void setDao(DAO<Visit> dao) {
-        this.dao = dao;
-        this.dao.setClassEO(Visit.class);
-    }
-
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public VisitVO findByID(int visitID) throws ApplicationException {
         return convertToVisitVO(dao.findByID(visitID));
@@ -50,7 +43,7 @@ public class ServiceVisit {
 
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<VisitVO> findAll() {
-        List<Visit> entities = dao.findAll("Visit.findAll", null);
+        List<Visit> entities = dao.findAll();
         if (entities == null) return null;
         List<VisitVO> result = new ArrayList<>();
         for (Visit entity : entities) {
@@ -61,7 +54,7 @@ public class ServiceVisit {
 
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<VisitVO> findAllActive() {
-        List<Visit> entities = dao.findAll("Visit.findAllActive", null);
+        List<Visit> entities = dao.findAllActive();
         if (entities == null) return null;
         List<VisitVO> result = new ArrayList<>();
         for (Visit entity : entities) {
@@ -103,11 +96,7 @@ public class ServiceVisit {
     }
 
     public List<VisitVO> getVisitsByDate(LocalDate date) {
-
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put("date", date);
-
-        List<Visit> entities = dao.findAll("Visit.findAllActiveByDate", parameters);
+        List<Visit> entities = dao.getVisitsByDate(date);
         if (entities == null) return null;
         List<VisitVO> result = new ArrayList<>();
         for (Visit entity : entities) {
@@ -203,7 +192,7 @@ public class ServiceVisit {
 
             if (original.getVisitDate() != null && original.getVisitDate().getVisitDateId() > 0) {
                 try {
-                    result.setVisitDate(serviceVisitDate.findEntityByID(original.getVisitDate().getVisitDateId()));
+                    result.setVisitDate(serviceVisitDate.findEntytiByID(original.getVisitDate().getVisitDateId()));
                 } catch (ApplicationException | EntityNotFoundException e) {
                     result.setVisitDate(null);
                 }
@@ -212,7 +201,7 @@ public class ServiceVisit {
 
             if (original.getPatient() != null && original.getPatient().getClientId() > 0) {
                 try {
-                    result.setPatient(serviceClient.findEntityByID(original.getPatient().getClientId()));
+                    result.setPatient(serviceClient.findEntytiByID(original.getPatient().getClientId()));
                 } catch (ApplicationException | EntityNotFoundException e) {
                     result.setPatient(null);
                 }
@@ -221,7 +210,7 @@ public class ServiceVisit {
 
             if (original.getClient() != null && original.getClient().getClientId() > 0) {
                 try {
-                    result.setClient(serviceClient.findEntityByID(original.getClient().getClientId()));
+                    result.setClient(serviceClient.findEntytiByID(original.getClient().getClientId()));
                 } catch (ApplicationException | EntityNotFoundException e) {
                     result.setClient(null);
                 }
@@ -230,7 +219,7 @@ public class ServiceVisit {
 
             if (original.getOperationType() != null && original.getOperationType().getOperationTypeId() > 0) {
                 try {
-                    result.setOperationType(serviceOperationType.findEntityByID(original.getOperationType().getOperationTypeId()));
+                    result.setOperationType(serviceOperationType.findEntytiByID(original.getOperationType().getOperationTypeId()));
                 } catch (ApplicationException | EntityNotFoundException e) {
                     result.setOperationType(null);
                 }
@@ -239,7 +228,7 @@ public class ServiceVisit {
 
             if (original.getSurgeon() != null && original.getSurgeon().getSurgeonId() > 0) {
                 try {
-                    result.setSurgeon(serviceSurgeon.findEntityByID(original.getSurgeon().getSurgeonId()));
+                    result.setSurgeon(serviceSurgeon.findEntytiByID(original.getSurgeon().getSurgeonId()));
                 } catch (ApplicationException | EntityNotFoundException e) {
                     result.setSurgeon(null);
                 }
@@ -256,7 +245,7 @@ public class ServiceVisit {
 
             if (original.getAccomodation() != null && original.getAccomodation().getAccomodationId() > 0) {
                 try {
-                    result.setAccomodation(serviceAccomodation.findEntityByID(original.getAccomodation().getAccomodationId()));
+                    result.setAccomodation(serviceAccomodation.findEntytiByID(original.getAccomodation().getAccomodationId()));
                 } catch (ApplicationException | EntityNotFoundException e) {
                     result.setAccomodation(null);
                 }

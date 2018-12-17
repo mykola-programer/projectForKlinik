@@ -5,6 +5,7 @@ import org.springframework.http.MediaType;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ua.nike.project.spring.exceptions.ApplicationException;
+import ua.nike.project.spring.exceptions.ValidationException;
 import ua.nike.project.spring.service.ServiceManager;
 import ua.nike.project.spring.vo.ManagerVO;
 
@@ -39,15 +40,15 @@ public class ControllerManagerREST {
 
     @CrossOrigin
     @RequestMapping(value = "", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ManagerVO addManager(@RequestBody @NotNull @Valid ManagerVO managerVO, BindingResult bindingResult) {
-        //TODO Valid
+    public ManagerVO addManager(@RequestBody @NotNull @Valid ManagerVO managerVO, BindingResult bindingResult) throws ValidationException {
+        if (bindingResult != null) throw new ValidationException("Object is not valid", bindingResult); // TODO Validate
         return serviceManager.create(managerVO);
     }
 
     @CrossOrigin
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ManagerVO editManager(@PathVariable("id") int managerID, @RequestBody @NotNull @Valid ManagerVO managerVO, BindingResult bindingResult) throws ApplicationException {
-        //TODO Valid
+    public ManagerVO editManager(@PathVariable("id") int managerID, @RequestBody @NotNull @Valid ManagerVO managerVO, BindingResult bindingResult) throws ApplicationException, ValidationException {
+        if (bindingResult != null) throw new ValidationException("Object is not valid", bindingResult); // TODO Validate
         return serviceManager.update(managerID, managerVO);
     }
 
@@ -56,6 +57,7 @@ public class ControllerManagerREST {
     public boolean deleteByID(@PathVariable("id") int managerID) {
         return serviceManager.deleteById(managerID);
     }
+
     @CrossOrigin
     @RequestMapping(value = "/{id}/deactivate", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ManagerVO deactivateByID(@PathVariable("id") int managerID) throws ApplicationException {

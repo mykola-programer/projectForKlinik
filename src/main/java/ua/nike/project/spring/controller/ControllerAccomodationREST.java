@@ -5,6 +5,7 @@ import org.springframework.http.MediaType;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ua.nike.project.spring.exceptions.ApplicationException;
+import ua.nike.project.spring.exceptions.ValidationException;
 import ua.nike.project.spring.service.ServiceAccomodation;
 import ua.nike.project.spring.vo.AccomodationVO;
 
@@ -16,8 +17,6 @@ import java.util.List;
 @RequestMapping("/accomodations")
 public class ControllerAccomodationREST {
 
-    //    @Autowired
-//    private ControllerValidation controllerValidation;
     @Autowired
     private ServiceAccomodation serviceAccomodation;
 
@@ -41,15 +40,15 @@ public class ControllerAccomodationREST {
 
     @CrossOrigin
     @RequestMapping(value = "", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public AccomodationVO addAccomodation(@RequestBody @NotNull @Valid AccomodationVO accomodationVO, BindingResult bindingResult) {
-        // TODO Validate
+    public AccomodationVO addAccomodation(@RequestBody @NotNull @Valid AccomodationVO accomodationVO, BindingResult bindingResult) throws ValidationException {
+        if (bindingResult != null) throw  new ValidationException("Object is not valid", bindingResult); // TODO Validate
         return serviceAccomodation.create(accomodationVO);
     }
 
     @CrossOrigin
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public AccomodationVO editAccomodation(@PathVariable("id") int accomodationID, @RequestBody @NotNull @Valid AccomodationVO accomodationVO, BindingResult bindingResult) throws ApplicationException {
-        // TODO Validate
+    public AccomodationVO editAccomodation(@PathVariable("id") int accomodationID, @RequestBody @NotNull @Valid AccomodationVO accomodationVO, BindingResult bindingResult) throws ValidationException, ApplicationException {
+        if (bindingResult != null) throw  new ValidationException("Object is not valid", bindingResult); // TODO Validate
         return serviceAccomodation.update(accomodationID, accomodationVO);
     }
 
@@ -77,21 +76,3 @@ public class ControllerAccomodationREST {
         return serviceAccomodation.getActiveWards();
     }
 }
-
-
-
-
-
-
-/*
-    @CrossOrigin
-    @RequestMapping(value = "/{id}/visits", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public List<VisitVO> getVisitsByAccomodation(@PathVariable("id") int accomodationID) throws ApplicationException {
-        Accomodation accomodation = serviceAccomodation.getEntityByID(accomodationID);
-
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put("accomodation", accomodation);
-
-        return visitServiceDAO.getListByNamedQuery("Visit.findByAccomodation", parameters);
-    }
-*/

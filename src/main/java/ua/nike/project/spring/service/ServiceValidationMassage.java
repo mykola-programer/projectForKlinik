@@ -12,16 +12,16 @@ public class ServiceValidationMassage {
     private Properties properties = new Properties();
 
      {
-        try {
-            properties.load(new FileInputStream(this.getClass().getClassLoader().getResource("validation/ua.properties").getFile()));
-        } catch (IOException e) {
+        try (FileInputStream fileInputStream = new FileInputStream(this.getClass().getClassLoader().getResource("validation/ua.properties").getFile())){
+            properties.load(fileInputStream);
+        } catch (NullPointerException | IOException e) {
             e.printStackTrace();
         }
     }
 
     public String value(String key) {
         try {
-            return new String(properties.getProperty(key).getBytes("ISO8859-1"));
+            return new String(properties.getProperty(key, "Error property massage!").getBytes("ISO8859-1"));
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
             return null;

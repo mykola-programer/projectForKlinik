@@ -1,4 +1,4 @@
-package ua.nike.project.spring.service;
+package ua.nike.project.spring.service.implementatoins;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import ua.nike.project.hibernate.entity.Surgeon;
 import ua.nike.project.hibernate.type.Sex;
-import ua.nike.project.spring.dao.DAO;
+import ua.nike.project.spring.dao.implementatoins.DAO;
 import ua.nike.project.spring.exceptions.ApplicationException;
 import ua.nike.project.spring.vo.SurgeonVO;
 
@@ -19,27 +19,21 @@ import java.util.List;
 @Scope(BeanDefinition.SCOPE_SINGLETON)
 public class ServiceSurgeon {
 
-    private DAO<Surgeon> dao;
-
     @Autowired
-    public void setDao(DAO<Surgeon> dao) {
-        this.dao = dao;
-        this.dao.setClassEO(Surgeon.class);
-    }
+    private DAO<Surgeon> dao;
 
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public SurgeonVO findByID(int surgeonID) throws ApplicationException {
         return convertToSurgeonVO(dao.findByID(surgeonID));
     }
-
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-    public Surgeon findEntityByID(int entityID) throws ApplicationException {
+    public Surgeon findEntytiByID(int entityID) throws ApplicationException {
         return dao.findByID(entityID);
     }
 
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<SurgeonVO> findAll() {
-        List<Surgeon> entities = dao.findAll("Surgeon.findAll", null);
+        List<Surgeon> entities = dao.findAll();
         if (entities == null) return null;
         List<SurgeonVO> result = new ArrayList<>();
         for (Surgeon entity : entities) {
@@ -50,7 +44,7 @@ public class ServiceSurgeon {
 
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<SurgeonVO> findAllActive() {
-        List<Surgeon> entities = dao.findAll("Surgeon.findAllActive", null);
+        List<Surgeon> entities = dao.findAllActive();
         if (entities == null) return null;
         List<SurgeonVO> result = new ArrayList<>();
         for (Surgeon entity : entities) {

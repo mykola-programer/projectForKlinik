@@ -1,4 +1,4 @@
-package ua.nike.project.spring.service;
+package ua.nike.project.spring.service.implementatoins;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -6,110 +6,83 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import ua.nike.project.hibernate.entity.Surgeon;
+import ua.nike.project.hibernate.entity.Client;
 import ua.nike.project.hibernate.type.Sex;
-import ua.nike.project.spring.dao.DAO;
+import ua.nike.project.spring.dao.implementatoins.DAO;
 import ua.nike.project.spring.exceptions.ApplicationException;
-import ua.nike.project.spring.vo.SurgeonVO;
+import ua.nike.project.spring.vo.ClientVO;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @Scope(BeanDefinition.SCOPE_SINGLETON)
-public class ServiceSurgeon {
-
-    private DAO<Surgeon> dao;
+public class ServiceClient {
 
     @Autowired
-    public void setDao(DAO<Surgeon> dao) {
-        this.dao = dao;
-        this.dao.setClassEO(Surgeon.class);
+    private DAO<Client> dao;
+
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+    public ClientVO findByID(int clientID) throws ApplicationException {
+        return convertToClientVO(dao.findByID(clientID));
     }
 
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-    public SurgeonVO findByID(int surgeonID) throws ApplicationException {
-        return convertToSurgeonVO(dao.findByID(surgeonID));
-    }
-
-    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-    public Surgeon findEntityByID(int entityID) throws ApplicationException {
+    public Client findEntytiByID(int entityID) throws ApplicationException {
         return dao.findByID(entityID);
     }
 
-    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-    public List<SurgeonVO> findAll() {
-        List<Surgeon> entities = dao.findAll("Surgeon.findAll", null);
-        if (entities == null) return null;
-        List<SurgeonVO> result = new ArrayList<>();
-        for (Surgeon entity : entities) {
-            result.add(convertToSurgeonVO(entity));
-        }
-        return result;
-    }
 
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-    public List<SurgeonVO> findAllActive() {
-        List<Surgeon> entities = dao.findAll("Surgeon.findAllActive", null);
+    public List<ClientVO> findAll() {
+        List<Client> entities = dao.findAll();
         if (entities == null) return null;
-        List<SurgeonVO> result = new ArrayList<>();
-        for (Surgeon entity : entities) {
-            result.add(convertToSurgeonVO(entity));
+        List<ClientVO> result = new ArrayList<>();
+        for (Client entity : entities) {
+            result.add(convertToClientVO(entity));
         }
         return result;
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public SurgeonVO create(SurgeonVO surgeonVO) {
-        Surgeon entity = copyToSurgeon(surgeonVO, null);
-        return convertToSurgeonVO(dao.save(entity));
+    public ClientVO create(ClientVO clientVO) {
+        Client entity = copyToClient(clientVO, null);
+        return convertToClientVO(dao.save(entity));
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public SurgeonVO update(int surgeonID, SurgeonVO surgeonVO) throws ApplicationException {
-        Surgeon originalEntity = dao.findByID(surgeonID);
-        Surgeon updatedEntity = copyToSurgeon(surgeonVO, originalEntity);
-        return convertToSurgeonVO(dao.update(updatedEntity));
+    public ClientVO update(int clientID, ClientVO clientVO) throws ApplicationException {
+        Client originalEntity = dao.findByID(clientID);
+        Client updatedEntity = copyToClient(clientVO, originalEntity);
+        return convertToClientVO(dao.update(updatedEntity));
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public boolean deleteById(int surgeonID) {
-        return dao.remove(surgeonID);
+    public boolean deleteById(int clientID) {
+        return dao.remove(clientID);
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
-    public SurgeonVO deactivateByID(int surgeonID) throws ApplicationException {
-        Surgeon surgeon = dao.findByID(surgeonID);
-        surgeon.setInactive(true);
-        return convertToSurgeonVO(dao.update(surgeon));
-    }
-
-    @Transactional(propagation = Propagation.REQUIRED)
-    public SurgeonVO activateByID(int surgeonID) throws ApplicationException {
-        Surgeon surgeon = dao.findByID(surgeonID);
-        surgeon.setInactive(false);
-        return convertToSurgeonVO(dao.update(surgeon));
-    }
-
-    private SurgeonVO convertToSurgeonVO(Surgeon surgeon) {
-        if (surgeon == null) return null;
-        SurgeonVO result = new SurgeonVO();
-        result.setSurgeonId(surgeon.getSurgeonId());
-        result.setSurname(surgeon.getSurname());
-        result.setFirstName(surgeon.getFirstName());
-        result.setSecondName(surgeon.getSecondName());
-        result.setSex(surgeon.getSex().toCharacter());
-        result.setInactive(surgeon.isInactive());
+    private ClientVO convertToClientVO(Client client) {
+        if (client == null) return null;
+        ClientVO result = new ClientVO();
+        result.setClientId(client.getClientId());
+        result.setSurname(client.getSurname());
+        result.setFirstName(client.getFirstName());
+        result.setSecondName(client.getSecondName());
+        result.setSex(client.getSex().toCharacter());
+        result.setBirthday(client.getBirthday());
+        result.setTelephone(client.getTelephone());
         return result;
     }
 
-    private Surgeon copyToSurgeon(SurgeonVO original, Surgeon result) {
+    private Client copyToClient(ClientVO original, Client result) {
         if (original != null) {
             result.setSurname(original.getSurname());
             result.setFirstName(original.getFirstName());
             result.setSecondName(original.getSecondName());
             result.setSex(Sex.getInstance(original.getSex()));
-            result.setInactive(original.isInactive());
+            result.setBirthday(original.getBirthday());
+            result.setTelephone(original.getTelephone());
         }
         return result;
     }
@@ -131,12 +104,12 @@ public class ServiceSurgeon {
 
     /*
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-    public List<SurgeonVO> getListByQuery(String hqlQuery, Map<String, Object> parameters) throws
+    public List<ClientVO> getListByQuery(String hqlQuery, Map<String, Object> parameters) throws
             ApplicationException {
-        List<Surgeon> entities = dao.getEntitiesByQuery(hqlQuery, parameters);
-        List<SurgeonVO> result = new ArrayList<>();
-        for (Surgeon entity : entities) {
-            result.add(convertToSurgeonVO(entity));
+        List<Client> entities = dao.getEntitiesByQuery(hqlQuery, parameters);
+        List<ClientVO> result = new ArrayList<>();
+        for (Client entity : entities) {
+            result.add(convertToClientVO(entity));
         }
         return result;
     }
@@ -157,27 +130,27 @@ public class ServiceSurgeon {
     
 //    @Override
 //    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-//    public Surgeon getEntityByID(int surgeonID) throws ApplicationException {
-//        return dao.findByID(surgeonID);
+//    public Client getEntityByID(int clientID) throws ApplicationException {
+//        return dao.findByID(clientID);
 //    }
 
-        private SurgeonVO convertToSurgeonVO(Surgeon entity) throws ApplicationException {
+        private ClientVO convertToClientVO(Client entity) throws ApplicationException {
             if (entity == null) return null;
             switch (entity.getClass().getSimpleName()) {
-                case "Surgeon":
-                    return (SurgeonVO) transformToSurgeonVO((Surgeon) entity);
+                case "Client":
+                    return (ClientVO) transformToClientVO((Client) entity);
                 case "Visit":
-                    return (SurgeonVO) transformToVisitVO((Visit) entity);
+                    return (ClientVO) transformToVisitVO((Visit) entity);
                 case "Accomodation":
-                    return (SurgeonVO) transformToAccomodationVO((Accomodation) entity);
-                case "Surgeon":
-                    return (SurgeonVO) transformToSurgeonVO((Surgeon) entity);
+                    return (ClientVO) transformToAccomodationVO((Accomodation) entity);
+                case "Manager":
+                    return (ClientVO) transformToManagerVO((Manager) entity);
                 case "OperationType":
-                    return (SurgeonVO) transformToOperationTypeVO((OperationType) entity);
+                    return (ClientVO) transformToOperationTypeVO((OperationType) entity);
                 case "Surgeon":
-                    return (SurgeonVO) transformToSurgeonVO((Surgeon) entity);
+                    return (ClientVO) transformToSurgeonVO((Surgeon) entity);
                 case "VisitDate":
-                    return (SurgeonVO) transformToVisitDateVO((VisitDate) entity);
+                    return (ClientVO) transformToVisitDateVO((VisitDate) entity);
 
                 default:
                     throw new ApplicationException("Class not find.");
@@ -192,29 +165,29 @@ public class ServiceSurgeon {
             result.setVisitDate(transformToVisitDateVO(visit.getVisitDate()));
             result.setTimeForCome(visit.getTimeForCome());
             result.setOrderForCome(visit.getOrderForCome());
-            result.setSurgeon(transformToSurgeonVO(visit.getSurgeon()));
-            result.setPatient(transformToSurgeonVO(visit.getPatient()));
-            result.setStatus(convertSurgeonStatus(visit.getStatus()));
+            result.setClient(transformToClientVO(visit.getClient()));
+            result.setPatient(transformToClientVO(visit.getPatient()));
+            result.setStatus(convertClientStatus(visit.getStatus()));
             result.setOperationType(transformToOperationTypeVO(visit.getOperationType()));
             result.setEye(visit.getEye());
             result.setSurgeon(transformToSurgeonVO(visit.getSurgeon()));
-            result.setSurgeon(transformToSurgeonVO(visit.getSurgeon()));
+            result.setManager(transformToManagerVO(visit.getManager()));
             result.setAccomodation(transformToAccomodationVO(visit.getAccomodation()));
             result.setNote(visit.getNote());
             result.setInactive(visit.getInactive());
             return result;
         }
 
-        private SurgeonVO transformToSurgeonVO(Surgeon surgeon) {
-            if (surgeon == null) return null;
-            SurgeonVO result = new SurgeonVO();
-            result.setSurgeonId(surgeon.getSurgeonId());
-            result.setSurname(surgeon.getSurname());
-            result.setFirstName(surgeon.getFirstName());
-            result.setSecondName(surgeon.getSecondName());
-            result.setSex(convertSex(surgeon.getSex()));
-            result.setBirthday(surgeon.getBirthday());
-            result.setTelephone(surgeon.getTelephone());
+        private ClientVO transformToClientVO(Client client) {
+            if (client == null) return null;
+            ClientVO result = new ClientVO();
+            result.setClientId(client.getClientId());
+            result.setSurname(client.getSurname());
+            result.setFirstName(client.getFirstName());
+            result.setSecondName(client.getSecondName());
+            result.setSex(convertSex(client.getSex()));
+            result.setBirthday(client.getBirthday());
+            result.setTelephone(client.getTelephone());
             return result;
         }
 
@@ -228,16 +201,16 @@ public class ServiceSurgeon {
             return result;
         }
 
-        private SurgeonVO transformToSurgeonVO(Surgeon surgeon) {
-            if (surgeon == null) return null;
-            SurgeonVO result = new SurgeonVO();
-            result.setSurgeonId(surgeon.getSurgeonId());
-            result.setSurname(surgeon.getSurname());
-            result.setFirstName(surgeon.getFirstName());
-            result.setSecondName(surgeon.getSecondName());
-            result.setSex(convertSex(surgeon.getSex()));
-            result.setCityFrom(surgeon.getCityFrom());
-            result.setInactive(surgeon.isInactive());
+        private ManagerVO transformToManagerVO(Manager manager) {
+            if (manager == null) return null;
+            ManagerVO result = new ManagerVO();
+            result.setManagerId(manager.getManagerId());
+            result.setSurname(manager.getSurname());
+            result.setFirstName(manager.getFirstName());
+            result.setSecondName(manager.getSecondName());
+            result.setSex(convertSex(manager.getSex()));
+            result.setCityFrom(manager.getCityFrom());
+            result.setInactive(manager.isInactive());
             return result;
         }
 
@@ -271,36 +244,36 @@ public class ServiceSurgeon {
             return result;
         }
 
-        private Surgeon copyToEntityObject(SurgeonVO surgeonVO, Surgeon entity) throws ApplicationException {
-            if (surgeonVO == null) return null;
-            switch (surgeonVO.getClass().getSimpleName()) {
-                case "SurgeonVO": {
-                    if (entity == null) entity = (Surgeon) new Surgeon();
-                    return (Surgeon) copyToSurgeon((SurgeonVO) surgeonVO, (Surgeon) entity);
+        private Client copyToEntityObject(ClientVO clientVO, Client entity) throws ApplicationException {
+            if (clientVO == null) return null;
+            switch (clientVO.getClass().getSimpleName()) {
+                case "ClientVO": {
+                    if (entity == null) entity = (Client) new Client();
+                    return (Client) copyToClient((ClientVO) clientVO, (Client) entity);
                 }
                 case "AccomodationVO": {
-                    if (entity == null) entity = (Surgeon) new Accomodation();
-                    return (Surgeon) copyToAccomodation((AccomodationVO) surgeonVO, (Accomodation) entity);
+                    if (entity == null) entity = (Client) new Accomodation();
+                    return (Client) copyToAccomodation((AccomodationVO) clientVO, (Accomodation) entity);
                 }
-                case "SurgeonVO": {
-                    if (entity == null) entity = (Surgeon) new Surgeon();
-                    return (Surgeon) copyToSurgeon((SurgeonVO) surgeonVO, (Surgeon) entity);
+                case "ManagerVO": {
+                    if (entity == null) entity = (Client) new Manager();
+                    return (Client) copyToManager((ManagerVO) clientVO, (Manager) entity);
                 }
                 case "OperationTypeVO": {
-                    if (entity == null) entity = (Surgeon) new OperationType();
-                    return (Surgeon) copyToOperationType((OperationTypeVO) surgeonVO, (OperationType) entity);
+                    if (entity == null) entity = (Client) new OperationType();
+                    return (Client) copyToOperationType((OperationTypeVO) clientVO, (OperationType) entity);
                 }
                 case "SurgeonVO": {
-                    if (entity == null) entity = (Surgeon) new Surgeon();
-                    return (Surgeon) copyToSurgeon((SurgeonVO) surgeonVO, (Surgeon) entity);
+                    if (entity == null) entity = (Client) new Surgeon();
+                    return (Client) copyToSurgeon((SurgeonVO) clientVO, (Surgeon) entity);
                 }
                 case "VisitVO": {
-                    if (entity == null) entity = (Surgeon) new Visit();
-                    return (Surgeon) copyToVisit((VisitVO) surgeonVO, (Visit) entity);
+                    if (entity == null) entity = (Client) new Visit();
+                    return (Client) copyToVisit((VisitVO) clientVO, (Visit) entity);
                 }
                 case "VisitDateVO": {
-                    if (entity == null) entity = (Surgeon) new VisitDate();
-                    return (Surgeon) copyToVisitDate((VisitDateVO) surgeonVO, (VisitDate) entity);
+                    if (entity == null) entity = (Client) new VisitDate();
+                    return (Client) copyToVisitDate((VisitDateVO) clientVO, (VisitDate) entity);
                 }
 
                 default:
@@ -314,7 +287,7 @@ public class ServiceSurgeon {
 
                 result.setTimeForCome(original.getTimeForCome());
                 result.setOrderForCome(original.getOrderForCome());
-                result.setStatus(convertSurgeonStatus(original.getStatus()));
+                result.setStatus(convertClientStatus(original.getStatus()));
                 result.setEye(original.getEye());
                 result.setNote(original.getNote());
                 result.setInactive(original.getInactive());
@@ -325,17 +298,17 @@ public class ServiceSurgeon {
                     result.setVisitDate(copyToVisitDate(original.getVisitDate(), visitDate));
                 } else result.setVisitDate(null);
 
-                if (original.getPatient() != null && original.getPatient().getSurgeonId() > 0) {
-                    Surgeon patient = new Surgeon();
-                    patient.setSurgeonId(original.getPatient().getSurgeonId());
-                    result.setPatient(copyToSurgeon(original.getPatient(), patient));
+                if (original.getPatient() != null && original.getPatient().getClientId() > 0) {
+                    Client patient = new Client();
+                    patient.setClientId(original.getPatient().getClientId());
+                    result.setPatient(copyToClient(original.getPatient(), patient));
                 } else result.setPatient(null);
 
-                if (original.getSurgeon() != null && original.getSurgeon().getSurgeonId() > 0) {
-                    Surgeon surgeon = new Surgeon();
-                    surgeon.setSurgeonId(original.getSurgeon().getSurgeonId());
-                    result.setSurgeon(copyToSurgeon(original.getSurgeon(), surgeon));
-                } else result.setSurgeon(null);
+                if (original.getClient() != null && original.getClient().getClientId() > 0) {
+                    Client client = new Client();
+                    client.setClientId(original.getClient().getClientId());
+                    result.setClient(copyToClient(original.getClient(), client));
+                } else result.setClient(null);
 
 
                 if (original.getOperationType() != null && original.getOperationType().getOperationTypeId() > 0) {
@@ -350,11 +323,11 @@ public class ServiceSurgeon {
                     result.setSurgeon(copyToSurgeon(original.getSurgeon(), surgeon));
                 } else result.setSurgeon(null);
 
-                if (original.getSurgeon() != null && original.getSurgeon().getSurgeonId() > 0) {
-                    Surgeon surgeon = new Surgeon();
-                    surgeon.setSurgeonId(original.getSurgeon().getSurgeonId());
-                    result.setSurgeon(copyToSurgeon(original.getSurgeon(), surgeon));
-                } else result.setSurgeon(null);
+                if (original.getManager() != null && original.getManager().getManagerId() > 0) {
+                    Manager manager = new Manager();
+                    manager.setManagerId(original.getManager().getManagerId());
+                    result.setManager(copyToManager(original.getManager(), manager));
+                } else result.setManager(null);
 
                 if (original.getAccomodation() != null && original.getAccomodation().getAccomodationId() > 0) {
                     Accomodation accomodation = new Accomodation();
@@ -393,7 +366,7 @@ public class ServiceSurgeon {
             return result;
         }
 
-        private Surgeon copyToSurgeon(SurgeonVO original, Surgeon result) {
+        private Manager copyToManager(ManagerVO original, Manager result) {
             if (original != null) {
                 result.setSurname(original.getSurname());
                 result.setFirstName(original.getFirstName());
@@ -414,7 +387,7 @@ public class ServiceSurgeon {
             return result;
         }
 
-        private Surgeon copyToSurgeon(SurgeonVO original, Surgeon result) {
+        private Client copyToClient(ClientVO original, Client result) {
             if (original != null) {
                 result.setSurname(original.getSurname());
                 result.setFirstName(original.getFirstName());
@@ -456,18 +429,18 @@ public class ServiceSurgeon {
             }
         }
 
-        private SurgeonStatus convertSurgeonStatus(String status) {
+        private ClientStatus convertClientStatus(String status) {
             switch (status) {
                 case "пацієнт":
-                    return SurgeonStatus.PATIENT;
+                    return ClientStatus.PATIENT;
                 case "супров.":
                 case "супроводжуючий":
                 default:
-                    return SurgeonStatus.RELATIVE;
+                    return ClientStatus.RELATIVE;
             }
         }
 
-        private String convertSurgeonStatus(SurgeonStatus status) {
+        private String convertClientStatus(ClientStatus status) {
             if (status == null) return null;
 
             switch (status.toString().toUpperCase()) {
@@ -479,41 +452,41 @@ public class ServiceSurgeon {
             }
         }
 
-    private boolean isRelated(Surgeon entity) throws ApplicationException {
+    private boolean isRelated(Client entity) throws ApplicationException {
 //        if (entity == null) throw new ApplicationException("Entity is not correct.");
 //        switch (entity.getClass().getSimpleName()) {
-//            case "Surgeon": {
-//                Map<String, Object> parametersSurgeon = new HashMap<>();
-//                parametersSurgeon.put("surgeon", (Surgeon) entity);
+//            case "Client": {
+//                Map<String, Object> parametersClient = new HashMap<>();
+//                parametersClient.put("client", (Client) entity);
 //                Map<String, Object> parametersPatient = new HashMap<>();
-//                parametersPatient.put("patient", (Surgeon) entity);
-//                return ((Long) dao.getObjectByQuery("SELECT count(*) FROM Visit v WHERE v.surgeon = :surgeon", parametersSurgeon) != 0
-//                        || dao.getEntitiesByNamedQuery("Visit.findByPatient", parametersPatient, (Class<Surgeon>) Visit.class).size() != 0);
+//                parametersPatient.put("patient", (Client) entity);
+//                return ((Long) dao.getObjectByQuery("SELECT count(*) FROM Visit v WHERE v.client = :client", parametersClient) != 0
+//                        || dao.getEntitiesByNamedQuery("Visit.findByPatient", parametersPatient, (Class<Client>) Visit.class).size() != 0);
 //            }
-//            case "Surgeon": {
+//            case "Manager": {
 //                Map<String, Object> parameters = new HashMap<>();
-//                parameters.put("surgeon", entity);
-//                return dao.getEntitiesByNamedQuery("Visit.findBySurgeon", parameters, (Class<Surgeon>) Visit.class).size() != 0;
+//                parameters.put("manager", entity);
+//                return dao.getEntitiesByNamedQuery("Visit.findByManager", parameters, (Class<Client>) Visit.class).size() != 0;
 //            }
 //            case "OperationType": {
 //                Map<String, Object> parameters = new HashMap<>();
 //                parameters.put("operationType", entity);
-//                return dao.getEntitiesByNamedQuery("Visit.findByOperationType", parameters, (Class<Surgeon>) Visit.class).size() != 0;
+//                return dao.getEntitiesByNamedQuery("Visit.findByOperationType", parameters, (Class<Client>) Visit.class).size() != 0;
 //            }
 //            case "Surgeon": {
 //                Map<String, Object> parameters = new HashMap<>();
 //                parameters.put("surgeon", entity);
-//                return dao.getEntitiesByNamedQuery("Visit.findBySurgeon", parameters, (Class<Surgeon>) Visit.class).size() != 0;
+//                return dao.getEntitiesByNamedQuery("Visit.findBySurgeon", parameters, (Class<Client>) Visit.class).size() != 0;
 //            }
 //            case "VisitDate": {
 //                Map<String, Object> parameters = new HashMap<>();
 //                parameters.put("visitDate", entity);
-//                return dao.getEntitiesByNamedQuery("Visit.findByVisitDate", parameters, (Class<Surgeon>) Visit.class).size() != 0;
+//                return dao.getEntitiesByNamedQuery("Visit.findByVisitDate", parameters, (Class<Client>) Visit.class).size() != 0;
 //            }
 //            case "Accomodation": {
 //                Map<String, Object> parameters = new HashMap<>();
 //                parameters.put("accomodation", entity);
-//                return dao.getEntitiesByNamedQuery("Visit.findByAccomodation", parameters, (Class<Surgeon>) Visit.class).size() != 0;
+//                return dao.getEntitiesByNamedQuery("Visit.findByAccomodation", parameters, (Class<Client>) Visit.class).size() != 0;
 //            }
 //            case "Visit": {
 //                return false;

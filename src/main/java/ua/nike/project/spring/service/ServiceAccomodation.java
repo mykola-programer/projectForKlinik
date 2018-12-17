@@ -19,21 +19,28 @@ import java.util.List;
 @Scope(BeanDefinition.SCOPE_SINGLETON)
 public class ServiceAccomodation {
 
-    @Autowired
+
     private DAO<Accomodation> dao;
+
+    @Autowired
+    public void setDao(DAO<Accomodation> dao) {
+        this.dao = dao;
+        this.dao.setClassEO(Accomodation.class);
+    }
 
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public AccomodationVO findByID(int accomodationID) throws ApplicationException {
         return convertToAccomodationVO(dao.findByID(accomodationID));
     }
+
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-    public Accomodation findEntytiByID(int entityID) throws ApplicationException {
+    public Accomodation findEntityByID(int entityID) throws ApplicationException {
         return dao.findByID(entityID);
     }
 
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<AccomodationVO> findAll() {
-        List<Accomodation> entities = dao.findAll();
+        List<Accomodation> entities = dao.findAll("Accomodation.findAll", null);
         if (entities == null) return null;
         List<AccomodationVO> result = new ArrayList<>();
         for (Accomodation entity : entities) {
@@ -44,7 +51,7 @@ public class ServiceAccomodation {
 
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<AccomodationVO> findAllActive() {
-        List<Accomodation> entities = dao.findAllActive();
+        List<Accomodation> entities = dao.findAll("Accomodation.getAllActive", null);
         if (entities == null) return null;
         List<AccomodationVO> result = new ArrayList<>();
         for (Accomodation entity : entities) {
@@ -55,7 +62,7 @@ public class ServiceAccomodation {
 
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<Integer> getActiveWards() {
-        List<Ward> wards = dao.getActiveWards();
+        List<Ward> wards = (List<Ward>) dao.getObjectsByQuery("SELECT DISTINCT acc.ward FROM Accomodation acc where acc.inactive = false ORDER BY acc.ward", null, Ward.class);
         if (wards == null) return null;
         List<Integer> result = new ArrayList<>();
         for (Ward ward : wards) result.add(ward.toInteger());

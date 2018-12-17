@@ -5,6 +5,7 @@ import org.springframework.http.MediaType;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ua.nike.project.spring.exceptions.ApplicationException;
+import ua.nike.project.spring.exceptions.ValidationException;
 import ua.nike.project.spring.service.ServiceVisit;
 import ua.nike.project.spring.vo.VisitVO;
 
@@ -42,14 +43,15 @@ public class ControllerVisitREST {
 
     @CrossOrigin
     @RequestMapping(value = "", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public VisitVO addVisit(@RequestBody @NotNull @Valid VisitVO visitVO, BindingResult bindingResult) {
-        //TODO Valid
+    public VisitVO addVisit(@RequestBody @NotNull @Valid VisitVO visitVO, BindingResult bindingResult) throws ValidationException {
+        if (bindingResult != null) throw  new ValidationException("Object is not valid", bindingResult);
         return serviceVisit.create(visitVO);
     }
 
     @CrossOrigin
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public VisitVO editVisit(@PathVariable("id") int visitID, @RequestBody @NotNull @Valid VisitVO visitVO, BindingResult bindingResult) throws ApplicationException {
+    public VisitVO editVisit(@PathVariable("id") int visitID, @RequestBody @NotNull @Valid VisitVO visitVO, BindingResult bindingResult) throws ApplicationException, ValidationException {
+        if (bindingResult != null) throw  new ValidationException("Object is not valid", bindingResult);
         return serviceVisit.update(visitID, visitVO);
     }
 

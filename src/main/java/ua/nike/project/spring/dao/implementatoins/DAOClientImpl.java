@@ -1,4 +1,4 @@
-package ua.nike.project.spring.dao;
+package ua.nike.project.spring.dao.implementatoins;
 
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;

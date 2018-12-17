@@ -5,6 +5,7 @@ import org.springframework.http.MediaType;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ua.nike.project.spring.exceptions.ApplicationException;
+import ua.nike.project.spring.exceptions.ValidationException;
 import ua.nike.project.spring.service.ServiceVisitDate;
 import ua.nike.project.spring.vo.VisitDateVO;
 
@@ -38,14 +39,14 @@ public class ControllerVisitDateREST {
         return serviceVisitDate.findAllActive();
     }
 
-    private VisitDateVO addVisitDate(@RequestBody @NotNull @Valid VisitDateVO visitDateVO, BindingResult bindingResult) {
-        //TODO Valid
+    private VisitDateVO addVisitDate(@RequestBody @NotNull @Valid VisitDateVO visitDateVO, BindingResult bindingResult) throws ValidationException {
+        if (bindingResult != null) throw  new ValidationException("Object is not valid", bindingResult); // TODO Validate ?
         return serviceVisitDate.create(visitDateVO);
     }
 
     @CrossOrigin
     @RequestMapping(value = "", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public List<VisitDateVO> addVisitDates(@RequestBody @NotNull List<VisitDateVO> visitDatesVO, BindingResult bindingResult) {
+    public List<VisitDateVO> addVisitDates(@RequestBody @NotNull @Valid List<VisitDateVO> visitDatesVO, BindingResult bindingResult) throws ValidationException {
         List<VisitDateVO> result = new ArrayList<>();
         for (VisitDateVO visitDateVO : visitDatesVO) {
             if (visitDateVO != null && visitDateVO.getDate() != null) {
@@ -57,8 +58,8 @@ public class ControllerVisitDateREST {
 
     @CrossOrigin
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public VisitDateVO editVisitDate(@PathVariable("id") int visitDateID, @RequestBody @NotNull @Valid VisitDateVO visitDateVO, BindingResult bindingResult) throws ApplicationException {
-        //TODO Valid
+    public VisitDateVO editVisitDate(@PathVariable("id") int visitDateID, @RequestBody @NotNull @Valid VisitDateVO visitDateVO, BindingResult bindingResult) throws ApplicationException, ValidationException {
+        if (bindingResult != null) throw  new ValidationException("Object is not valid", bindingResult);
         return serviceVisitDate.update(visitDateID, visitDateVO);
     }
 

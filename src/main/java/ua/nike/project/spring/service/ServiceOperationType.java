@@ -6,11 +6,9 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import ua.nike.project.hibernate.entity.Accomodation;
 import ua.nike.project.hibernate.entity.OperationType;
 import ua.nike.project.spring.dao.DAO;
 import ua.nike.project.spring.exceptions.ApplicationException;
-import ua.nike.project.spring.vo.AccomodationVO;
 import ua.nike.project.spring.vo.OperationTypeVO;
 
 import java.util.ArrayList;
@@ -20,21 +18,27 @@ import java.util.List;
 @Scope(BeanDefinition.SCOPE_SINGLETON)
 public class ServiceOperationType {
 
-    @Autowired
     private DAO<OperationType> dao;
+
+    @Autowired
+    public void setDao(DAO<OperationType> dao) {
+        this.dao = dao;
+        this.dao.setClassEO(OperationType.class);
+    }
 
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public OperationTypeVO findByID(int operationTypeID) throws ApplicationException {
         return convertToOperationTypeVO(dao.findByID(operationTypeID));
     }
+
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-    public OperationType findEntytiByID(int entityID) throws ApplicationException {
+    public OperationType findEntityByID(int entityID) throws ApplicationException {
         return dao.findByID(entityID);
     }
 
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<OperationTypeVO> findAll() {
-        List<OperationType> entities = dao.findAll();
+        List<OperationType> entities = dao.findAll("OperationType.findAll", null);
         if (entities == null) return null;
         List<OperationTypeVO> result = new ArrayList<>();
         for (OperationType entity : entities) {
@@ -45,7 +49,7 @@ public class ServiceOperationType {
 
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<OperationTypeVO> findAllActive() {
-        List<OperationType> entities = dao.findAllActive();
+        List<OperationType> entities = dao.findAll("OperationType.getAllActive", null);
         if (entities == null) return null;
         List<OperationTypeVO> result = new ArrayList<>();
         for (OperationType entity : entities) {
@@ -78,6 +82,7 @@ public class ServiceOperationType {
         operationType.setInactive(true);
         return convertToOperationTypeVO(dao.update(operationType));
     }
+
     @Transactional(propagation = Propagation.REQUIRED)
     public OperationTypeVO activateByID(int operationTypeID) throws ApplicationException {
         OperationType operationType = dao.findByID(operationTypeID);

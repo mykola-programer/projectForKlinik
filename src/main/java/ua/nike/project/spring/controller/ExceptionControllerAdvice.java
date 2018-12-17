@@ -1,19 +1,106 @@
 package ua.nike.project.spring.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
-import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import ua.nike.project.spring.exceptions.ApplicationException;
+import ua.nike.project.spring.exceptions.ValidationException;
+import ua.nike.project.spring.service.ServiceValidationMassage;
+
+import javax.validation.Validation;
+import javax.validation.Validator;
+import java.util.Map;
 
 @ControllerAdvice
 public class ExceptionControllerAdvice extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler(Exception.class)
+    @Autowired
+    ServiceValidationMassage serviceValidMass;
+
+    @ExceptionHandler(ApplicationException.class)
+    protected ResponseEntity<Object> handleConflict(ApplicationException ex, WebRequest request) {
+
+        MassageResponse bodyOfResponse = new MassageResponse(ex.getErrUserMsgs() + "\n" + ex.getErrExceptMsg());
+        return handleExceptionInternal(ex, bodyOfResponse,
+                new HttpHeaders(), HttpStatus.MULTIPLE_CHOICES, request);
+    }
+
+
+    @ExceptionHandler(ValidationException.class)
+    protected ResponseEntity<Object> handleValid(ValidationException ex, WebRequest request) {
+
+        MassageResponse bodyOfResponse = new MassageResponse(ex.getErrUserMsg(), transformValidMassage(ex.getBindingResult()));
+        return handleExceptionInternal(ex, bodyOfResponse,
+                new HttpHeaders(), HttpStatus.UNSUPPORTED_MEDIA_TYPE, request);
+    }
+
+    private String transformValidMassage(BindingResult bindingResult) {
+        if (bindingResult == null) return null;
+        final StringBuilder result = new StringBuilder();
+        result.append(serviceValidMass.value(bindingResult.getTarget().getClass().getSimpleName()+".massage"))
+                .append(" \n");
+        result.append(serviceValidMass.value("count.mistakes")).append(" ")
+                .append(bindingResult.getErrorCount())
+                .append(": \n");
+        for (FieldError error : bindingResult.getFieldErrors()) {
+            result.append(serviceValidMass.value(error.getDefaultMessage()))
+                    .append(" (")
+                    .append(serviceValidMass.value("mistake"))
+                    .append(" [")
+                    .append(bindingResult.getFieldValue(error.getField()))
+                    .append("])")
+                    .append(" \n");
+        }
+
+        return result.toString();
+    }
+
+    private static class MassageResponse {
+        private String exceptionMassage;
+        private String validationMassage;
+
+        public MassageResponse(String exceptionMassage, String validationMassage) {
+            this.exceptionMassage = exceptionMassage;
+            this.validationMassage = validationMassage;
+        }
+
+        public MassageResponse(String exceptionMassage) {
+            this.exceptionMassage = exceptionMassage;
+        }
+
+        public String getExceptionMassage() {
+            return exceptionMassage;
+        }
+
+        public void setExceptionMassage(String exceptionMassage) {
+            this.exceptionMassage = exceptionMassage;
+        }
+
+        public String getValidationMassage() {
+            return validationMassage;
+        }
+
+        public void setValidationMassage(String validationMassage) {
+            this.validationMassage = validationMassage;
+        }
+    }
+}
+
+
+
+
+
+/*
+
+        @ExceptionHandler(Exception.class)
     public ModelAndView handleAllException(Exception ex) {
 
         ModelAndView model = new ModelAndView("error");
@@ -24,7 +111,7 @@ public class ExceptionControllerAdvice extends ResponseEntityExceptionHandler {
 
     }
 
-/*    @ExceptionHandler(ApplicationException.class)
+    @ExceptionHandler(ApplicationException.class)
     public ModelAndView handleCustomException(ApplicationException ex) {
         ModelAndView model = new ModelAndView("error");
         model.addObject("errUserMsg", ex.getErrUserMsgs());
@@ -34,30 +121,3 @@ public class ExceptionControllerAdvice extends ResponseEntityExceptionHandler {
         return model;
 
     }*/
-
-    @ExceptionHandler(value
-            = {ApplicationException.class, IllegalStateException.class})
-    protected ResponseEntity<Object> handleConflict(
-            ApplicationException ex, WebRequest request) {
-//            String bodyOfResponse = "This should be application specific";
-        MassageResponse bodyOfResponse = new MassageResponse(ex.getErrUserMsgs());
-        return handleExceptionInternal(ex, bodyOfResponse,
-                new HttpHeaders(), HttpStatus.MULTIPLE_CHOICES, request);
-    }
-
-    private static class MassageResponse {
-        private String exeptionMassage;
-
-        public MassageResponse(String exeptionMassage) {
-            this.exeptionMassage = exeptionMassage;
-        }
-
-        public String getExeptionMassage() {
-            return exeptionMassage;
-        }
-
-        public void setExeptionMassage(String exeptionMassage) {
-            this.exeptionMassage = exeptionMassage;
-        }
-    }
-}

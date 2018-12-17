@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import ua.nike.project.hibernate.entity.VisitDate;
-import ua.nike.project.hibernate.type.Sex;
 import ua.nike.project.spring.dao.DAO;
 import ua.nike.project.spring.exceptions.ApplicationException;
 import ua.nike.project.spring.vo.VisitDateVO;
@@ -19,8 +18,13 @@ import java.util.List;
 @Scope(BeanDefinition.SCOPE_SINGLETON)
 public class ServiceVisitDate {
 
-    @Autowired
     private DAO<VisitDate> dao;
+
+    @Autowired
+    public void setDao(DAO<VisitDate> dao) {
+        this.dao = dao;
+        this.dao.setClassEO(VisitDate.class);
+    }
 
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public VisitDateVO findByID(int visitDateID) throws ApplicationException {
@@ -28,13 +32,13 @@ public class ServiceVisitDate {
     }
 
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-    public VisitDate findEntytiByID(int entityID) throws ApplicationException {
+    public VisitDate findEntityByID(int entityID) throws ApplicationException {
         return dao.findByID(entityID);
     }
 
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<VisitDateVO> findAll() {
-        List<VisitDate> entities = dao.findAll();
+        List<VisitDate> entities = dao.findAll("VisitDate.findAll",null);
         if (entities == null) return null;
         List<VisitDateVO> result = new ArrayList<>();
         for (VisitDate entity : entities) {
@@ -45,7 +49,7 @@ public class ServiceVisitDate {
 
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<VisitDateVO> findAllActive() {
-        List<VisitDate> entities = dao.findAllActive();
+        List<VisitDate> entities = dao.findAll("VisitDate.findAllActive",null);
         if (entities == null) return null;
         List<VisitDateVO> result = new ArrayList<>();
         for (VisitDate entity : entities) {

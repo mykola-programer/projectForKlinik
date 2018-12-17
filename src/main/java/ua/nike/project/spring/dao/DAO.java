@@ -1,22 +1,18 @@
 package ua.nike.project.spring.dao;
 
 import ua.nike.project.hibernate.entity.EntityObject;
-import ua.nike.project.hibernate.entity.Visit;
-import ua.nike.project.hibernate.type.Ward;
 import ua.nike.project.spring.exceptions.ApplicationException;
 
-import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 public interface DAO<T extends EntityObject> {
 
+    void setClassEO(Class<T> classEO);
+
     T findByID(int entityID) throws ApplicationException;
 
-    List<T> findAll();
-
-    default List<T> findAllActive() {
-        return findAll();
-    }
+    List<T> findAll(String namedQuery, Map<String, Object> parameters);
 
     T save(T entity);
 
@@ -24,12 +20,9 @@ public interface DAO<T extends EntityObject> {
 
     boolean remove(int entityID);
 
-    default List<Ward> getActiveWards() {
-        return null;
-    }
+    List<? extends Object> getObjectsByQuery(String hqlQuery, Map<String, Object> parameters, Class<? extends Object> oClass);
 
-    default List<Visit> getVisitsByDate(LocalDate date) {
-        return null;
-    }
+    Object getObjectByQuery(String hqlQuery, Map<String, Object> parameters, Class<? extends Object> oClass);
+
 
 }
