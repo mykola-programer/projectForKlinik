@@ -6,29 +6,24 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import ua.nike.project.spring.exceptions.ApplicationException;
 import ua.nike.project.spring.exceptions.ValidationException;
-import ua.nike.project.spring.service.ServiceValidationMassage;
-
-import javax.validation.Validation;
-import javax.validation.Validator;
-import java.util.Map;
+import ua.nike.project.spring.service.ServiceMassage;
 
 @ControllerAdvice
 public class ExceptionControllerAdvice extends ResponseEntityExceptionHandler {
 
     @Autowired
-    ServiceValidationMassage serviceValidMass;
+    ServiceMassage serviceMass;
 
     @ExceptionHandler(ApplicationException.class)
     protected ResponseEntity<Object> handleConflict(ApplicationException ex, WebRequest request) {
 
-        MassageResponse bodyOfResponse = new MassageResponse(ex.getErrUserMsgs() + "\n" + ex.getErrExceptMsg());
+        MassageResponse bodyOfResponse = new MassageResponse(ex.getErrUserMsgs() + "\n" + (ex.getErrExceptMsg() != null ? ex.getErrExceptMsg() : ""));
         return handleExceptionInternal(ex, bodyOfResponse,
                 new HttpHeaders(), HttpStatus.MULTIPLE_CHOICES, request);
     }
@@ -37,7 +32,7 @@ public class ExceptionControllerAdvice extends ResponseEntityExceptionHandler {
     @ExceptionHandler(ValidationException.class)
     protected ResponseEntity<Object> handleValid(ValidationException ex, WebRequest request) {
 
-        MassageResponse bodyOfResponse = new MassageResponse(ex.getErrUserMsg(), transformValidMassage(ex.getBindingResult()));
+        MassageResponse bodyOfResponse = new MassageResponse(null, transformValidMassage(ex.getBindingResult()));
         return handleExceptionInternal(ex, bodyOfResponse,
                 new HttpHeaders(), HttpStatus.UNSUPPORTED_MEDIA_TYPE, request);
     }
@@ -45,21 +40,22 @@ public class ExceptionControllerAdvice extends ResponseEntityExceptionHandler {
     private String transformValidMassage(BindingResult bindingResult) {
         if (bindingResult == null) return null;
         final StringBuilder result = new StringBuilder();
-        result.append(serviceValidMass.value(bindingResult.getTarget().getClass().getSimpleName()+".massage"))
+        result.append(serviceMass.value(bindingResult.getTarget().getClass().getSimpleName() + ".massage"))
                 .append(" \n");
-        result.append(serviceValidMass.value("count.mistakes")).append(" ")
+        result.append(serviceMass.value("count.mistakes")).append(" ")
                 .append(bindingResult.getErrorCount())
                 .append(": \n");
         for (FieldError error : bindingResult.getFieldErrors()) {
-            result.append(serviceValidMass.value(error.getDefaultMessage()))
+            result.append("* ")
+                    .append(serviceMass.value(error.getDefaultMessage()))
                     .append(" (")
-                    .append(serviceValidMass.value("mistake"))
+                    .append(serviceMass.value("mistake"))
                     .append(" [")
                     .append(bindingResult.getFieldValue(error.getField()))
                     .append("])")
                     .append(" \n");
         }
-
+        result.append(serviceMass.value("please.validate"));
         return result.toString();
     }
 

@@ -12,13 +12,15 @@ public interface DAO<T extends EntityObject> {
 
     T findByID(int entityID) throws ApplicationException;
 
-    List<T> findAll(String namedQuery, Map<String, Object> parameters);
+    List<T> findAll(String nQuery, Map<String, Object> parameters);
 
     T save(T entity);
 
     T update(T entity);
 
     boolean remove(int entityID);
+
+    boolean remove(String hqlQuery, List<Integer> entityIDs);
 
     List<? extends Object> getObjectsByQuery(String hqlQuery, Map<String, Object> parameters, Class<? extends Object> oClass);
 

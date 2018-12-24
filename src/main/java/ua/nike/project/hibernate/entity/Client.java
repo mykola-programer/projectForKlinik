@@ -29,7 +29,7 @@ public class Client implements Comparable<Client>, EntityObject {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "client_id")
-    @Access(AccessType.PROPERTY) // TODO Play with it
+    @Access(AccessType.PROPERTY) // TODO Play with it // About getReference
     private Integer clientId;
 
     @Column(name = "surname", length = 50)

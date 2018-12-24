@@ -8,7 +8,10 @@ public class ApplicationException extends Exception {
         this.errUserMsgs = errUserMsgs;
         this.errExceptMsg = super.getMessage();
     }
-
+    public ApplicationException(String errUserMsgs, String errExceptMsg) {
+        this.errUserMsgs = errUserMsgs;
+        this.errExceptMsg = errExceptMsg;
+    }
     public String getErrUserMsgs() {
         return errUserMsgs;
     }

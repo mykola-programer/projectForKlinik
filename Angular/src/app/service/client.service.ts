@@ -2,6 +2,7 @@ import {Injectable} from "@angular/core";
 import {Observable} from "rxjs/internal/Observable";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {Client} from "../backend_types/client";
+import {MyObjectList} from "../backend_types/my-object-list";
 
 @Injectable({
   providedIn: "root"
@@ -30,9 +31,11 @@ export class ClientService {
     return this.http.post<Client>(this.serverUrl + this.clientsUrl, JSON.stringify(client), this.httpOptions);
   }
 
-  // addClients(clients: Client[]): Observable<Client[]> {
-  //   return this.http.post<Client[]>(this.serverUrl + this.clientsUrl, JSON.stringify(clients), this.httpOptions);
-  // }
+  editClients(clients: Client[]): Observable<Client[]> {
+    const myClient: MyObjectList<Client> = new MyObjectList();
+    myClient.objects = clients;
+    return this.http.put<Client[]>(this.serverUrl + this.clientsUrl + "list/", JSON.stringify(myClient), this.httpOptions);
+  }
 
   editClient(client: Client): Observable<Client> {
     return this.http.put<Client>(this.serverUrl + this.clientsUrl + client.clientId.toString(), JSON.stringify(client), this.httpOptions);
@@ -41,4 +44,10 @@ export class ClientService {
   deleteClient(client_id: number): Observable<boolean> {
     return this.http.delete<boolean>(this.serverUrl + this.clientsUrl + client_id.toString(), this.httpOptions);
   }
+
+  deleteClients(client_ids: number[]): Observable<boolean> {
+    return this.http.delete<boolean>(this.serverUrl + this.clientsUrl + "list/" + client_ids.toString(), this.httpOptions);
+  }
+
 }
+

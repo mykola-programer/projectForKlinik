@@ -41,7 +41,7 @@ public class ControllerAccomodationREST {
     @CrossOrigin
     @RequestMapping(value = "", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public AccomodationVO addAccomodation(@RequestBody @NotNull @Valid AccomodationVO accomodationVO, BindingResult bindingResult) throws ValidationException {
-        if (bindingResult != null) throw  new ValidationException("Object is not valid", bindingResult); // TODO Validate
+        if (bindingResult != null) throw  new ValidationException("Object is not valid", bindingResult);
         return serviceAccomodation.create(accomodationVO);
     }
 

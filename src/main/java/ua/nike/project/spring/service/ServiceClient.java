@@ -40,7 +40,7 @@ public class ServiceClient {
 
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<ClientVO> findAll() {
-        List<Client> entities = dao.findAll("Client.findAll",null);
+        List<Client> entities = dao.findAll("Client.findAll", null);
         if (entities == null) return null;
         List<ClientVO> result = new ArrayList<>();
         for (Client entity : entities) {
@@ -49,7 +49,7 @@ public class ServiceClient {
         return result;
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional(propagation = Propagation.REQUIRED)
     public ClientVO create(ClientVO clientVO) {
         Client entity = copyToClient(clientVO, null);
         return convertToClientVO(dao.save(entity));
@@ -62,9 +62,29 @@ public class ServiceClient {
         return convertToClientVO(dao.update(updatedEntity));
     }
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public List<ClientVO> putClients(List<ClientVO> clientsVO) throws ApplicationException {
+        List<ClientVO> result = new ArrayList<>();
+        for (ClientVO clientVO : clientsVO) {
+            if (clientVO != null) {
+                if (clientVO.getClientId() > 0) {
+                    result.add(update(clientVO.getClientId(), clientVO));
+                } else {
+                    result.add(create(clientVO));
+                }
+            }
+        }
+        return result;
+    }
+
     @Transactional(propagation = Propagation.REQUIRED)
     public boolean deleteById(int clientID) {
         return dao.remove(clientID);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public boolean deleteByIDs(List<Integer> clientIDs) {
+        return dao.remove("DELETE Client cl WHERE cl.clientId IN (:IDs)", clientIDs);
     }
 
     private ClientVO convertToClientVO(Client client) {

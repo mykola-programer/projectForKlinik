@@ -15,24 +15,24 @@ public class ClientVO implements VisualObject {
     @Pattern(regexp = "[A-Za-zА-Яа-яЁёІіЇїЄє]+", message = "client.surname.pattern")
     private String surname;
 
-    @NotNull(message = "Ім'я повинно бути задано.")
-    @Size(min = 1, max = 50, message = "Ім'я повинно мати від 1 до 50 символів !")
-    @Pattern(regexp = "[A-Za-zА-Яа-яЁёІіЇїЄє]+", message = "Ім'я повинно мати тільки літери !")
+    @NotNull(message = "client.firstName.null")
+    @Size(min = 1, max = 50, message = "client.firstName.size")
+    @Pattern(regexp = "[A-Za-zА-Яа-яЁёІіЇїЄє]+", message = "client.firstName.pattern")
     private String firstName;
 
-    @NotNull(message = "По-Батькові повинно бути задано.")
-    @Size(min = 1, max = 50, message = "По-Батькові повинно мати від 1 до 50 символів !")
-    @Pattern(regexp = "[A-Za-zА-Яа-яЁёІіЇїЄє]+", message = "По-Батькові повинно мати тільки літери !")
+    @NotNull(message = "client.secondName.null")
+    @Size(min = 1, max = 50, message = "client.secondName.size")
+    @Pattern(regexp = "[A-Za-zА-Яа-яЁёІіЇїЄє]+", message = "client.secondName.pattern")
     private String secondName;
 
-    @NotNull(message = "Стать повинна бути задана.")
+    @NotNull(message = "client.sex.null")
     private Character sex;
 
-    @NotNull(message = "Дата народження повинна бути задана.")
+    @NotNull(message = "client.birthday.null")
     private LocalDate birthday;
 
-    @Size(max = 19, message = "Телефон повинен бути не більше 19 символів !")
-    @Pattern(regexp = "[ ()0-9+-]*")
+    @Size(max = 19, message = "client.telephone.size")
+    @Pattern(regexp = "[ ()0-9+-]*", message = "client.telephone.pattern")
     private String telephone;
 
     public Integer getClientId() {

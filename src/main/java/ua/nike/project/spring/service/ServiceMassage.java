@@ -8,7 +8,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.Properties;
 
 @Service
-public class ServiceValidationMassage {
+public class ServiceMassage {
     private Properties properties = new Properties();
 
      {
@@ -21,7 +21,7 @@ public class ServiceValidationMassage {
 
     public String value(String key) {
         try {
-            return new String(properties.getProperty(key, "Error property massage!").getBytes("ISO8859-1"));
+            return new String(properties.getProperty(key, key).getBytes("ISO8859-1"));
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
             return null;

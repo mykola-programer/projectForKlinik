@@ -41,7 +41,7 @@ public class ControllerManagerREST {
     @CrossOrigin
     @RequestMapping(value = "", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ManagerVO addManager(@RequestBody @NotNull @Valid ManagerVO managerVO, BindingResult bindingResult) throws ValidationException {
-        if (bindingResult != null) throw new ValidationException("Object is not valid", bindingResult); // TODO Validate
+        if (bindingResult != null) throw new ValidationException("Object is not valid", bindingResult);
         return serviceManager.create(managerVO);
     }
 

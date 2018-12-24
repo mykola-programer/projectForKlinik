@@ -4,6 +4,7 @@ import {ClientService} from "../service/client.service";
 import {Router} from "@angular/router";
 import {NavbarService} from "../service/navbar.service";
 import {HttpErrorResponse} from "@angular/common/http";
+import {MassageResponse} from "../backend_types/massage-response";
 
 @Component({
   selector: "app-client-editor",
@@ -11,11 +12,14 @@ import {HttpErrorResponse} from "@angular/common/http";
   styleUrls: ["./client-editor.component.css"]
 })
 export class ClientEditorComponent implements OnInit {
-  public clients: Client[] = [];
-  public filteredClients: Client[] = [];
+  public clients: Client[];
+  public filteredClients: Client[];
   public genders: string[] = ["Ч", "Ж"];
   min_date: Date = new Date(new Date(Date.now()).getFullYear() - 100, 0, 0);
   max_date: Date = new Date(new Date(Date.now()).getFullYear() - 3, 0, 0);
+  loading_save = false;
+  loading_del = false;
+  loading_clients = false;
 
   // "1" - ASC,
   // "-1" - DESC
@@ -31,10 +35,12 @@ export class ClientEditorComponent implements OnInit {
   }
 
   getClients() {
+    this.loading_clients = true;
     this.clientService.getClients().toPromise().then((clients: Client[]) => {
       this.clients = clients;
       this.sortClients(this.clients);
       this.filteredClients = this.clients;
+      this.loading_clients = false;
     });
   }
 
@@ -163,81 +169,52 @@ export class ClientEditorComponent implements OnInit {
   }
 
   onSave() {
-    let isSuccess = true;
-    const new_clients: Client[] = this.filteredClients.filter((client: Client) => {
-      return client.isChanged && client.clientId === 0;
-    });
-    if (new_clients.length > 0) {
-      new_clients.forEach((client: Client) => {
-        this.clientService.addClient(client).toPromise().then((returned_client: Client) => {
-          this.copyClient(returned_client, client);
-          client.isChanged = false;
-          alert("Клієнт : " + returned_client.surname + " " + returned_client.firstName + " "
-            + returned_client.secondName + " успішно збережений!");
-
-        }).catch((err: HttpErrorResponse) => {
-
-          console.log(err);
-          alert(err);
-
-          const div = document.createElement("div");
-          div.innerHTML = err.error.text;
-          const text = div.textContent || div.innerText || "";
-
-          alert(text);
-          isSuccess = false;
-        });
-      });
-    }
-
+    this.loading_save = true;
     const edit_clients: Client[] = this.filteredClients.filter((client: Client) => {
-      return client.isChanged && client.clientId !== 0;
+      return client.isChanged;
     });
-    edit_clients.forEach((client: Client) => {
-      this.clientService.editClient(client).toPromise().then((returned_client: Client) => {
-        this.copyClient(returned_client, client);
-        client.isChanged = false;
-        alert("Клієнт : " + returned_client.surname + " " + returned_client.firstName + " "
-          + returned_client.secondName + " успішно оновлений!");
+    if (edit_clients.length) {
+      this.clientService.editClients(edit_clients).toPromise().then(() => {
+        alert("Кліенти успішно збережені !");
+        this.getClients();
+        this.loading_save = false;
       }).catch((err: HttpErrorResponse) => {
-
-        const div = document.createElement("div");
-        div.innerHTML = err.error.text;
-        const text = div.textContent || div.innerText || "";
-
-        alert(text);
-        isSuccess = false;
+        this.loading_save = false;
+        alert(
+          ((<MassageResponse> err.error).exceptionMassage != null ? (<MassageResponse> err.error).exceptionMassage : "") + " \n" +
+          ((<MassageResponse> err.error).validationMassage != null ? (<MassageResponse> err.error).validationMassage : ""));
       });
-    });
-    if (isSuccess) {
-      this.sortClients(this.filteredClients);
-      // alert("All record was save !");
+    } else {
+      this.loading_save = false;
+      alert("Виберіть хоча б один запис!");
     }
   }
 
   onDelete() {
-    const clients_for_lock: Client[] = this.filteredClients.filter((client: Client) => {
-      return client.isChanged && client.clientId !== 0;
+    this.loading_del = true;
+    const clients_ids_for_delete: number[] = [];
+    this.filteredClients.forEach((client: Client) => {
+      if (client.isChanged && client.clientId !== 0) {
+        clients_ids_for_delete.push(client.clientId);
+      }
     });
-    clients_for_lock.forEach((client: Client) => {
-      this.clientService.deleteClient(client.clientId).toPromise().then((success: boolean) => {
+    if (clients_ids_for_delete.length) {
+      this.clientService.deleteClients(clients_ids_for_delete).toPromise().then((success: boolean) => {
         if (success) {
-          alert("Клієнт : " + client.surname + " " + client.firstName + " "
-            + client.secondName + " успішно виделений!");
-          this.filteredClients.splice(this.filteredClients.indexOf(client, 0), 1);
-        } else {
-          alert(client.surname + " " + client.firstName + " "
-            + client.secondName + "\n\n" + "Неможливо видалити! \n У клієнта є активні візити.");
+          alert("Кліенти успішно видалені!");
+          this.getClients();
+          this.loading_del = false;
         }
       }).catch((err: HttpErrorResponse) => {
-
-        const div = document.createElement("div");
-        div.innerHTML = err.error.text;
-        const text = div.textContent || div.innerText || "";
-
-        alert(text);
+        this.loading_del = false;
+        alert(
+          ((<MassageResponse> err.error).exceptionMassage != null ? (<MassageResponse> err.error).exceptionMassage : "") + " \n" +
+          ((<MassageResponse> err.error).validationMassage != null ? (<MassageResponse> err.error).validationMassage : ""));
       });
-    });
+    } else {
+      this.loading_del = false;
+      alert("Виберіть хоча б один запис!");
+    }
   }
 
   onCancel() {
@@ -266,6 +243,11 @@ export class ClientEditorComponent implements OnInit {
     });
   }
 
+
+}
+
+
+/*
   private copyClient(original: Client, result: Client) {
     result.clientId = original.clientId;
     result.surname = original.surname;
@@ -276,4 +258,81 @@ export class ClientEditorComponent implements OnInit {
     result.telephone = original.telephone;
     result.isChanged = original.isChanged;
   }
-}
+
+onDelete() {
+  const clients_for_lock: Client[] = this.filteredClients.filter((client: Client) => {
+    return client.isChanged && client.clientId !== 0;
+  });
+  clients_for_lock.forEach((client: Client) => {
+    this.clientService.deleteClient(client.clientId).toPromise().then((success: boolean) => {
+      if (success) {
+        alert("Клієнт : " + client.surname + " " + client.firstName + " "
+          + client.secondName + " успішно виделений!");
+        this.filteredClients.splice(this.filteredClients.indexOf(client, 0), 1);
+      } else {
+        alert(client.surname + " " + client.firstName + " "
+          + client.secondName + "\n\n" + "Неможливо видалити! \n У клієнта є активні візити.");
+      }
+    }).catch((err: HttpErrorResponse) => {
+
+      const div = document.createElement("div");
+      div.innerHTML = err.error.text;
+      const text = div.textContent || div.innerText || "";
+
+      alert(text);
+    });
+  });
+}*/
+
+// onSave() {
+//   let isSuccess = true;
+//   const new_clients: Client[] = this.filteredClients.filter((client: Client) => {
+//     return client.isChanged && client.clientId === 0;
+//   });
+//   if (new_clients.length > 0) {
+//     new_clients.forEach((client: Client) => {
+//       this.clientService.addClient(client).toPromise().then((returned_client: Client) => {
+//         this.copyClient(returned_client, client);
+//         client.isChanged = false;
+//         alert("Клієнт : " + returned_client.surname + " " + returned_client.firstName + " "
+//           + returned_client.secondName + " успішно збережений!");
+//
+//       }).catch((err: HttpErrorResponse) => {
+//
+//         console.log(err);
+//         alert(err);
+//
+//         const div = document.createElement("div");
+//         div.innerHTML = err.error.text;
+//         const text = div.textContent || div.innerText || "";
+//
+//         alert(text);
+//         isSuccess = false;
+//       });
+//     });
+//   }
+//
+//   const edit_clients: Client[] = this.filteredClients.filter((client: Client) => {
+//     return client.isChanged && client.clientId !== 0;
+//   });
+//   edit_clients.forEach((client: Client) => {
+//     this.clientService.editClient(client).toPromise().then((returned_client: Client) => {
+//       this.copyClient(returned_client, client);
+//       client.isChanged = false;
+//       alert("Клієнт : " + returned_client.surname + " " + returned_client.firstName + " "
+//         + returned_client.secondName + " успішно оновлений!");
+//     }).catch((err: HttpErrorResponse) => {
+//
+//       const div = document.createElement("div");
+//       div.innerHTML = err.error.text;
+//       const text = div.textContent || div.innerText || "";
+//
+//       alert(text);
+//       isSuccess = false;
+//     });
+//   });
+//   if (isSuccess) {
+//     this.sortClients(this.filteredClients);
+//     // alert("All record was save !");
+//   }
+// }

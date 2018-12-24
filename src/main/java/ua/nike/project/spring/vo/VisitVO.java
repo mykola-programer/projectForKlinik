@@ -2,6 +2,7 @@ package ua.nike.project.spring.vo;
 
 import ua.nike.project.hibernate.type.Eye;
 
+import javax.validation.constraints.Pattern;
 import java.io.Serializable;
 import java.time.LocalTime;
 import java.util.Objects;
@@ -16,6 +17,8 @@ public class VisitVO implements Serializable, VisualObject {
     private String status;
     private ClientVO patient;
     private OperationTypeVO operationType;
+
+    @Pattern(regexp="^(OD|OS|OU)$",message="visit.eye.pattern")
     private Eye eye;
     private SurgeonVO surgeon;
     private ManagerVO manager;

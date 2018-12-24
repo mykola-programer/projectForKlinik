@@ -10,8 +10,9 @@
 <div class="left-container" style="max-width: 800px; min-width: 550px; margin-left: 10px">
   <p class="h3 text-center">Клієнти клініки :</p>
 
-  <div class="table-responsive-lg">
-    <table class="table table-bordered table-sm table-hover">
+  <img *ngIf="loading_clients" src="/assets/img/download.gif" />
+  <div *ngIf="!loading_clients" class="table-responsive-lg">
+    <table class="table table-bordered table-sm table-hover" *ngIf="filteredClients">
       <thead>
 
 
@@ -101,9 +102,13 @@
 
 <div class="left-container fixed-bottom bg-light">
   <button class="btn btn-min-style" (click)="onAdd()">Add</button>
-  <button class="btn btn-success btn-min-style" (click)="onSave()" [disabled]="!saveButtonActive">Save</button>
+  <button class="btn btn-success btn-min-style" (click)="onSave()" [disabled]="!saveButtonActive">
+    <div>Save</div>
+  </button>
+  <img *ngIf="loading_save" src="/assets/img/rotating-balls-spinner.gif" height="40" width="40"/>
   <button class="btn btn-warning btn-min-style" (click)="onRefresh()">Refresh</button>
   <button class="btn btn-dark btn-min-style" (click)="onDelete()">Delete</button>
+  <img *ngIf="loading_del" src="/assets/img/rotating-balls-spinner.gif" height="40" width="40"/>
   <button class="btn btn-danger btn-min-style" (click)="onCancel()">Cancel</button>
 </div>
 

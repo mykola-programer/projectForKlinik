@@ -1,5 +1,6 @@
 package ua.nike.project.spring.dao;
 
+import javax.persistence.Query;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Repository;
@@ -30,7 +31,7 @@ public class DAOImpl<T extends EntityObject> implements DAO<T> {
 
     @Override
     public T findByID(int entityID) throws ApplicationException {
-        T entity = this.entityManager.find(classEO, entityID);
+        T entity = entityManager.find(classEO, entityID);
         if (entity == null) throw new ApplicationException("This object is not find in database !");
         return entity;
     }
@@ -64,6 +65,15 @@ public class DAOImpl<T extends EntityObject> implements DAO<T> {
             entityManager.remove(entityManager.getReference(classEO, entityID));
             return true;
     }
+
+    @Override
+    public boolean remove(String hqlQuery, List<Integer> entityIDs){
+        Query query = entityManager.createQuery(hqlQuery);
+        query.setParameter("IDs", entityIDs);
+        query.executeUpdate();
+        return true;
+    }
+
 
     @Override
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
