@@ -70,7 +70,7 @@ public class ServiceVisit {
         return result;
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional(propagation = Propagation.REQUIRED)
     public VisitVO create(VisitVO visitVO) {
         Visit entity = copyToVisit(visitVO, null);
         return convertToVisitVO(dao.save(entity));
@@ -144,7 +144,7 @@ public class ServiceVisit {
             }
         } else result.setClient(null);
 
-        if (visit.getPatient() != null) {
+        if (visit.getPatient() != null && !visit.getStatus().toString().equals(ClientStatus.PATIENT.toString())) {
             try {
                 result.setPatient(serviceClient.findByID(visit.getPatient().getClientId()));
             } catch (ApplicationException | EntityNotFoundException e) {
@@ -193,13 +193,13 @@ public class ServiceVisit {
 
     private Visit copyToVisit(VisitVO original, Visit result) {
         if (original != null) {
-
+            if (result == null) result = new Visit();
             result.setTimeForCome(original.getTimeForCome());
             result.setOrderForCome(original.getOrderForCome());
             result.setStatus(ClientStatus.getInstance(original.getStatus()));
             result.setEye(original.getEye());
             result.setNote(original.getNote());
-            result.setInactive(original.getInactive());
+            result.setInactive(original.getInactive() != null ? original.getInactive() : false);
 
             if (original.getVisitDate() != null && original.getVisitDate().getVisitDateId() > 0) {
                 try {
@@ -210,7 +210,7 @@ public class ServiceVisit {
             } else result.setVisitDate(null);
 
 
-            if (original.getPatient() != null && original.getPatient().getClientId() > 0) {
+            if (original.getPatient() != null && original.getPatient().getClientId() > 0 && !original.getStatus().equals("пацієнт")) {
                 try {
                     result.setPatient(serviceClient.findEntityByID(original.getPatient().getClientId()));
                 } catch (ApplicationException | EntityNotFoundException e) {
@@ -266,6 +266,36 @@ public class ServiceVisit {
     }
 
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public List<VisitVO> putVisits(List<VisitVO> visitsVO) throws ApplicationException {
+        List<VisitVO> result = new ArrayList<>();
+        for (VisitVO visitVO : visitsVO) {
+            if (visitVO != null) {
+                if (visitVO.getVisitId() > 0) {
+                    result.add(update(visitVO.getVisitId(), visitVO));
+                } else {
+                    result.add(create(visitVO));
+                }
+            }
+        }
+        return result;
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public List<VisitVO> displaceVisits(List<VisitVO> visitsVO) throws ApplicationException {
+        List<VisitVO> result = new ArrayList<>();
+        for (VisitVO visitVO : visitsVO) {
+            if (visitVO != null) {
+                visitVO.setAccomodation(null);
+                if (visitVO.getVisitId() > 0) {
+                    result.add(update(visitVO.getVisitId(), visitVO));
+                } else {
+                    result.add(create(visitVO));
+                }
+            }
+        }
+        return result;
+    }
 }
 
 

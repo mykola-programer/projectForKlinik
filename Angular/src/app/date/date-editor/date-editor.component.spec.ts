@@ -1,8 +1,8 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed } from "@angular/core/testing";
 
-import { DateEditorComponent } from './date-editor.component';
+import { DateEditorComponent } from "./date-editor.component";
 
-describe('DateEditorComponent', () => {
+describe("DateEditorComponent", () => {
   let component: DateEditorComponent;
   let fixture: ComponentFixture<DateEditorComponent>;
 
@@ -19,7 +19,7 @@ describe('DateEditorComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
   });
 });

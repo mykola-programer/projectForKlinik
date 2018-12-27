@@ -2,6 +2,7 @@ import {Injectable} from "@angular/core";
 import {Observable} from "rxjs/internal/Observable";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {VisitDate} from "../backend_types/visit-date";
+import {MyObjectList} from "../backend_types/my-object-list";
 
 @Injectable({
   providedIn: "root"
@@ -20,14 +21,20 @@ export class VisitDateService {
   }
 
   getVisitDates(): Observable<VisitDate[]> {
-    return this.http.get<VisitDate[]>(this.serverUrl + this.visitDatesUrl);
+    return this.http.get<VisitDate[]>(this.serverUrl + this.visitDatesUrl + "active");
   }
 
-  addVisitDates(dates: VisitDate[]): Observable<Object> {
-    return this.http.post<VisitDate[]>(this.serverUrl + this.visitDatesUrl, JSON.stringify(dates), this.httpOptions);
+  addVisitDates(visitDates: VisitDate[]): Observable<VisitDate[]> {
+    const myVisitDates: MyObjectList<VisitDate> = new MyObjectList();
+    myVisitDates.objects = visitDates;
+    return this.http.put<VisitDate[]>(this.serverUrl + this.visitDatesUrl + "list/", JSON.stringify(myVisitDates), this.httpOptions);
   }
 
-  removeVisitDate(visitDateId: number): any {
-      return this.http.delete(this.serverUrl + this.visitDatesUrl + visitDateId + "/", this.httpOptions);
+  removeVisitDate(visitDateId: number): Observable<boolean> {
+    return this.http.delete<boolean>(this.serverUrl + this.visitDatesUrl + visitDateId + "/", this.httpOptions);
+  }
+
+  removeVisitDates(ids: number[]): Observable<boolean> {
+    return this.http.delete<boolean>(this.serverUrl + this.visitDatesUrl + "list/" + ids.toString(), this.httpOptions);
   }
 }

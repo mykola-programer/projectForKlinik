@@ -41,14 +41,14 @@ public class ControllerManagerREST {
     @CrossOrigin
     @RequestMapping(value = "", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ManagerVO addManager(@RequestBody @NotNull @Valid ManagerVO managerVO, BindingResult bindingResult) throws ValidationException {
-        if (bindingResult != null) throw new ValidationException("Object is not valid", bindingResult);
+        if (bindingResult != null && bindingResult.hasErrors()) throw new ValidationException("Object is not valid", bindingResult);
         return serviceManager.create(managerVO);
     }
 
     @CrossOrigin
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ManagerVO editManager(@PathVariable("id") int managerID, @RequestBody @NotNull @Valid ManagerVO managerVO, BindingResult bindingResult) throws ApplicationException, ValidationException {
-        if (bindingResult != null) throw new ValidationException("Object is not valid", bindingResult); // TODO Validate
+        if (bindingResult != null && bindingResult.hasErrors()) throw new ValidationException("Object is not valid", bindingResult);
         return serviceManager.update(managerID, managerVO);
     }
 

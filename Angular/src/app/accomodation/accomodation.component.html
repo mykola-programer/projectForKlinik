@@ -1,5 +1,14 @@
 <br><br>
-<div class="container-fluid" style="max-width: 1200px; min-width: 550px; margin-left: 10px">
+
+<div *ngIf="loading_calender">
+  <br>
+  <p class="h5 text-center">Виберіть дату !</p>
+  <img class="center" src="/assets/img/calender.png"/>
+</div>
+
+<img *ngIf="loading_visits" src="/assets/img/download.gif"/>
+<div *ngIf="!loading_visits && !loading_calender" class="container-fluid"
+     style="max-width: 1200px; min-width: 550px; margin-left: 10px">
   <br>
 
   <!--            Wards             -->
@@ -21,6 +30,7 @@
           <th scope="col" style="min-width: 195px; max-width: 250px">ПІБ</th>
           <th scope="col" style="width: 35px;">Ст.</th>
           <th scope="col" style="width: 60px;">Статус</th>
+          <th scope="col" style="width: 150px;">Супр. пацієнта</th>
           <th scope="col" style="width: 150px;">Операція</th>
           <th scope="col" style="width: 45px;">Око</th>
           <th scope="col" style="width: 100px">Хірург</th>
@@ -51,8 +61,9 @@
                    *ngIf="visit_with_ward.orderForCome != null || visit_with_ward.client != null"
                    [ngModel]="visit_with_ward.orderForCome" min="1" max="99" required
                    (change)="changeOrderForCome(visit_with_ward, orderForCome.value)"
-                   class="form-control font-weight-bold form-control-sm input-style-active"
-                   [ngClass]="{'has-danger': !validOrderForCome(visit_with_ward, orderForCome.value)}">
+                   [ngClass]="{'form-control font-weight-bold form-control-sm': true,
+                    'has-danger': !validOrderForCome(visit_with_ward, orderForCome.value),
+                    'input-style-active': validOrderForCome(visit_with_ward, orderForCome.value)}">
           </td>
 
           <!--Time For Come-->
@@ -70,8 +81,8 @@
           <td *ngIf="visit_with_ward.accomodation.ward == ward">
 
             <input matInput #client type="text" [matAutocomplete]="autoClient"
-                   [ngModel]="visit_with_ward.client" (input)="filteringClients(client.value)"
-                   (focus)="filteringClients(client.value)"
+                   [ngModel]="visit_with_ward.client" (input)="filterClients(client.value)"
+                   (focus)="filterClients(client.value)"
                    class="form-control font-weight-bold form-control-sm input-style-active"
                    [ngClass]="{'has-danger': !validClient(visit_with_ward.client, client.value)}">
             <!--(blur)="((filteredClients.length > 0 && client.value) ? selectedClient(visit_with_ward, filteredClients[0]) : false)"-->
@@ -80,7 +91,8 @@
                               (optionSelected)="selectedClient(visit_with_ward, $event.option.value)">
               <mat-option *ngFor="let client of filteredClients"
                           [value]="client">
-                {{client.surname}} {{client.firstName}} {{client.secondName}}  ({{refactorDate(client.birthday) | date: 'yyyy.MM.dd'}})
+                {{client.surname}} {{client.firstName}} {{client.secondName}} ({{refactorDate(client.birthday) | date:
+                'yyyy.MM.dd'}})
               </mat-option>
             </mat-autocomplete>
           </td>
@@ -99,15 +111,35 @@
             <select #status *ngIf="visit_with_ward.client != null"
                     (change)="changeStatus(visit_with_ward, status.value)"
                     class="form-control font-weight-bold form-control-sm input-style-active"
-              >
+            >
 
-              <option [selected]="visit_with_ward.status == null" [value]=null></option>
+              <!--<option [selected]="visit_with_ward.status == null" [value]=null></option>-->
               <option *ngFor="let status of statuses" [value]="status"
                       [selected]="visit_with_ward.status == status">
                 {{status}}
               </option>
             </select>
 
+          </td>
+
+          <!--Patient-->
+          <td *ngIf="visit_with_ward.accomodation.ward == ward">
+
+            <input matInput #patient type="text" [matAutocomplete]="autoPatient"
+                   *ngIf="visit_with_ward.status != 'пацієнт' && visit_with_ward.client != null"
+                   [ngModel]="visit_with_ward.patient" (input)="filterPatients(patient.value)"
+                   (focus)="filterPatients(patient.value)"
+                   class="form-control font-weight-bold form-control-sm input-style-active"
+                   [ngClass]="{'has-danger': !validClient(visit_with_ward.patient, patient.value)}">
+
+            <mat-autocomplete autoActiveFirstOption [displayWith]="displayFn" #autoPatient="matAutocomplete"
+                              (optionSelected)="selectedPatient(visit_with_ward, $event.option.value)">
+              <mat-option *ngFor="let patient of filteredPatients"
+                          [value]="patient">
+                {{patient.surname}} {{patient.firstName}} {{patient.secondName}} ({{refactorDate(patient.birthday) |
+                date: 'yyyy.MM.dd'}})
+              </mat-option>
+            </mat-autocomplete>
           </td>
 
 
@@ -257,8 +289,8 @@
           <!--Client-->
           <td>
             <input matInput #client type="text" [matAutocomplete]="autoClient"
-                   [ngModel]="visit.client" (input)="filteringClients(client.value)"
-                   (focus)="filteringClients(client.value)"
+                   [ngModel]="visit.client" (input)="filterClients(client.value)"
+                   (focus)="filterClients(client.value)"
                    class="form-control font-weight-bold form-control-sm input-style-active"
                    [ngClass]="{'has-danger': !validClient(visit.client, client.value)}"
                    required>
@@ -377,14 +409,16 @@
       </table>
     </div>
   </div>
-<br>
-<br>
+  <br>
+  <br>
   <div class="left-container fixed-bottom bg-light">
     <button class="btn btn-min-style" (click)="onAdd()">Add</button>
     <button class="btn btn-success btn-min-style" (click)="onSave()">Save</button>
+    <img *ngIf="loading_save" src="/assets/img/rotating-balls-spinner.gif" height="40" width="40"/>
     <button class="btn btn-warning btn-min-style" (click)="onRefresh()">Refresh</button>
     <button class="btn btn-dark btn-min-style" (click)="onDelete()">Delete</button>
-    <button class="btn btn-info btn-min-style" (click)="onUnplace()">Unplace</button>
+    <button class="btn btn-info btn-min-style" (click)="onDisplace()">Displace</button>
+    <img *ngIf="loading_displace" src="/assets/img/rotating-balls-spinner.gif" height="40" width="40"/>
     <button class="btn btn-info btn-min-style" (click)="moveToAnotherDatePlace()">Move to ...</button>
     <button class="btn btn-danger btn-min-style" (click)="onCancel()">Cancel</button>
   </div>

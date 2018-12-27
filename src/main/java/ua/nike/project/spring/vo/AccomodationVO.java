@@ -1,9 +1,8 @@
 package ua.nike.project.spring.vo;
 
-import java.io.Serializable;
 import java.util.Objects;
 
-public class AccomodationVO implements Serializable, VisualObject {
+public class AccomodationVO implements VisualObject {
 
     private Integer accomodationId;
     private Integer ward;

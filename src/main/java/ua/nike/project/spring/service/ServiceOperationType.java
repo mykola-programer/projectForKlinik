@@ -101,6 +101,7 @@ public class ServiceOperationType {
 
     private OperationType copyToOperationType(OperationTypeVO original, OperationType result) {
         if (original != null) {
+            if (result == null) result = new OperationType();
             result.setName(original.getName());
             result.setInactive(original.isInactive());
         }

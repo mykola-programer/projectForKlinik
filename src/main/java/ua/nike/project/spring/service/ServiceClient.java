@@ -101,7 +101,9 @@ public class ServiceClient {
     }
 
     private Client copyToClient(ClientVO original, Client result) {
+
         if (original != null) {
+            if (result == null) result = new Client();
             result.setSurname(original.getSurname());
             result.setFirstName(original.getFirstName());
             result.setSecondName(original.getSecondName());

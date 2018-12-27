@@ -42,14 +42,14 @@ public class ControllerSurgeonREST {
     @CrossOrigin
     @RequestMapping(value = "", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public SurgeonVO addSurgeon(@RequestBody @NotNull @Valid SurgeonVO surgeonVO, BindingResult bindingResult) throws ValidationException {
-        if (bindingResult != null) throw  new ValidationException("Object is not valid", bindingResult);
+        if (bindingResult != null && bindingResult.hasErrors()) throw  new ValidationException("Object is not valid", bindingResult);
         return serviceSurgeon.create(surgeonVO);
     }
 
     @CrossOrigin
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public SurgeonVO editSurgeon(@PathVariable("id") int surgeonID, @RequestBody @NotNull @Valid SurgeonVO surgeonVO, BindingResult bindingResult) throws ApplicationException, ValidationException {
-        if (bindingResult != null) throw  new ValidationException("Object is not valid", bindingResult);
+        if (bindingResult != null && bindingResult.hasErrors()) throw  new ValidationException("Object is not valid", bindingResult);
         return serviceSurgeon.update(surgeonID, surgeonVO);
     }
 

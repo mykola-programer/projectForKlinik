@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ua.nike.project.hibernate.entity.VisitDate;
 import ua.nike.project.spring.dao.DAO;
 import ua.nike.project.spring.exceptions.ApplicationException;
+import ua.nike.project.spring.vo.ClientVO;
 import ua.nike.project.spring.vo.VisitDateVO;
 
 import java.util.ArrayList;
@@ -58,7 +59,7 @@ public class ServiceVisitDate {
         return result;
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional(propagation = Propagation.REQUIRED)
     public VisitDateVO create(VisitDateVO visitDateVO) {
         VisitDate entity = copyToVisitDate(visitDateVO, null);
         return convertToVisitDateVO(dao.save(entity));
@@ -71,9 +72,30 @@ public class ServiceVisitDate {
         return convertToVisitDateVO(dao.update(updatedEntity));
     }
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public List<VisitDateVO> putVisitDates(List<VisitDateVO> visitDateVOS) throws ApplicationException {
+        List<VisitDateVO> result = new ArrayList<>();
+        for (VisitDateVO visitDateVO : visitDateVOS) {
+            if (visitDateVO != null) {
+                if (visitDateVO.getVisitDateId() > 0) {
+                    result.add(update(visitDateVO.getVisitDateId(), visitDateVO));
+                } else {
+                    result.add(create(visitDateVO));
+                }
+            }
+        }
+        return result;
+    }
+
     @Transactional(propagation = Propagation.REQUIRED)
     public boolean deleteById(int visitDateID) {
         return dao.remove(visitDateID);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public boolean deleteByIDs(List<Integer> visitDateIDs) {
+        return dao.remove("DELETE VisitDate vd WHERE vd.visitDateId IN (:IDs)", visitDateIDs);
+
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
@@ -82,7 +104,7 @@ public class ServiceVisitDate {
         visitDate.setInactive(true);
         return convertToVisitDateVO(dao.update(visitDate));
     }
-    
+
     @Transactional(propagation = Propagation.REQUIRED)
     public VisitDateVO activateByID(int visitDateID) throws ApplicationException {
         VisitDate visitDate = dao.findByID(visitDateID);
@@ -101,12 +123,12 @@ public class ServiceVisitDate {
 
     private VisitDate copyToVisitDate(VisitDateVO original, VisitDate result) {
         if (original != null) {
+            if (result == null) result = new VisitDate();
             result.setDate(original.getDate());
             result.setInactive(original.isInactive());
         }
         return result;
     }
-
 }
 
 

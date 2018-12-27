@@ -1,10 +1,15 @@
 package ua.nike.project.spring.vo;
 
+import javax.validation.constraints.Future;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 public class VisitDateVO implements VisualObject {
 
     private Integer visitDateId;
+
+    @NotNull(message = "visit_dates.date.null")
+    @Future(message = "visit_dates.date.future")
     private LocalDate date;
     private boolean inactive;
 

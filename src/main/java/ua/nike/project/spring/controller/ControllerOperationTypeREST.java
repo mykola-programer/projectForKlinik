@@ -41,14 +41,14 @@ public class ControllerOperationTypeREST {
     @CrossOrigin
     @RequestMapping(value = "", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public OperationTypeVO addOperationType(@RequestBody @NotNull @Valid OperationTypeVO operationTypeVO, BindingResult bindingResult) throws ValidationException {
-        if (bindingResult != null) throw new ValidationException("Object is not valid", bindingResult);
+        if (bindingResult != null && bindingResult.hasErrors()) throw new ValidationException("Object is not valid", bindingResult);
         return serviceOperationType.create(operationTypeVO);
     }
 
     @CrossOrigin
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public OperationTypeVO editOperationType(@PathVariable("id") int operationTypeID, @RequestBody @NotNull @Valid OperationTypeVO operationTypeVO, BindingResult bindingResult) throws ApplicationException, ValidationException {
-        if (bindingResult != null) throw new ValidationException("Object is not valid", bindingResult);
+        if (bindingResult != null && bindingResult.hasErrors()) throw new ValidationException("Object is not valid", bindingResult);
         return serviceOperationType.update(operationTypeID, operationTypeVO);
     }
 

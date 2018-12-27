@@ -3,13 +3,14 @@
   <div class="row">
     <div class="col-lg-5">
 
-      <ngb-datepicker [minDate]="minDate" [maxDate]="maxDate" [dayTemplate]="editedCustomDay">
+      <ngb-datepicker
+        [minDate]="minDate" [maxDate]="maxDate" [dayTemplate]="editedCustomDay">
       </ngb-datepicker>
 
       <ng-template #editedCustomDay let-date="date" let-currentMonth="currentMonth" let-selected="selected"
                    let-disabled="disabled" let-focused="focused">
           <span class="custom-day" [class.work-day]="isPresented(date)" [class.focused]="focused"
-                (click)="onSelect(date, disabled)"
+                (click)="onSelect(date)"
                 [class.bg-primary]="isSelected(date)" [class.hidden]="date.month !== currentMonth"
                 [class.text-muted]="disabled">
                   {{ date.day }}
@@ -18,9 +19,17 @@
       </ng-template>
 
       <div>
-        <button class="btn btn-success" (click)="onSave()">Save</button>
-        <button class="btn btn-dark" (click)="onDelete()">Delete</button>
-        <button class="btn btn-danger" (click)="onCancel()">Cancel</button>
+        <button class="btn btn-success btn-min-style" (click)="onSave()" [disabled]="!(selectedDates.length > 0)">Save
+        </button>
+        <img *ngIf="loading_save" src="/assets/img/rotating-balls-spinner.gif" height="40" width="40"/>
+        <button class="btn btn-warning btn-min-style" (click)="onRefresh()">Refresh</button>
+        <button class="btn btn-dark btn-min-style" (click)="onDelete()" [disabled]="!(selectedDates.length > 0)">
+          Delete
+        </button>
+        <img *ngIf="loading_del" src="/assets/img/rotating-balls-spinner.gif" height="40" width="40"/>
+        <button class="btn btn-danger btn-min-style" (click)="onCancel()" [disabled]="!(selectedDates.length > 0)">
+          Cancel
+        </button>
       </div>
 
     </div>

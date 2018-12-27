@@ -113,6 +113,7 @@ public class ServiceAccomodation {
 
     private Accomodation copyToAccomodation(AccomodationVO original, Accomodation result) {
         if (original != null) {
+            if (result == null) result = new Accomodation();
             result.setWard(Ward.valueOf("N" + original.getWard()));
             result.setWardPlace(original.getWardPlace());
             result.setInactive(original.isInactive());

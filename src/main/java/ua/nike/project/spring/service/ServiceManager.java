@@ -103,6 +103,7 @@ public class ServiceManager {
 
     private Manager copyToManager(ManagerVO original, Manager result) {
         if (original != null) {
+            if (result == null) result = new Manager();
             result.setSurname(original.getSurname());
             result.setFirstName(original.getFirstName());
             result.setSecondName(original.getSecondName());

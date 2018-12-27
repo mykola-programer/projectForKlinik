@@ -2,6 +2,7 @@ import {Injectable} from "@angular/core";
 import {Observable} from "rxjs/internal/Observable";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {Visit} from "../backend_types/visit";
+import {MyObjectList} from "../backend_types/my-object-list";
 
 @Injectable({
   providedIn: "root"
@@ -20,7 +21,7 @@ export class VisitService {
   constructor(private http: HttpClient) {
   }
 
-  getVisits(select_date: Date): Observable<Visit[]> {
+  findVisits(select_date: Date): Observable<Visit[]> {
     return this.http.get<Visit[]>(this.serverUrl + this.visitUrl + "all/" + select_date.toLocaleDateString() + "/");
   }
 
@@ -36,30 +37,20 @@ export class VisitService {
     return this.http.post<Visit>(this.serverUrl + this.visitUrl, JSON.stringify(visit), this.httpOptions);
   }
 
-  /*  addVisits(visits: Visit[]): Observable<Visit[]> {
-      return this.http.post<Visit[]>(this.serverUrl + this.visitUrl, JSON.stringify(visits), this.httpOptions);
-    }*/
-
-  doUnplaced(visit: Visit): Observable<Visit> {
-    const visit_without_ward: Visit = new Visit();
-    visit_without_ward.visitId = visit.visitId;
-    visit_without_ward.visitDate = visit.visitDate;
-    visit_without_ward.accomodation = null;
-    visit_without_ward.status = visit.status;
-    visit_without_ward.client = visit.client;
-    visit_without_ward.timeForCome = visit.timeForCome;
-    visit_without_ward.note = visit.note;
-    visit_without_ward.operationType = visit.operationType;
-    visit_without_ward.eye = visit.eye;
-    visit_without_ward.surgeon = visit.surgeon;
-    visit_without_ward.manager = visit.manager;
-    visit_without_ward.orderForCome = visit.orderForCome;
-    visit_without_ward.patient = visit.patient;
-    return this.editVisit(visit_without_ward);
-  }
-
   editVisit(visit: Visit): Observable<Visit> {
     return this.http.put<Visit>(this.serverUrl + this.visitUrl + visit.visitId.toString(), JSON.stringify(visit), this.httpOptions);
+  }
+
+  putVisits(visits: Visit[]): Observable<Visit[]> {
+    const myVisits: MyObjectList<Visit> = new MyObjectList();
+    myVisits.objects = visits;
+    return this.http.put<Visit[]>(this.serverUrl + this.visitUrl + "list/", JSON.stringify(myVisits), this.httpOptions);
+  }
+
+  displaceVisits(visits: Visit[]): Observable<Visit[]> {
+    const myVisits: MyObjectList<Visit> = new MyObjectList();
+    myVisits.objects = visits;
+    return this.http.put<Visit[]>(this.serverUrl + this.visitUrl + "list/displace", JSON.stringify(myVisits), this.httpOptions);
   }
 
   removeVisit(visit_id: number): any {

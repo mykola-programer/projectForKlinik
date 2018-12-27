@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import ua.nike.project.spring.exceptions.ApplicationException;
 import ua.nike.project.spring.exceptions.ValidationException;
 import ua.nike.project.spring.service.ServiceVisit;
+import ua.nike.project.spring.vo.MyObjectVOList;
 import ua.nike.project.spring.vo.VisitVO;
 
 import javax.validation.Valid;
@@ -44,15 +45,33 @@ public class ControllerVisitREST {
     @CrossOrigin
     @RequestMapping(value = "", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public VisitVO addVisit(@RequestBody @NotNull @Valid VisitVO visitVO, BindingResult bindingResult) throws ValidationException {
-        if (bindingResult != null) throw  new ValidationException("Object is not valid", bindingResult);
+        if (bindingResult != null && bindingResult.hasErrors())
+            throw new ValidationException("Object is not valid", bindingResult);
         return serviceVisit.create(visitVO);
     }
 
     @CrossOrigin
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public VisitVO editVisit(@PathVariable("id") int visitID, @RequestBody @NotNull @Valid VisitVO visitVO, BindingResult bindingResult) throws ApplicationException, ValidationException {
-        if (bindingResult != null) throw  new ValidationException("Object is not valid", bindingResult);
+        if (bindingResult != null && bindingResult.hasErrors())
+            throw new ValidationException("Object is not valid", bindingResult);
         return serviceVisit.update(visitID, visitVO);
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "/list", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public List<VisitVO> putVisits(@RequestBody @NotNull @Valid MyObjectVOList<VisitVO> visitsVO, BindingResult bindingResult) throws ApplicationException, ValidationException {
+        if (bindingResult != null && bindingResult.hasErrors())
+            throw new ValidationException("Object is not valid", bindingResult);
+        return serviceVisit.putVisits(visitsVO.getObjects());
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "/list/displace", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public List<VisitVO> displaceVisits(@RequestBody @NotNull @Valid MyObjectVOList<VisitVO> visitsVO, BindingResult bindingResult) throws ApplicationException, ValidationException {
+        if (bindingResult != null && bindingResult.hasErrors())
+            throw new ValidationException("Object is not valid", bindingResult);
+        return serviceVisit.displaceVisits(visitsVO.getObjects());
     }
 
     @CrossOrigin

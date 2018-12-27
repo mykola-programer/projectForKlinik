@@ -31,10 +31,10 @@ export class ClientService {
     return this.http.post<Client>(this.serverUrl + this.clientsUrl, JSON.stringify(client), this.httpOptions);
   }
 
-  editClients(clients: Client[]): Observable<Client[]> {
-    const myClient: MyObjectList<Client> = new MyObjectList();
-    myClient.objects = clients;
-    return this.http.put<Client[]>(this.serverUrl + this.clientsUrl + "list/", JSON.stringify(myClient), this.httpOptions);
+  putClients(clients: Client[]): Observable<Client[]> {
+    const myClients: MyObjectList<Client> = new MyObjectList();
+    myClients.objects = clients;
+    return this.http.put<Client[]>(this.serverUrl + this.clientsUrl + "list/", JSON.stringify(myClients), this.httpOptions);
   }
 
   editClient(client: Client): Observable<Client> {

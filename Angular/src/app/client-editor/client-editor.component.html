@@ -102,7 +102,7 @@
 
 <div class="left-container fixed-bottom bg-light">
   <button class="btn btn-min-style" (click)="onAdd()">Add</button>
-  <button class="btn btn-success btn-min-style" (click)="onSave()" [disabled]="!saveButtonActive">
+  <button class="btn btn-success btn-min-style" (click)="onSave()">
     <div>Save</div>
   </button>
   <img *ngIf="loading_save" src="/assets/img/rotating-balls-spinner.gif" height="40" width="40"/>

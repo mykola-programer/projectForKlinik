@@ -16,6 +16,8 @@ import {VisitDate} from "../backend_types/visit-date";
 import {MatDialog} from "@angular/material";
 import {Accomodation} from "../backend_types/accomodation";
 import {DateSelectorDialogComponent} from "../date/date-selector-dialog/date-selector-dialog.component";
+import {HttpErrorResponse} from "@angular/common/http";
+import {MassageResponse} from "../backend_types/massage-response";
 
 @Component({
   selector: "app-accomodation",
@@ -31,12 +33,20 @@ export class AccomodationComponent implements OnInit {
   selected_date: Date = null;
   selected_visit_date: VisitDate = null;
   clients: Client[] = [];
+  patients: Client[] = [];
   filteredClients: Client[];
+  filteredPatients: Client[];
   surgeons: Surgeon[] = [];
   managers: Manager[] = [];
   operation_types: OperationType[] = [];
   eyes: string[] = ["OU", "OS", "OD"];
   statuses: string[] = ["пацієнт", "супров."];
+
+  loading_visits = false;
+  loading_calender = false;
+  loading_displace = false;
+  loading_save = false;
+
 
   constructor(
     private serviceNavbar: NavbarService,
@@ -53,7 +63,10 @@ export class AccomodationComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.loading_calender = true;
     this.dateService.selected_date.subscribe((selected_visit_date: VisitDate) => {
+      this.loading_calender = false;
+      this.loading_visits = true;
       this.selected_date = new Date(selected_visit_date.date[0], selected_visit_date.date[1] - 1, selected_visit_date.date[2]);
       this.selected_visit_date = selected_visit_date;
       this.getVisits();
@@ -67,12 +80,13 @@ export class AccomodationComponent implements OnInit {
   }
 
   private getVisits() {
+    this.loading_visits = true;
     if (this.selected_date !== null) {
-      this.visitService.getVisits(this.selected_date)
+      this.visitService.findVisits(this.selected_date)
         .toPromise().then(visits_of_date => {
         this.visits_of_date = visits_of_date;
-        this.getVisitsWithWards();
         this.getVisitsWithoutWards();
+        this.getVisitsWithWards();
       });
     }
   }
@@ -98,6 +112,16 @@ export class AccomodationComponent implements OnInit {
           this.visits_with_wards.push(visit);
         }
       });
+
+      this.patients = [];
+      this.visits_with_wards.forEach((visit: Visit) => {
+        if (visit.client && visit.status === "пацієнт") {
+          this.patients.push(visit.client);
+        }
+      });
+      this.loading_visits = false;
+      this.loading_calender = false;
+
     });
   }
 
@@ -130,7 +154,7 @@ export class AccomodationComponent implements OnInit {
   /*             Order For Come              */
 
   changeOrderForCome(visit: Visit, numberInOrder: number) {
-    if (visit.orderForCome != numberInOrder) {
+    if (visit.orderForCome !== numberInOrder) {
       if (this.validOrderForCome(visit, numberInOrder)) {
         visit.orderForCome = numberInOrder;
         visit.isChanged = true;
@@ -140,13 +164,12 @@ export class AccomodationComponent implements OnInit {
 
   validOrderForCome(visit: Visit, numberInOrder: number): boolean {
     if (visit.orderForCome != numberInOrder) {
-      let isFree = true;
-      this.visits_of_date.forEach(value => {
-        if (value.orderForCome == numberInOrder) {
-          isFree = false;
+      for (let i = 0; i < this.visits_of_date.length; i++) {
+        if (this.visits_of_date[i].orderForCome == numberInOrder) {
+          return false;
         }
-      });
-      return isFree;
+      }
+      return true;
     } else {
       return true;
     }
@@ -194,7 +217,7 @@ export class AccomodationComponent implements OnInit {
     }
   }
 
-  filteringClients(client_value: string) {
+  filterClients(client_value: string) {
     if (client_value) {
       const filterValue: string[] = client_value.toLowerCase().split(" ");
       this.filteredClients = this.clients.filter(client => {
@@ -214,6 +237,39 @@ export class AccomodationComponent implements OnInit {
       });
     } else {
       this.filteredClients = this.clients;
+    }
+  }
+
+
+  // Patients
+
+  selectedPatient(visit: Visit, patient: Client) {
+    if (visit && patient && (!visit.patient || visit.patient.clientId !== patient.clientId)) {
+      visit.isChanged = true;
+      visit.patient = patient;
+    }
+  }
+
+  filterPatients(patient_value: string) {
+    if (patient_value) {
+      const filterValue: string[] = patient_value.toLowerCase().split(" ");
+      this.filteredPatients = this.patients.filter(patient => {
+        switch (filterValue.length) {
+          case 0:
+            return true;
+          case 1:
+            return (patient.surname.toLowerCase().indexOf(filterValue[0]) === 0);
+          case 2:
+            return (patient.surname.toLowerCase().indexOf(filterValue[0]) === 0
+              && patient.firstName.toLowerCase().indexOf(filterValue[1]) === 0);
+          default:
+            return (patient.surname.toLowerCase().indexOf(filterValue[0]) === 0
+              && patient.firstName.toLowerCase().indexOf(filterValue[1]) === 0
+              && patient.secondName.toLowerCase().indexOf(filterValue[2]) === 0);
+        }
+      });
+    } else {
+      this.filteredPatients = this.patients;
     }
   }
 
@@ -253,7 +309,7 @@ export class AccomodationComponent implements OnInit {
   changeSurgeon(place_in_ward: Visit, surgeon_id: number) {
     place_in_ward.isChanged = true;
     this.surgeons.forEach((surgeon: Surgeon) => {
-      if (surgeon.surgeonId === surgeon_id) {
+      if (surgeon.surgeonId == surgeon_id) {
         place_in_ward.surgeon = surgeon;
       }
     });
@@ -262,7 +318,7 @@ export class AccomodationComponent implements OnInit {
   changeManager(place_in_ward: Visit, manager_id: number) {
     place_in_ward.isChanged = true;
     this.managers.forEach((manager: Manager) => {
-      if (manager.managerId === manager_id) {
+      if (manager.managerId == manager_id) {
         place_in_ward.manager = manager;
       }
     });
@@ -271,7 +327,7 @@ export class AccomodationComponent implements OnInit {
   changeOperationType(place_in_ward: Visit, operation_type_id: number) {
     place_in_ward.isChanged = true;
     this.operation_types.forEach((operation_type: OperationType) => {
-      if (operation_type.operationTypeId === operation_type_id) {
+      if (operation_type.operationTypeId == operation_type_id) {
         place_in_ward.operationType = operation_type;
       }
     });
@@ -284,15 +340,10 @@ export class AccomodationComponent implements OnInit {
 
 
   onAdd() {
-    if (this.visits_of_date == null) {
-      this.visits_of_date = [];
-    }
-    if (this.visits_of_date[0] == null) {
-      this.visits_of_date[0] = new Visit();
-    }
-    if (this.visits_of_date[0].client != null) {
+    if (this.visits_of_date[0] == null || this.visits_of_date[0].client != null) {
       const visit = new Visit();
       visit.status = "пацієнт";
+      visit.visitDate = this.selected_visit_date;
       this.visits_of_date.unshift(visit);
       this.getVisitsWithoutWards();
     }
@@ -300,20 +351,26 @@ export class AccomodationComponent implements OnInit {
   }
 
   onSave() {
-    for (let i = 0; i < this.visits_with_wards.length; i++) {
-      if (this.visits_with_wards[i].isChanged === true) {
-        if (this.visits_with_wards[i].visitId > 0) {
-          this.visitService.editVisit(this.visits_with_wards[i]).toPromise().then((visit: Visit) => {
-            this.visits_with_wards.splice(i, 1, visit);
-          });
-        } else if (this.visits_with_wards[i].client !== null && this.visits_with_wards[i].status !== null) {
-          this.visitService.addVisit(this.visits_with_wards[i]).toPromise().then((visit: Visit) => {
-            this.visits_with_wards.splice(i, 1, visit);
-          });
-        } else {
-          this.visits_with_wards[i].isChanged = true;
-        }
-      }
+    this.loading_save = true;
+    const changedVisits = this.visits_of_date.filter((visit: Visit) => {
+      return visit.isChanged && visit.client && visit.client.clientId > 0;
+    });
+
+    if (changedVisits.length !== 0) {
+      this.visitService.putVisits(changedVisits).toPromise().then((visits: Visit[]) => {
+        alert("Візити успішно збережені !");
+        this.getClients();
+        this.loading_save = false;
+        this.onRefresh();
+      }).catch((err: HttpErrorResponse) => {
+        this.loading_save = false;
+        alert(
+          ((<MassageResponse> err.error).exceptionMassage != null ? (<MassageResponse> err.error).exceptionMassage : "") + " \n" +
+          ((<MassageResponse> err.error).validationMassage != null ? (<MassageResponse> err.error).validationMassage : ""));
+      });
+    } else {
+      this.loading_save = false;
+      alert("Виберіть хоча б один запис!");
     }
   }
 
@@ -342,44 +399,28 @@ export class AccomodationComponent implements OnInit {
     });
   }
 
-  onUnplace() {
-    this.visits_with_wards.forEach((value: Visit, i: number) => {
-      if (value.isChanged === true) {
-        if (value.visitId > 0 && value.client !== null) {
-          this.visitService.doUnplaced(this.visits_with_wards[i]).toPromise().then(() => {
-            const visit: Visit = new Visit();
-            visit.accomodation = this.visits_with_wards[i].accomodation;
-            visit.visitDate = this.visits_with_wards[i].visitDate;
-            this.visits_with_wards.splice(i, 1, visit);
-          });
-
-        } else if (value.visitId === 0 && value.client !== null) {
-          this.visitService.addVisit(this.visits_with_wards[i]).toPromise().then((visit: Visit) => {
-            this.visitService.doUnplaced(visit).toPromise().then(() => {
-              const visit: Visit = new Visit();
-              visit.accomodation = this.visits_with_wards[i].accomodation;
-              visit.visitDate = this.visits_with_wards[i].visitDate;
-              this.visits_with_wards.splice(i, 1, visit);
-            });
-          });
-
-/*        } else if (value.visitId > 0 && value.status !== "пацієнт") {
-          this.visitService.removeVisit(this.visits_with_wards[i].visitId).toPromise().then(() => {
-            const visit: Visit = new Visit();
-            visit.accomodation = this.visits_with_wards[i].accomodation;
-            visit.visitDate = this.visits_with_wards[i].visitDate;
-            this.visits_with_wards.splice(i, 1, visit);
-          });*/
-
-        } else {
-          const visit: Visit = new Visit();
-          visit.accomodation = this.visits_with_wards[i].accomodation;
-          visit.visitDate = this.visits_with_wards[i].visitDate;
-          this.visits_with_wards.splice(i, 1, visit);
-
-        }
-      }
+  onDisplace() {
+    this.loading_displace = true;
+    const changedVisits = this.visits_with_wards.filter((visit: Visit) => {
+      return visit.isChanged && visit.client && visit.client.clientId > 0;
     });
+
+    if (changedVisits.length !== 0) {
+      this.visitService.displaceVisits(changedVisits).toPromise().then((visits: Visit[]) => {
+        alert("Клієнти успішно виселені !");
+        this.getClients();
+        this.loading_displace = false;
+        this.onRefresh();
+      }).catch((err: HttpErrorResponse) => {
+        this.loading_displace = false;
+        alert(
+          ((<MassageResponse> err.error).exceptionMassage != null ? (<MassageResponse> err.error).exceptionMassage : "") + " \n" +
+          ((<MassageResponse> err.error).validationMassage != null ? (<MassageResponse> err.error).validationMassage : ""));
+      });
+    } else {
+      this.loading_displace = false;
+      alert("Виберіть хоча б один запис!");
+    }
   }
 
   moveToAnotherDatePlace() {
@@ -411,47 +452,5 @@ export class AccomodationComponent implements OnInit {
       this.onRefresh();
     });
   }
-
-  /*  openDialogSelectVisitDate() {
-
-      const dialogRef = this.dialog.open(DateSelectorDialogComponent, {
-        width: "700px",
-        height: "410px",
-        data: {visit_date: this.selected_visit_date, accomodation: Accomodation}
-      });
-      dialogRef.afterClosed().subscribe((data: { visit_date: VisitDate, accomodation: Accomodation }) => {
-        if (data !== null && data.visit_date !== null) {
-
-          this.visits_of_date.forEach((value, index) => {
-            if (value.isChanged === true) {
-
-              const visit: Visit = new Visit();
-              visit.accomodation = value.accomodation;
-              visit.visitDate = this.selected_visit_date;
-
-              value.visitDate = data.visit_date;
-              if (data.accomodation !== null) {
-                value.accomodation = data.accomodation;
-              } else {
-                value.accomodation = null;
-              }
-
-              if (value.visitId > 0) {
-                this.visitService.editVisit(value).toPromise().then(() => {
-                  this.visits_of_date.splice(index, 1, visit);
-                });
-
-              } else if (value.client !== null && value.status !== null) {
-                this.visitService.addVisit(value).toPromise().then(() => {
-                  this.visits_of_date.splice(index, 1, visit);
-                });
-              } else {
-                value.isChanged = false;
-              }
-            }
-          });
-        }
-      });
-    }*/
 
 }

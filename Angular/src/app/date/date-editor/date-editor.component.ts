@@ -1,14 +1,18 @@
 import {Component, Injectable, OnInit} from "@angular/core";
-import {NgbDatepickerConfig, NgbDatepickerI18n, NgbDateStruct} from "@ng-bootstrap/ng-bootstrap";
+import {NgbCalendar, NgbDatepickerConfig, NgbDatepickerI18n, NgbDateStruct} from "@ng-bootstrap/ng-bootstrap";
 import {VisitDateService} from "../../service/visit-date.service";
 import {Router} from "@angular/router";
 import {VisitDate} from "../../backend_types/visit-date";
 import {NavbarService} from "../../service/navbar.service";
+import {NgbDate} from "@ng-bootstrap/ng-bootstrap/datepicker/ngb-date";
+import {HttpErrorResponse} from "@angular/common/http";
+import {MassageResponse} from "../../backend_types/massage-response";
 
 const I18N_VALUES = {
   "ua": {
     weekdays: ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Нд"],
-    months: ["Січень", "Лютий", "Березень", "Квітень", "Травень", "Червень", "Липень", "Серпень", "Вересень", "Жовтень", "Листопад", "Грудень"],
+    months: ["Січень", "Лютий", "Березень", "Квітень", "Травень",
+      "Червень", "Липень", "Серпень", "Вересень", "Жовтень", "Листопад", "Грудень"],
   }
   // other languages you would support
 };
@@ -53,18 +57,27 @@ export class EditedDatepickerI18n extends NgbDatepickerI18n {
 
 })
 export class DateEditorComponent implements OnInit {
-  model;
-  private readonly year_now: number = new Date(Date.now()).getFullYear();
-  private readonly month_now: number = new Date(Date.now()).getMonth() + 1;
-  private readonly day_now: number = new Date(Date.now()).getDate();
-  minDate: NgbDateStruct = {year: this.year_now, month: this.month_now, day: this.day_now};
-  maxDate: NgbDateStruct = {year: this.year_now + 5, month: 12, day: 31};
-  dates: NgbDateStruct[] = [];
+  minDate: NgbDate = NgbDate.from(this.calendar.getToday());
+  maxDate: NgbDate = new NgbDate(this.calendar.getToday().year + 5, 12, 31);
+  dates: NgbDate[] = [];
   visitDates: VisitDate[] = [];
-  selectedDates: NgbDateStruct[] = [];
+  selectedDates: NgbDate[] = [];
+  loading_save = false;
+  loading_del = false;
+  loading_dates = false;
 
-  constructor(private router: Router, private config: NgbDatepickerConfig, private dateService: VisitDateService, private serviceNavbar: NavbarService) {
-    this.setNgbDatepickerConfig();
+  constructor(private router: Router,
+              private config: NgbDatepickerConfig,
+              private calendar: NgbCalendar,
+              private dateService: VisitDateService,
+              private serviceNavbar: NavbarService) {
+
+    this.config.outsideDays = "hidden";
+    this.config.displayMonths = 2;
+    this.config.navigation = "select";
+    this.config.showWeekNumbers = false;
+    this.config.firstDayOfWeek = 1;
+    this.config.markDisabled = (date: NgbDate) => this.isWeekend(date);
   }
 
   ngOnInit(): void {
@@ -72,111 +85,121 @@ export class DateEditorComponent implements OnInit {
     this.serviceNavbar.change("date");
   }
 
-
-  onSelect(date: NgbDateStruct, disabled) {
-    // console.log(this.selectedDates.indexOf(date, 0));
-    if (!disabled) {
-      if (this.selectedDates.indexOf(date, 0) == -1) {
-        this.selectedDates.push(date);
+  onSelect(date: NgbDateStruct) {
+    const ngbDate = NgbDate.from(date);
+    if (!this.isWeekend(ngbDate) && ngbDate.after(this.minDate) && ngbDate.before(this.maxDate)) {
+      const index_date: number = this.indexOf(ngbDate, this.selectedDates);
+      if (index_date === -1) {
+        this.selectedDates.push(ngbDate);
       } else {
-        this.selectedDates.splice(this.selectedDates.indexOf(date, 0), 1);
+        this.selectedDates.splice(index_date, 1);
       }
 
       this.selectedDates.sort((date1, date2) => {
-        if (date1.year !== date2.year) {
-          return date1.year - date2.year;
-        } else if (date1.month !== date2.month) {
-          return date1.month - date2.month;
-        } else {
-          return date1.day - date2.day;
+        if (date1.equals(date2)) {
+          return 0;
+        }
+        if (date1.before(date2)) {
+          return -1;
+        }
+        if (date1.after(date2)) {
+          return 1;
         }
       });
     }
   }
 
-
   onSave() {
+    this.loading_save = true;
     const visitDates: VisitDate[] = [];
 
-    this.selectedDates.forEach((value: NgbDateStruct) => {
-      const visit_date: VisitDate = new VisitDate();
-      visit_date.visitDateId = 0;
-      visit_date.date = [value.year, value.month, value.day];
-      visit_date.inactive = false;
-      visitDates.push(visit_date);
+    this.selectedDates.forEach((value: NgbDate) => {
+      if (this.indexOf(value, this.dates) === -1) {
+        const visit_date: VisitDate = new VisitDate();
+        visit_date.visitDateId = 0;
+        visit_date.date = [value.year, value.month, value.day];
+        visit_date.inactive = false;
+        visitDates.push(visit_date);
+      }
     });
 
     this.dateService.addVisitDates(visitDates).toPromise().then(() => {
-      this.onClear();
+      alert("Дати успішно збережені !");
       this.getDates();
+      this.loading_save = false;
+    }).catch((err: HttpErrorResponse) => {
+      this.loading_save = false;
+      alert(
+        ((<MassageResponse> err.error).exceptionMassage != null ? (<MassageResponse> err.error).exceptionMassage : "") + " \n" +
+        ((<MassageResponse> err.error).validationMassage != null ? (<MassageResponse> err.error).validationMassage : ""));
     });
   }
 
-  onClear() {
-    this.selectedDates.splice(0, this.selectedDates.length);
+  onRefresh() {
+    this.getDates();
   }
 
   onDelete() {
-    const visitDates: VisitDate[] = this.visitDates
-      .filter((value: VisitDate) => {
-        return this.isInArray({year: value.date[0], month: value.date[1], day: value.date[2]}, this.selectedDates);
-      });
-
-    visitDates.forEach((value: VisitDate) => {
-      this.dateService.removeVisitDate(value.visitDateId).toPromise().then(() => {
-        this.onClear();
+    this.loading_del = true;
+    const ids: number[] = [];
+    for (let i = 0; i < this.visitDates.length; i++) {
+      const ngbDate: NgbDate = new NgbDate(this.visitDates[i].date[0], this.visitDates[i].date[1], this.visitDates[i].date[2]);
+      if (this.indexOf(ngbDate, this.selectedDates) !== -1) {
+        ids.push(this.visitDates[i].visitDateId);
+      }
+    }
+    this.dateService.removeVisitDates(ids).toPromise().then((success: boolean) => {
+      if (success) {
+        alert("Дати успішно видалені!");
         this.getDates();
-      });
+        this.loading_del = false;
+      }
+    }).catch((err: HttpErrorResponse) => {
+      this.loading_del = false;
+      alert(
+        ((<MassageResponse> err.error).exceptionMassage != null ? (<MassageResponse> err.error).exceptionMassage : "") + " \n" +
+        ((<MassageResponse> err.error).validationMassage != null ? (<MassageResponse> err.error).validationMassage : ""));
     });
   }
 
   onCancel() {
-    this.onClear();
-    // this.router.navigateByUrl("");
-  }
-
-  private setNgbDatepickerConfig() {
-    this.config.outsideDays = "hidden";
-    this.config.displayMonths = 2;
-    this.config.navigation = "select";
-    this.config.showWeekNumbers = false;
-    this.config.firstDayOfWeek = 1;
-
-    this.config.markDisabled = (date: NgbDateStruct) => {
-      const d = new Date(date.year, date.month - 1, date.day);
-      return d.getDay() === 0 || d.getDay() === 6;
-    };
+    this.selectedDates = [];
+    this.getDates();
   }
 
   // This is selected dates
-  isSelected(date: NgbDateStruct): boolean {
-    return this.selectedDates.indexOf(date) !== -1;
+  isSelected(date: NgbDate): boolean {
+    return this.indexOf(date, this.selectedDates) !== -1;
   }
 
-  isPresented(date: NgbDateStruct): boolean {
-    return this.isInArray(date, this.dates);
+  isPresented(date: NgbDate): boolean {
+    return this.indexOf(date, this.dates) !== -1;
   }
 
-  private isInArray(date: NgbDateStruct, dates: NgbDateStruct[]): boolean {
-    let isEqual = false;
-    dates.forEach((value: NgbDateStruct) => {
-      if ((value.year == date.year) &&
-        (value.month == date.month) &&
-        (value.day == date.day)) {
-        isEqual = true;
+  private indexOf(date: NgbDate, dates: NgbDate[]): number {
+    for (let i = 0; i < dates.length; i++) {
+      if (NgbDate.from(date).equals(dates[i])) {
+        return i;
       }
-    });
-    return isEqual;
+    }
+    return -1;
+  }
+
+  private isWeekend(date: NgbDate): boolean {
+    const d = new Date(date.year, date.month - 1, date.day);
+    return d.getDay() === 0 || d.getDay() === 6;
   }
 
   private getDates(): void {
+    this.loading_dates = true;
     this.dateService.getVisitDates().toPromise().then((visitDates: VisitDate[]) => {
       this.visitDates = visitDates;
-      this.dates.splice(0, this.dates.length);
+      this.dates = [];
+      this.selectedDates = [];
       this.visitDates.forEach((value: VisitDate) => {
-        const d: NgbDateStruct = {year: value.date[0], month: value.date[1], day: value.date[2]};
-        this.dates.push(d);
+        this.dates.push(new NgbDate(value.date[0], value.date[1], value.date[2]));
       });
+      this.loading_dates = false;
     });
   }
 

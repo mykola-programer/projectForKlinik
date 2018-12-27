@@ -96,12 +96,12 @@ export class DateSelectorComponent implements OnInit {
     private router: Router,
     private dateService: DateService) {
 
-    {
-      const visit_date = new VisitDate();
-      visit_date.visitDateId = 2;
-      visit_date.date = [2018, 12, 10];
-      this.dateService.change(visit_date);
-    }
+    // {
+    //   const visit_date = new VisitDate();
+    //   visit_date.visitDateId = 2;
+    //   visit_date.date = [2018, 12, 10];
+    //   this.dateService.change(visit_date);
+    // }
   }
 
   ngOnInit(): void {

@@ -3,10 +3,9 @@ package ua.nike.project.spring.vo;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
-import java.io.Serializable;
 import java.util.Objects;
 
-public class SurgeonVO implements Serializable, VisualObject {
+public class SurgeonVO implements VisualObject {
 
     private Integer surgeonId;
 

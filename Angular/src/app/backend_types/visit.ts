@@ -6,7 +6,7 @@ import {Manager} from "./manager";
 import {Accomodation} from "./accomodation";
 
 export class Visit {
-  public visitId: number = 0;
+  public visitId = 0;
   public visitDate: VisitDate;
   public timeForCome: number[];
   public orderForCome: number;
@@ -18,9 +18,9 @@ export class Visit {
   public surgeon: Surgeon;
   public manager: Manager;
   public accomodation: Accomodation;
-  public inactive: boolean;
+  public inactive = false;
   public note: string;
-  public isChanged: boolean = false;
+  public isChanged = false;
 
 }
 

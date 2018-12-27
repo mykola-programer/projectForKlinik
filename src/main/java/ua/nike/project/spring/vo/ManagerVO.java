@@ -1,11 +1,8 @@
 package ua.nike.project.spring.vo;
 
-import ua.nike.project.hibernate.type.Sex;
-
-import java.io.Serializable;
 import java.util.Objects;
 
-public class ManagerVO implements Serializable, VisualObject {
+public class ManagerVO implements VisualObject {
 
     private Integer managerId;
     private String surname;

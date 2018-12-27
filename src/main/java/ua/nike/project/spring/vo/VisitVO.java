@@ -7,7 +7,7 @@ import java.io.Serializable;
 import java.time.LocalTime;
 import java.util.Objects;
 
-public class VisitVO implements Serializable, VisualObject {
+public class VisitVO implements VisualObject {
 
     private Integer visitId;
     private VisitDateVO visitDate;
@@ -18,7 +18,7 @@ public class VisitVO implements Serializable, VisualObject {
     private ClientVO patient;
     private OperationTypeVO operationType;
 
-    @Pattern(regexp="^(OD|OS|OU)$",message="visit.eye.pattern")
+//    @Pattern(regexp = "^(OD|OS|OU)$", message = "visit.eye.pattern")
     private Eye eye;
     private SurgeonVO surgeon;
     private ManagerVO manager;

@@ -24,7 +24,6 @@ export class ClientEditorComponent implements OnInit {
   // "1" - ASC,
   // "-1" - DESC
   private sorting_order = 1;
-  public saveButtonActive = true;
 
   constructor(private router: Router, private clientService: ClientService, private serviceNavbar: NavbarService) {
   }
@@ -174,7 +173,7 @@ export class ClientEditorComponent implements OnInit {
       return client.isChanged;
     });
     if (edit_clients.length) {
-      this.clientService.editClients(edit_clients).toPromise().then(() => {
+      this.clientService.putClients(edit_clients).toPromise().then(() => {
         alert("Кліенти успішно збережені !");
         this.getClients();
         this.loading_save = false;

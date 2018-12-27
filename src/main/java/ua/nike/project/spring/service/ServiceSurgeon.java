@@ -105,6 +105,7 @@ public class ServiceSurgeon {
 
     private Surgeon copyToSurgeon(SurgeonVO original, Surgeon result) {
         if (original != null) {
+            if (result == null) result = new Surgeon();
             result.setSurname(original.getSurname());
             result.setFirstName(original.getFirstName());
             result.setSecondName(original.getSecondName());

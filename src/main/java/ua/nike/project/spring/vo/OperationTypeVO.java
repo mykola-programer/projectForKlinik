@@ -1,6 +1,5 @@
 package ua.nike.project.spring.vo;
 
-import java.io.Serializable;
 import java.util.Objects;
 
 public class OperationTypeVO implements VisualObject {
