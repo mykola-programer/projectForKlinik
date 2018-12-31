@@ -6,17 +6,20 @@ import java.time.LocalDate;
 import java.util.Set;
 
 @Entity
-@Table(name = "visit_date")
+@Table(name = "visit_date", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"date"})
+})
 @NamedQueries(value = {
-//        @NamedQuery(name = "VisitDate.getUniqueDates", query = "SELECT DISTINCT od.date FROM VisitDate od WHERE inactive = false ORDER BY od.date"),
         @NamedQuery(name = "VisitDate.findAll", query = "FROM VisitDate ORDER BY date"),
-        @NamedQuery(name = "VisitDate.findAllActive", query = "FROM VisitDate vd WHERE vd.inactive = false ORDER BY date")
+        @NamedQuery(name = "VisitDate.findAllActive", query = "FROM VisitDate vd WHERE vd.inactive = false ORDER BY date"),
+        @NamedQuery(name = "VisitDate.deleteByIDs", query = "DELETE VisitDate vd WHERE vd.visitDateId IN (:IDs)")
 })
 public class VisitDate implements Serializable, EntityObject {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "visit_date_id")
+//    @Access(AccessType.FIELD) // TODO Work without annotation !
     private Integer visitDateId;
 
     @Column(name = "date", nullable = false)

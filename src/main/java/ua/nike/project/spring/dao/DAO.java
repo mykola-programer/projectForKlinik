@@ -1,7 +1,6 @@
 package ua.nike.project.spring.dao;
 
 import ua.nike.project.hibernate.entity.EntityObject;
-import ua.nike.project.spring.exceptions.ApplicationException;
 
 import java.util.List;
 import java.util.Map;
@@ -10,7 +9,7 @@ public interface DAO<T extends EntityObject> {
 
     void setClassEO(Class<T> classEO);
 
-    T findByID(int entityID) throws ApplicationException;
+    T findByID(int entityID);
 
     List<T> findAll(String nQuery, Map<String, Object> parameters);
 
@@ -20,9 +19,9 @@ public interface DAO<T extends EntityObject> {
 
     boolean remove(int entityID);
 
-    boolean remove(String hqlQuery, List<Integer> entityIDs);
+    boolean remove(String namedQuery, List<Integer> entityIDs);
 
-    List<? extends Object> getObjectsByQuery(String hqlQuery, Map<String, Object> parameters, Class<? extends Object> oClass);
+    List<? extends Object> getObjectsByQuery(String namedQuery, Map<String, Object> parameters, Class<? extends Object> oClass);
 
     Object getObjectByQuery(String hqlQuery, Map<String, Object> parameters, Class<? extends Object> oClass);
 

@@ -15,7 +15,9 @@ import java.util.Objects;
         @NamedQuery(name = "Surgeon.findAll", query = "FROM Surgeon ORDER BY surname"),
         @NamedQuery(name = "Surgeon.findAllActive", query = "FROM Surgeon s WHERE s.inactive = false ORDER BY surname")
 })
-@Table(name = "surgeon")
+@Table(name = "surgeon", uniqueConstraints = {
+        @UniqueConstraint(name = "surgeon_pk", columnNames = {"surname", "first_name", "second_name"})
+})
 @TypeDef(
         name = "pgsql_enum",
         typeClass = PostgreSQLEnumType.class
@@ -25,6 +27,7 @@ public class Surgeon implements EntityObject {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "surgeon_id")
+//    @Access(AccessType.FIELD) // TODO Work without annotation !
     private Integer surgeonId;
 
     @Column(name = "surname", length = 50)

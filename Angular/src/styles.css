@@ -2,7 +2,19 @@
 
 @import "~@angular/material/prebuilt-themes/indigo-pink.css";
 @import './css/bootstrap.min.css';
+@import "~node_modules/ngx-toasta/styles/style-default.css";
+@import "~node_modules/ngx-toasta/styles/style-material.css";
+@import "~node_modules/ngx-toasta/styles/style-bootstrap.css";
+
 
 *{
   font-size: small;
+}
+block{
+  background: #eee;
+  border: 1px solid #000;
+}
+.block2{
+  background: #ccc;
+  border: 1px solid #000;
 }

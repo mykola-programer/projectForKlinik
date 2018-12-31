@@ -9,6 +9,7 @@ import {AccomodationService} from "../../service/accomodation.service";
 import {Visit} from "../../backend_types/visit";
 import {VisitService} from "../../service/visit.service";
 import {HttpErrorResponse} from "@angular/common/http";
+import {ToastaConfig, ToastaService, ToastData, ToastOptions} from "ngx-toasta";
 
 const I18N_VALUES = {
   "ua": {
@@ -69,6 +70,17 @@ export class DateSelectorDialogComponent implements OnInit {
   accomodations: Accomodation[] = [];
   selected_accomodation: Accomodation = null;
 
+  toastOptions: ToastOptions = {
+    title: "",
+    msg: "",
+    showClose: false,
+    timeout: 1000,
+    theme: "bootstrap",
+    onAdd: (toast: ToastData) => {
+    },
+    onRemove: function (toast: ToastData) {
+    }
+  };
   constructor(
     public dialogRef: MatDialogRef<DateSelectorDialogComponent>,
     private router: Router,
@@ -76,6 +88,8 @@ export class DateSelectorDialogComponent implements OnInit {
     private dateService: VisitDateService,
     private accomodationService: AccomodationService,
     private visitService: VisitService,
+    private toastaService: ToastaService,
+    private toastaConfig: ToastaConfig,
     @Inject(MAT_DIALOG_DATA) public data: { visit: Visit }) {
     this.selected_date = this.data.visit.visitDate;
     this.selected_accomodation = this.data.visit.accomodation;
@@ -136,26 +150,19 @@ export class DateSelectorDialogComponent implements OnInit {
         (value.date[2] == date.day))) != -1;
   }
 
-  onSelect() {
+  onMove() {
     this.data.visit.visitDate = this.selected_date;
     this.data.visit.accomodation = this.selected_accomodation;
     this.visitService.editVisit(this.data.visit).toPromise().then((visit: Visit) => {
-      if (visit
-        && this.data.visit.visitId === visit.visitId
-        && this.data.visit.client.clientId === visit.client.clientId) {
-        this.dialogRef.close(visit);
-      } else {
-        alert("Помилка запису в базу даних... Спробуйте ще !");
-        this.onRefresh();
-      }
-
+      this.dialogRef.close(visit);
+      this.onRefresh();
     }).catch((err: HttpErrorResponse) => {
-
-      const div = document.createElement("div");
-      div.innerHTML = err.error.text;
-      const text = div.textContent || div.innerText || "";
-
-      alert(text);
+      {
+        this.toastOptions.title = "Помилка при переміщені!";
+        this.toastOptions.msg = err.error;
+        this.toastOptions.timeout = 5000;
+        this.toastaService.error(this.toastOptions);
+      }
     });
   }
 

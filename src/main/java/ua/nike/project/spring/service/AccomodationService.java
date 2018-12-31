@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 import ua.nike.project.hibernate.entity.Accomodation;
 import ua.nike.project.hibernate.type.Ward;
 import ua.nike.project.spring.dao.DAO;
-import ua.nike.project.spring.exceptions.ApplicationException;
 import ua.nike.project.spring.vo.AccomodationVO;
 
 import java.util.ArrayList;
@@ -17,7 +16,7 @@ import java.util.List;
 
 @Service
 @Scope(BeanDefinition.SCOPE_SINGLETON)
-public class ServiceAccomodation {
+public class AccomodationService {
 
 
     private DAO<Accomodation> dao;
@@ -29,12 +28,12 @@ public class ServiceAccomodation {
     }
 
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-    public AccomodationVO findByID(int accomodationID) throws ApplicationException {
+    public AccomodationVO findByID(int accomodationID) {
         return convertToAccomodationVO(dao.findByID(accomodationID));
     }
 
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-    public Accomodation findEntityByID(int entityID) throws ApplicationException {
+    public Accomodation findEntityByID(int entityID) {
         return dao.findByID(entityID);
     }
 
@@ -62,21 +61,21 @@ public class ServiceAccomodation {
 
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<Integer> getActiveWards() {
-        List<Ward> wards = (List<Ward>) dao.getObjectsByQuery("SELECT DISTINCT acc.ward FROM Accomodation acc where acc.inactive = false ORDER BY acc.ward", null, Ward.class);
+        List<Ward> wards = (List<Ward>) dao.getObjectsByQuery("Accomodation.getActiveWards", null, Ward.class);
         if (wards == null) return null;
         List<Integer> result = new ArrayList<>();
         for (Ward ward : wards) result.add(ward.toInteger());
         return result;
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional(propagation = Propagation.REQUIRED)
     public AccomodationVO create(AccomodationVO accomodationVO) {
         Accomodation entity = copyToAccomodation(accomodationVO, null);
         return convertToAccomodationVO(dao.save(entity));
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public AccomodationVO update(int accomodationID, AccomodationVO accomodationVO) throws ApplicationException {
+    public AccomodationVO update(int accomodationID, AccomodationVO accomodationVO) {
         Accomodation originalEntity = dao.findByID(accomodationID);
         Accomodation updatedEntity = copyToAccomodation(accomodationVO, originalEntity);
         return convertToAccomodationVO(dao.update(updatedEntity));
@@ -88,14 +87,14 @@ public class ServiceAccomodation {
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public AccomodationVO deactivateByID(int accomodationID) throws ApplicationException {
+    public AccomodationVO deactivateByID(int accomodationID) {
         Accomodation accomodation = dao.findByID(accomodationID);
         accomodation.setInactive(true);
         return convertToAccomodationVO(dao.update(accomodation));
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public AccomodationVO activateByID(int accomodationID) throws ApplicationException {
+    public AccomodationVO activateByID(int accomodationID) {
         Accomodation accomodation = dao.findByID(accomodationID);
         accomodation.setInactive(false);
         return convertToAccomodationVO(dao.update(accomodation));

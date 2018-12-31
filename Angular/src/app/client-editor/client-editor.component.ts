@@ -4,7 +4,6 @@ import {ClientService} from "../service/client.service";
 import {Router} from "@angular/router";
 import {NavbarService} from "../service/navbar.service";
 import {HttpErrorResponse} from "@angular/common/http";
-import {MassageResponse} from "../backend_types/massage-response";
 
 @Component({
   selector: "app-client-editor",
@@ -164,6 +163,7 @@ export class ClientEditorComponent implements OnInit {
   }
 
   onRefresh() {
+    this.loading_clients = true;
     this.getClients();
   }
 
@@ -178,11 +178,14 @@ export class ClientEditorComponent implements OnInit {
         this.getClients();
         this.loading_save = false;
       }).catch((err: HttpErrorResponse) => {
-        this.loading_save = false;
-        alert(
-          ((<MassageResponse> err.error).exceptionMassage != null ? (<MassageResponse> err.error).exceptionMassage : "") + " \n" +
-          ((<MassageResponse> err.error).validationMassage != null ? (<MassageResponse> err.error).validationMassage : ""));
-      });
+          this.loading_save = false;
+          if (err.status === 422) {
+            alert(err.error);
+          } else {
+            alert(err.error);
+          }
+        }
+      );
     } else {
       this.loading_save = false;
       alert("Виберіть хоча б один запис!");
@@ -206,9 +209,11 @@ export class ClientEditorComponent implements OnInit {
         }
       }).catch((err: HttpErrorResponse) => {
         this.loading_del = false;
-        alert(
-          ((<MassageResponse> err.error).exceptionMassage != null ? (<MassageResponse> err.error).exceptionMassage : "") + " \n" +
-          ((<MassageResponse> err.error).validationMassage != null ? (<MassageResponse> err.error).validationMassage : ""));
+        if (err.status === 400) {
+          alert("Видалення неможливе !" + "\n" + err.error);
+        } else {
+          alert(err.error);
+        }
       });
     } else {
       this.loading_del = false;

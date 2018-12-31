@@ -12,12 +12,15 @@ import java.util.Objects;
         @NamedQuery(name = "Manager.findAll", query = "FROM Manager ORDER BY surname, firstName, secondName"),
         @NamedQuery(name = "Manager.findAllActive", query = "FROM Manager WHERE inactive = false  ORDER BY surname, firstName, secondName")
 })
-@Table(name = "manager")
+@Table(name = "manager", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"surname", "first_name", "second_name", "city_from"})
+})
 public class Manager implements EntityObject {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "manager_id")
+//    @Access(AccessType.FIELD) // TODO Work without annotation !
     private Integer managerId;
 
     @Column(name = "surname", length = 50, nullable = false)

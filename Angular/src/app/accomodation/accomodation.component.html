@@ -1,3 +1,4 @@
+<ngx-toasta [position]="'top-center'"></ngx-toasta>
 <br><br>
 
 <div *ngIf="loading_calender">
@@ -11,7 +12,7 @@
      style="max-width: 1200px; min-width: 550px; margin-left: 10px">
   <br>
 
-  <!--            Wards             -->
+  <!--   TODO         Wards             -->
 
   <!--<div class="row">-->
   <!--<div class="col-lg-6">-->
@@ -32,7 +33,7 @@
           <th scope="col" style="width: 60px;">Статус</th>
           <th scope="col" style="width: 150px;">Супр. пацієнта</th>
           <th scope="col" style="width: 150px;">Операція</th>
-          <th scope="col" style="width: 45px;">Око</th>
+          <th scope="col" style="width: 55px;">Око</th>
           <th scope="col" style="width: 100px">Хірург</th>
           <th scope="col" style="width: 100px">Менеджер</th>
           <th scope="col">Примітки</th>
@@ -106,7 +107,7 @@
           </td>
 
 
-          <!--Status-->
+          <!-- TODO         Status  -->
           <td *ngIf="visit_with_ward.accomodation.ward == ward">
             <select #status *ngIf="visit_with_ward.client != null"
                     (change)="changeStatus(visit_with_ward, status.value)"
@@ -229,7 +230,7 @@
   <!--</div>-->
 
 
-  <!--                    No Ward                    -->
+  <!-- TODO         No Ward                    -->
 
   <!--<div class="col-lg-6">-->
 
@@ -412,6 +413,7 @@
   <br>
   <br>
   <div class="left-container fixed-bottom bg-light">
+
     <button class="btn btn-min-style" (click)="onAdd()">Add</button>
     <button class="btn btn-success btn-min-style" (click)="onSave()">Save</button>
     <img *ngIf="loading_save" src="/assets/img/rotating-balls-spinner.gif" height="40" width="40"/>

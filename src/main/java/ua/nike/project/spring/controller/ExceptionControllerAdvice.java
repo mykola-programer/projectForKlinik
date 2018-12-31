@@ -1,6 +1,8 @@
 package ua.nike.project.spring.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,52 +14,93 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import ua.nike.project.spring.exceptions.ApplicationException;
 import ua.nike.project.spring.exceptions.ValidationException;
-import ua.nike.project.spring.service.ServiceMassage;
+
+import javax.persistence.EntityNotFoundException;
+import java.io.UnsupportedEncodingException;
+import java.sql.SQLException;
 
 @ControllerAdvice
+@PropertySource({"classpath:validation/ua.properties"})
 public class ExceptionControllerAdvice extends ResponseEntityExceptionHandler {
 
     @Autowired
-    ServiceMassage serviceMass;
+    private Environment env;
 
     @ExceptionHandler(ApplicationException.class)
-    protected ResponseEntity<Object> handleConflict(ApplicationException ex, WebRequest request) {
-
-        MassageResponse bodyOfResponse = new MassageResponse(ex.getErrUserMsgs() + "\n" + (ex.getErrExceptMsg() != null ? ex.getErrExceptMsg() : ""));
-        return handleExceptionInternal(ex, bodyOfResponse,
-                new HttpHeaders(), HttpStatus.MULTIPLE_CHOICES, request);
+    protected ResponseEntity<Object> handleConflictException(ApplicationException ex, WebRequest request) {
+        StringBuilder bodyOfResponse = new StringBuilder().append(getValue(ex.getErrUserMsgs())).append("\n").append(getValue(ex.getErrExceptMsg()));
+        return handleExceptionInternal(ex, bodyOfResponse, new HttpHeaders(), HttpStatus.UNPROCESSABLE_ENTITY, request);
     }
 
 
     @ExceptionHandler(ValidationException.class)
-    protected ResponseEntity<Object> handleValid(ValidationException ex, WebRequest request) {
-
-        MassageResponse bodyOfResponse = new MassageResponse(null, transformValidMassage(ex.getBindingResult()));
-        return handleExceptionInternal(ex, bodyOfResponse,
-                new HttpHeaders(), HttpStatus.UNSUPPORTED_MEDIA_TYPE, request);
+    protected ResponseEntity<Object> handleValidException(ValidationException ex, WebRequest request) {
+        String bodyOfResponse = transformValidMassage(ex.getBindingResult());
+        return handleExceptionInternal(ex, bodyOfResponse, new HttpHeaders(), HttpStatus.UNPROCESSABLE_ENTITY, request);
     }
+
+    @ExceptionHandler(RuntimeException.class)
+    protected ResponseEntity<Object> handleRuntimeException(RuntimeException ex, WebRequest request) {
+        StringBuilder bodyOfResponse = new StringBuilder();
+        HttpStatus httpStatus = HttpStatus.UNPROCESSABLE_ENTITY;
+        for (Throwable runtimeException = ex; runtimeException != null; ) {
+                bodyOfResponse.append("RuntimeException : ").append(runtimeException.getClass().getSimpleName()).append(" => ").append(runtimeException.getLocalizedMessage()).append("\n");
+            if (runtimeException instanceof EntityNotFoundException) {
+                bodyOfResponse.append(getValue("object.not.find")).append("\n");
+                httpStatus = HttpStatus.UNPROCESSABLE_ENTITY;
+            } else if (runtimeException instanceof SQLException) {
+                bodyOfResponse.append(getValue("violation.of.integrity")).append("\n");
+                httpStatus = HttpStatus.BAD_REQUEST;
+            }
+            runtimeException = runtimeException.getCause();
+        }
+        return handleExceptionInternal(ex, bodyOfResponse, new HttpHeaders(), httpStatus, request);
+    }
+
 
     private String transformValidMassage(BindingResult bindingResult) {
         if (bindingResult == null) return null;
         final StringBuilder result = new StringBuilder();
-        result.append(serviceMass.value(bindingResult.getTarget().getClass().getSimpleName() + ".massage"))
+        result.append(getValue("violation.mistake"))
                 .append(" \n");
-        result.append(serviceMass.value("count.mistakes")).append(" ")
-                .append(bindingResult.getErrorCount())
-                .append(": \n");
+//        result.append(getValue("mistakes.count")).append(" ")
+//                .append(bindingResult.getErrorCount())
+//                .append(": \n");
+        int i = 1;
         for (FieldError error : bindingResult.getFieldErrors()) {
-            result.append("* ")
-                    .append(serviceMass.value(error.getDefaultMessage()))
+            result.append(i + ". ")
+                    .append(getValue(error.getDefaultMessage()))
                     .append(" (")
-                    .append(serviceMass.value("mistake"))
+                    .append(getValue("mistake"))
                     .append(" [")
                     .append(bindingResult.getFieldValue(error.getField()))
                     .append("])")
                     .append(" \n");
+            i++;
         }
-        result.append(serviceMass.value("please.validate"));
+        result.append(getValue("please.validate"));
         return result.toString();
     }
+
+    private String getValue(String key) {
+        if (key == null) {
+            return null;
+        }
+        try {
+            return new String(env.getProperty(key, key).getBytes("ISO8859-1"));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+}
+
+
+
+
+
+/*
+
 
     private static class MassageResponse {
         private String exceptionMassage;
@@ -88,13 +131,6 @@ public class ExceptionControllerAdvice extends ResponseEntityExceptionHandler {
             this.validationMassage = validationMassage;
         }
     }
-}
-
-
-
-
-
-/*
 
         @ExceptionHandler(Exception.class)
     public ModelAndView handleAllException(Exception ex) {

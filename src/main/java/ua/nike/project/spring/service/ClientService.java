@@ -6,108 +6,112 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import ua.nike.project.hibernate.entity.OperationType;
+import ua.nike.project.hibernate.entity.Client;
+import ua.nike.project.hibernate.type.Sex;
 import ua.nike.project.spring.dao.DAO;
-import ua.nike.project.spring.exceptions.ApplicationException;
-import ua.nike.project.spring.vo.OperationTypeVO;
+import ua.nike.project.spring.vo.ClientVO;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @Scope(BeanDefinition.SCOPE_SINGLETON)
-public class ServiceOperationType {
+public class ClientService {
 
-    private DAO<OperationType> dao;
+    private DAO<Client> dao;
 
     @Autowired
-    public void setDao(DAO<OperationType> dao) {
+    public void setDao(DAO<Client> dao) {
         this.dao = dao;
-        this.dao.setClassEO(OperationType.class);
+        this.dao.setClassEO(Client.class);
     }
 
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-    public OperationTypeVO findByID(int operationTypeID) throws ApplicationException {
-        return convertToOperationTypeVO(dao.findByID(operationTypeID));
+    public ClientVO findByID(int clientID) {
+        return convertToClientVO(dao.findByID(clientID));
     }
 
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-    public OperationType findEntityByID(int entityID) throws ApplicationException {
+    public Client findEntityByID(int entityID) {
         return dao.findByID(entityID);
     }
 
+
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-    public List<OperationTypeVO> findAll() {
-        List<OperationType> entities = dao.findAll("OperationType.findAll", null);
+    public List<ClientVO> findAll() {
+        List<Client> entities = dao.findAll("Client.findAll", null);
         if (entities == null) return null;
-        List<OperationTypeVO> result = new ArrayList<>();
-        for (OperationType entity : entities) {
-            result.add(convertToOperationTypeVO(entity));
+        List<ClientVO> result = new ArrayList<>();
+        for (Client entity : entities) {
+            result.add(convertToClientVO(entity));
         }
         return result;
     }
 
-    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-    public List<OperationTypeVO> findAllActive() {
-        List<OperationType> entities = dao.findAll("OperationType.getAllActive", null);
-        if (entities == null) return null;
-        List<OperationTypeVO> result = new ArrayList<>();
-        for (OperationType entity : entities) {
-            result.add(convertToOperationTypeVO(entity));
+    @Transactional(propagation = Propagation.REQUIRED)
+    public ClientVO create(ClientVO clientVO) {
+        Client entity = copyToClient(clientVO, null);
+        return convertToClientVO(dao.save(entity));
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public ClientVO update(int clientID, ClientVO clientVO) {
+        Client originalEntity = dao.findByID(clientID);
+        Client updatedEntity = copyToClient(clientVO, originalEntity);
+        return convertToClientVO(dao.update(updatedEntity));
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public List<ClientVO> putClients(List<ClientVO> clientsVO) {
+        List<ClientVO> result = new ArrayList<>();
+        for (ClientVO clientVO : clientsVO) {
+            if (clientVO != null) {
+                if (clientVO.getClientId() > 0) {
+                    result.add(update(clientVO.getClientId(), clientVO));
+                } else {
+                    result.add(create(clientVO));
+                }
+            }
         }
         return result;
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public OperationTypeVO create(OperationTypeVO operationTypeVO) {
-        OperationType entity = copyToOperationType(operationTypeVO, null);
-        return convertToOperationTypeVO(dao.save(entity));
+    @Transactional(propagation = Propagation.REQUIRED)
+    public boolean deleteById(int clientID) {
+        return dao.remove(clientID);
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public OperationTypeVO update(int operationTypeID, OperationTypeVO operationTypeVO) throws ApplicationException {
-        OperationType originalEntity = dao.findByID(operationTypeID);
-        OperationType updatedEntity = copyToOperationType(operationTypeVO, originalEntity);
-        return convertToOperationTypeVO(dao.update(updatedEntity));
+    public boolean deleteByIDs(List<Integer> clientIDs) {
+        return dao.remove("Client.deleteByIDs", clientIDs);
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
-    public boolean deleteById(int operationTypeID) {
-        return dao.remove(operationTypeID);
+    private ClientVO convertToClientVO(Client client) {
+        if (client == null) return null;
+        ClientVO result = new ClientVO();
+        result.setClientId(client.getClientId());
+        result.setSurname(client.getSurname());
+        result.setFirstName(client.getFirstName());
+        result.setSecondName(client.getSecondName());
+        result.setSex(client.getSex().toCharacter());
+        result.setBirthday(client.getBirthday());
+        result.setTelephone(client.getTelephone());
+        return result;
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
-    public OperationTypeVO deactivateByID(int operationTypeID) throws ApplicationException {
-        OperationType operationType = dao.findByID(operationTypeID);
-        operationType.setInactive(true);
-        return convertToOperationTypeVO(dao.update(operationType));
-    }
+    private Client copyToClient(ClientVO original, Client result) {
 
-    @Transactional(propagation = Propagation.REQUIRED)
-    public OperationTypeVO activateByID(int operationTypeID) throws ApplicationException {
-        OperationType operationType = dao.findByID(operationTypeID);
-        operationType.setInactive(false);
-        return convertToOperationTypeVO(dao.update(operationType));
-    }
-
-    private OperationTypeVO convertToOperationTypeVO(OperationType operationType) {
-        if (operationType == null) return null;
-        OperationTypeVO operationTypeVO = new OperationTypeVO();
-        operationTypeVO.setOperationTypeId(operationType.getOperationTypeId());
-        operationTypeVO.setName(operationType.getName());
-        operationTypeVO.setInactive(operationType.isInactive());
-        return operationTypeVO;
-    }
-
-    private OperationType copyToOperationType(OperationTypeVO original, OperationType result) {
         if (original != null) {
-            if (result == null) result = new OperationType();
-            result.setName(original.getName());
-            result.setInactive(original.isInactive());
+            if (result == null) result = new Client();
+            result.setSurname(original.getSurname());
+            result.setFirstName(original.getFirstName());
+            result.setSecondName(original.getSecondName());
+            result.setSex(Sex.getInstance(original.getSex()));
+            result.setBirthday(original.getBirthday());
+            result.setTelephone(original.getTelephone());
         }
         return result;
     }
-
 
 }
 
@@ -126,12 +130,12 @@ public class ServiceOperationType {
 
     /*
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-    public List<OperationTypeVO> getListByQuery(String hqlQuery, Map<String, Object> parameters) throws
+    public List<ClientVO> getListByQuery(String hqlQuery, Map<String, Object> parameters) throws
             ApplicationException {
-        List<OperationType> entities = dao.getEntitiesByQuery(hqlQuery, parameters);
-        List<OperationTypeVO> result = new ArrayList<>();
-        for (OperationType entity : entities) {
-            result.add(convertToOperationTypeVO(entity));
+        List<Client> entities = dao.getEntitiesByQuery(hqlQuery, parameters);
+        List<ClientVO> result = new ArrayList<>();
+        for (Client entity : entities) {
+            result.add(convertToClientVO(entity));
         }
         return result;
     }
@@ -152,27 +156,27 @@ public class ServiceOperationType {
     
 //    @Override
 //    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-//    public OperationType getEntityByID(int operationTypeID) throws ApplicationException {
-//        return dao.findByID(operationTypeID);
+//    public Client getEntityByID(int clientID) throws ApplicationException {
+//        return dao.findByID(clientID);
 //    }
 
-        private OperationTypeVO convertToOperationTypeVO(OperationType entity) throws ApplicationException {
+        private ClientVO convertToClientVO(Client entity) throws ApplicationException {
             if (entity == null) return null;
             switch (entity.getClass().getSimpleName()) {
-                case "OperationType":
-                    return (OperationTypeVO) transformToOperationTypeVO((OperationType) entity);
+                case "Client":
+                    return (ClientVO) transformToClientVO((Client) entity);
                 case "Visit":
-                    return (OperationTypeVO) transformToVisitVO((Visit) entity);
-                case "OperationType":
-                    return (OperationTypeVO) transformToOperationTypeVO((OperationType) entity);
+                    return (ClientVO) transformToVisitVO((Visit) entity);
+                case "Accomodation":
+                    return (ClientVO) transformToAccomodationVO((Accomodation) entity);
                 case "Manager":
-                    return (OperationTypeVO) transformToManagerVO((Manager) entity);
+                    return (ClientVO) transformToManagerVO((Manager) entity);
                 case "OperationType":
-                    return (OperationTypeVO) transformToOperationTypeVO((OperationType) entity);
+                    return (ClientVO) transformToOperationTypeVO((OperationType) entity);
                 case "Surgeon":
-                    return (OperationTypeVO) transformToSurgeonVO((Surgeon) entity);
+                    return (ClientVO) transformToSurgeonVO((Surgeon) entity);
                 case "VisitDate":
-                    return (OperationTypeVO) transformToVisitDateVO((VisitDate) entity);
+                    return (ClientVO) transformToVisitDateVO((VisitDate) entity);
 
                 default:
                     throw new ApplicationException("Class not find.");
@@ -187,23 +191,23 @@ public class ServiceOperationType {
             result.setVisitDate(transformToVisitDateVO(visit.getVisitDate()));
             result.setTimeForCome(visit.getTimeForCome());
             result.setOrderForCome(visit.getOrderForCome());
-            result.setOperationType(transformToOperationTypeVO(visit.getOperationType()));
-            result.setPatient(transformToOperationTypeVO(visit.getPatient()));
-            result.setStatus(convertOperationTypeStatus(visit.getStatus()));
+            result.setClient(transformToClientVO(visit.getClient()));
+            result.setPatient(transformToClientVO(visit.getPatient()));
+            result.setStatus(convertClientStatus(visit.getStatus()));
             result.setOperationType(transformToOperationTypeVO(visit.getOperationType()));
             result.setEye(visit.getEye());
             result.setSurgeon(transformToSurgeonVO(visit.getSurgeon()));
             result.setManager(transformToManagerVO(visit.getManager()));
-            result.setOperationType(transformToOperationTypeVO(visit.getOperationType()));
+            result.setAccomodation(transformToAccomodationVO(visit.getAccomodation()));
             result.setNote(visit.getNote());
             result.setInactive(visit.getInactive());
             return result;
         }
 
-        private OperationTypeVO transformToOperationTypeVO(OperationType client) {
+        private ClientVO transformToClientVO(Client client) {
             if (client == null) return null;
-            OperationTypeVO result = new OperationTypeVO();
-            result.setOperationTypeId(client.getOperationTypeId());
+            ClientVO result = new ClientVO();
+            result.setClientId(client.getClientId());
             result.setSurname(client.getSurname());
             result.setFirstName(client.getFirstName());
             result.setSecondName(client.getSecondName());
@@ -213,13 +217,13 @@ public class ServiceOperationType {
             return result;
         }
 
-        private OperationTypeVO transformToOperationTypeVO(OperationType operationType) {
-            if (operationType == null) return null;
-            OperationTypeVO result = new OperationTypeVO();
-            result.setOperationTypeId(operationType.getOperationTypeId());
-            result.setWard(Integer.valueOf(operationType.getWard().toString().substring(1)));
-            result.setWardPlace(operationType.getWardPlace());
-            result.setInactive(operationType.isInactive());
+        private AccomodationVO transformToAccomodationVO(Accomodation accomodation) {
+            if (accomodation == null) return null;
+            AccomodationVO result = new AccomodationVO();
+            result.setAccomodationId(accomodation.getAccomodationId());
+            result.setWard(Integer.valueOf(accomodation.getWard().toString().substring(1)));
+            result.setWardPlace(accomodation.getWardPlace());
+            result.setInactive(accomodation.isInactive());
             return result;
         }
 
@@ -266,36 +270,36 @@ public class ServiceOperationType {
             return result;
         }
 
-        private OperationType copyToEntityObject(OperationTypeVO operationTypeVO, OperationType entity) throws ApplicationException {
-            if (operationTypeVO == null) return null;
-            switch (operationTypeVO.getClass().getSimpleName()) {
-                case "OperationTypeVO": {
-                    if (entity == null) entity = (OperationType) new OperationType();
-                    return (OperationType) copyToOperationType((OperationTypeVO) operationTypeVO, (OperationType) entity);
+        private Client copyToEntityObject(ClientVO clientVO, Client entity) throws ApplicationException {
+            if (clientVO == null) return null;
+            switch (clientVO.getClass().getSimpleName()) {
+                case "ClientVO": {
+                    if (entity == null) entity = (Client) new Client();
+                    return (Client) copyToClient((ClientVO) clientVO, (Client) entity);
                 }
-                case "OperationTypeVO": {
-                    if (entity == null) entity = (OperationType) new OperationType();
-                    return (OperationType) copyToOperationType((OperationTypeVO) operationTypeVO, (OperationType) entity);
+                case "AccomodationVO": {
+                    if (entity == null) entity = (Client) new Accomodation();
+                    return (Client) copyToAccomodation((AccomodationVO) clientVO, (Accomodation) entity);
                 }
                 case "ManagerVO": {
-                    if (entity == null) entity = (OperationType) new Manager();
-                    return (OperationType) copyToManager((ManagerVO) operationTypeVO, (Manager) entity);
+                    if (entity == null) entity = (Client) new Manager();
+                    return (Client) copyToManager((ManagerVO) clientVO, (Manager) entity);
                 }
                 case "OperationTypeVO": {
-                    if (entity == null) entity = (OperationType) new OperationType();
-                    return (OperationType) copyToOperationType((OperationTypeVO) operationTypeVO, (OperationType) entity);
+                    if (entity == null) entity = (Client) new OperationType();
+                    return (Client) copyToOperationType((OperationTypeVO) clientVO, (OperationType) entity);
                 }
                 case "SurgeonVO": {
-                    if (entity == null) entity = (OperationType) new Surgeon();
-                    return (OperationType) copyToSurgeon((SurgeonVO) operationTypeVO, (Surgeon) entity);
+                    if (entity == null) entity = (Client) new Surgeon();
+                    return (Client) copyToSurgeon((SurgeonVO) clientVO, (Surgeon) entity);
                 }
                 case "VisitVO": {
-                    if (entity == null) entity = (OperationType) new Visit();
-                    return (OperationType) copyToVisit((VisitVO) operationTypeVO, (Visit) entity);
+                    if (entity == null) entity = (Client) new Visit();
+                    return (Client) copyToVisit((VisitVO) clientVO, (Visit) entity);
                 }
                 case "VisitDateVO": {
-                    if (entity == null) entity = (OperationType) new VisitDate();
-                    return (OperationType) copyToVisitDate((VisitDateVO) operationTypeVO, (VisitDate) entity);
+                    if (entity == null) entity = (Client) new VisitDate();
+                    return (Client) copyToVisitDate((VisitDateVO) clientVO, (VisitDate) entity);
                 }
 
                 default:
@@ -309,7 +313,7 @@ public class ServiceOperationType {
 
                 result.setTimeForCome(original.getTimeForCome());
                 result.setOrderForCome(original.getOrderForCome());
-                result.setStatus(convertOperationTypeStatus(original.getStatus()));
+                result.setStatus(convertClientStatus(original.getStatus()));
                 result.setEye(original.getEye());
                 result.setNote(original.getNote());
                 result.setInactive(original.getInactive());
@@ -320,17 +324,17 @@ public class ServiceOperationType {
                     result.setVisitDate(copyToVisitDate(original.getVisitDate(), visitDate));
                 } else result.setVisitDate(null);
 
-                if (original.getPatient() != null && original.getPatient().getOperationTypeId() > 0) {
-                    OperationType patient = new OperationType();
-                    patient.setOperationTypeId(original.getPatient().getOperationTypeId());
-                    result.setPatient(copyToOperationType(original.getPatient(), patient));
+                if (original.getPatient() != null && original.getPatient().getClientId() > 0) {
+                    Client patient = new Client();
+                    patient.setClientId(original.getPatient().getClientId());
+                    result.setPatient(copyToClient(original.getPatient(), patient));
                 } else result.setPatient(null);
 
-                if (original.getOperationType() != null && original.getOperationType().getOperationTypeId() > 0) {
-                    OperationType client = new OperationType();
-                    client.setOperationTypeId(original.getOperationType().getOperationTypeId());
-                    result.setOperationType(copyToOperationType(original.getOperationType(), client));
-                } else result.setOperationType(null);
+                if (original.getClient() != null && original.getClient().getClientId() > 0) {
+                    Client client = new Client();
+                    client.setClientId(original.getClient().getClientId());
+                    result.setClient(copyToClient(original.getClient(), client));
+                } else result.setClient(null);
 
 
                 if (original.getOperationType() != null && original.getOperationType().getOperationTypeId() > 0) {
@@ -351,11 +355,11 @@ public class ServiceOperationType {
                     result.setManager(copyToManager(original.getManager(), manager));
                 } else result.setManager(null);
 
-                if (original.getOperationType() != null && original.getOperationType().getOperationTypeId() > 0) {
-                    OperationType operationType = new OperationType();
-                    operationType.setOperationTypeId(original.getOperationType().getOperationTypeId());
-                    result.setOperationType(copyToOperationType(original.getOperationType(), operationType));
-                } else result.setOperationType(null);
+                if (original.getAccomodation() != null && original.getAccomodation().getAccomodationId() > 0) {
+                    Accomodation accomodation = new Accomodation();
+                    accomodation.setAccomodationId(original.getAccomodation().getAccomodationId());
+                    result.setAccomodation(copyToAccomodation(original.getAccomodation(), accomodation));
+                } else result.setAccomodation(null);
 
             }
             return result;
@@ -400,7 +404,7 @@ public class ServiceOperationType {
             return result;
         }
 
-        private OperationType copyToOperationType(OperationTypeVO original, OperationType result) {
+        private Accomodation copyToAccomodation(AccomodationVO original, Accomodation result) {
             if (original != null) {
                 result.setWard(Ward.valueOf("N" + original.getWard()));
                 result.setWardPlace(original.getWardPlace());
@@ -409,7 +413,7 @@ public class ServiceOperationType {
             return result;
         }
 
-        private OperationType copyToOperationType(OperationTypeVO original, OperationType result) {
+        private Client copyToClient(ClientVO original, Client result) {
             if (original != null) {
                 result.setSurname(original.getSurname());
                 result.setFirstName(original.getFirstName());
@@ -451,18 +455,18 @@ public class ServiceOperationType {
             }
         }
 
-        private OperationTypeStatus convertOperationTypeStatus(String status) {
+        private ClientStatus convertClientStatus(String status) {
             switch (status) {
                 case "пацієнт":
-                    return OperationTypeStatus.PATIENT;
+                    return ClientStatus.PATIENT;
                 case "супров.":
                 case "супроводжуючий":
                 default:
-                    return OperationTypeStatus.RELATIVE;
+                    return ClientStatus.RELATIVE;
             }
         }
 
-        private String convertOperationTypeStatus(OperationTypeStatus status) {
+        private String convertClientStatus(ClientStatus status) {
             if (status == null) return null;
 
             switch (status.toString().toUpperCase()) {
@@ -474,41 +478,41 @@ public class ServiceOperationType {
             }
         }
 
-    private boolean isRelated(OperationType entity) throws ApplicationException {
+    private boolean isRelated(Client entity) throws ApplicationException {
 //        if (entity == null) throw new ApplicationException("Entity is not correct.");
 //        switch (entity.getClass().getSimpleName()) {
-//            case "OperationType": {
-//                Map<String, Object> parametersOperationType = new HashMap<>();
-//                parametersOperationType.put("client", (OperationType) entity);
+//            case "Client": {
+//                Map<String, Object> parametersClient = new HashMap<>();
+//                parametersClient.put("client", (Client) entity);
 //                Map<String, Object> parametersPatient = new HashMap<>();
-//                parametersPatient.put("patient", (OperationType) entity);
-//                return ((Long) dao.getObjectByQuery("SELECT count(*) FROM Visit v WHERE v.client = :client", parametersOperationType) != 0
-//                        || dao.getEntitiesByNamedQuery("Visit.findByPatient", parametersPatient, (Class<OperationType>) Visit.class).size() != 0);
+//                parametersPatient.put("patient", (Client) entity);
+//                return ((Long) dao.getObjectByQuery("SELECT count(*) FROM Visit v WHERE v.client = :client", parametersClient) != 0
+//                        || dao.getEntitiesByNamedQuery("Visit.findByPatient", parametersPatient, (Class<Client>) Visit.class).size() != 0);
 //            }
 //            case "Manager": {
 //                Map<String, Object> parameters = new HashMap<>();
 //                parameters.put("manager", entity);
-//                return dao.getEntitiesByNamedQuery("Visit.findByManager", parameters, (Class<OperationType>) Visit.class).size() != 0;
+//                return dao.getEntitiesByNamedQuery("Visit.findByManager", parameters, (Class<Client>) Visit.class).size() != 0;
 //            }
 //            case "OperationType": {
 //                Map<String, Object> parameters = new HashMap<>();
 //                parameters.put("operationType", entity);
-//                return dao.getEntitiesByNamedQuery("Visit.findByOperationType", parameters, (Class<OperationType>) Visit.class).size() != 0;
+//                return dao.getEntitiesByNamedQuery("Visit.findByOperationType", parameters, (Class<Client>) Visit.class).size() != 0;
 //            }
 //            case "Surgeon": {
 //                Map<String, Object> parameters = new HashMap<>();
 //                parameters.put("surgeon", entity);
-//                return dao.getEntitiesByNamedQuery("Visit.findBySurgeon", parameters, (Class<OperationType>) Visit.class).size() != 0;
+//                return dao.getEntitiesByNamedQuery("Visit.findBySurgeon", parameters, (Class<Client>) Visit.class).size() != 0;
 //            }
 //            case "VisitDate": {
 //                Map<String, Object> parameters = new HashMap<>();
 //                parameters.put("visitDate", entity);
-//                return dao.getEntitiesByNamedQuery("Visit.findByVisitDate", parameters, (Class<OperationType>) Visit.class).size() != 0;
+//                return dao.getEntitiesByNamedQuery("Visit.findByVisitDate", parameters, (Class<Client>) Visit.class).size() != 0;
 //            }
-//            case "OperationType": {
+//            case "Accomodation": {
 //                Map<String, Object> parameters = new HashMap<>();
-//                parameters.put("operationType", entity);
-//                return dao.getEntitiesByNamedQuery("Visit.findByOperationType", parameters, (Class<OperationType>) Visit.class).size() != 0;
+//                parameters.put("accomodation", entity);
+//                return dao.getEntitiesByNamedQuery("Visit.findByAccomodation", parameters, (Class<Client>) Visit.class).size() != 0;
 //            }
 //            case "Visit": {
 //                return false;

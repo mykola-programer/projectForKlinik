@@ -1,16 +1,15 @@
 package ua.nike.project.spring.dao;
 
-import javax.persistence.Query;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import ua.nike.project.hibernate.entity.EntityObject;
-import ua.nike.project.spring.exceptions.ApplicationException;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import java.util.List;
 import java.util.Map;
@@ -30,10 +29,12 @@ public class DAOImpl<T extends EntityObject> implements DAO<T> {
     }
 
     @Override
-    public T findByID(int entityID) throws ApplicationException {
-        T entity = entityManager.find(classEO, entityID);
-        if (entity == null) throw new ApplicationException("This object is not find in database !");
-        return entity;
+    public T findByID(int entityID) {
+        entityManager.getReference(classEO, entityID);
+        T entity2 = entityManager.getReference(classEO, entityID);
+        T entity3 = entityManager.getReference(classEO, entityID);
+        T entity4 = entityManager.find(classEO, entityID);
+        return entityManager.find(classEO, entityID);
     }
 
     @Override
@@ -62,13 +63,13 @@ public class DAOImpl<T extends EntityObject> implements DAO<T> {
 
     @Override
     public boolean remove(int entityID) {
-            entityManager.remove(entityManager.getReference(classEO, entityID));
-            return true;
+        entityManager.remove(entityManager.getReference(classEO, entityID));
+        return true;
     }
 
     @Override
-    public boolean remove(String hqlQuery, List<Integer> entityIDs){
-        Query query = entityManager.createQuery(hqlQuery);
+    public boolean remove(String namedQuery, List<Integer> entityIDs) {
+        Query query = entityManager.createNamedQuery(namedQuery);
         query.setParameter("IDs", entityIDs);
         query.executeUpdate();
         return true;
@@ -77,8 +78,8 @@ public class DAOImpl<T extends EntityObject> implements DAO<T> {
 
     @Override
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-    public List<? extends Object> getObjectsByQuery(String hqlQuery, Map<String, Object> parameters, Class<? extends Object> oClass) {
-        TypedQuery<? extends Object> query = entityManager.createQuery(hqlQuery, oClass);
+    public List<? extends Object> getObjectsByQuery(String namedQuery, Map<String, Object> parameters, Class<? extends Object> oClass) {
+        TypedQuery<? extends Object> query = entityManager.createNamedQuery(namedQuery, oClass);
         if (parameters != null) {
             for (Map.Entry<String, Object> parameter : parameters.entrySet()) {
                 query.setParameter(parameter.getKey(), parameter.getValue());

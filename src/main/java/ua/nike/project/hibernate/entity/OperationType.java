@@ -5,7 +5,9 @@ import java.util.List;
 import java.util.Objects;
 
 @Entity
-@Table(name = "operation_type")
+@Table(name = "operation_type", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"name"})
+})
 @NamedQueries(value = {
         @NamedQuery(name = "OperationType.findAll", query = "FROM OperationType ORDER BY name"),
         @NamedQuery(name = "OperationType.getAllActive", query = "FROM OperationType WHERE inactive = false ORDER BY name")
@@ -16,6 +18,7 @@ public class OperationType implements EntityObject {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "operation_type_id")
+//    @Access(AccessType.FIELD) // TODO Work without annotation !
     private Integer operationTypeId;
 
     @Column(name = "name", length = 50, nullable = false)

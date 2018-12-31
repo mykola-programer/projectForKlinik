@@ -12,14 +12,6 @@
 
         <mapping-file>/META-INF/operation_bean.orm.xml</mapping-file>
 
-        <class>ua.nike.project.hibernate.entity.Manager</class>
-        <class>ua.nike.project.hibernate.entity.Surgeon</class>
-        <class>ua.nike.project.hibernate.entity.Accomodation</class>
-        <class>ua.nike.project.hibernate.entity.Visit</class>
-        <class>ua.nike.project.hibernate.entity.VisitDate</class>
-        <class>ua.nike.project.hibernate.entity.Client</class>
-        <class>ua.nike.project.hibernate.entity.OperationType</class>
-
         <properties>
             <property name="javax.persistence.jdbc.driver"
                       value="org.postgresql.Driver"/>
@@ -49,7 +41,7 @@
             <property name="hibernate.dialect"
                       value="org.hibernate.dialect.PostgreSQL95Dialect"/>
 
-            <property name="hibernate.connection.pool_size" value="50"/>
+            <!--<property name="hibernate.connection.pool_size" value="50"/>-->
 
             <!--<property name="hibernate.cache.use_query_cache" value="true"/>-->
 

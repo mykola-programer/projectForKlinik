@@ -5,18 +5,7 @@ import org.hibernate.annotations.TypeDef;
 import ua.nike.project.hibernate.type.PostgreSQLEnumType;
 import ua.nike.project.hibernate.type.Ward;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
@@ -27,7 +16,9 @@ import java.util.Objects;
         @NamedQuery(name = "Accomodation.getAllActive", query = "FROM Accomodation acc where acc.inactive = false ORDER BY acc.ward, acc.wardPlace"),
         @NamedQuery(name = "Accomodation.getActiveWards", query = "SELECT DISTINCT acc.ward FROM Accomodation acc where acc.inactive = false ORDER BY acc.ward")
 })
-@Table(name = "accomodation")
+@Table(name = "accomodation", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"ward", "ward_place"})
+})
 @TypeDef(
         name = "pgsql_enum",
         typeClass = PostgreSQLEnumType.class
@@ -37,6 +28,7 @@ public class Accomodation implements EntityObject {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "accomodation_id")
+//    @Access(AccessType.FIELD) // TODO Work without annotation !
     private Integer accomodationId;
 
     @Column(name = "ward")

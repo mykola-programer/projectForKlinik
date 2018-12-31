@@ -1,16 +1,18 @@
 import {Component, Injectable, OnInit} from "@angular/core";
 import {VisitDateService} from "../../service/visit-date.service";
 
-import {NgbDateParserFormatter, NgbDatepickerConfig, NgbDatepickerI18n, NgbDateStruct} from "@ng-bootstrap/ng-bootstrap";
+import {NgbCalendar, NgbDateParserFormatter, NgbDatepickerConfig, NgbDatepickerI18n, NgbDateStruct} from "@ng-bootstrap/ng-bootstrap";
 import {isNumber, padNumber, toInteger} from "@ng-bootstrap/ng-bootstrap/util/util";
 import {Router} from "@angular/router";
 import {VisitDate} from "../../backend_types/visit-date";
 import {DateService} from "../../service/date.service";
+import {NgbDate} from "@ng-bootstrap/ng-bootstrap/datepicker/ngb-date";
 
 const I18N_VALUES = {
   "ua": {
     weekdays: ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Нд"],
-    months: ["Січень", "Лютий", "Березень", "Квітень", "Травень", "Червень", "Липень", "Серпень", "Вересень", "Жовтень", "Листопад", "Грудень"],
+    months: ["Січень", "Лютий", "Березень", "Квітень", "Травень",
+      "Червень", "Липень", "Серпень", "Вересень", "Жовтень", "Листопад", "Грудень"],
   }
   // other languages you would support
 };
@@ -81,96 +83,82 @@ export class NgbDateCustomParserFormatter extends NgbDateParserFormatter {
 
 })
 export class DateSelectorComponent implements OnInit {
-  private readonly year_now: number = new Date(Date.now()).getFullYear();
-  private readonly month_now: number = new Date(Date.now()).getMonth() + 1;
-  private readonly day_now: number = new Date(Date.now()).getDate();
-  minDate: NgbDateStruct = {year: this.year_now, month: this.month_now - 2, day: this.day_now};
-  maxDate: NgbDateStruct = {year: this.year_now + 5, month: 12, day: 31};
+  minDate: NgbDate = new NgbDate(this.calendar.getToday().year, this.calendar.getToday().month - 3, this.calendar.getToday().day);
+  maxDate: NgbDate = new NgbDate(this.calendar.getToday().year + 5, 12, 31);
 
   visitDates: VisitDate[] = [];
-  dates: NgbDateStruct[] = [];
+  dates: NgbDate[] = [];
 
   constructor(
     private visitDateService: VisitDateService,
     private config: NgbDatepickerConfig,
+    private calendar: NgbCalendar,
     private router: Router,
     private dateService: DateService) {
-
     // {
     //   const visit_date = new VisitDate();
     //   visit_date.visitDateId = 2;
     //   visit_date.date = [2018, 12, 10];
     //   this.dateService.change(visit_date);
     // }
-  }
 
-  ngOnInit(): void {
-    this.setNgbDatepickerConfig();
-    this.getDates();
-  }
-
-
-  onChangeDate(date: NgbDateStruct, disabled): void {
-    if (this.isPresented(date) && !disabled) {
-      const selected_visitDate: VisitDate = this.visitDates.find((value: VisitDate) => {
-        return (value.date[0] == date.year &&
-          value.date[1] == date.month &&
-          value.date[2] == date.day);
-      });
-      this.dateService.change(selected_visitDate);
-    }
-  }
-
-  isPresented(date: NgbDateStruct): boolean {
-    for (let i = 0; i < this.dates.length; i++) {
-      if ((this.dates[i].year == date.year) &&
-        (this.dates[i].month == date.month) &&
-        (this.dates[i].day == date.day)) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  addDate() {
-    this.router.navigateByUrl("dates");
-  }
-
-
-  onClick(calendar) {
-    this.setNgbDatepickerConfig();
-    calendar.toggle();
-  }
-
-  private setNgbDatepickerConfig() {
     this.config.outsideDays = "hidden";
     this.config.displayMonths = 2;
     this.config.navigation = "select";
     this.config.showWeekNumbers = false;
     this.config.firstDayOfWeek = 1;
 
-    this.config.markDisabled = (date: NgbDateStruct) => {
-      for (let i = 0; i < this.dates.length; i++) {
-        if ((this.dates[i].year == date.year) &&
-          (this.dates[i].month == date.month) &&
-          (this.dates[i].day == date.day)) {
-          return false;
-        }
-      }
-      return true;
-    };
+    this.config.markDisabled = (date: NgbDate) => this.indexOf(date, this.dates) === -1;
   }
+
+  ngOnInit(): void {
+    this.getDates();
+  }
+
+  onChangeDate(date: NgbDate, disabled): void {
+    if (this.isPresented(date) && !disabled) {
+      const selected_visitDate: VisitDate = this.visitDates.find((visitDate: VisitDate) => {
+        return (visitDate.date[0] == date.year &&
+          visitDate.date[1] == date.month &&
+          visitDate.date[2] == date.day);
+      });
+      this.dateService.change(selected_visitDate);
+    }
+  }
+
+  isPresented(date: NgbDate): boolean {
+    return this.indexOf(date, this.dates) !== -1;
+  }
+
+  addDate() {
+    this.router.navigateByUrl("dates");
+  }
+
+  onClick(calendar) {
+    calendar.toggle();
+    this.getDates();
+  }
+
 
   private getDates(): void {
     this.visitDateService.getVisitDates().toPromise().then((visitDates: VisitDate[]) => {
       this.visitDates = visitDates;
 
       this.dates.splice(0, this.dates.length);
-      this.visitDates.forEach((value: VisitDate) => {
-        const d: NgbDateStruct = {year: value.date[0], month: value.date[1], day: value.date[2]};
+      this.visitDates.forEach((visitDate: VisitDate) => {
+        const d: NgbDate = new NgbDate(visitDate.date[0], visitDate.date[1], visitDate.date[2]);
         this.dates.push(d);
       });
     });
+  }
+
+  private indexOf(date: NgbDate, dates: NgbDate[]): number {
+    for (let i = 0; i < dates.length; i++) {
+      if (NgbDate.from(date).equals(dates[i])) {
+        return i;
+      }
+    }
+    return -1;
   }
 
 }

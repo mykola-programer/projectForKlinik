@@ -17,7 +17,7 @@ import {MatDialog} from "@angular/material";
 import {Accomodation} from "../backend_types/accomodation";
 import {DateSelectorDialogComponent} from "../date/date-selector-dialog/date-selector-dialog.component";
 import {HttpErrorResponse} from "@angular/common/http";
-import {MassageResponse} from "../backend_types/massage-response";
+import {ToastaConfig, ToastaService, ToastData, ToastOptions} from "ngx-toasta";
 
 @Component({
   selector: "app-accomodation",
@@ -25,27 +25,39 @@ import {MassageResponse} from "../backend_types/massage-response";
   styleUrls: ["./accomodation.component.css"]
 })
 export class AccomodationComponent implements OnInit {
-  visits_of_date: Visit[] = [];
-  visits_without_wards: Visit[] = [];
-  visits_with_wards: Visit[] = [];
-  wards: number[] = [];
+  visits_of_date: Visit[];
+  visits_without_wards: Visit[];
+  visits_with_wards: Visit[];
+  wards: number[];
 
-  selected_date: Date = null;
-  selected_visit_date: VisitDate = null;
-  clients: Client[] = [];
-  patients: Client[] = [];
+  selected_date: Date;
+  selected_visit_date: VisitDate;
+  clients: Client[];
+  patients: Client[];
   filteredClients: Client[];
   filteredPatients: Client[];
-  surgeons: Surgeon[] = [];
-  managers: Manager[] = [];
-  operation_types: OperationType[] = [];
+  surgeons: Surgeon[];
+  managers: Manager[];
+  operation_types: OperationType[];
   eyes: string[] = ["OU", "OS", "OD"];
   statuses: string[] = ["пацієнт", "супров."];
 
   loading_visits = false;
-  loading_calender = false;
+  loading_calender = true;
   loading_displace = false;
   loading_save = false;
+
+  toastOptions: ToastOptions = {
+    title: "",
+    msg: "",
+    showClose: false,
+    timeout: 1000,
+    theme: "bootstrap",
+    onAdd: (toast: ToastData) => {
+    },
+    onRemove: function (toast: ToastData) {
+    }
+  };
 
 
   constructor(
@@ -57,37 +69,49 @@ export class AccomodationComponent implements OnInit {
     private managerService: ManagerService,
     private operationTypeService: OperationTypeService,
     private accomodationService: AccomodationService,
+    private toastaService: ToastaService,
+    private toastaConfig: ToastaConfig,
     private dialog: MatDialog
   ) {
     this.serviceNavbar.change("accomodation");
   }
 
   ngOnInit(): void {
-    this.loading_calender = true;
-    this.dateService.selected_date.subscribe((selected_visit_date: VisitDate) => {
-      this.loading_calender = false;
-      this.loading_visits = true;
-      this.selected_date = new Date(selected_visit_date.date[0], selected_visit_date.date[1] - 1, selected_visit_date.date[2]);
-      this.selected_visit_date = selected_visit_date;
-      this.getVisits();
-    });
-    this.getWards();
-    this.getSurgeons();
-    this.getManagers();
-    this.getOperationTypes();
-    this.getClients();
-
+    // this.loading_calender = true;
+    this.dateService.selected_date.subscribe(
+      (selected_visit_date: VisitDate) => {
+        this.loading_calender = false;
+        this.loading_visits = true;
+        this.selected_date = new Date(selected_visit_date.date[0], selected_visit_date.date[1] - 1, selected_visit_date.date[2]);
+        this.selected_visit_date = selected_visit_date;
+        this.onRefresh();
+      }
+    );
   }
 
   private getVisits() {
     this.loading_visits = true;
     if (this.selected_date !== null) {
       this.visitService.findVisits(this.selected_date)
-        .toPromise().then(visits_of_date => {
-        this.visits_of_date = visits_of_date;
-        this.getVisitsWithoutWards();
-        this.getVisitsWithWards();
-      });
+        .subscribe(
+          (visits_of_date) => {
+            this.visits_of_date = visits_of_date;
+          },
+          (err: HttpErrorResponse) => {
+            alert();
+            this.loading_visits = false;
+            this.loading_calender = true;
+            {
+              this.toastOptions.title = "Помилка !";
+              this.toastOptions.msg = err.error;
+              this.toastOptions.timeout = 6000;
+              this.toastaService.error(this.toastOptions);
+            }
+          },
+          () => {
+            this.getVisitsWithoutWards();
+            this.getVisitsWithWards();
+          });
     }
   }
 
@@ -119,10 +143,12 @@ export class AccomodationComponent implements OnInit {
           this.patients.push(visit.client);
         }
       });
-      this.loading_visits = false;
-      this.loading_calender = false;
 
-    });
+    }).then(() => {
+        this.loading_visits = false;
+        this.loading_calender = false;
+      }
+    );
   }
 
   private getVisitsWithoutWards() {
@@ -151,6 +177,7 @@ export class AccomodationComponent implements OnInit {
     this.operationTypeService.getActiveProcedures().toPromise().then(operation_types => this.operation_types = operation_types);
   }
 
+
   /*             Order For Come              */
 
   changeOrderForCome(visit: Visit, numberInOrder: number) {
@@ -158,7 +185,12 @@ export class AccomodationComponent implements OnInit {
       if (this.validOrderForCome(visit, numberInOrder)) {
         visit.orderForCome = numberInOrder;
         visit.isChanged = true;
+      } else {
+        visit.isChanged = false;
       }
+    } else {
+      visit.isChanged = true;
+
     }
   }
 
@@ -213,6 +245,7 @@ export class AccomodationComponent implements OnInit {
   selectedClient(visit: Visit, client: Client) {
     if (visit && client && (!visit.client || visit.client.clientId !== client.clientId)) {
       visit.isChanged = true;
+      visit.status = "пацієнт";
       visit.client = client;
     }
   }
@@ -348,6 +381,12 @@ export class AccomodationComponent implements OnInit {
       this.getVisitsWithoutWards();
     }
     document.getElementById("table_no_ward").scrollIntoView();
+    {
+      this.toastOptions.title = "Додано!";
+      this.toastOptions.msg = "Візит додано до таблиці ''Безстаціонарні пацієнти''";
+      this.toastOptions.timeout = 3000;
+      this.toastaService.success(this.toastOptions);
+    }
   }
 
   onSave() {
@@ -358,28 +397,50 @@ export class AccomodationComponent implements OnInit {
 
     if (changedVisits.length !== 0) {
       this.visitService.putVisits(changedVisits).toPromise().then((visits: Visit[]) => {
-        alert("Візити успішно збережені !");
-        this.getClients();
         this.loading_save = false;
         this.onRefresh();
+        {
+          this.toastOptions.title = "Збережено !";
+          this.toastOptions.msg = "Візити успішно збережено !";
+          this.toastOptions.timeout = 3000;
+          this.toastaService.success(this.toastOptions);
+        }
       }).catch((err: HttpErrorResponse) => {
         this.loading_save = false;
-        alert(
-          ((<MassageResponse> err.error).exceptionMassage != null ? (<MassageResponse> err.error).exceptionMassage : "") + " \n" +
-          ((<MassageResponse> err.error).validationMassage != null ? (<MassageResponse> err.error).validationMassage : ""));
+        if (err.status === 422) {
+        }
+        {
+          this.toastOptions.title = "Помилка при збережені!";
+          this.toastOptions.msg = err.error;
+          this.toastOptions.timeout = 5000;
+          this.toastaService.error(this.toastOptions);
+        }
       });
     } else {
       this.loading_save = false;
-      alert("Виберіть хоча б один запис!");
+      {
+        this.toastOptions.title = "Виберіть хоча б один запис!";
+        this.toastOptions.msg = "";
+        this.toastOptions.timeout = 3000;
+        this.toastaService.info(this.toastOptions);
+      }
     }
   }
 
   onRefresh() {
     this.getVisits();
-    this.ngOnInit();
+    // this.ngOnInit();
+    this.getWards();
+    this.getSurgeons();
+    this.getManagers();
+    this.getOperationTypes();
+    this.getClients();
+    // setTimeout(() => {
+    //   this.onRefresh();
+    // }, 5000);
   }
 
-  onDelete() {
+  onDelete() { // TODO Correct !
     this.visits_with_wards.forEach((value: Visit, i: number) => {
       if (value.isChanged === true) {
         if (value.visitId > 0) {
@@ -407,19 +468,33 @@ export class AccomodationComponent implements OnInit {
 
     if (changedVisits.length !== 0) {
       this.visitService.displaceVisits(changedVisits).toPromise().then((visits: Visit[]) => {
-        alert("Клієнти успішно виселені !");
-        this.getClients();
         this.loading_displace = false;
         this.onRefresh();
+        {
+          this.toastOptions.title = "Клієнти успішно виселені !";
+          this.toastOptions.msg = "";
+          this.toastOptions.timeout = 3000;
+          this.toastaService.success(this.toastOptions);
+        }
       }).catch((err: HttpErrorResponse) => {
         this.loading_displace = false;
-        alert(
-          ((<MassageResponse> err.error).exceptionMassage != null ? (<MassageResponse> err.error).exceptionMassage : "") + " \n" +
-          ((<MassageResponse> err.error).validationMassage != null ? (<MassageResponse> err.error).validationMassage : ""));
+        if (err.status === 422) {
+        }
+        {
+          this.toastOptions.title = "Помилка при збережені!";
+          this.toastOptions.msg = err.error;
+          this.toastOptions.timeout = 5000;
+          this.toastaService.error(this.toastOptions);
+        }
       });
     } else {
       this.loading_displace = false;
-      alert("Виберіть хоча б один запис!");
+      {
+        this.toastOptions.title = "Виберіть хоча б один запис!";
+        this.toastOptions.msg = "";
+        this.toastOptions.timeout = 3000;
+        this.toastaService.info(this.toastOptions);
+      }
     }
   }
 
@@ -450,6 +525,12 @@ export class AccomodationComponent implements OnInit {
     });
     dialogRef.afterClosed().subscribe((data: { visit: Visit }) => {
       this.onRefresh();
+      {
+        this.toastOptions.title = "Кліент успішно перенесений!";
+        this.toastOptions.msg = "";
+        this.toastOptions.timeout = 3000;
+        this.toastaService.success(this.toastOptions);
+      }
     });
   }
 

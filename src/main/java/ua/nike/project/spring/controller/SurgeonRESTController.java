@@ -4,9 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import ua.nike.project.spring.exceptions.ApplicationException;
 import ua.nike.project.spring.exceptions.ValidationException;
-import ua.nike.project.spring.service.ServiceSurgeon;
+import ua.nike.project.spring.service.SurgeonService;
 import ua.nike.project.spring.vo.SurgeonVO;
 
 import javax.validation.Valid;
@@ -15,59 +14,61 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/surgeons")
-public class ControllerSurgeonREST {
+public class SurgeonRESTController {
 
     @Autowired
-    private ServiceSurgeon serviceSurgeon;
+    private SurgeonService surgeonService;
 
     @CrossOrigin
     @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public SurgeonVO getSurgeon(@PathVariable("id") int surgeonID) throws ApplicationException {
-        return serviceSurgeon.findByID(surgeonID);
+    public SurgeonVO getSurgeon(@PathVariable("id") int surgeonID) {
+        return surgeonService.findByID(surgeonID);
     }
 
     @CrossOrigin
     @RequestMapping(value = "", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public List<SurgeonVO> getSurgeons() {
-        return serviceSurgeon.findAll();
+        return surgeonService.findAll();
     }
 
     @CrossOrigin
     @RequestMapping(value = "/active", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public List<SurgeonVO> getActiveSurgeons() {
-        return serviceSurgeon.findAllActive();
+        return surgeonService.findAllActive();
     }
 
 
     @CrossOrigin
     @RequestMapping(value = "", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public SurgeonVO addSurgeon(@RequestBody @NotNull @Valid SurgeonVO surgeonVO, BindingResult bindingResult) throws ValidationException {
-        if (bindingResult != null && bindingResult.hasErrors()) throw  new ValidationException("Object is not valid", bindingResult);
-        return serviceSurgeon.create(surgeonVO);
+        if (bindingResult != null && bindingResult.hasErrors())
+            throw new ValidationException("Object is not valid", bindingResult);
+        return surgeonService.create(surgeonVO);
     }
 
     @CrossOrigin
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public SurgeonVO editSurgeon(@PathVariable("id") int surgeonID, @RequestBody @NotNull @Valid SurgeonVO surgeonVO, BindingResult bindingResult) throws ApplicationException, ValidationException {
-        if (bindingResult != null && bindingResult.hasErrors()) throw  new ValidationException("Object is not valid", bindingResult);
-        return serviceSurgeon.update(surgeonID, surgeonVO);
+    public SurgeonVO editSurgeon(@PathVariable("id") int surgeonID, @RequestBody @NotNull @Valid SurgeonVO surgeonVO, BindingResult bindingResult) throws ValidationException {
+        if (bindingResult != null && bindingResult.hasErrors())
+            throw new ValidationException("Object is not valid", bindingResult);
+        return surgeonService.update(surgeonID, surgeonVO);
     }
 
     @CrossOrigin
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public boolean deleteByID(@PathVariable("id") int surgeonID) {
-        return serviceSurgeon.deleteById(surgeonID);
+        return surgeonService.deleteById(surgeonID);
     }
 
     @CrossOrigin
     @RequestMapping(value = "/{id}/deactivate", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public SurgeonVO deactivateByID(@PathVariable("id") int surgeonID) throws ApplicationException {
-        return serviceSurgeon.deactivateByID(surgeonID);
+    public SurgeonVO deactivateByID(@PathVariable("id") int surgeonID) {
+        return surgeonService.deactivateByID(surgeonID);
     }
 
     @CrossOrigin
     @RequestMapping(value = "/{id}/activate", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public SurgeonVO activateByID(@PathVariable("id") int surgeonID) throws ApplicationException {
-        return serviceSurgeon.activateByID(surgeonID);
+    public SurgeonVO activateByID(@PathVariable("id") int surgeonID) {
+        return surgeonService.activateByID(surgeonID);
     }
 }

@@ -8,7 +8,6 @@ import ua.nike.project.hibernate.type.PostgreSQLEnumType;
 
 import javax.persistence.*;
 import javax.validation.constraints.Min;
-import java.io.Serializable;
 import java.time.LocalTime;
 import java.util.Objects;
 
@@ -20,7 +19,10 @@ import java.util.Objects;
 //        @NamedQuery(name = "Visit.findAllByDateWithWards", query = "FROM Visit v WHERE v.visitDate.date = :date AND v.accomodation IS NOT NULL ORDER BY v.accomodation.ward, v.accomodation.wardPlace"),
 //        @NamedQuery(name = "Visit.findAllByDateWithoutWards", query = "FROM Visit v WHERE v.visitDate.date = :date AND v.accomodation IS NULL order by v.orderForCome")
 })
-@Table(name = "visit")
+@Table(name = "visit", uniqueConstraints = {
+        @UniqueConstraint(name = "visit_date_client_operation_type_eye", columnNames = {"visit_date_id", "client_id", "operation_type_id", "eye"}),
+        @UniqueConstraint(name = "visit_date_order", columnNames = {"visit_date_id", "order_for_come"})
+})
 @TypeDef(
         name = "pgsql_enum",
         typeClass = PostgreSQLEnumType.class
@@ -33,6 +35,7 @@ public class Visit implements EntityObject {
     @Id
     @Column(name = "visit_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @Access(AccessType.FIELD) // TODO Work without annotation !
     private Integer visitId;
 
     @ManyToOne(fetch = FetchType.EAGER)

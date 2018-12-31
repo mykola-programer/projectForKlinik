@@ -9,10 +9,8 @@ import org.springframework.transaction.annotation.Transactional;
 import ua.nike.project.hibernate.entity.Visit;
 import ua.nike.project.hibernate.type.ClientStatus;
 import ua.nike.project.spring.dao.DAO;
-import ua.nike.project.spring.exceptions.ApplicationException;
 import ua.nike.project.spring.vo.VisitVO;
 
-import javax.persistence.EntityNotFoundException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,21 +19,21 @@ import java.util.Map;
 
 @Service
 @Scope(BeanDefinition.SCOPE_SINGLETON)
-public class ServiceVisit {
+public class VisitService {
 
     private DAO<Visit> dao;
     @Autowired
-    private ServiceVisitDate serviceVisitDate;
+    private VisitDateService visitDateService;
     @Autowired
-    private ServiceClient serviceClient;
+    private ClientService clientService;
     @Autowired
-    private ServiceOperationType serviceOperationType;
+    private OperationTypeService operationTypeService;
     @Autowired
-    private ServiceSurgeon serviceSurgeon;
+    private SurgeonService surgeonService;
     @Autowired
-    private ServiceManager serviceManager;
+    private ManagerService managerService;
     @Autowired
-    private ServiceAccomodation serviceAccomodation;
+    private AccomodationService accomodationService;
 
     @Autowired
     public void setDao(DAO<Visit> dao) {
@@ -44,7 +42,7 @@ public class ServiceVisit {
     }
 
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-    public VisitVO findByID(int visitID) throws ApplicationException {
+    public VisitVO findByID(int visitID) {
         return convertToVisitVO(dao.findByID(visitID));
     }
 
@@ -77,7 +75,7 @@ public class ServiceVisit {
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public VisitVO update(int visitID, VisitVO visitVO) throws ApplicationException {
+    public VisitVO update(int visitID, VisitVO visitVO) {
         Visit originalEntity = dao.findByID(visitID);
         Visit updatedEntity = copyToVisit(visitVO, originalEntity);
         return convertToVisitVO(dao.update(updatedEntity));
@@ -89,14 +87,14 @@ public class ServiceVisit {
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public VisitVO deactivateByID(int visitID) throws ApplicationException {
+    public VisitVO deactivateByID(int visitID) {
         Visit visit = dao.findByID(visitID);
         visit.setInactive(true);
         return convertToVisitVO(dao.update(visit));
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public VisitVO activateByID(int visitID) throws ApplicationException {
+    public VisitVO activateByID(int visitID) {
         Visit visit = dao.findByID(visitID);
         visit.setInactive(false);
         return convertToVisitVO(dao.update(visit));
@@ -116,78 +114,35 @@ public class ServiceVisit {
         return result;
     }
 
-    private VisitVO convertToVisitVO(Visit visit) {
-        if (visit == null) return null;
 
-        VisitVO result = new VisitVO();
-        result.setVisitId(visit.getVisitId());
-        result.setTimeForCome(visit.getTimeForCome());
-        result.setOrderForCome(visit.getOrderForCome());
-        result.setEye(visit.getEye());
-        result.setStatus(visit.getStatus().convertToCyrillic());
-        result.setNote(visit.getNote());
-        result.setInactive(visit.getInactive());
-
-        if (visit.getVisitDate() != null) {
-            try {
-                result.setVisitDate(serviceVisitDate.findByID(visit.getVisitDate().getVisitDateId()));
-            } catch (ApplicationException | EntityNotFoundException e) {
-                result.setVisitDate(null);
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public List<VisitVO> putVisits(List<VisitVO> visitsVO) {
+        List<VisitVO> result = new ArrayList<>();
+        for (VisitVO visitVO : visitsVO) {
+            if (visitVO != null) {
+                if (visitVO.getVisitId() > 0) {
+                    result.add(update(visitVO.getVisitId(), visitVO));
+                } else {
+                    result.add(create(visitVO));
+                }
             }
-        } else result.setVisitDate(null);
+        }
+        return result;
+    }
 
-        if (visit.getClient() != null) {
-            try {
-                result.setClient(serviceClient.findByID(visit.getClient().getClientId()));
-            } catch (ApplicationException | EntityNotFoundException e) {
-                result.setClient(null);
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public List<VisitVO> displaceVisits(List<VisitVO> visitsVO) {
+        List<VisitVO> result = new ArrayList<>();
+        for (VisitVO visitVO : visitsVO) {
+            if (visitVO != null) {
+                visitVO.setAccomodation(null);
+                if (visitVO.getVisitId() > 0) {
+                    result.add(update(visitVO.getVisitId(), visitVO));
+                } else {
+                    result.add(create(visitVO));
+                }
             }
-        } else result.setClient(null);
-
-        if (visit.getPatient() != null && !visit.getStatus().toString().equals(ClientStatus.PATIENT.toString())) {
-            try {
-                result.setPatient(serviceClient.findByID(visit.getPatient().getClientId()));
-            } catch (ApplicationException | EntityNotFoundException e) {
-                result.setPatient(null);
-            }
-        } else result.setPatient(null);
-
-
-        if (visit.getOperationType() != null) {
-            try {
-                result.setOperationType(serviceOperationType.findByID(visit.getOperationType().getOperationTypeId()));
-            } catch (ApplicationException | EntityNotFoundException e) {
-                result.setOperationType(null);
-            }
-        } else result.setOperationType(null);
-
-
-        if (visit.getSurgeon() != null) {
-            try {
-                result.setSurgeon(serviceSurgeon.findByID(visit.getSurgeon().getSurgeonId()));
-            } catch (ApplicationException | EntityNotFoundException e) {
-                result.setSurgeon(null);
-            }
-        } else result.setSurgeon(null);
-
-
-        if (visit.getManager() != null) {
-            try {
-                result.setManager(serviceManager.findByID(visit.getManager().getManagerId()));
-            } catch (ApplicationException | EntityNotFoundException e) {
-                result.setManager(null);
-            }
-        } else result.setManager(null);
-
-        if (visit.getAccomodation() != null) {
-            try {
-                result.setAccomodation(serviceAccomodation.findByID(visit.getAccomodation().getAccomodationId()));
-            } catch (ApplicationException | EntityNotFoundException e) {
-                result.setAccomodation(null);
-            }
-        } else result.setAccomodation(null);
-
-
+        }
         return result;
     }
 
@@ -202,98 +157,85 @@ public class ServiceVisit {
             result.setInactive(original.getInactive() != null ? original.getInactive() : false);
 
             if (original.getVisitDate() != null && original.getVisitDate().getVisitDateId() > 0) {
-                try {
-                    result.setVisitDate(serviceVisitDate.findEntityByID(original.getVisitDate().getVisitDateId()));
-                } catch (ApplicationException | EntityNotFoundException e) {
-                    result.setVisitDate(null);
-                }
+                result.setVisitDate(visitDateService.findEntityByID(original.getVisitDate().getVisitDateId()));
             } else result.setVisitDate(null);
 
 
             if (original.getPatient() != null && original.getPatient().getClientId() > 0 && !original.getStatus().equals("пацієнт")) {
-                try {
-                    result.setPatient(serviceClient.findEntityByID(original.getPatient().getClientId()));
-                } catch (ApplicationException | EntityNotFoundException e) {
-                    result.setPatient(null);
-                }
+                result.setPatient(clientService.findEntityByID(original.getPatient().getClientId()));
             } else result.setPatient(null);
 
 
             if (original.getClient() != null && original.getClient().getClientId() > 0) {
-                try {
-                    result.setClient(serviceClient.findEntityByID(original.getClient().getClientId()));
-                } catch (ApplicationException | EntityNotFoundException e) {
-                    result.setClient(null);
-                }
+                result.setClient(clientService.findEntityByID(original.getClient().getClientId()));
             } else result.setClient(null);
 
 
             if (original.getOperationType() != null && original.getOperationType().getOperationTypeId() > 0) {
-                try {
-                    result.setOperationType(serviceOperationType.findEntityByID(original.getOperationType().getOperationTypeId()));
-                } catch (ApplicationException | EntityNotFoundException e) {
-                    result.setOperationType(null);
-                }
+                result.setOperationType(operationTypeService.findEntityByID(original.getOperationType().getOperationTypeId()));
             } else result.setOperationType(null);
 
 
             if (original.getSurgeon() != null && original.getSurgeon().getSurgeonId() > 0) {
-                try {
-                    result.setSurgeon(serviceSurgeon.findEntityByID(original.getSurgeon().getSurgeonId()));
-                } catch (ApplicationException | EntityNotFoundException e) {
-                    result.setSurgeon(null);
-                }
+                result.setSurgeon(surgeonService.findEntityByID(original.getSurgeon().getSurgeonId()));
             } else result.setSurgeon(null);
 
 
             if (original.getManager() != null && original.getManager().getManagerId() > 0) {
-                try {
-                    result.setManager(serviceManager.findEntytiByID(original.getManager().getManagerId()));
-                } catch (ApplicationException | EntityNotFoundException e) {
-                    result.setManager(null);
-                }
+                result.setManager(managerService.findEntytiByID(original.getManager().getManagerId()));
             } else result.setManager(null);
 
             if (original.getAccomodation() != null && original.getAccomodation().getAccomodationId() > 0) {
-                try {
-                    result.setAccomodation(serviceAccomodation.findEntityByID(original.getAccomodation().getAccomodationId()));
-                } catch (ApplicationException | EntityNotFoundException e) {
-                    result.setAccomodation(null);
-                }
+                result.setAccomodation(accomodationService.findEntityByID(original.getAccomodation().getAccomodationId()));
             } else result.setAccomodation(null);
         }
         return result;
     }
 
+    private VisitVO convertToVisitVO(Visit visit) {
+        if (visit == null) return null;
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public List<VisitVO> putVisits(List<VisitVO> visitsVO) throws ApplicationException {
-        List<VisitVO> result = new ArrayList<>();
-        for (VisitVO visitVO : visitsVO) {
-            if (visitVO != null) {
-                if (visitVO.getVisitId() > 0) {
-                    result.add(update(visitVO.getVisitId(), visitVO));
-                } else {
-                    result.add(create(visitVO));
-                }
-            }
-        }
-        return result;
-    }
+        VisitVO result = new VisitVO();
+        result.setVisitId(visit.getVisitId());
+        result.setTimeForCome(visit.getTimeForCome());
+        result.setOrderForCome(visit.getOrderForCome());
+        result.setEye(visit.getEye());
+        result.setStatus(visit.getStatus().convertToCyrillic());
+        result.setNote(visit.getNote());
+        result.setInactive(visit.getInactive());
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public List<VisitVO> displaceVisits(List<VisitVO> visitsVO) throws ApplicationException {
-        List<VisitVO> result = new ArrayList<>();
-        for (VisitVO visitVO : visitsVO) {
-            if (visitVO != null) {
-                visitVO.setAccomodation(null);
-                if (visitVO.getVisitId() > 0) {
-                    result.add(update(visitVO.getVisitId(), visitVO));
-                } else {
-                    result.add(create(visitVO));
-                }
-            }
-        }
+        if (visit.getVisitDate() != null) {
+            result.setVisitDate(visitDateService.findByID(visit.getVisitDate().getVisitDateId()));
+        } else result.setVisitDate(null);
+
+        if (visit.getClient() != null) {
+            result.setClient(clientService.findByID(visit.getClient().getClientId()));
+        } else result.setClient(null);
+
+        if (visit.getPatient() != null && visit.getStatus() != null && visit.getStatus().toString().equals(ClientStatus.RELATIVE.toString())) {
+            result.setPatient(clientService.findByID(visit.getPatient().getClientId()));
+        } else result.setPatient(null);
+
+
+        if (visit.getOperationType() != null) {
+            result.setOperationType(operationTypeService.findByID(visit.getOperationType().getOperationTypeId()));
+        } else result.setOperationType(null);
+
+
+        if (visit.getSurgeon() != null) {
+            result.setSurgeon(surgeonService.findByID(visit.getSurgeon().getSurgeonId()));
+        } else result.setSurgeon(null);
+
+
+        if (visit.getManager() != null) {
+            result.setManager(managerService.findByID(visit.getManager().getManagerId()));
+        } else result.setManager(null);
+
+        if (visit.getAccomodation() != null) {
+            result.setAccomodation(accomodationService.findByID(visit.getAccomodation().getAccomodationId()));
+        } else result.setAccomodation(null);
+
+
         return result;
     }
 }

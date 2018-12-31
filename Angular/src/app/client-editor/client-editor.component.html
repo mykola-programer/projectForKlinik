@@ -1,4 +1,6 @@
 <br><br><br>
+<img *ngIf="loading_clients" src="/assets/img/download.gif" style="max-width: 600px; min-width: 600px;"/>
+<div *ngIf="!loading_clients" >
 <div class="left-container" style="max-width: 800px; min-width: 550px; margin-left: 10px">
   <div class="input-group-prepend">
       <span class="input-group-text">Пошук :</span>
@@ -10,11 +12,9 @@
 <div class="left-container" style="max-width: 800px; min-width: 550px; margin-left: 10px">
   <p class="h3 text-center">Клієнти клініки :</p>
 
-  <img *ngIf="loading_clients" src="/assets/img/download.gif" />
-  <div *ngIf="!loading_clients" class="table-responsive-lg">
+  <div class="table-responsive-lg">
     <table class="table table-bordered table-sm table-hover" *ngIf="filteredClients">
       <thead>
-
 
       <tr class="table-info">
         <th scope="col" style="width: 30px;"></th>
@@ -23,7 +23,6 @@
         <th scope="col" style="width: 40px;">Дата народж.</th>
         <th scope="col">Телефон</th>
       </tr>
-
 
       </thead>
       <tbody>
@@ -112,7 +111,7 @@
   <button class="btn btn-danger btn-min-style" (click)="onCancel()">Cancel</button>
 </div>
 
-
+</div>
 <!--
 
 <div>

@@ -20,7 +20,9 @@ import {AccomodationComponent} from "./accomodation/accomodation.component";
 import {NavbarService} from "./service/navbar.service";
 import {OperationEditorComponent} from "./operation-editor/operation-editor.component";
 import { DateSelectorDialogComponent } from "./date/date-selector-dialog/date-selector-dialog.component";
-import { SurgeonEditorComponent } from './surgeon-editor/surgeon-editor.component';
+import { SurgeonEditorComponent } from "./surgeon-editor/surgeon-editor.component";
+import { ToastComponent } from "./alerts/toast/toast.component";
+import {ToastaModule} from "ngx-toasta";
 
 // import {ngContentDef} from "@angular/core/src/view";
 
@@ -37,6 +39,7 @@ import { SurgeonEditorComponent } from './surgeon-editor/surgeon-editor.componen
     OperationEditorComponent,
     DateSelectorDialogComponent,
     SurgeonEditorComponent,
+    ToastComponent,
   ],
   imports: [
     BrowserModule,
@@ -50,8 +53,10 @@ import { SurgeonEditorComponent } from './surgeon-editor/surgeon-editor.componen
     ReactiveFormsModule,
     HttpClientModule,
     HttpClientInMemoryWebApiModule,
-    NgbModule.forRoot()
+    NgbModule.forRoot(),
+    ToastaModule.forRoot()
   ],
+  exports: [BrowserModule, ToastaModule],
   providers: [VisitDateService, NavbarService],
   entryComponents: [
     // ClientEditorComponent,

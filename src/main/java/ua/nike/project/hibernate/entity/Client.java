@@ -6,7 +6,6 @@ import ua.nike.project.hibernate.type.PostgreSQLEnumType;
 import ua.nike.project.hibernate.type.Sex;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
@@ -14,9 +13,12 @@ import java.util.Objects;
 @Entity
 @NamedQueries(value = {
         @NamedQuery(name = "Client.findAll", query = "FROM Client cl ORDER BY surname,firstName,secondName"),
+        @NamedQuery(name = "Client.deleteByIDs", query = "DELETE Client cl WHERE cl.clientId IN (:IDs)")
 })
 
-@Table(name = "client")
+@Table(name = "client", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"surname", "first_name", "second_name", "birthday"})
+})
 @TypeDef(
         name = "pgsql_enum",
         typeClass = PostgreSQLEnumType.class
@@ -29,10 +31,11 @@ public class Client implements Comparable<Client>, EntityObject {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "client_id")
-    @Access(AccessType.PROPERTY) // TODO Play with it // About getReference
+//    @Access(AccessType.FIELD) // TODO Work without annotation !
     private Integer clientId;
 
     @Column(name = "surname", length = 50)
+    //    @Access(AccessType.PROPERTY) // TODO Work without annotation !
     private String surname;
 
     @Column(name = "first_name", length = 50)
@@ -69,26 +72,32 @@ public class Client implements Comparable<Client>, EntityObject {
     }
 
     public Integer getClientId() {
+        System.out.println("getClientId");
         return clientId;
     }
 
     public void setClientId(Integer clientId) {
+        System.out.println("setClientId");
         this.clientId = clientId;
     }
 
     public String getSurname() {
+        System.out.println("getSurname");
         return surname;
     }
 
     public void setSurname(String surname) {
+        System.out.println("setSurname");
         this.surname = firstUpperCase(surname);
     }
 
     public String getFirstName() {
+        System.out.println("getFirstName");
         return firstName;
     }
 
     public void setFirstName(String firstName) {
+        System.out.println("setFirstName");
         this.firstName = firstUpperCase(firstName);
     }
 

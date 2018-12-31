@@ -8,8 +8,6 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import ua.nike.project.hibernate.entity.VisitDate;
 import ua.nike.project.spring.dao.DAO;
-import ua.nike.project.spring.exceptions.ApplicationException;
-import ua.nike.project.spring.vo.ClientVO;
 import ua.nike.project.spring.vo.VisitDateVO;
 
 import java.util.ArrayList;
@@ -17,7 +15,7 @@ import java.util.List;
 
 @Service
 @Scope(BeanDefinition.SCOPE_SINGLETON)
-public class ServiceVisitDate {
+public class VisitDateService {
 
     private DAO<VisitDate> dao;
 
@@ -28,18 +26,18 @@ public class ServiceVisitDate {
     }
 
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-    public VisitDateVO findByID(int visitDateID) throws ApplicationException {
+    public VisitDateVO findByID(int visitDateID) {
         return convertToVisitDateVO(dao.findByID(visitDateID));
     }
 
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-    public VisitDate findEntityByID(int entityID) throws ApplicationException {
+    public VisitDate findEntityByID(int entityID) {
         return dao.findByID(entityID);
     }
 
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<VisitDateVO> findAll() {
-        List<VisitDate> entities = dao.findAll("VisitDate.findAll",null);
+        List<VisitDate> entities = dao.findAll("VisitDate.findAll", null);
         if (entities == null) return null;
         List<VisitDateVO> result = new ArrayList<>();
         for (VisitDate entity : entities) {
@@ -50,7 +48,7 @@ public class ServiceVisitDate {
 
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<VisitDateVO> findAllActive() {
-        List<VisitDate> entities = dao.findAll("VisitDate.findAllActive",null);
+        List<VisitDate> entities = dao.findAll("VisitDate.findAllActive", null);
         if (entities == null) return null;
         List<VisitDateVO> result = new ArrayList<>();
         for (VisitDate entity : entities) {
@@ -66,14 +64,14 @@ public class ServiceVisitDate {
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public VisitDateVO update(int visitDateID, VisitDateVO visitDateVO) throws ApplicationException {
+    public VisitDateVO update(int visitDateID, VisitDateVO visitDateVO) {
         VisitDate originalEntity = dao.findByID(visitDateID);
         VisitDate updatedEntity = copyToVisitDate(visitDateVO, originalEntity);
         return convertToVisitDateVO(dao.update(updatedEntity));
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public List<VisitDateVO> putVisitDates(List<VisitDateVO> visitDateVOS) throws ApplicationException {
+    public List<VisitDateVO> putVisitDates(List<VisitDateVO> visitDateVOS) {
         List<VisitDateVO> result = new ArrayList<>();
         for (VisitDateVO visitDateVO : visitDateVOS) {
             if (visitDateVO != null) {
@@ -94,19 +92,19 @@ public class ServiceVisitDate {
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public boolean deleteByIDs(List<Integer> visitDateIDs) {
-        return dao.remove("DELETE VisitDate vd WHERE vd.visitDateId IN (:IDs)", visitDateIDs);
+        return dao.remove("VisitDate.deleteByIDs", visitDateIDs);
 
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public VisitDateVO deactivateByID(int visitDateID) throws ApplicationException {
+    public VisitDateVO deactivateByID(int visitDateID) {
         VisitDate visitDate = dao.findByID(visitDateID);
         visitDate.setInactive(true);
         return convertToVisitDateVO(dao.update(visitDate));
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public VisitDateVO activateByID(int visitDateID) throws ApplicationException {
+    public VisitDateVO activateByID(int visitDateID) {
         VisitDate visitDate = dao.findByID(visitDateID);
         visitDate.setInactive(false);
         return convertToVisitDateVO(dao.update(visitDate));

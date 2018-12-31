@@ -6,7 +6,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ua.nike.project.spring.exceptions.ApplicationException;
 import ua.nike.project.spring.exceptions.ValidationException;
-import ua.nike.project.spring.service.ServiceVisit;
+import ua.nike.project.spring.service.VisitService;
 import ua.nike.project.spring.vo.MyObjectVOList;
 import ua.nike.project.spring.vo.VisitVO;
 
@@ -19,27 +19,27 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/visits")
-public class ControllerVisitREST {
+public class VisitRESTController {
 
     @Autowired
-    private ServiceVisit serviceVisit;
+    private VisitService visitService;
 
     @CrossOrigin
     @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public VisitVO getVisit(@PathVariable("id") int visitID) throws ApplicationException {
-        return serviceVisit.findByID(visitID);
+    public VisitVO getVisit(@PathVariable("id") int visitID) {
+        return visitService.findByID(visitID);
     }
 
     @CrossOrigin
     @RequestMapping(value = "", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public List<VisitVO> getVisits() {
-        return serviceVisit.findAll();
+        return visitService.findAll();
     }
 
     @CrossOrigin
     @RequestMapping(value = "/active", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public List<VisitVO> getActiveVisits() {
-        return serviceVisit.findAllActive();
+        return visitService.findAllActive();
     }
 
     @CrossOrigin
@@ -47,63 +47,63 @@ public class ControllerVisitREST {
     public VisitVO addVisit(@RequestBody @NotNull @Valid VisitVO visitVO, BindingResult bindingResult) throws ValidationException {
         if (bindingResult != null && bindingResult.hasErrors())
             throw new ValidationException("Object is not valid", bindingResult);
-        return serviceVisit.create(visitVO);
+        return visitService.create(visitVO);
     }
 
     @CrossOrigin
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public VisitVO editVisit(@PathVariable("id") int visitID, @RequestBody @NotNull @Valid VisitVO visitVO, BindingResult bindingResult) throws ApplicationException, ValidationException {
+    public VisitVO editVisit(@PathVariable("id") int visitID, @RequestBody @NotNull @Valid VisitVO visitVO, BindingResult bindingResult) throws ValidationException {
         if (bindingResult != null && bindingResult.hasErrors())
             throw new ValidationException("Object is not valid", bindingResult);
-        return serviceVisit.update(visitID, visitVO);
+        return visitService.update(visitID, visitVO);
     }
 
     @CrossOrigin
     @RequestMapping(value = "/list", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public List<VisitVO> putVisits(@RequestBody @NotNull @Valid MyObjectVOList<VisitVO> visitsVO, BindingResult bindingResult) throws ApplicationException, ValidationException {
+    public List<VisitVO> putVisits(@RequestBody @NotNull @Valid MyObjectVOList<VisitVO> visitsVO, BindingResult bindingResult) throws ValidationException {
         if (bindingResult != null && bindingResult.hasErrors())
             throw new ValidationException("Object is not valid", bindingResult);
-        return serviceVisit.putVisits(visitsVO.getObjects());
+        return visitService.putVisits(visitsVO.getObjects());
     }
 
     @CrossOrigin
     @RequestMapping(value = "/list/displace", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public List<VisitVO> displaceVisits(@RequestBody @NotNull @Valid MyObjectVOList<VisitVO> visitsVO, BindingResult bindingResult) throws ApplicationException, ValidationException {
+    public List<VisitVO> displaceVisits(@RequestBody @NotNull @Valid MyObjectVOList<VisitVO> visitsVO, BindingResult bindingResult) throws ValidationException {
         if (bindingResult != null && bindingResult.hasErrors())
             throw new ValidationException("Object is not valid", bindingResult);
-        return serviceVisit.displaceVisits(visitsVO.getObjects());
+        return visitService.displaceVisits(visitsVO.getObjects());
     }
 
     @CrossOrigin
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public boolean deleteByID(@PathVariable("id") int visitID) {
-        return serviceVisit.deleteById(visitID);
+        return visitService.deleteById(visitID);
     }
 
 
     @CrossOrigin
     @RequestMapping(value = "/{id}/deactivate", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public VisitVO deactivateByID(@PathVariable("id") int visitID) throws ApplicationException {
-        return serviceVisit.deactivateByID(visitID);
+    public VisitVO deactivateByID(@PathVariable("id") int visitID) {
+        return visitService.deactivateByID(visitID);
     }
 
     @CrossOrigin
     @RequestMapping(value = "/{id}/activate", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public VisitVO activateByID(@PathVariable("id") int visitID) throws ApplicationException {
-        return serviceVisit.activateByID(visitID);
+    public VisitVO activateByID(@PathVariable("id") int visitID) {
+        return visitService.activateByID(visitID);
     }
 
 
     @CrossOrigin
     @RequestMapping(value = "/all/{date}/", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public List<VisitVO> getVisitsByDate(@PathVariable("date") String reqDate) throws ApplicationException {
-        return serviceVisit.getVisitsByDate(convertToDate(reqDate));
+        return visitService.getVisitsByDate(convertToDate(reqDate));
     }
 
     @CrossOrigin
     @RequestMapping(value = "/all_wards/{date}/", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public List<VisitVO> getVisitsByDateWithWards(@PathVariable("date") String reqDate) throws ApplicationException {
-        return serviceVisit.getVisitsByDate(convertToDate(reqDate))
+        return visitService.getVisitsByDate(convertToDate(reqDate))
                 .stream()
                 .filter((VisitVO visitVO) -> visitVO.getAccomodation() != null)
                 .collect(Collectors.toList());
@@ -112,7 +112,7 @@ public class ControllerVisitREST {
     @CrossOrigin
     @RequestMapping(value = "/no_wards/{date}/", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public List<VisitVO> getVisitsByDateWithoutWard(@PathVariable("date") String reqDate) throws ApplicationException {
-        return serviceVisit.getVisitsByDate(convertToDate(reqDate))
+        return visitService.getVisitsByDate(convertToDate(reqDate))
                 .stream()
                 .filter((VisitVO visitVO) -> visitVO.getAccomodation() == null)
                 .collect(Collectors.toList());
@@ -124,9 +124,10 @@ public class ControllerVisitREST {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_FORMAT);
             return LocalDate.parse(reqDate, formatter);
         } else {
-            throw new ApplicationException("Dates is not correct !");
+            throw new ApplicationException("incorrect.date");
         }
     }
+}
 
 
 
@@ -189,4 +190,4 @@ public class ControllerVisitREST {
         return visitDAO.saveVisits(visitsVO);
     }*/
 
-}
+

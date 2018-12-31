@@ -266,45 +266,45 @@ export class WardComponent implements OnInit {
     });
   }
 
-  onUnplaced() {
-    this.placesOfWards.forEach((value: Visit, i: number) => {
-      if (value.isChanged === true) {
-        if (value.visitId > 0 && value.client !== null && value.status === "пацієнт") {
-          this.visitService.doUnplaced(this.placesOfWards[i]).toPromise().then(() => {
-            const visit: Visit = new Visit();
-            visit.accomodation = this.placesOfWards[i].accomodation;
-            visit.visitDate = this.placesOfWards[i].visitDate;
-            this.placesOfWards.splice(i, 1, visit);
-          });
-
-        } else if (value.visitId === 0 && value.client !== null && value.status === "пацієнт") {
-          this.visitService.addVisit(this.placesOfWards[i]).toPromise().then((visit: Visit) => {
-            this.visitService.doUnplaced(visit).toPromise().then(() => {
-              const visit: Visit = new Visit();
-              visit.accomodation = this.placesOfWards[i].accomodation;
-              visit.visitDate = this.placesOfWards[i].visitDate;
-              this.placesOfWards.splice(i, 1, visit);
-            });
-          });
-
-        } else if (value.visitId > 0 && value.status !== "пацієнт") {
-          this.visitService.removeVisit(this.placesOfWards[i].visitId).toPromise().then(() => {
-            const visit: Visit = new Visit();
-            visit.accomodation = this.placesOfWards[i].accomodation;
-            visit.visitDate = this.placesOfWards[i].visitDate;
-            this.placesOfWards.splice(i, 1, visit);
-          });
-
-        } else {
-          const visit: Visit = new Visit();
-          visit.accomodation = this.placesOfWards[i].accomodation;
-          visit.visitDate = this.placesOfWards[i].visitDate;
-          this.placesOfWards.splice(i, 1, visit);
-
-        }
-      }
-    });
-  }
+  // onUnplaced() {
+  //   this.placesOfWards.forEach((value: Visit, i: number) => {
+  //     if (value.isChanged === true) {
+  //       if (value.visitId > 0 && value.client !== null && value.status === "пацієнт") {
+  //         this.visitService.doUnplaced(this.placesOfWards[i]).toPromise().then(() => {
+  //           const visit: Visit = new Visit();
+  //           visit.accomodation = this.placesOfWards[i].accomodation;
+  //           visit.visitDate = this.placesOfWards[i].visitDate;
+  //           this.placesOfWards.splice(i, 1, visit);
+  //         });
+  //
+  //       } else if (value.visitId === 0 && value.client !== null && value.status === "пацієнт") {
+  //         this.visitService.addVisit(this.placesOfWards[i]).toPromise().then((visit: Visit) => {
+  //           this.visitService.doUnplaced(visit).toPromise().then(() => {
+  //             const visit: Visit = new Visit();
+  //             visit.accomodation = this.placesOfWards[i].accomodation;
+  //             visit.visitDate = this.placesOfWards[i].visitDate;
+  //             this.placesOfWards.splice(i, 1, visit);
+  //           });
+  //         });
+  //
+  //       } else if (value.visitId > 0 && value.status !== "пацієнт") {
+  //         this.visitService.removeVisit(this.placesOfWards[i].visitId).toPromise().then(() => {
+  //           const visit: Visit = new Visit();
+  //           visit.accomodation = this.placesOfWards[i].accomodation;
+  //           visit.visitDate = this.placesOfWards[i].visitDate;
+  //           this.placesOfWards.splice(i, 1, visit);
+  //         });
+  //
+  //       } else {
+  //         const visit: Visit = new Visit();
+  //         visit.accomodation = this.placesOfWards[i].accomodation;
+  //         visit.visitDate = this.placesOfWards[i].visitDate;
+  //         this.placesOfWards.splice(i, 1, visit);
+  //
+  //       }
+  //     }
+  //   });
+  // }
 
   moveToAnotherDatePlace() {
     for (let i = 0; i < 5; i++) {

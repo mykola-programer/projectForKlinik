@@ -26,3 +26,8 @@ select {
   border: none;
   background-color: rgba(0,0,0,0);
 }
+.center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
