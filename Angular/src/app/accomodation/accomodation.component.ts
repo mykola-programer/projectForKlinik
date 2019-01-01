@@ -17,7 +17,7 @@ import {MatDialog} from "@angular/material";
 import {Accomodation} from "../backend_types/accomodation";
 import {DateSelectorDialogComponent} from "../date/date-selector-dialog/date-selector-dialog.component";
 import {HttpErrorResponse} from "@angular/common/http";
-import {ToastaConfig, ToastaService, ToastData, ToastOptions} from "ngx-toasta";
+import {ToastMessageService} from "../service/toast-message.service";
 
 @Component({
   selector: "app-accomodation",
@@ -47,19 +47,6 @@ export class AccomodationComponent implements OnInit {
   loading_displace = false;
   loading_save = false;
 
-  toastOptions: ToastOptions = {
-    title: "",
-    msg: "",
-    showClose: false,
-    timeout: 1000,
-    theme: "bootstrap",
-    onAdd: (toast: ToastData) => {
-    },
-    onRemove: function (toast: ToastData) {
-    }
-  };
-
-
   constructor(
     private serviceNavbar: NavbarService,
     private dateService: DateService,
@@ -69,8 +56,7 @@ export class AccomodationComponent implements OnInit {
     private managerService: ManagerService,
     private operationTypeService: OperationTypeService,
     private accomodationService: AccomodationService,
-    private toastaService: ToastaService,
-    private toastaConfig: ToastaConfig,
+    private toastMessageService: ToastMessageService,
     private dialog: MatDialog
   ) {
     this.serviceNavbar.change("accomodation");
@@ -98,15 +84,9 @@ export class AccomodationComponent implements OnInit {
             this.visits_of_date = visits_of_date;
           },
           (err: HttpErrorResponse) => {
-            alert();
             this.loading_visits = false;
             this.loading_calender = true;
-            {
-              this.toastOptions.title = "Помилка !";
-              this.toastOptions.msg = err.error;
-              this.toastOptions.timeout = 6000;
-              this.toastaService.error(this.toastOptions);
-            }
+            this.toastMessageService.inform("Помилка !", err.error, "error");
           },
           () => {
             this.getVisitsWithoutWards();
@@ -381,12 +361,7 @@ export class AccomodationComponent implements OnInit {
       this.getVisitsWithoutWards();
     }
     document.getElementById("table_no_ward").scrollIntoView();
-    {
-      this.toastOptions.title = "Додано!";
-      this.toastOptions.msg = "Візит додано до таблиці ''Безстаціонарні пацієнти''";
-      this.toastOptions.timeout = 3000;
-      this.toastaService.success(this.toastOptions);
-    }
+    this.toastMessageService.inform("Додано!", "Візит додано до таблиці ''Безстаціонарні клієнти''", "success");
   }
 
   onSave() {
@@ -399,31 +374,16 @@ export class AccomodationComponent implements OnInit {
       this.visitService.putVisits(changedVisits).toPromise().then((visits: Visit[]) => {
         this.loading_save = false;
         this.onRefresh();
-        {
-          this.toastOptions.title = "Збережено !";
-          this.toastOptions.msg = "Візити успішно збережено !";
-          this.toastOptions.timeout = 3000;
-          this.toastaService.success(this.toastOptions);
-        }
+        this.toastMessageService.inform("Збережено !", "Візити успішно збережено !", "success");
       }).catch((err: HttpErrorResponse) => {
         this.loading_save = false;
         if (err.status === 422) {
         }
-        {
-          this.toastOptions.title = "Помилка при збережені!";
-          this.toastOptions.msg = err.error;
-          this.toastOptions.timeout = 5000;
-          this.toastaService.error(this.toastOptions);
-        }
+        this.toastMessageService.inform("Помилка при збережені!", err.error, "error");
       });
     } else {
       this.loading_save = false;
-      {
-        this.toastOptions.title = "Виберіть хоча б один запис!";
-        this.toastOptions.msg = "";
-        this.toastOptions.timeout = 3000;
-        this.toastaService.info(this.toastOptions);
-      }
+      this.toastMessageService.inform("Виберіть хоча б один запис!", "", "info");
     }
   }
 
@@ -470,31 +430,16 @@ export class AccomodationComponent implements OnInit {
       this.visitService.displaceVisits(changedVisits).toPromise().then((visits: Visit[]) => {
         this.loading_displace = false;
         this.onRefresh();
-        {
-          this.toastOptions.title = "Клієнти успішно виселені !";
-          this.toastOptions.msg = "";
-          this.toastOptions.timeout = 3000;
-          this.toastaService.success(this.toastOptions);
-        }
+        this.toastMessageService.inform("Виконано !", "Клієнти успішно виселені !", "success");
       }).catch((err: HttpErrorResponse) => {
         this.loading_displace = false;
         if (err.status === 422) {
         }
-        {
-          this.toastOptions.title = "Помилка при збережені!";
-          this.toastOptions.msg = err.error;
-          this.toastOptions.timeout = 5000;
-          this.toastaService.error(this.toastOptions);
-        }
+        this.toastMessageService.inform("Помилка при збережені!", err.error, "error");
       });
     } else {
       this.loading_displace = false;
-      {
-        this.toastOptions.title = "Виберіть хоча б один запис!";
-        this.toastOptions.msg = "";
-        this.toastOptions.timeout = 3000;
-        this.toastaService.info(this.toastOptions);
-      }
+      this.toastMessageService.inform("Виберіть хоча б один запис!", "", "info");
     }
   }
 
@@ -525,12 +470,7 @@ export class AccomodationComponent implements OnInit {
     });
     dialogRef.afterClosed().subscribe((data: { visit: Visit }) => {
       this.onRefresh();
-      {
-        this.toastOptions.title = "Кліент успішно перенесений!";
-        this.toastOptions.msg = "";
-        this.toastOptions.timeout = 3000;
-        this.toastaService.success(this.toastOptions);
-      }
+      this.toastMessageService.inform("Перенесено !", "Візит успішно перенесений!", "success");
     });
   }
 

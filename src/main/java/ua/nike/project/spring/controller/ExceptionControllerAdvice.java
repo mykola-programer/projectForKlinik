@@ -23,12 +23,18 @@ import java.sql.SQLException;
 @PropertySource({"classpath:validation/ua.properties"})
 public class ExceptionControllerAdvice extends ResponseEntityExceptionHandler {
 
+    /*
+     nl - new line
+     Use "<br>" for html-string;
+     Use "\n" for text-string;
+     */
+    private final String nl = "<br>";
     @Autowired
     private Environment env;
 
     @ExceptionHandler(ApplicationException.class)
     protected ResponseEntity<Object> handleConflictException(ApplicationException ex, WebRequest request) {
-        StringBuilder bodyOfResponse = new StringBuilder().append(getValue(ex.getErrUserMsgs())).append("\n").append(getValue(ex.getErrExceptMsg()));
+        StringBuilder bodyOfResponse = new StringBuilder().append(getValue(ex.getErrUserMsgs())).append(nl).append(getValue(ex.getErrExceptMsg()));
         return handleExceptionInternal(ex, bodyOfResponse, new HttpHeaders(), HttpStatus.UNPROCESSABLE_ENTITY, request);
     }
 
@@ -44,12 +50,12 @@ public class ExceptionControllerAdvice extends ResponseEntityExceptionHandler {
         StringBuilder bodyOfResponse = new StringBuilder();
         HttpStatus httpStatus = HttpStatus.UNPROCESSABLE_ENTITY;
         for (Throwable runtimeException = ex; runtimeException != null; ) {
-                bodyOfResponse.append("RuntimeException : ").append(runtimeException.getClass().getSimpleName()).append(" => ").append(runtimeException.getLocalizedMessage()).append("\n");
+//            bodyOfResponse.append("RuntimeException : ").append(runtimeException.getClass().getSimpleName()).append(" => ").append(runtimeException.getLocalizedMessage()).append(nl);
             if (runtimeException instanceof EntityNotFoundException) {
-                bodyOfResponse.append(getValue("object.not.find")).append("\n");
+                bodyOfResponse.append(getValue("object.not.find")).append(nl);
                 httpStatus = HttpStatus.UNPROCESSABLE_ENTITY;
             } else if (runtimeException instanceof SQLException) {
-                bodyOfResponse.append(getValue("violation.of.integrity")).append("\n");
+                bodyOfResponse.append(getValue("violation.of.integrity")).append(nl);
                 httpStatus = HttpStatus.BAD_REQUEST;
             }
             runtimeException = runtimeException.getCause();
@@ -62,10 +68,10 @@ public class ExceptionControllerAdvice extends ResponseEntityExceptionHandler {
         if (bindingResult == null) return null;
         final StringBuilder result = new StringBuilder();
         result.append(getValue("violation.mistake"))
-                .append(" \n");
+                .append(nl);
 //        result.append(getValue("mistakes.count")).append(" ")
 //                .append(bindingResult.getErrorCount())
-//                .append(": \n");
+//                .append(": " + nl);
         int i = 1;
         for (FieldError error : bindingResult.getFieldErrors()) {
             result.append(i + ". ")
@@ -75,7 +81,7 @@ public class ExceptionControllerAdvice extends ResponseEntityExceptionHandler {
                     .append(" [")
                     .append(bindingResult.getFieldValue(error.getField()))
                     .append("])")
-                    .append(" \n");
+                    .append(nl);
             i++;
         }
         result.append(getValue("please.validate"));

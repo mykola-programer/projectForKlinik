@@ -6,6 +6,7 @@ import {VisitDate} from "../../backend_types/visit-date";
 import {NavbarService} from "../../service/navbar.service";
 import {NgbDate} from "@ng-bootstrap/ng-bootstrap/datepicker/ngb-date";
 import {HttpErrorResponse} from "@angular/common/http";
+import {ToastMessageService} from "../../service/toast-message.service";
 
 const I18N_VALUES = {
   "ua": {
@@ -69,7 +70,9 @@ export class DateEditorComponent implements OnInit {
               private config: NgbDatepickerConfig,
               private calendar: NgbCalendar,
               private dateService: VisitDateService,
-              private serviceNavbar: NavbarService) {
+              private serviceNavbar: NavbarService,
+              private toastMessageService: ToastMessageService,
+  ) {
 
     this.config.outsideDays = "hidden";
     this.config.displayMonths = 2;
@@ -122,18 +125,21 @@ export class DateEditorComponent implements OnInit {
       }
     });
 
-    this.dateService.addVisitDates(visitDates).toPromise().then(() => {
-      alert("Дати успішно збережені !");
-      this.getDates();
+    if (visitDates.length) {
+      this.dateService.addVisitDates(visitDates).toPromise().then(() => {
+        this.toastMessageService.inform("Збережено !", "Дати успішно збережені !", "success");
+        this.getDates();
+        this.loading_save = false;
+      }).catch((err: HttpErrorResponse) => {
+        this.loading_save = false;
+        if (err.status === 422) {
+        }
+        this.toastMessageService.inform("Помилка при збережені!", err.error, "error");
+      });
+    } else {
       this.loading_save = false;
-    }).catch((err: HttpErrorResponse) => {
-      this.loading_save = false;
-      if (err.status === 422) {
-        alert(err.error);
-      } else {
-        alert(err.error);
-      }
-    });
+      this.toastMessageService.inform("Виберіть хоча б один запис!", "", "info");
+    }
   }
 
   onRefresh() {
@@ -152,24 +158,23 @@ export class DateEditorComponent implements OnInit {
     if (ids.length) {
       this.dateService.removeVisitDates(ids).toPromise().then((success: boolean) => {
         if (success) {
-          alert("Дати успішно видалені!");
+          this.toastMessageService.inform("Видалено !", "Дати успішно видалені !", "success");
           this.getDates();
           this.loading_del = false;
         }
       }).catch((err: HttpErrorResponse) => {
         this.loading_del = false;
         if (err.status === 400) {
-          alert("Видалення неможливе !" + "\n" + err.error);
-        } else {
-          alert(err.error);
         }
+        this.toastMessageService.inform("Помилка при видалені!", err.error, "error");
       });
     } else if (this.selectedDates.length) {
+      this.toastMessageService.inform("Ці дати не існували в базі даних!", "", "info");
       this.loading_del = false;
       this.getDates();
     } else {
       this.getDates();
-      alert("Виберіть хоча б один запис!");
+      this.toastMessageService.inform("Виберіть хоча б один запис!", "", "info");
     }
   }
 
@@ -213,5 +218,6 @@ export class DateEditorComponent implements OnInit {
       this.loading_dates = false;
     });
   }
+
 
 }

@@ -4,6 +4,7 @@ import {ClientService} from "../service/client.service";
 import {Router} from "@angular/router";
 import {NavbarService} from "../service/navbar.service";
 import {HttpErrorResponse} from "@angular/common/http";
+import {ToastMessageService} from "../service/toast-message.service";
 
 @Component({
   selector: "app-client-editor",
@@ -24,12 +25,17 @@ export class ClientEditorComponent implements OnInit {
   // "-1" - DESC
   private sorting_order = 1;
 
-  constructor(private router: Router, private clientService: ClientService, private serviceNavbar: NavbarService) {
+  constructor(
+    private router: Router,
+    private clientService: ClientService,
+    private navbarService: NavbarService,
+    private toastMessageService: ToastMessageService,
+  ) {
   }
 
   ngOnInit(): void {
     this.getClients();
-    this.serviceNavbar.change("client");
+    this.navbarService.change("client");
   }
 
   getClients() {
@@ -54,7 +60,9 @@ export class ClientEditorComponent implements OnInit {
       client.surname = surnameElement.value;
     } else {
       client.isChanged = false;
-      alert("Введіть корректне Прізвище! \n\n 1. Не пусте поле. \n 2. Тільки букви. \n 3. Мін. - 3 , Макс. - 50");
+      this.toastMessageService.inform("Помилка !",
+        "Введіть корректне Прізвище! <br> 1. Не пусте поле. <br> 2. Тільки букви. <br> 3. Макс. - 50",
+        "info");
     }
   }
 
@@ -64,7 +72,9 @@ export class ClientEditorComponent implements OnInit {
       client.firstName = firstNameElement.value;
     } else {
       client.isChanged = false;
-      alert("Введіть корректне Ім'я! \n\n 1. Не пусте поле. \n 2. Тільки букви. \n 3. Мін. - 3 , Макс. - 50");
+      this.toastMessageService.inform("Помилка !",
+        "Введіть корректне Ім'я! <br> 1. Не пусте поле. <br> 2. Тільки букви. <br> 3. Макс. - 50",
+        "info");
     }
   }
 
@@ -74,17 +84,15 @@ export class ClientEditorComponent implements OnInit {
       client.secondName = secondNameElement.value;
     } else {
       client.isChanged = false;
-      alert("Введіть корректне по-Батькові! \n\n 1. Не пусте поле. \n 2. Тільки букви. \n 3. Мін. - 3 , Макс. - 50");
+      this.toastMessageService.inform("Помилка !",
+        "Введіть корректне по-Батькові! <br> 1. Не пусте поле. <br> 2. Тільки букви. <br> 3. Макс. - 50",
+        "info");
     }
   }
 
   changeSex(client: Client, sexElement: HTMLInputElement) {
-    if (sexElement.checkValidity() && (sexElement.value === "Ч" || sexElement.value === "Ж")) {
-      client.isChanged = true;
-      client.sex = sexElement.value;
-    } else {
-      // alert("Виберіть корректну стать!");
-    }
+    client.isChanged = true;
+    client.sex = sexElement.value;
   }
 
   changeBirthday(client: Client, birthdayElement: HTMLInputElement) {
@@ -114,7 +122,9 @@ export class ClientEditorComponent implements OnInit {
       client.telephone = telephoneElement.value;
     } else {
       client.isChanged = false;
-      alert("Введіть корректний телефон! \n\n Мін. - 10, Макс. - 19 \n\n Формати :\n 099 888 88 88 \n (099)888-88-88 \n +38 099 888 88 88");
+      this.toastMessageService.inform("Помилка !",
+        "Введіть корректний телефон! <br> Мін. - 10, Макс. - 19 <br>  Формати :<br> 099 888 88 88 <br> (099)888-88-88 <br> +38 099 888 88 88",
+        "info");
     }
   }
 
@@ -174,21 +184,20 @@ export class ClientEditorComponent implements OnInit {
     });
     if (edit_clients.length) {
       this.clientService.putClients(edit_clients).toPromise().then(() => {
-        alert("Кліенти успішно збережені !");
+        this.toastMessageService.inform("Збережено !", "Кліенти успішно збережені !", "success");
         this.getClients();
         this.loading_save = false;
       }).catch((err: HttpErrorResponse) => {
           this.loading_save = false;
           if (err.status === 422) {
-            alert(err.error);
-          } else {
-            alert(err.error);
           }
+          this.toastMessageService.inform("Помилка при збережені!", err.error, "error");
+
         }
       );
     } else {
       this.loading_save = false;
-      alert("Виберіть хоча б один запис!");
+      this.toastMessageService.inform("Виберіть хоча б один запис!", "", "info");
     }
   }
 
@@ -203,21 +212,20 @@ export class ClientEditorComponent implements OnInit {
     if (clients_ids_for_delete.length) {
       this.clientService.deleteClients(clients_ids_for_delete).toPromise().then((success: boolean) => {
         if (success) {
-          alert("Кліенти успішно видалені!");
+          this.toastMessageService.inform("Видалено !", "Кліенти успішно видалені !", "success");
           this.getClients();
           this.loading_del = false;
         }
       }).catch((err: HttpErrorResponse) => {
         this.loading_del = false;
         if (err.status === 400) {
-          alert("Видалення неможливе !" + "\n" + err.error);
-        } else {
-          alert(err.error);
         }
+        this.toastMessageService.inform("Помилка при видалені!", err.error, "error");
+
       });
     } else {
       this.loading_del = false;
-      alert("Виберіть хоча б один запис!");
+      this.toastMessageService.inform("Виберіть хоча б один запис!", "", "info");
     }
   }
 
@@ -249,94 +257,3 @@ export class ClientEditorComponent implements OnInit {
 
 
 }
-
-
-/*
-  private copyClient(original: Client, result: Client) {
-    result.clientId = original.clientId;
-    result.surname = original.surname;
-    result.firstName = original.firstName;
-    result.secondName = original.secondName;
-    result.birthday = original.birthday;
-    result.sex = original.sex;
-    result.telephone = original.telephone;
-    result.isChanged = original.isChanged;
-  }
-
-onDelete() {
-  const clients_for_lock: Client[] = this.filteredClients.filter((client: Client) => {
-    return client.isChanged && client.clientId !== 0;
-  });
-  clients_for_lock.forEach((client: Client) => {
-    this.clientService.deleteClient(client.clientId).toPromise().then((success: boolean) => {
-      if (success) {
-        alert("Клієнт : " + client.surname + " " + client.firstName + " "
-          + client.secondName + " успішно виделений!");
-        this.filteredClients.splice(this.filteredClients.indexOf(client, 0), 1);
-      } else {
-        alert(client.surname + " " + client.firstName + " "
-          + client.secondName + "\n\n" + "Неможливо видалити! \n У клієнта є активні візити.");
-      }
-    }).catch((err: HttpErrorResponse) => {
-
-      const div = document.createElement("div");
-      div.innerHTML = err.error.text;
-      const text = div.textContent || div.innerText || "";
-
-      alert(text);
-    });
-  });
-}*/
-
-// onSave() {
-//   let isSuccess = true;
-//   const new_clients: Client[] = this.filteredClients.filter((client: Client) => {
-//     return client.isChanged && client.clientId === 0;
-//   });
-//   if (new_clients.length > 0) {
-//     new_clients.forEach((client: Client) => {
-//       this.clientService.addClient(client).toPromise().then((returned_client: Client) => {
-//         this.copyClient(returned_client, client);
-//         client.isChanged = false;
-//         alert("Клієнт : " + returned_client.surname + " " + returned_client.firstName + " "
-//           + returned_client.secondName + " успішно збережений!");
-//
-//       }).catch((err: HttpErrorResponse) => {
-//
-//         console.log(err);
-//         alert(err);
-//
-//         const div = document.createElement("div");
-//         div.innerHTML = err.error.text;
-//         const text = div.textContent || div.innerText || "";
-//
-//         alert(text);
-//         isSuccess = false;
-//       });
-//     });
-//   }
-//
-//   const edit_clients: Client[] = this.filteredClients.filter((client: Client) => {
-//     return client.isChanged && client.clientId !== 0;
-//   });
-//   edit_clients.forEach((client: Client) => {
-//     this.clientService.editClient(client).toPromise().then((returned_client: Client) => {
-//       this.copyClient(returned_client, client);
-//       client.isChanged = false;
-//       alert("Клієнт : " + returned_client.surname + " " + returned_client.firstName + " "
-//         + returned_client.secondName + " успішно оновлений!");
-//     }).catch((err: HttpErrorResponse) => {
-//
-//       const div = document.createElement("div");
-//       div.innerHTML = err.error.text;
-//       const text = div.textContent || div.innerText || "";
-//
-//       alert(text);
-//       isSuccess = false;
-//     });
-//   });
-//   if (isSuccess) {
-//     this.sortClients(this.filteredClients);
-//     // alert("All record was save !");
-//   }
-// }

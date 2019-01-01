@@ -21,7 +21,6 @@ import {NavbarService} from "./service/navbar.service";
 import {OperationEditorComponent} from "./operation-editor/operation-editor.component";
 import { DateSelectorDialogComponent } from "./date/date-selector-dialog/date-selector-dialog.component";
 import { SurgeonEditorComponent } from "./surgeon-editor/surgeon-editor.component";
-import { ToastComponent } from "./alerts/toast/toast.component";
 import {ToastaModule} from "ngx-toasta";
 
 // import {ngContentDef} from "@angular/core/src/view";
@@ -39,7 +38,6 @@ import {ToastaModule} from "ngx-toasta";
     OperationEditorComponent,
     DateSelectorDialogComponent,
     SurgeonEditorComponent,
-    ToastComponent,
   ],
   imports: [
     BrowserModule,
