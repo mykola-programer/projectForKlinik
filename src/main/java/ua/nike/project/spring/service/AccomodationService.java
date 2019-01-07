@@ -243,7 +243,7 @@ public class AccomodationService {
             result.setFirstName(manager.getFirstName());
             result.setSecondName(manager.getSecondName());
             result.setSex(convertSex(manager.getSex()));
-            result.setCityFrom(manager.getCityFrom());
+            result.setCity(manager.getCity());
             result.setInactive(manager.isInactive());
             return result;
         }
@@ -405,7 +405,7 @@ public class AccomodationService {
                 result.setSurname(original.getSurname());
                 result.setFirstName(original.getFirstName());
                 result.setSecondName(original.getSecondName());
-                result.setCityFrom(original.getCityFrom());
+                result.setCity(original.getCity());
                 result.setSex(convertSex(original.getSex()));
                 result.setInactive(original.isInactive());
             }

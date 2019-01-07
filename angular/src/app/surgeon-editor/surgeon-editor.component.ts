@@ -1,6 +1,5 @@
-import { Component, OnInit } from "@angular/core";
+import {Component, OnInit} from "@angular/core";
 import {Surgeon} from "../backend_types/surgeon";
-import {Router} from "@angular/router";
 import {SurgeonService} from "../service/surgeon.service";
 import {NavbarService} from "../service/navbar.service";
 import {HttpErrorResponse} from "@angular/common/http";
@@ -19,7 +18,7 @@ export class SurgeonEditorComponent implements OnInit {
   // "-1" - DESC
   private sorting_order = 1;
 
-  constructor(private router: Router, private surgeonService: SurgeonService, private serviceNavbar: NavbarService) {
+  constructor(private surgeonService: SurgeonService, private serviceNavbar: NavbarService) {
   }
 
   ngOnInit() {
@@ -133,7 +132,7 @@ export class SurgeonEditorComponent implements OnInit {
     // if (!this.filteredSurgeons[0].surname) {
     //   this.filteredSurgeons.splice(0, 1);
     // }
-      let isSuccess = true;
+    let isSuccess = true;
     const new_surgeons: Surgeon[] = this.filteredSurgeons.filter((surgeon: Surgeon) => {
       return surgeon.isChanged && surgeon.surgeonId === 0;
     });
@@ -191,7 +190,6 @@ export class SurgeonEditorComponent implements OnInit {
 
   onCancel() {
     this.onRefresh();
-    // this.router.navigateByUrl("");
 
   }
 

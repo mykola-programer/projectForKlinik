@@ -1,7 +1,6 @@
 import {Component, Inject, Injectable, OnInit} from "@angular/core";
 import {NgbDatepickerConfig, NgbDatepickerI18n, NgbDateStruct} from "@ng-bootstrap/ng-bootstrap";
 import {VisitDateService} from "../../service/visit-date.service";
-import {Router} from "@angular/router";
 import {VisitDate} from "../../backend_types/visit-date";
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material";
 import {Accomodation} from "../../backend_types/accomodation";
@@ -9,7 +8,7 @@ import {AccomodationService} from "../../service/accomodation.service";
 import {Visit} from "../../backend_types/visit";
 import {VisitService} from "../../service/visit.service";
 import {HttpErrorResponse} from "@angular/common/http";
-import {ToastaConfig, ToastaService, ToastData, ToastOptions} from "ngx-toasta";
+import {ToastMessageService} from "../../service/toast-message.service";
 
 const I18N_VALUES = {
   "ua": {
@@ -70,35 +69,22 @@ export class DateSelectorDialogComponent implements OnInit {
   accomodations: Accomodation[] = [];
   selected_accomodation: Accomodation = null;
 
-  toastOptions: ToastOptions = {
-    title: "",
-    msg: "",
-    showClose: false,
-    timeout: 1000,
-    theme: "bootstrap",
-    onAdd: (toast: ToastData) => {
-    },
-    onRemove: function (toast: ToastData) {
-    }
-  };
   constructor(
     public dialogRef: MatDialogRef<DateSelectorDialogComponent>,
-    private router: Router,
+    // private router: Router,
     private config: NgbDatepickerConfig,
     private dateService: VisitDateService,
     private accomodationService: AccomodationService,
     private visitService: VisitService,
-    private toastaService: ToastaService,
-    private toastaConfig: ToastaConfig,
+    private toastMessageService: ToastMessageService,
     @Inject(MAT_DIALOG_DATA) public data: { visit: Visit }) {
     this.selected_date = this.data.visit.visitDate;
-    this.selected_accomodation = this.data.visit.accomodation;
+    this.selected_accomodation = null;
   }
 
   ngOnInit(): void {
     this.setNgbDatepickerConfig();
-    this.getDates();
-    this.getVisits();
+    this.onRefresh();
   }
 
 
@@ -110,6 +96,8 @@ export class DateSelectorDialogComponent implements OnInit {
           (value.date[1] == date.month) &&
           (value.date[2] == date.day)));
       this.getVisits();
+      this.selected_accomodation = null;
+
     }
   }
 
@@ -147,29 +135,32 @@ export class DateSelectorDialogComponent implements OnInit {
     return this.visitDates.findIndex(value =>
       ((value.date[0] == date.year) &&
         (value.date[1] == date.month) &&
-        (value.date[2] == date.day))) != -1;
+        (value.date[2] == date.day))) !== -1;
   }
 
   onMove() {
     this.data.visit.visitDate = this.selected_date;
-    this.data.visit.accomodation = this.selected_accomodation;
-    this.visitService.editVisit(this.data.visit).toPromise().then((visit: Visit) => {
-      this.dialogRef.close(visit);
-      this.onRefresh();
-    }).catch((err: HttpErrorResponse) => {
-      {
-        this.toastOptions.title = "Помилка при переміщені!";
-        this.toastOptions.msg = err.error;
-        this.toastOptions.timeout = 5000;
-        this.toastaService.error(this.toastOptions);
-      }
-    });
+    if (this.selected_accomodation != null) {
+      this.data.visit.accomodation = this.selected_accomodation;
+      this.visitService.editVisit(this.data.visit).toPromise().then((visit: Visit) => {
+        this.onRefresh();
+        this.dialogRef.close(visit);
+      }).catch((err: HttpErrorResponse) => {
+        this.toastMessageService.inform("Помилка при переміщені!", err.error, "error");
+      });
+    } else {
+      this.visitService.displaceVisits([this.data.visit]).toPromise().then((visit: Visit[]) => {
+        this.onRefresh();
+        this.dialogRef.close(visit);
+      });
+    }
   }
 
   onRefresh() {
     this.selected_date = this.data.visit.visitDate;
-    this.selected_accomodation = this.data.visit.accomodation;
-    this.ngOnInit();
+    this.selected_accomodation = null;
+    this.getDates();
+    this.getVisits();
   }
 
   onCancel() {
@@ -206,7 +197,7 @@ export class DateSelectorDialogComponent implements OnInit {
       visits_of_date.forEach((visit: Visit) => {
         const index = this.accomodations.findIndex((accomodation: Accomodation) => {
           return visit != null && visit.accomodation != null && accomodation != null &&
-            visit.accomodation.ward == accomodation.ward && visit.accomodation.wardPlace == accomodation.wardPlace;
+            visit.accomodation.ward === accomodation.ward && visit.accomodation.wardPlace === accomodation.wardPlace;
         });
         this.accomodations.splice(index, 1);
       });

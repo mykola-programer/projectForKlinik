@@ -7,7 +7,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "visit_date", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"date"})
+        @UniqueConstraint(name = "date_pk", columnNames = {"date"})
 })
 @NamedQueries(value = {
         @NamedQuery(name = "VisitDate.findAll", query = "FROM VisitDate ORDER BY date"),

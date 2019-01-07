@@ -1,0 +1,125 @@
+<ngx-toasta></ngx-toasta>
+<br><br><br>
+<img *ngIf="loading_managers" src="/assets/img/download.gif" style="max-width: 600px; min-width: 600px;"/>
+<div *ngIf="!loading_managers">
+  <div class="left-container" style="max-width: 800px; min-width: 550px; margin-left: 10px">
+    <form [formGroup]="searchForm">
+      <div class="input-group-prepend">
+        <span class="input-group-text">Пошук :</span>
+        <input #search type="search" formControlName="searchControlForm"
+               [ngClass]="{'form-control border-left':true,
+                    'is-valid':searchForm.valid,
+                    'is-invalid':!searchForm.valid
+                    }"
+        (input)="filterManagers(search.value)">
+      </div>
+    </form>
+  </div>
+  <div class="left-container" style="max-width: 800px; min-width: 550px; margin-left: 10px">
+    <p class="h3 text-center">Менеджери клініки :</p>
+
+    <form [formGroup]="tableForm">
+      <div class="table-responsive-lg">
+        <table class="table table-bordered table-sm table-hover">
+
+          <thead>
+          <tr class="table-info">
+            <th scope="col" style="width: 30px;"></th>
+            <th scope="col" colspan="3">ПІБ Менеджера</th>
+            <th scope="col" style="width: 80px;">Місто</th>
+            <th scope="col" style="width: 40px;">Ст.</th>
+          </tr>
+          </thead>
+
+          <tbody formArrayName="managersForm">
+
+          <tr *ngFor="let managerForm of tableForm.get('managersForm').controls; let i=index"
+              [ngClass]="{changed:managerForm.get('isChanged').value}">
+
+            <td [formGroupName]="i">
+              <input type="checkbox" formControlName="isChanged"
+                     (change)="managerForm.invalid ? managerForm.get('isChanged')
+                   .patchValue(false) : false"
+                     class="form-control form-control-sm input-style-active"
+              >
+            </td>
+
+            <td [formGroupName]="i">
+              <input #surname type="text" formControlName="surname" title="" placeholder="  - Прізвище -  "
+                     [ngClass]="{'form-control form-control-sm':true,
+                    'input-style-active':managerForm.get('surname').valid,
+                    'is-invalid':!managerForm.get('surname').valid
+                    }"
+                     (change)="managerForm.get('isChanged').patchValue(managerForm.valid)"
+                     (keydown.space)="firstName.focus(); false">
+            </td>
+
+            <td [formGroupName]="i">
+              <input #firstName type="text" formControlName="firstName" placeholder="  - Ім'я -  "
+                     [ngClass]="{'form-control form-control-sm':true,
+                    'input-style-active':managerForm.get('firstName').valid,
+                    'is-invalid':!managerForm.get('firstName').valid
+                    }"
+                     (change)="managerForm.get('isChanged').patchValue(managerForm.valid)"
+                     (keydown.space)="secondName.focus(); false">
+            </td>
+
+            <td [formGroupName]="i">
+              <input #secondName type="text" formControlName="secondName" placeholder="  - по-Батькові -  "
+                     [ngClass]="{'form-control form-control-sm':true,
+                    'input-style-active':managerForm.get('secondName').valid,
+                    'is-invalid':!managerForm.get('secondName').valid
+                    }"
+                     (change)="managerForm.get('isChanged').patchValue(managerForm.valid)"
+                     (keydown.space)="city.focus(); false">
+            </td>
+
+            <td [formGroupName]="i">
+              <input #city type="text" formControlName="city" placeholder="  - філіал -  "
+                     [ngClass]="{'form-control form-control-sm':true,
+                    'input-style-active':managerForm.get('city').valid,
+                    'is-invalid':!managerForm.get('city').valid
+                    }"
+                     (change)="managerForm.get('isChanged').patchValue(managerForm.valid)"
+                     (keydown.space)="sex.focus(); false">
+            </td>
+
+            <td [formGroupName]="i">
+              <select #sex type="text" formControlName="sex"
+                      [ngClass]="{'form-control form-control-sm':true,
+                    'input-style-active':managerForm.get('sex').valid,
+                    'is-invalid':!managerForm.get('sex').valid
+                    }"
+                      (change)="managerForm.get('isChanged').patchValue(managerForm.valid)"
+              >
+                <option *ngFor="let sex of genders" [selected]="managerForm.get('sex').value === sex" value="{{sex}}">
+                  {{sex}}
+                </option>
+              </select>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </form>
+
+  </div>
+</div>
+<br><br><br>
+
+<div class="left-container fixed-bottom bg-light">
+  <button class="btn btn-min-style" (click)="onAdd()">Add</button>
+  <button class="btn btn-success btn-min-style" (click)="onSave()"
+          [disabled]="getSelectedElementCount() == 0">Save
+  </button>
+  <img *ngIf="loading_save" src="/assets/img/rotating-balls-spinner.gif" height="40" width="40"/>
+  <button class="btn btn-warning btn-min-style" (click)="onRefresh()">Refresh</button>
+  <button class="btn btn-dark btn-min-style" (click)="onDelete()"
+          [disabled]="!(getSelectedElementCount() == 1)">Delete
+  </button>
+  <img *ngIf="loading_del" src="/assets/img/rotating-balls-spinner.gif" height="40" width="40"/>
+  <button class="btn btn-danger btn-min-style" (click)="onCancel()"
+          [disabled]="getSelectedElementCount() == 0">Cancel
+  </button>
+  <!--<button class="btn btn-danger btn-min-style" (click)="test()">Test</button>-->
+</div>

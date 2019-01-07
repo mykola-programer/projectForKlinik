@@ -21,12 +21,6 @@ public class ClientRESTController {
     private ClientService clientService;
 
     @CrossOrigin
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ClientVO getClient(@PathVariable("id") int clientID) {
-        return clientService.findByID(clientID);
-    }
-
-    @CrossOrigin
     @RequestMapping(value = "", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public List<ClientVO> getClients() {
         List<ClientVO> test = clientService.findAll();
@@ -34,23 +28,6 @@ public class ClientRESTController {
             test.addAll(test);
         }
         return test;
-    }
-
-    @CrossOrigin
-    @RequestMapping(value = "", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ClientVO addClient(@RequestBody @NotNull @Valid ClientVO clientVO, BindingResult bindingResult) throws ValidationException {
-        if (bindingResult != null && bindingResult.hasErrors()) {
-            throw new ValidationException("Object is not valid", bindingResult);
-        }
-        return clientService.create(clientVO);
-    }
-
-    @CrossOrigin
-    @RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ClientVO editClient(@PathVariable("id") int clientID, @RequestBody @NotNull @Valid ClientVO clientVO, BindingResult bindingResult) throws ValidationException {
-        if (bindingResult != null && bindingResult.hasErrors())
-            throw new ValidationException("Object is not valid", bindingResult);
-        return clientService.update(clientID, clientVO);
     }
 
     @CrossOrigin
@@ -63,14 +40,8 @@ public class ClientRESTController {
     }
 
     @CrossOrigin
-    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public boolean deleteClientByID(@PathVariable("id") int clientID) {
-        return clientService.deleteById(clientID);
-    }
-
-    @CrossOrigin
     @RequestMapping(value = "/list/{ids}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public boolean deleteClients(@PathVariable("ids") List<Integer> clientIDs) {
+    public boolean deleteByIDs(@PathVariable("ids") List<Integer> clientIDs) {
         return clientService.deleteByIDs(clientIDs);
     }
 }
@@ -114,3 +85,35 @@ final ACSException firstAcsException = (ACSException) getThrowableChildByFQFN(AC
         jsonResponseBody.put(USER_MESSAGE_RESPONSE_KEY, USER_MESSAGE);
         }
         */
+
+/*
+    @CrossOrigin
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ClientVO getClient(@PathVariable("id") int clientID) {
+        return clientService.findByID(clientID);
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ClientVO addClient(@RequestBody @NotNull @Valid ClientVO clientVO, BindingResult bindingResult) throws ValidationException {
+        if (bindingResult != null && bindingResult.hasErrors()) {
+            throw new ValidationException("Object is not valid", bindingResult);
+        }
+        return clientService.create(clientVO);
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ClientVO editClient(@PathVariable("id") int clientID, @RequestBody @NotNull @Valid ClientVO clientVO, BindingResult bindingResult) throws ValidationException {
+        if (bindingResult != null && bindingResult.hasErrors())
+            throw new ValidationException("Object is not valid", bindingResult);
+        return clientService.update(clientID, clientVO);
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public boolean deleteClientByID(@PathVariable("id") int clientID) {
+        return clientService.deleteById(clientID);
+    }
+
+*/

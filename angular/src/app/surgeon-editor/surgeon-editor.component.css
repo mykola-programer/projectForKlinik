@@ -10,6 +10,7 @@ select {
   -moz-appearance: none;
   appearance: none;
 }
+
 .changed {background-color: #f5c6cb}
 
 .invalid {

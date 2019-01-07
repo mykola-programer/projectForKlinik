@@ -63,7 +63,7 @@
                    [ngModel]="visit_with_ward.orderForCome" min="1" max="99" required
                    (change)="changeOrderForCome(visit_with_ward, orderForCome.value)"
                    [ngClass]="{'form-control font-weight-bold form-control-sm': true,
-                    'has-danger': !validOrderForCome(visit_with_ward, orderForCome.value),
+                    'is-invalid': !validOrderForCome(visit_with_ward, orderForCome.value),
                     'input-style-active': validOrderForCome(visit_with_ward, orderForCome.value)}">
           </td>
 

@@ -48,15 +48,27 @@ public class ExceptionControllerAdvice extends ResponseEntityExceptionHandler {
     @ExceptionHandler(RuntimeException.class)
     protected ResponseEntity<Object> handleRuntimeException(RuntimeException ex, WebRequest request) {
         StringBuilder bodyOfResponse = new StringBuilder();
-        HttpStatus httpStatus = HttpStatus.UNPROCESSABLE_ENTITY;
+        HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
         for (Throwable runtimeException = ex; runtimeException != null; ) {
+
 //            bodyOfResponse.append("RuntimeException : ").append(runtimeException.getClass().getSimpleName()).append(" => ").append(runtimeException.getLocalizedMessage()).append(nl);
+
             if (runtimeException instanceof EntityNotFoundException) {
+                httpStatus = HttpStatus.NOT_FOUND;
                 bodyOfResponse.append(getValue("object.not.find")).append(nl);
-                httpStatus = HttpStatus.UNPROCESSABLE_ENTITY;
             } else if (runtimeException instanceof SQLException) {
+                httpStatus = HttpStatus.CONFLICT;
                 bodyOfResponse.append(getValue("violation.of.integrity")).append(nl);
-                httpStatus = HttpStatus.BAD_REQUEST;
+                if (runtimeException.getLocalizedMessage().contains("still referenced from table")) {
+                    bodyOfResponse.append(getValue("object.has.relatives")).append(nl);
+                }else if (runtimeException.getLocalizedMessage().contains("violates unique constraint")) {
+                    bodyOfResponse.append(getValue("duplicate.record")).append(nl);
+                }else if (runtimeException.getLocalizedMessage().contains("violates not-null constraint")) {
+                    bodyOfResponse.append(getValue("same.fields.are.null")).append(nl);
+                } else {
+                    bodyOfResponse.append(getValue(runtimeException.getLocalizedMessage())).append(nl);
+
+                }
             }
             runtimeException = runtimeException.getCause();
         }
@@ -72,9 +84,9 @@ public class ExceptionControllerAdvice extends ResponseEntityExceptionHandler {
 //        result.append(getValue("mistakes.count")).append(" ")
 //                .append(bindingResult.getErrorCount())
 //                .append(": " + nl);
-        int i = 1;
+        int i = 0;
         for (FieldError error : bindingResult.getFieldErrors()) {
-            result.append(i + ". ")
+            result.append(++i + ". ")
                     .append(getValue(error.getDefaultMessage()))
                     .append(" (")
                     .append(getValue("mistake"))
@@ -82,7 +94,6 @@ public class ExceptionControllerAdvice extends ResponseEntityExceptionHandler {
                     .append(bindingResult.getFieldValue(error.getField()))
                     .append("])")
                     .append(nl);
-            i++;
         }
         result.append(getValue("please.validate"));
         return result.toString();
@@ -90,13 +101,13 @@ public class ExceptionControllerAdvice extends ResponseEntityExceptionHandler {
 
     private String getValue(String key) {
         if (key == null) {
-            return null;
+            return "";
         }
         try {
             return new String(env.getProperty(key, key).getBytes("ISO8859-1"));
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
-            return null;
+            return "";
         }
     }
 }

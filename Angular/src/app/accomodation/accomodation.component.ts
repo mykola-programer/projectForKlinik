@@ -18,6 +18,7 @@ import {Accomodation} from "../backend_types/accomodation";
 import {DateSelectorDialogComponent} from "../date/date-selector-dialog/date-selector-dialog.component";
 import {HttpErrorResponse} from "@angular/common/http";
 import {ToastMessageService} from "../service/toast-message.service";
+import {ToastaConfig} from "ngx-toasta";
 
 @Component({
   selector: "app-accomodation",
@@ -56,6 +57,7 @@ export class AccomodationComponent implements OnInit {
     private managerService: ManagerService,
     private operationTypeService: OperationTypeService,
     private accomodationService: AccomodationService,
+    private toastaConfig: ToastaConfig,
     private toastMessageService: ToastMessageService,
     private dialog: MatDialog
   ) {
@@ -150,7 +152,7 @@ export class AccomodationComponent implements OnInit {
   }
 
   private getManagers() {
-    this.managerService.getManagers().toPromise().then(managers => this.managers = managers);
+    this.managerService.getActiveManagers().toPromise().then(managers => this.managers = managers);
   }
 
   private getOperationTypes() {
@@ -175,16 +177,12 @@ export class AccomodationComponent implements OnInit {
   }
 
   validOrderForCome(visit: Visit, numberInOrder: number): boolean {
-    if (visit.orderForCome != numberInOrder) {
       for (let i = 0; i < this.visits_of_date.length; i++) {
-        if (this.visits_of_date[i].orderForCome == numberInOrder) {
+        if (this.visits_of_date[i].orderForCome == numberInOrder && this.visits_of_date[i].visitId !== visit.visitId) {
           return false;
         }
       }
       return true;
-    } else {
-      return true;
-    }
   }
 
 
@@ -389,15 +387,11 @@ export class AccomodationComponent implements OnInit {
 
   onRefresh() {
     this.getVisits();
-    // this.ngOnInit();
     this.getWards();
     this.getSurgeons();
     this.getManagers();
     this.getOperationTypes();
     this.getClients();
-    // setTimeout(() => {
-    //   this.onRefresh();
-    // }, 5000);
   }
 
   onDelete() { // TODO Correct !
@@ -444,17 +438,14 @@ export class AccomodationComponent implements OnInit {
   }
 
   moveToAnotherDatePlace() {
-
-    this.visits_of_date.forEach((visit: Visit) => {
-      if (visit.isChanged === true && visit.visitId > 0) {
-        this.openDialogSelectVisitDate(visit);
-      }
+    const changedVisits = this.visits_of_date.filter((visit: Visit) => {
+      return visit.isChanged && visit.visitId > 0;
     });
-
-    // for (let i = 0; i < 5; i++) {
-
-    // this.openDialogSelectVisitDate();---------------------------------------------------
-    // }
+    if (changedVisits.length) {
+      this.openDialogSelectVisitDate(changedVisits[0]);
+    } else {
+      this.onRefresh();
+    }
   }
 
   onCancel() {
@@ -462,16 +453,30 @@ export class AccomodationComponent implements OnInit {
   }
 
   openDialogSelectVisitDate(visit: Visit) {
-
-    const dialogRef = this.dialog.open(DateSelectorDialogComponent, {
-      width: "700px",
-      height: "410px",
-      data: {visit: visit}
-    });
-    dialogRef.afterClosed().subscribe((data: { visit: Visit }) => {
+    if (visit) {
+      const dialogRef = this.dialog.open(DateSelectorDialogComponent, {
+        width: "700px",
+        height: "410px",
+        data: {visit: visit}
+      });
+      dialogRef.afterClosed().subscribe((data: { visit: Visit }) => {
+          if (data) {
+            this.toastMessageService.inform("Перенесено !", "Візит успішно перенесений!", "success");
+          } else {
+            this.toastMessageService.inform("Відміна !", "", "warning");
+          }
+        },
+        () => {
+          this.toastMessageService.inform("Помилка !", "Відбулась критична помилка !", "error");
+        },
+        () => {
+          visit.isChanged = false;
+          this.moveToAnotherDatePlace();
+        }
+      );
+    } else {
       this.onRefresh();
-      this.toastMessageService.inform("Перенесено !", "Візит успішно перенесений!", "success");
-    });
+    }
   }
 
 }

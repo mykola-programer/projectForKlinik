@@ -119,11 +119,11 @@ public class VisitRESTController {
     }
 
     private LocalDate convertToDate(String reqDate) throws ApplicationException {
-        if (reqDate != null && !reqDate.equals("")) {
+        try {
             final String DATE_FORMAT = "dd.MM.yyyy";
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_FORMAT);
             return LocalDate.parse(reqDate, formatter);
-        } else {
+        } catch (RuntimeException e) {
             throw new ApplicationException("incorrect.date");
         }
     }

@@ -236,7 +236,7 @@ public class SurgeonService {
             result.setFirstName(surgeon.getFirstName());
             result.setSecondName(surgeon.getSecondName());
             result.setSex(convertSex(surgeon.getSex()));
-            result.setCityFrom(surgeon.getCityFrom());
+            result.setCity(surgeon.getCity());
             result.setInactive(surgeon.isInactive());
             return result;
         }
@@ -398,7 +398,7 @@ public class SurgeonService {
                 result.setSurname(original.getSurname());
                 result.setFirstName(original.getFirstName());
                 result.setSecondName(original.getSecondName());
-                result.setCityFrom(original.getCityFrom());
+                result.setCity(original.getCity());
                 result.setSex(convertSex(original.getSex()));
                 result.setInactive(original.isInactive());
             }

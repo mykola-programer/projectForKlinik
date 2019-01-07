@@ -22,6 +22,7 @@ import {OperationEditorComponent} from "./operation-editor/operation-editor.comp
 import { DateSelectorDialogComponent } from "./date/date-selector-dialog/date-selector-dialog.component";
 import { SurgeonEditorComponent } from "./surgeon-editor/surgeon-editor.component";
 import {ToastaModule} from "ngx-toasta";
+import { ManagerEditorComponent } from "./manager-editor/manager-editor.component";
 
 // import {ngContentDef} from "@angular/core/src/view";
 
@@ -38,8 +39,10 @@ import {ToastaModule} from "ngx-toasta";
     OperationEditorComponent,
     DateSelectorDialogComponent,
     SurgeonEditorComponent,
+    ManagerEditorComponent,
   ],
   imports: [
+    ReactiveFormsModule,
     BrowserModule,
     FormsModule,
     AppRoutingModule,

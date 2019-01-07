@@ -8,7 +8,7 @@ public class ManagerVO implements VisualObject {
     private String surname;
     private String firstName;
     private String secondName;
-    private String cityFrom;
+    private String city;
     private Character sex;
     private Boolean inactive;
 
@@ -44,12 +44,12 @@ public class ManagerVO implements VisualObject {
         this.secondName = firstUpperCase(secondName);
     }
 
-    public String getCityFrom() {
-        return cityFrom;
+    public String getCity() {
+        return city;
     }
 
-    public void setCityFrom(String cityFrom) {
-        this.cityFrom = firstUpperCase(cityFrom);
+    public void setCity(String city) {
+        this.city = firstUpperCase(city);
     }
 
     public Character getSex() {
@@ -83,12 +83,12 @@ public class ManagerVO implements VisualObject {
         return Objects.equals(surname, manager.surname) &&
                 Objects.equals(firstName, manager.firstName) &&
                 Objects.equals(secondName, manager.secondName) &&
-                Objects.equals(cityFrom, manager.cityFrom);
+                Objects.equals(city, manager.city);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(surname, firstName, secondName, cityFrom);
+        return Objects.hash(surname, firstName, secondName, city);
     }
 
     @Override
@@ -98,7 +98,7 @@ public class ManagerVO implements VisualObject {
         sb.append(", surname='").append(surname).append('\'');
         sb.append(", firstName='").append(firstName).append('\'');
         sb.append(", secondName='").append(secondName).append('\'');
-        sb.append(", cityFrom='").append(cityFrom).append('\'');
+        sb.append(", city='").append(city).append('\'');
         sb.append(", sex=").append(sex);
         sb.append(", inactive=").append(inactive);
         sb.append('}');

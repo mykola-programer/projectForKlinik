@@ -112,7 +112,7 @@ export class WardComponent implements OnInit {
   }
 
   getManagers() {
-    this.managerService.getManagers().toPromise().then(managers => this.managers = managers);
+    this.managerService.getActiveManagers().toPromise().then(managers => this.managers = managers);
   }
 
   getOperationTypes() {

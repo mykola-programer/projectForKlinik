@@ -20,6 +20,10 @@ export class VisitDateService {
   constructor(private http: HttpClient) {
   }
 
+  getVisitDate(visitDateId: number): Observable<VisitDate> {
+    return this.http.get<VisitDate>(this.serverUrl + this.visitDatesUrl + visitDateId);
+  }
+
   getVisitDates(): Observable<VisitDate[]> {
     return this.http.get<VisitDate[]>(this.serverUrl + this.visitDatesUrl + "active");
   }

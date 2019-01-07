@@ -15,7 +15,7 @@ export class ClientEditorComponent implements OnInit {
   public clients: Client[];
   public filteredClients: Client[];
   public genders: string[] = ["Ч", "Ж"];
-  min_date: Date = new Date(new Date(Date.now()).getFullYear() - 100, 0, 0);
+  min_date: Date = new Date(new Date(Date.now()).getFullYear() - 50, 0, 0);
   max_date: Date = new Date(new Date(Date.now()).getFullYear() - 3, 0, 0);
   loading_save = false;
   loading_del = false;
@@ -26,7 +26,6 @@ export class ClientEditorComponent implements OnInit {
   private sorting_order = 1;
 
   constructor(
-    private router: Router,
     private clientService: ClientService,
     private navbarService: NavbarService,
     private toastMessageService: ToastMessageService,
@@ -123,12 +122,13 @@ export class ClientEditorComponent implements OnInit {
     } else {
       client.isChanged = false;
       this.toastMessageService.inform("Помилка !",
-        "Введіть корректний телефон! <br> Мін. - 10, Макс. - 19 <br>  Формати :<br> 099 888 88 88 <br> (099)888-88-88 <br> +38 099 888 88 88",
+        "Введіть корректний телефон! <br> " +
+        "Мін. - 10, Макс. - 19 <br>  Формати :<br> 099 888 88 88 <br> (099)888-88-88 <br> +38 099 888 88 88",
         "info");
     }
   }
 
-  filteringClients(client_value: string) {
+  filterClients(client_value: string) {
     if (client_value) {
       const filterValue: string[] = client_value.toLowerCase().split(" ");
       this.filteredClients = this.clients.filter(client => {
@@ -190,9 +190,18 @@ export class ClientEditorComponent implements OnInit {
       }).catch((err: HttpErrorResponse) => {
           this.loading_save = false;
           if (err.status === 422) {
+            this.toastMessageService.inform("Помилка при збережені! <br> Кліент не відповідає критеріям !",
+              err.error, "error");
+          } else if (err.status === 404) {
+            this.toastMessageService.inform("Помилка при збережені!",
+              err.error + "<br> Обновіть сторінку та спробуйте знову.", "error");
+          } else if (err.status === 409) {
+            this.toastMessageService.inform("Помилка при збережені! <br> Конфлікт в базі даних !",
+              err.error + "<br> Обновіть сторінку та спробуйте знову.", "error");
+          } else {
+            this.toastMessageService.inform("Помилка при збережені!",
+              err.error + "<br>" + "HTTP status: " + err.status, "error");
           }
-          this.toastMessageService.inform("Помилка при збережені!", err.error, "error");
-
         }
       );
     } else {
@@ -203,25 +212,28 @@ export class ClientEditorComponent implements OnInit {
 
   onDelete() {
     this.loading_del = true;
-    const clients_ids_for_delete: number[] = [];
+    const ids_for_delete: number[] = [];
     this.filteredClients.forEach((client: Client) => {
-      if (client.isChanged && client.clientId !== 0) {
-        clients_ids_for_delete.push(client.clientId);
+      if (client.isChanged && client.clientId > 0) {
+        ids_for_delete.push(client.clientId);
       }
     });
-    if (clients_ids_for_delete.length) {
-      this.clientService.deleteClients(clients_ids_for_delete).toPromise().then((success: boolean) => {
+    if (ids_for_delete.length) {
+      this.clientService.deleteClients(ids_for_delete).toPromise().then((success: boolean) => {
         if (success) {
           this.toastMessageService.inform("Видалено !", "Кліенти успішно видалені !", "success");
-          this.getClients();
           this.loading_del = false;
+          this.getClients();
         }
       }).catch((err: HttpErrorResponse) => {
         this.loading_del = false;
-        if (err.status === 400) {
+        if (err.status === 409) {
+          this.toastMessageService.inform("Помилка при видалені!", "Клієнт має активні візити! <br>" +
+            " Спочатку видаліть візити цього кілєнта !", "error");
+        } else {
+          this.toastMessageService.inform("Помилка при видалені!",
+            err.error + "<br>" + "HTTP status: " + err.status, "error");
         }
-        this.toastMessageService.inform("Помилка при видалені!", err.error, "error");
-
       });
     } else {
       this.loading_del = false;
@@ -231,8 +243,6 @@ export class ClientEditorComponent implements OnInit {
 
   onCancel() {
     this.onRefresh();
-    // this.router.navigateByUrl("");
-
   }
 
   private sortClients(clients: Client[]) {

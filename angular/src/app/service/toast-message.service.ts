@@ -10,7 +10,7 @@ export class ToastMessageService {
               private toastaConfig: ToastaConfig,
   ) {
     this.toastaConfig.position = "top-center";
-  }
+   }
 
   public inform(title: string, msg: string, command: string, timeout?: number) {
     const toastOptions: ToastOptions = {
@@ -51,7 +51,7 @@ export class ToastMessageService {
         break;
       case "error":
         if (timeout == null) {
-          toastOptions.timeout = 8000;
+          toastOptions.timeout = 10000;
         }
         this.toastaService.error(toastOptions);
         break;

@@ -3,8 +3,9 @@ export class Manager {
   public surname: string;
   public firstName: string;
   public secondName: string;
-  public cityFrom: string;
+  public city: string;
   public sex: string;
   public inactive: boolean;
+  public isChanged = false;
 
 }

@@ -95,12 +95,6 @@ export class DateSelectorComponent implements OnInit {
     private calendar: NgbCalendar,
     private router: Router,
     private dateService: DateService) {
-    // {
-    //   const visit_date = new VisitDate();
-    //   visit_date.visitDateId = 2;
-    //   visit_date.date = [2018, 12, 10];
-    //   this.dateService.change(visit_date);
-    // }
 
     this.config.outsideDays = "hidden";
     this.config.displayMonths = 2;
@@ -113,6 +107,8 @@ export class DateSelectorComponent implements OnInit {
 
   ngOnInit(): void {
     this.getDates();
+    // Delete
+    this.visitDateService.getVisitDate(117).toPromise().then(value => this.dateService.change(value));
   }
 
   onChangeDate(date: NgbDate, disabled): void {

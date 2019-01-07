@@ -360,7 +360,7 @@ public class VisitService {
             result.setFirstName(visit.getFirstName());
             result.setSecondName(visit.getSecondName());
             result.setSex(convertSex(visit.getSex()));
-            result.setCityFrom(visit.getCityFrom());
+            result.setCity(visit.getCity());
             result.setInactive(visit.isInactive());
             return result;
         }
@@ -522,7 +522,7 @@ public class VisitService {
                 result.setSurname(original.getSurname());
                 result.setFirstName(original.getFirstName());
                 result.setSecondName(original.getSecondName());
-                result.setCityFrom(original.getCityFrom());
+                result.setCity(original.getCity());
                 result.setSex(convertSex(original.getSex()));
                 result.setInactive(original.isInactive());
             }

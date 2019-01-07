@@ -38,7 +38,7 @@ public class Manager implements EntityObject {
     private Sex sex;
 
     @Column(name = "city_from", length = 50)
-    private String cityFrom;
+    private String city;
 
     @Column(name = "inactive")
     private Boolean inactive;
@@ -86,12 +86,12 @@ public class Manager implements EntityObject {
         this.sex = sex;
     }
 
-    public String getCityFrom() {
-        return cityFrom;
+    public String getCity() {
+        return city;
     }
 
-    public void setCityFrom(String cityFrom) {
-        this.cityFrom = firstUpperCase(cityFrom);
+    public void setCity(String cityFrom) {
+        this.city = firstUpperCase(cityFrom);
     }
 
     public Boolean isInactive() {
@@ -125,12 +125,12 @@ public class Manager implements EntityObject {
         return Objects.equals(surname, manager.surname) &&
                 Objects.equals(firstName, manager.firstName) &&
                 Objects.equals(secondName, manager.secondName) &&
-                Objects.equals(cityFrom, manager.cityFrom);
+                Objects.equals(city, manager.city);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(surname, firstName, secondName, cityFrom);
+        return Objects.hash(surname, firstName, secondName, city);
     }
 
     @Override
@@ -141,7 +141,7 @@ public class Manager implements EntityObject {
         sb.append(", firstName='").append(firstName).append('\'');
         sb.append(", secondName='").append(secondName).append('\'');
         sb.append(", sex=").append(sex);
-        sb.append(", cityFrom='").append(cityFrom).append('\'');
+        sb.append(", cityFrom='").append(city).append('\'');
         sb.append(", inactive=").append(inactive);
         sb.append('}');
         return sb.toString();

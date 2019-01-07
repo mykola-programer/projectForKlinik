@@ -21,7 +21,7 @@ import java.util.Objects;
 })
 @Table(name = "visit", uniqueConstraints = {
         @UniqueConstraint(name = "visit_date_client_operation_type_eye", columnNames = {"visit_date_id", "client_id", "operation_type_id", "eye"}),
-        @UniqueConstraint(name = "visit_date_order", columnNames = {"visit_date_id", "order_for_come"})
+//        @UniqueConstraint(name = "visit_date_order", columnNames = {"visit_date_id", "order_for_come"})
 })
 @TypeDef(
         name = "pgsql_enum",

@@ -58,7 +58,7 @@ public class ManagerService {
         return result;
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional(propagation = Propagation.REQUIRED)
     public ManagerVO create(ManagerVO managerVO) {
         Manager entity = copyToManager(managerVO, null);
         return convertToManagerVO(dao.save(entity));
@@ -69,6 +69,21 @@ public class ManagerService {
         Manager originalEntity = dao.findByID(managerID);
         Manager updatedEntity = copyToManager(managerVO, originalEntity);
         return convertToManagerVO(dao.update(updatedEntity));
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public List<ManagerVO> putManagers(List<ManagerVO> managersVO) {
+        List<ManagerVO> result = new ArrayList<>();
+        for (ManagerVO managerVO : managersVO) {
+            if (managerVO != null) {
+                if (managerVO.getManagerId() > 0) {
+                    result.add(update(managerVO.getManagerId(), managerVO));
+                } else {
+                    result.add(create(managerVO));
+                }
+            }
+        }
+        return result;
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
@@ -98,7 +113,7 @@ public class ManagerService {
         result.setFirstName(manager.getFirstName());
         result.setSecondName(manager.getSecondName());
         result.setSex(manager.getSex().toCharacter());
-        result.setCityFrom(manager.getCityFrom());
+        result.setCity(manager.getCity());
         result.setInactive(manager.isInactive());
         return result;
     }
@@ -109,13 +124,12 @@ public class ManagerService {
             result.setSurname(original.getSurname());
             result.setFirstName(original.getFirstName());
             result.setSecondName(original.getSecondName());
-            result.setCityFrom(original.getCityFrom());
+            result.setCity(original.getCity());
             result.setSex(Sex.getInstance(original.getSex()));
             result.setInactive(original.isInactive());
         }
         return result;
     }
-
 }
 
 
@@ -238,7 +252,7 @@ public class ManagerService {
             result.setFirstName(manager.getFirstName());
             result.setSecondName(manager.getSecondName());
             result.setSex(convertSex(manager.getSex()));
-            result.setCityFrom(manager.getCityFrom());
+            result.setCity(manager.getCity());
             result.setInactive(manager.isInactive());
             return result;
         }
@@ -400,7 +414,7 @@ public class ManagerService {
                 result.setSurname(original.getSurname());
                 result.setFirstName(original.getFirstName());
                 result.setSecondName(original.getSecondName());
-                result.setCityFrom(original.getCityFrom());
+                result.setCity(original.getCity());
                 result.setSex(convertSex(original.getSex()));
                 result.setInactive(original.isInactive());
             }

@@ -249,7 +249,7 @@ public class VisitDateService {
             result.setFirstName(visitDate.getFirstName());
             result.setSecondName(visitDate.getSecondName());
             result.setSex(convertSex(visitDate.getSex()));
-            result.setCityFrom(visitDate.getCityFrom());
+            result.setCity(visitDate.getCity());
             result.setInactive(visitDate.isInactive());
             return result;
         }
@@ -411,7 +411,7 @@ public class VisitDateService {
                 result.setSurname(original.getSurname());
                 result.setFirstName(original.getFirstName());
                 result.setSecondName(original.getSecondName());
-                result.setCityFrom(original.getCityFrom());
+                result.setCity(original.getCity());
                 result.setSex(convertSex(original.getSex()));
                 result.setInactive(original.isInactive());
             }
