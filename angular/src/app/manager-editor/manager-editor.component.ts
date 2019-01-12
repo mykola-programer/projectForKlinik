@@ -6,6 +6,7 @@ import {FormArray, FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {HttpErrorResponse} from "@angular/common/http";
 import {ToastMessageService} from "../service/toast-message.service";
 import {AbstractControl} from "@angular/forms/src/model";
+import {debounceTime} from "rxjs/operators";
 
 @Component({
   selector: "app-manager-editor",
@@ -13,7 +14,7 @@ import {AbstractControl} from "@angular/forms/src/model";
   styleUrls: ["./manager-editor.component.css"]
 })
 export class ManagerEditorComponent implements OnInit {
-  private managers: Manager[];
+  public managers: Manager[];
   public genders: string[] = ["Ч", "Ж"];
 
   searchForm: FormGroup = this.fb.group({
@@ -24,13 +25,14 @@ export class ManagerEditorComponent implements OnInit {
     managersForm: this.managersForm
   });
 
-  loading_managers = false;
-  loading_save = false;
-  loading_del = false;
+  hidden_managers = false;
+  managers_loading = false;
+  save_loading = false;
+  del_loading = false;
 
-  // "1" - ASC,
-  // "-1" - DESC
-  private sorting_order = 1;
+  // "true" - ASC,
+  // "false" - DESC
+  sorting_order = true;
 
   constructor(private managerService: ManagerService,
               private navbarService: NavbarService,
@@ -39,24 +41,42 @@ export class ManagerEditorComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.loading_managers = true;
-    this.getManagers();
     this.navbarService.change("manager");
+    this.managers_loading = true;
+    this.getManagers();
+    this.searchForm.get("searchControlForm").valueChanges
+      .pipe(debounceTime(900))
+      .subscribe(search_value => this.filterManagers(search_value));
+
+    this.searchForm.get("searchControlForm").statusChanges
+      .pipe(debounceTime(900))
+      .subscribe(value => {
+        if (value === "INVALID") {
+          this.toastMessageService.inform("Некорректне значення пошуку",
+            "Вводьте тільки літери та пробіли." + "<br>" +
+            "Не більше 50 символів", "info");
+        }
+      });
+
   }
 
   getManagers() {
-    this.loading_managers = true;
-    this.managerService.getActiveManagers().toPromise().then((managers: Manager[]) => {
+    this.managers_loading = true;
+    this.managerService.getManagers().toPromise().then((managers: Manager[]) => {
       this.managers = managers;
-      this.sortManagers(this.managers);
-      this.updateFormGroups(this.managers);
+      this.managersForm = this.updateFormGroups(this.managers);
+      this.tableForm.setControl("managersForm", this.managersForm);
+      this.managers_loading = false;
+      setTimeout(() => {
+        document.getElementById("search").focus();
+      });
     }).catch((err: HttpErrorResponse) => {
-      this.loading_managers = true;
+      this.managers_loading = true;
       this.toastMessageService.inform("Сервер недоступний!",
-        "Спробуйте пізніше !" + "<br>" + err.error + "<br>" + err.message, "error", 8000);
+        "Спробуйте пізніше !" + "<br>" + err.error + "<br>" + err.message, "error", 10000);
       setTimeout(() => {
         this.getManagers();
-      }, 10000);
+      }, 15000);
     });
   }
 
@@ -65,28 +85,35 @@ export class ManagerEditorComponent implements OnInit {
     manager.managerId = 0;
     manager.inactive = false;
     manager.isChanged = false;
-    this.managersForm.insert(0, this.createFormGroup(manager));
+    this.searchForm.get("searchControlForm").setValue("");
+    if (this.managersForm.controls[0].valid && (<Manager>this.managersForm.controls[0].value).managerId !== 0) {
+      this.managersForm.insert(0, this.createFormGroup(manager));
+    }
+    setTimeout(() => {
+      document.getElementById("surname").focus();
+    }, 1000);
     window.scroll(0, 0);
   }
 
   getSelectedElementCount(): number {
-    return (this.managersForm.controls).filter((control: AbstractControl) => {
+    // @ts-ignore
+    return (this.tableForm.get("managersForm").controls).filter((control: AbstractControl) => {
       return control.valid && (<Manager>control.value).isChanged;
     }).length;
   }
 
   onSave() {
-    this.loading_save = true;
-    const edited_managers: Manager[] = this.managersForm.value.filter((manager: Manager) => {
+    this.save_loading = true;
+    const edited_manager: Manager = (<Manager[]>this.tableForm.get("managersForm").value).find((manager: Manager) => {
       return manager.isChanged;
     });
-    if (edited_managers.length) {
-      this.managerService.putManagers(edited_managers).toPromise().then(() => {
-        this.toastMessageService.inform("Збережено !", "Менеджери успішно збережені !", "success");
+    if (edited_manager && edited_manager.managerId > 0) {
+      this.managerService.editManager(edited_manager).toPromise().then(() => {
+        this.toastMessageService.inform("Збережено !", "Менеджер успішно збережений !", "success");
         this.getManagers();
-        this.loading_save = false;
+        this.save_loading = false;
       }).catch((err: HttpErrorResponse) => {
-          this.loading_save = false;
+          this.save_loading = false;
           if (err.status === 422) {
             this.toastMessageService.inform("Помилка при збережені! <br> Менеджер не відповідає критеріям !",
               err.error, "error");
@@ -95,66 +122,91 @@ export class ManagerEditorComponent implements OnInit {
               err.error + "<br> Обновіть сторінку та спробуйте знову.", "error");
           } else if (err.status === 409) {
             this.toastMessageService.inform("Помилка при збережені! <br> Конфлікт в базі даних !",
-              err.error + "<br> Обновіть сторінку та спробуйте знову.", "error");
+              err.error + "<br> Обновіть сторінку та спробуйте знову. <br> Можливо ваш менеджер існує серед прихованих.", "error");
           } else {
             this.toastMessageService.inform("Помилка при збережені!",
               err.error + "<br>" + "HTTP status: " + err.status, "error");
           }
-          // TODO Create dialog window for activate meneger
-
+        }
+      );
+    } else if (edited_manager && edited_manager.managerId === 0) {
+      this.managerService.addManager(edited_manager).toPromise().then(() => {
+        this.toastMessageService.inform("Збережено !", "Менеджер успішно збережений !", "success");
+        this.getManagers();
+        this.save_loading = false;
+      }).catch((err: HttpErrorResponse) => {
+          this.save_loading = false;
+          if (err.status === 422) {
+            this.toastMessageService.inform("Помилка при збережені! <br> Менеджер не відповідає критеріям !",
+              err.error, "error");
+          } else if (err.status === 404) {
+            this.toastMessageService.inform("Помилка при збережені!",
+              err.error + "<br> Обновіть сторінку та спробуйте знову.", "error");
+          } else if (err.status === 409) {
+            this.toastMessageService.inform("Помилка при збережені! <br> Конфлікт в базі даних !",
+              err.error + "<br> Обновіть сторінку та спробуйте знову. <br> Можливо ваш менеджер існує серед прихованих.", "error");
+          } else {
+            this.toastMessageService.inform("Помилка при збережені!",
+              err.error + "<br>" + "HTTP status: " + err.status, "error");
+          }
         }
       );
     } else {
-      this.loading_save = false;
+      this.save_loading = false;
       this.toastMessageService.inform("Виберіть хоча б один запис!", "", "info");
     }
   }
 
   onDelete() {
-    this.loading_del = true;
-    const manager_for_del: Manager = (<Manager[]>this.managersForm.value).find((manager: Manager) => {
+    this.del_loading = true;
+    const manager_for_del: Manager = (<Manager[]>this.tableForm.get("managersForm").value).find((manager: Manager) => {
       return manager.isChanged;
     });
     if (manager_for_del.managerId > 0) {
       this.managerService.deleteManager(manager_for_del.managerId).toPromise().then((success: boolean) => {
         if (success) {
           this.toastMessageService.inform("Видалено !", "Менеджер успішно видалений !", "success");
-          this.loading_del = false;
+          this.del_loading = false;
           this.getManagers();
         }
       }).catch((err: HttpErrorResponse) => {
-        this.loading_del = false;
+        this.del_loading = false;
         if (err.status === 409) {
           this.toastMessageService.inform("Помилка при видалені!", "Менеджер має активні візити! <br>" +
-            " Спочатку видаліть візити цього менеджера !", "error");
+            " Спочатку видаліть візити цього менеджера ! <br> Або приховайте його.", "error");
         } else {
           this.toastMessageService.inform("Помилка при видалені!",
             err.error + "<br>" + "HTTP status: " + err.status, "error");
         }
-        // TODO Create dialog window for disactivate meneger
       });
     } else {
-      this.loading_del = false;
+      this.del_loading = false;
       this.onRefresh();
     }
   }
 
   onRefresh() {
+    this.hidden_managers = false;
+    this.sorting_order = true;
     this.getManagers();
+    this.searchForm.get("searchControlForm").setValue("");
   }
 
   onCancel() {
-    this.updateFormGroups(this.managers);
+    this.searchForm.get("searchControlForm").setValue("");
+    this.managersForm = this.updateFormGroups(this.managers);
+    this.tableForm.setControl("managersForm", this.managersForm);
   }
 
-  private updateFormGroups(managers: Manager[]) {
-    this.loading_managers = true;
-    this.managersForm = this.fb.array([]);
+  private updateFormGroups(managers: Manager[]): FormArray {
+    this.managers_loading = true;
+    this.sorting_order ? managers.sort(this.compareManagers) : managers.sort(this.compareManagers).reverse();
+    const managersForm = this.fb.array([]);
     managers.forEach((manager: Manager) => {
-      this.managersForm.push(this.createFormGroup(manager));
+      managersForm.push(this.createFormGroup(manager));
     });
-    this.tableForm.setControl("managersForm", this.managersForm);
-    this.loading_managers = false;
+    this.managers_loading = false;
+    return managersForm;
   }
 
   private createFormGroup(manager: Manager): FormGroup {
@@ -167,18 +219,6 @@ export class ManagerEditorComponent implements OnInit {
       sex: [manager.sex, [Validators.required, Validators.maxLength(1), Validators.pattern("^[ЧЖ]*$")]],
       inactive: [manager.inactive],
       isChanged: [false],
-    });
-  }
-
-  private sortManagers(managers: Manager[]) {
-    managers.sort((manager1, manager2) => {
-      if (manager1.surname && manager2.surname && manager1.surname.localeCompare(manager2.surname) !== 0) {
-        return manager1.surname.localeCompare(manager2.surname) * this.sorting_order;
-      } else if (manager1.firstName && manager2.firstName && manager1.firstName.localeCompare(manager2.firstName) !== 0) {
-        return manager1.firstName.localeCompare(manager2.firstName) * this.sorting_order;
-      } else if (manager1.secondName && manager2.secondName && manager1.secondName.localeCompare(manager2.secondName) !== 0) {
-        return manager1.secondName.localeCompare(manager2.secondName) * this.sorting_order;
-      }
     });
   }
 
@@ -212,18 +252,41 @@ export class ManagerEditorComponent implements OnInit {
             }
         }
       });
-      this.updateFormGroups(filteredManagers);
+      this.tableForm.setControl("managersForm", this.updateFormGroups(filteredManagers));
     } else {
-      this.updateFormGroups(this.managers);
+      this.tableForm.setControl("managersForm", this.managersForm);
     }
   }
 
+  determineOrder() {
+    this.sorting_order = !this.sorting_order;
+    this.tableForm.setControl("managersForm", this.updateFormGroups(<Manager[]>this.tableForm.get("managersForm").value));
+    this.managersForm = this.updateFormGroups(<Manager[]>this.managersForm.value);
 
- /* test(value?: any) {
+  }
+
+  private compareManagers = (manager1, manager2) => {
+    if (manager1.managerId === 0) {
+      return !this.sorting_order;
+    } else if (manager2.managerId === 0) {
+      return this.sorting_order;
+    } else if (manager1.surname && manager2.surname && manager1.surname.localeCompare(manager2.surname) !== 0) {
+      return manager1.surname.localeCompare(manager2.surname);
+    } else if (manager1.firstName && manager2.firstName && manager1.firstName.localeCompare(manager2.firstName) !== 0) {
+      return manager1.firstName.localeCompare(manager2.firstName);
+    } else if (manager1.secondName && manager2.secondName && manager1.secondName.localeCompare(manager2.secondName) !== 0) {
+      return manager1.secondName.localeCompare(manager2.secondName);
+    }
+  }
+
+  // test(value?: any) {
     // console.log(value);
-    console.log(this.searchForm);
+    // console.log(this.sorting_order);
+    // console.log(this.searchForm);
     // console.log(this.tableForm.statusChanges);
     // console.log((<FormArray>this.tableForm.controls.managersForm).controls);
     // (this.managersForm.value).forEach(value1 => console.log(value1));
-  }*/
+  // }
 }
+
+

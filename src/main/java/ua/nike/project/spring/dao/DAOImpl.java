@@ -30,10 +30,6 @@ public class DAOImpl<T extends EntityObject> implements DAO<T> {
 
     @Override
     public T findByID(int entityID) {
-        entityManager.getReference(classEO, entityID);
-        T entity2 = entityManager.getReference(classEO, entityID);
-        T entity3 = entityManager.getReference(classEO, entityID);
-        T entity4 = entityManager.find(classEO, entityID);
         return entityManager.find(classEO, entityID);
     }
 

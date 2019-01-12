@@ -1,87 +1,141 @@
+<ngx-toasta></ngx-toasta>
 <br><br><br>
-<div class="left-container" style="max-width: 800px; min-width: 550px; margin-left: 10px">
-  <div class="input-group-prepend">
-    <span class="input-group-text">Пошук :</span>
-    <input #search type="search"
-           (input)="filteringSurgeons(search.value)"
-           class="form-control border-left">
+<img [hidden]="!surgeons_loading" src="/assets/img/download.gif" style="max-width: 600px"/>
+<div *ngIf="!surgeons_loading">
+  <div class="left-container" style="max-width: 800px; min-width: 550px; margin-left: 10px">
+    <form [formGroup]="searchForm">
+      <div class="input-group-prepend">
+        <span class="input-group-text">Пошук :</span>
+        <input #search id="search" type="search" formControlName="searchControlForm"
+               [ngClass]="{'form-control border-left':true,
+                    'is-valid':searchForm.valid,
+                    'is-invalid':!searchForm.valid
+                    }">
+      </div>
+    </form>
   </div>
-</div>
-<div class="left-container" style="max-width: 800px; min-width: 550px; margin-left: 10px">
-  <p class="h3 text-center">Хірурги клініки :</p>
 
-  <div class="table-responsive-lg">
-    <table class="table table-bordered table-sm table-hover">
-      <thead>
+  <div class="left-container" style="max-width: 800px; min-width: 550px; margin-left: 10px">
+    <p class="h3 text-center">Хірурги клініки :</p>
 
+    <label class="text-right">
+      <input type="checkbox" [(ngModel)]="hidden_surgeons"
+             class="text-right"> приховані
+    </label>
 
-      <tr class="table-info">
-        <th scope="col" style="width: 30px;"></th>
-        <th scope="col" colspan="3">ПІБ Хірурга</th>
-        <th scope="col" style="width: 40px;">Ст.</th>
-      </tr>
+    <form [formGroup]="tableForm">
+      <div class="table-responsive-lg">
+        <table id="table" class="table table-bordered table-sm table-hover">
 
+          <thead>
+          <tr class="table-info">
+            <th scope="col" style="width: 30px;"></th>
+            <th scope="col" colspan="3">
+              <img [hidden]="!sorting_order" src="/assets/img/sort/sort-ASC.png" style="max-width: 25px;"
+                   (click)="determineOrder()"/>
+              <img [hidden]="sorting_order" src="/assets/img/sort/sort-DESC.png" style="max-width: 25px;"
+                   (click)="determineOrder()"/>
+              <label>&nbsp; ПІБ Хірурга</label>
+            </th>
+            <th scope="col" style="width: 80px;">Місто</th>
+            <th scope="col" style="width: 40px;">Ст.</th>
+            <th scope="col" style="width: 40px;" *ngIf="hidden_surgeons">бл.</th>
+          </tr>
+          </thead>
 
-      </thead>
-      <tbody>
+          <tbody formArrayName="surgeonsForm">
 
-      <tr *ngFor="let surgeon of filteredSurgeons" [ngClass]="{changed:surgeon.isChanged}">
-        <th>
-          <input type="checkbox" [ngModel]="surgeon.isChanged" (change)="surgeon.isChanged=!surgeon.isChanged">
-        </th>
+          <tr *ngFor="let surgeonForm of (tableForm.get('surgeonsForm').controls); let i=index"
+              [hidden]="surgeonForm.get('inactive').value && !hidden_surgeons"
+              [ngClass]="{changed:surgeonForm.get('isChanged').value}">
 
-        <td>
-          <input #surname type="text" placeholder="  - Прізвище -  "
-                 pattern="[A-Za-zА-Яа-яЁёІіЇїЄє]{3,50}" required
-                 class="form-control font-weight-bold form-control-sm input-style-active"
-                 [ngModel]="surgeon.surname"
-                 (change)="changeSurname(surgeon, surname)"
-                 (keydown.space)="firstName.focus(); false"
-                 (blur)="onBlur(surgeon, surname)">
-          <div *ngIf="!surname.checkValidity()" class="invalid">Введіть коректне значення !</div>
-        </td>
-        <td>
-          <input #firstName type="text" placeholder="  - Ім'я -  "
-                 pattern="[A-Za-zА-Яа-яЁёІіЇїЄє]{3,50}" required
-                 class="form-control font-weight-bold form-control-sm input-style-active"
-                 [ngModel]="surgeon.firstName"
-                 (change)="changeFirstName(surgeon, firstName)"
-                 (keydown.space)="secondName.focus(); false"
-                 (blur)="onBlur(surgeon, firstName)">
+            <td [formGroupName]="i">
+              <input type="checkbox" formControlName="isChanged"
+                     (change)="surgeonForm.invalid ? surgeonForm.get('isChanged')
+                   .patchValue(false) : false"
+                     class="form-control form-control-sm input-style-active">
+            </td>
 
-          <div *ngIf="!firstName.checkValidity()" class="invalid">Введіть коректне значення !</div>
-        </td>
-        <td>
-          <input #secondName type="text" placeholder="  - по-Батькові -  "
-                 pattern="[A-Za-zА-Яа-яЁёІіЇїЄє]{3,50}" required
-                 class="form-control font-weight-bold form-control-sm input-style-active"
-                 [ngModel]="surgeon.secondName"
-                 (change)="changeSecondName(surgeon, secondName)"
-                 (keydown.space)="sex.focus(); false"
-                 (blur)="onBlur(surgeon, secondName)">
+            <td [formGroupName]="i">
+              <input id="surname" #surname type="text" formControlName="surname" title="" placeholder="  - Прізвище -  "
+                     [ngClass]="{'form-control form-control-sm':true,
+                    'input-style-active':surgeonForm.get('surname').valid,
+                    'is-invalid':!surgeonForm.get('surname').valid
+                    }"
+                     (input)="surgeonForm.get('isChanged').patchValue(surgeonForm.valid)"
+                     (keydown.space)="firstName.focus(); false">
+            </td>
 
-          <div *ngIf="!secondName.checkValidity()" class="invalid">Введіть коректне значення !</div>
-        </td>
+            <td [formGroupName]="i">
+              <input #firstName type="text" formControlName="firstName" placeholder="  - Ім'я -  "
+                     [ngClass]="{'form-control form-control-sm':true,
+                    'input-style-active':surgeonForm.get('firstName').valid,
+                    'is-invalid':!surgeonForm.get('firstName').valid
+                    }"
+                     (input)="surgeonForm.get('isChanged').patchValue(surgeonForm.valid)"
+                     (keydown.space)="secondName.focus(); false">
+            </td>
 
-        <td>
-          <select #sex class="form-control form-control-sm input-style-active"
-                  pattern="[ЧЖ]" required
-                  (change)="changeSex(surgeon, sex)">
-            <option *ngFor="let sex of genders" [selected]="surgeon.sex === sex" value="{{sex}}">{{sex}}</option>
-          </select>
-        </td>
+            <td [formGroupName]="i">
+              <input #secondName type="text" formControlName="secondName" placeholder="  - по-Батькові -  "
+                     [ngClass]="{'form-control form-control-sm':true,
+                    'input-style-active':surgeonForm.get('secondName').valid,
+                    'is-invalid':!surgeonForm.get('secondName').valid
+                    }"
+                     (input)="surgeonForm.get('isChanged').patchValue(surgeonForm.valid)"
+                     (keydown.space)="city.focus(); false">
+            </td>
 
-      </tr>
-      </tbody>
-    </table>
+            <td [formGroupName]="i">
+              <input #city type="text" formControlName="city" placeholder="  - філіал -  "
+                     [ngClass]="{'form-control form-control-sm':true,
+                    'input-style-active':surgeonForm.get('city').valid,
+                    'is-invalid':!surgeonForm.get('city').valid
+                    }"
+                     (input)="surgeonForm.get('isChanged').patchValue(surgeonForm.valid)"
+                     (keydown.space)="sex.focus(); false">
+            </td>
+
+            <td [formGroupName]="i">
+              <select #sex type="text" formControlName="sex"
+                      [ngClass]="{'form-control form-control-sm':true,
+                    'input-style-active':surgeonForm.get('sex').valid,
+                    'is-invalid':!surgeonForm.get('sex').valid
+                    }"
+                      (change)="surgeonForm.get('isChanged').patchValue(surgeonForm.valid)"
+              >
+                <option *ngFor="let sex of genders" [selected]="surgeonForm.get('sex').value === sex" value="{{sex}}">
+                  {{sex}}
+                </option>
+              </select>
+            </td>
+            <td [formGroupName]="i" *ngIf="hidden_surgeons">
+              <input type="checkbox" formControlName="inactive"
+                     (change)="surgeonForm.get('isChanged').patchValue(surgeonForm.valid)"
+                     class="form-control form-control-sm input-style-active">
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </form>
+
   </div>
 </div>
 <br><br><br>
 
 <div class="left-container fixed-bottom bg-light">
   <button class="btn btn-min-style" (click)="onAdd()">Add</button>
-  <button class="btn btn-success btn-min-style" (click)="onSave()">Save</button>
+  <button class="btn btn-success btn-min-style" (click)="onSave()"
+          [disabled]="!(getSelectedElementCount() == 1)">Save
+  </button>
+  <img [hidden]="!save_loading" src="/assets/img/rotating-balls-spinner.gif" height="40" width="40"/>
   <button class="btn btn-warning btn-min-style" (click)="onRefresh()">Refresh</button>
-  <button class="btn btn-dark btn-min-style" (click)="onDelete()">Delete</button>
-  <button class="btn btn-danger btn-min-style" (click)="onCancel()">Cancel</button>
+  <button class="btn btn-dark btn-min-style" (click)="onDelete()"
+          [disabled]="!(getSelectedElementCount() == 1)">Delete
+  </button>
+  <img [hidden]="!del_loading" src="/assets/img/rotating-balls-spinner.gif" height="40" width="40"/>
+  <button class="btn btn-danger btn-min-style" (click)="onCancel()"
+          [disabled]="getSelectedElementCount() == 0">Cancel
+  </button>
 </div>

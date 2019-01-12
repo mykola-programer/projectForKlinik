@@ -81,9 +81,6 @@ public class ExceptionControllerAdvice extends ResponseEntityExceptionHandler {
         final StringBuilder result = new StringBuilder();
         result.append(getValue("violation.mistake"))
                 .append(nl);
-//        result.append(getValue("mistakes.count")).append(" ")
-//                .append(bindingResult.getErrorCount())
-//                .append(": " + nl);
         int i = 0;
         for (FieldError error : bindingResult.getFieldErrors()) {
             result.append(++i + ". ")

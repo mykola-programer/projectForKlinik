@@ -152,7 +152,7 @@ export class AccomodationComponent implements OnInit {
   }
 
   private getManagers() {
-    this.managerService.getActiveManagers().toPromise().then(managers => this.managers = managers);
+    this.managerService.getManagers().toPromise().then(managers => this.managers = managers);
   }
 
   private getOperationTypes() {

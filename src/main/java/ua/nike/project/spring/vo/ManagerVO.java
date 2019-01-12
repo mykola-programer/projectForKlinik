@@ -1,14 +1,35 @@
 package ua.nike.project.spring.vo;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import java.util.Objects;
 
 public class ManagerVO implements VisualObject {
 
     private Integer managerId;
+
+    @NotNull(message = "manager.surname.null")
+    @Size(min = 1, max = 50, message = "manager.surname.size")
+    @Pattern(regexp = "[A-Za-zА-Яа-яЁёІіЇїЄє]+", message = "manager.surname.pattern")
     private String surname;
+
+    @NotNull(message = "manager.firstName.null")
+    @Size(min = 1, max = 50, message = "manager.firstName.size")
+    @Pattern(regexp = "[A-Za-zА-Яа-яЁёІіЇїЄє]+", message = "manager.firstName.pattern")
     private String firstName;
+
+    @NotNull(message = "manager.secondName.null")
+    @Size(min = 1, max = 50, message = "manager.secondName.size")
+    @Pattern(regexp = "[A-Za-zА-Яа-яЁёІіЇїЄє]+", message = "manager.secondName.pattern")
     private String secondName;
+
+    @NotNull(message = "manager.city.null")
+    @Size(min = 1, max = 50, message = "manager.city.size")
+    @Pattern(regexp = "[A-Za-zА-Яа-яЁёІіЇїЄє]+", message = "manager.city.pattern")
     private String city;
+
+    @NotNull(message = "manager.sex.null")
     private Character sex;
     private Boolean inactive;
 

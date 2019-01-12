@@ -20,23 +20,10 @@ public class SurgeonRESTController {
     private SurgeonService surgeonService;
 
     @CrossOrigin
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public SurgeonVO getSurgeon(@PathVariable("id") int surgeonID) {
-        return surgeonService.findByID(surgeonID);
-    }
-
-    @CrossOrigin
     @RequestMapping(value = "", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public List<SurgeonVO> getSurgeons() {
         return surgeonService.findAll();
     }
-
-    @CrossOrigin
-    @RequestMapping(value = "/active", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public List<SurgeonVO> getActiveSurgeons() {
-        return surgeonService.findAllActive();
-    }
-
 
     @CrossOrigin
     @RequestMapping(value = "", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -60,6 +47,27 @@ public class SurgeonRESTController {
         return surgeonService.deleteById(surgeonID);
     }
 
+}
+
+
+
+
+
+
+/*
+
+    @CrossOrigin
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public SurgeonVO getSurgeon(@PathVariable("id") int surgeonID) {
+        return surgeonService.findByID(surgeonID);
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "/active", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public List<SurgeonVO> getActiveSurgeons() {
+        return surgeonService.findAllActive();
+    }
+
     @CrossOrigin
     @RequestMapping(value = "/{id}/deactivate", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public SurgeonVO deactivateByID(@PathVariable("id") int surgeonID) {
@@ -71,4 +79,6 @@ public class SurgeonRESTController {
     public SurgeonVO activateByID(@PathVariable("id") int surgeonID) {
         return surgeonService.activateByID(surgeonID);
     }
-}
+
+
+*/

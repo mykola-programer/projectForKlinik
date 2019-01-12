@@ -1,6 +1,8 @@
 package ua.nike.project.hibernate.entity;
 
 import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
+import ua.nike.project.hibernate.type.PostgreSQLEnumType;
 import ua.nike.project.hibernate.type.Sex;
 
 import javax.persistence.*;
@@ -10,11 +12,15 @@ import java.util.Objects;
 @Entity
 @NamedQueries(value = {
         @NamedQuery(name = "Manager.findAll", query = "FROM Manager ORDER BY surname, firstName, secondName"),
-        @NamedQuery(name = "Manager.findAllActive", query = "FROM Manager WHERE inactive = false  ORDER BY surname, firstName, secondName")
+//        @NamedQuery(name = "Manager.findAllActive", query = "FROM Manager WHERE inactive = false  ORDER BY surname, firstName, secondName")
 })
 @Table(name = "manager", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"surname", "first_name", "second_name", "city_from"})
+        @UniqueConstraint(name = "manager_pk", columnNames = {"surname", "first_name", "second_name", "city_from"})
 })
+@TypeDef(
+        name = "pgsql_enum",
+        typeClass = PostgreSQLEnumType.class
+)
 public class Manager implements EntityObject {
 
     @Id
@@ -26,10 +32,10 @@ public class Manager implements EntityObject {
     @Column(name = "surname", length = 50, nullable = false)
     private String surname;
 
-    @Column(name = "first_name", length = 50)
+    @Column(name = "first_name", length = 50, nullable = false)
     private String firstName;
 
-    @Column(name = "second_name", length = 50)
+    @Column(name = "second_name", length = 50, nullable = false)
     private String secondName;
 
     @Column(name = "sex")
@@ -37,13 +43,13 @@ public class Manager implements EntityObject {
     @Type(type = "pgsql_enum")
     private Sex sex;
 
-    @Column(name = "city_from", length = 50)
+    @Column(name = "city_from", length = 50, nullable = false)
     private String city;
 
     @Column(name = "inactive")
     private Boolean inactive;
 
-    @OneToMany(targetEntity = Visit.class, fetch = FetchType.LAZY, mappedBy = "manager", cascade = CascadeType.ALL)
+    @OneToMany(targetEntity = Visit.class, fetch = FetchType.LAZY, mappedBy = "manager")
     private List<Visit> visits;
 
     public Integer getManagerId() {

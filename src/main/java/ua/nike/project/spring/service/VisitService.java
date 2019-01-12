@@ -182,7 +182,7 @@ public class VisitService {
 
 
             if (original.getManager() != null && original.getManager().getManagerId() > 0) {
-                result.setManager(managerService.findEntytiByID(original.getManager().getManagerId()));
+                result.setManager(managerService.findEntityByID(original.getManager().getManagerId()));
             } else result.setManager(null);
 
             if (original.getAccomodation() != null && original.getAccomodation().getAccomodationId() > 0) {

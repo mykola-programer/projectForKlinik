@@ -29,12 +29,6 @@ public class ManagerRESTController {
     }
 
     @CrossOrigin
-    @RequestMapping(value = "/active", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public List<ManagerVO> getActiveManagers() {
-        return managerService.findAllActive();
-    }
-
-    @CrossOrigin
     @RequestMapping(value = "", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ManagerVO addManager(@RequestBody @NotNull @Valid ManagerVO managerVO, BindingResult bindingResult) throws ValidationException {
         if (bindingResult != null && bindingResult.hasErrors())
@@ -42,14 +36,6 @@ public class ManagerRESTController {
         return managerService.create(managerVO);
     }
 
-    @CrossOrigin
-    @RequestMapping(value = "/list", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public List<ManagerVO> putManagers(@RequestBody @NotNull @Valid MyObjectVOList<ManagerVO> managersVO, BindingResult bindingResult) throws ValidationException {
-        if (bindingResult != null && bindingResult.hasErrors()) {
-            throw new ValidationException("Object is not valid", bindingResult);
-        }
-        return managerService.putManagers(managersVO.getObjects());
-    }
     @CrossOrigin
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ManagerVO editManager(@PathVariable("id") int managerID, @RequestBody @NotNull @Valid ManagerVO managerVO, BindingResult bindingResult) throws ValidationException {
@@ -64,6 +50,28 @@ public class ManagerRESTController {
         return managerService.deleteById(managerID);
     }
 
+}
+
+
+
+
+/*
+
+    @CrossOrigin
+    @RequestMapping(value = "/active", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public List<ManagerVO> getActiveManagers() {
+        return managerService.findAllActive();
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "/list", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public List<ManagerVO> putManagers(@RequestBody @NotNull @Valid MyObjectVOList<ManagerVO> managersVO, BindingResult bindingResult) throws ValidationException {
+        if (bindingResult != null && bindingResult.hasErrors()) {
+            throw new ValidationException("Object is not valid", bindingResult);
+        }
+        return managerService.putManagers(managersVO.getObjects());
+    }
+
     @CrossOrigin
     @RequestMapping(value = "/{id}/deactivate", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ManagerVO deactivateByID(@PathVariable("id") int managerID) {
@@ -75,13 +83,6 @@ public class ManagerRESTController {
     public ManagerVO activateByID(@PathVariable("id") int managerID) {
         return managerService.activateByID(managerID);
     }
-
-}
-
-
-
-
-/*
 
     @CrossOrigin
     @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)

@@ -12,11 +12,11 @@ import java.util.Objects;
 
 @Entity
 @NamedQueries(value = {
-        @NamedQuery(name = "Surgeon.findAll", query = "FROM Surgeon ORDER BY surname"),
-        @NamedQuery(name = "Surgeon.findAllActive", query = "FROM Surgeon s WHERE s.inactive = false ORDER BY surname")
+        @NamedQuery(name = "Surgeon.findAll", query = "FROM Surgeon ORDER BY surname, firstName, secondName"),
+//        @NamedQuery(name = "Surgeon.findAllActive", query = "FROM Surgeon s WHERE s.inactive = false ORDER BY surname")
 })
 @Table(name = "surgeon", uniqueConstraints = {
-        @UniqueConstraint(name = "surgeon_pk", columnNames = {"surname", "first_name", "second_name"})
+        @UniqueConstraint(name = "surgeon_pk", columnNames = {"surname", "first_name", "second_name", "city_from"})
 })
 @TypeDef(
         name = "pgsql_enum",
@@ -30,13 +30,13 @@ public class Surgeon implements EntityObject {
 //    @Access(AccessType.FIELD) // TODO Work without annotation !
     private Integer surgeonId;
 
-    @Column(name = "surname", length = 50)
+    @Column(name = "surname", length = 50, nullable = false)
     private String surname;
 
-    @Column(name = "first_name", length = 50)
+    @Column(name = "first_name", length = 50, nullable = false)
     private String firstName;
 
-    @Column(name = "second_name", length = 50)
+    @Column(name = "second_name", length = 50, nullable = false)
     private String secondName;
 
     @Column(name = "sex")
@@ -44,9 +44,12 @@ public class Surgeon implements EntityObject {
     @Type(type = "pgsql_enum")
     private Sex sex;
 
+    @Column(name = "city_from", length = 50, nullable = false)
+    private String city;
+
     private boolean inactive;
 
-    @OneToMany(targetEntity = Visit.class, fetch = FetchType.LAZY, mappedBy = "surgeon", cascade = CascadeType.ALL)
+    @OneToMany(targetEntity = Visit.class, fetch = FetchType.LAZY, mappedBy = "surgeon")
     private List<Visit> visits;
 
     public Integer getSurgeonId() {
@@ -89,6 +92,15 @@ public class Surgeon implements EntityObject {
         this.sex = sex;
     }
 
+    public String getCity() {
+        return city;
+    }
+
+    public Surgeon setCity(String city) {
+        this.city = firstUpperCase(city);
+        return this;
+    }
+
     public boolean isInactive() {
         return inactive;
     }
@@ -119,12 +131,13 @@ public class Surgeon implements EntityObject {
         Surgeon surgeon = (Surgeon) o;
         return Objects.equals(surname, surgeon.surname) &&
                 Objects.equals(firstName, surgeon.firstName) &&
-                Objects.equals(secondName, surgeon.secondName);
+                Objects.equals(secondName, surgeon.secondName) &&
+                Objects.equals(city, surgeon.city);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(surname, firstName, secondName);
+        return Objects.hash(surname, firstName, secondName, city);
     }
 
     @Override
@@ -135,6 +148,7 @@ public class Surgeon implements EntityObject {
         sb.append(", firstName='").append(firstName).append('\'');
         sb.append(", secondName='").append(secondName).append('\'');
         sb.append(", sex=").append(sex);
+        sb.append(", city='").append(city).append('\'');
         sb.append(", inactive=").append(inactive);
         sb.append('}');
         return sb.toString();

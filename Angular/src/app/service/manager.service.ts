@@ -11,7 +11,7 @@ import {MyObjectList} from "../backend_types/my-object-list";
 export class ManagerService {
   private serverUrl = "http://localhost:8080/";  // URL to REST-server
   private managersUrl = "managers/";
-  private activeUrl = "active/";
+  // private activeUrl = "active/";
   private readonly httpOptions = {
     headers: new HttpHeaders({
       "Content-Type": "application/json"
@@ -21,23 +21,20 @@ export class ManagerService {
   constructor(private http: HttpClient) {
   }
 
-  getActiveManagers(): Observable<Manager[]> {
-    return this.http.get<Manager[]>(this.serverUrl + this.managersUrl + this.activeUrl);
+  getManagers(): Observable<Manager[]> {
+    return this.http.get<Manager[]>(this.serverUrl + this.managersUrl);
   }
 
-  getManager(manager_id: number): Observable<Manager> {
-    return this.http.get<Manager>(this.serverUrl + this.managersUrl + manager_id);
+  /** @deprecated */
+  getActiveManagers(): Observable<Manager[]> {
+    return this.http.get<Manager[]>(this.serverUrl + this.managersUrl);
   }
+
 
   addManager(manager: Manager): Observable<Manager> {
     return this.http.post<Manager>(this.serverUrl + this.managersUrl, JSON.stringify(manager), this.httpOptions);
   }
 
-  putManagers(managers: Manager[]): Observable<Manager[]> {
-    const myManagers: MyObjectList<Manager> = new MyObjectList();
-    myManagers.objects = managers;
-    return this.http.put<Manager[]>(this.serverUrl + this.managersUrl + "list/", JSON.stringify(myManagers), this.httpOptions);
-  }
 
   editManager(manager: Manager): Observable<Manager> {
     return this.http.put<Manager>(this.serverUrl + this.managersUrl + manager.managerId.toString(), JSON.stringify(manager),
@@ -48,3 +45,19 @@ export class ManagerService {
     return this.http.delete<boolean>(this.serverUrl + this.managersUrl + manager_id.toString(), this.httpOptions);
   }
 }
+
+
+  //
+  // getManager(manager_id: number): Observable<Manager> {
+  //   return this.http.get<Manager>(this.serverUrl + this.managersUrl + manager_id);
+  // }
+  //
+  // putManagers(managers: Manager[]): Observable<Manager[]> {
+  //   const myManagers: MyObjectList<Manager> = new MyObjectList();
+  //   myManagers.objects = managers;
+  //   return this.http.put<Manager[]>(this.serverUrl + this.managersUrl + "list/", JSON.stringify(myManagers), this.httpOptions);
+  // }
+
+
+
+

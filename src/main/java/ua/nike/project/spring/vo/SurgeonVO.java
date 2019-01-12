@@ -9,22 +9,27 @@ public class SurgeonVO implements VisualObject {
 
     private Integer surgeonId;
 
-    @NotNull(message = "Прізвище повинно бути задано.")
-    @Size(min = 1, max = 50, message = "Прізвище повинно мати до 50 символів !")
-    @Pattern(regexp = "[A-Za-zА-Яа-яЁёІіЇїЄє]+", message = "Прізвище повинно мати тільки літери !")
+    @NotNull(message = "surgeon.surname.null")
+    @Size(min = 1, max = 50, message = "surgeon.surname.size")
+    @Pattern(regexp = "[A-Za-zА-Яа-яЁёІіЇїЄє]+", message = "surgeon.surname.pattern")
     private String surname;
 
-    @NotNull(message = "Ім'я повинно бути задано.")
-    @Size(min = 1, max = 50, message = "Ім'я повинно мати від 50 символів !")
-    @Pattern(regexp = "[A-Za-zА-Яа-яЁёІіЇїЄє]+", message = "Ім'я повинно мати тільки літери !")
+    @NotNull(message = "surgeon.firstName.null")
+    @Size(min = 1, max = 50, message = "surgeon.firstName.size")
+    @Pattern(regexp = "[A-Za-zА-Яа-яЁёІіЇїЄє]+", message = "surgeon.firstName.pattern")
     private String firstName;
 
-    @NotNull(message = "По-Батькові повинно бути задано.")
-    @Size(min = 1, max = 50, message = "По-Батькові повинно мати до 50 символів !")
-    @Pattern(regexp = "[A-Za-zА-Яа-яЁёІіЇїЄє]+", message = "По-Батькові повинно мати тільки літери !")
+    @NotNull(message = "surgeon.secondName.null")
+    @Size(min = 1, max = 50, message = "surgeon.secondName.size")
+    @Pattern(regexp = "[A-Za-zА-Яа-яЁёІіЇїЄє]+", message = "surgeon.secondName.pattern")
     private String secondName;
 
-    @NotNull(message = "Стать повинна бути задана.")
+    @NotNull(message = "manager.city.null")
+    @Size(min = 1, max = 50, message = "manager.city.size")
+    @Pattern(regexp = "[A-Za-zА-Яа-яЁёІіЇїЄє]+", message = "manager.city.pattern")
+    private String city;
+
+    @NotNull(message = "surgeon.sex.null")
     private Character sex;
 
     private boolean inactive;
@@ -61,6 +66,15 @@ public class SurgeonVO implements VisualObject {
         this.secondName = firstUpperCase(secondName);
     }
 
+    public String getCity() {
+        return city;
+    }
+
+    public SurgeonVO setCity(String city) {
+        this.city = firstUpperCase(city);
+        return this;
+    }
+
     public Character getSex() {
         return sex;
     }
@@ -88,15 +102,16 @@ public class SurgeonVO implements VisualObject {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        SurgeonVO surgeon = (SurgeonVO) o;
-        return Objects.equals(surname, surgeon.surname) &&
-                Objects.equals(firstName, surgeon.firstName) &&
-                Objects.equals(secondName, surgeon.secondName);
+        SurgeonVO surgeonVO = (SurgeonVO) o;
+        return Objects.equals(surname, surgeonVO.surname) &&
+                Objects.equals(firstName, surgeonVO.firstName) &&
+                Objects.equals(secondName, surgeonVO.secondName) &&
+                Objects.equals(city, surgeonVO.city);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(surname, firstName, secondName);
+        return Objects.hash(surname, firstName, secondName, city);
     }
 
     @Override
@@ -106,6 +121,7 @@ public class SurgeonVO implements VisualObject {
         sb.append(", surname='").append(surname).append('\'');
         sb.append(", firstName='").append(firstName).append('\'');
         sb.append(", secondName='").append(secondName).append('\'');
+        sb.append(", city='").append(city).append('\'');
         sb.append(", sex=").append(sex);
         sb.append(", inactive=").append(inactive);
         sb.append('}');

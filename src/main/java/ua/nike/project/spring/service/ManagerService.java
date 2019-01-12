@@ -32,24 +32,13 @@ public class ManagerService {
     }
 
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-    public Manager findEntytiByID(int entityID) {
+    public Manager findEntityByID(int entityID) {
         return dao.findByID(entityID);
     }
 
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<ManagerVO> findAll() {
         List<Manager> entities = dao.findAll("Manager.findAll", null);
-        if (entities == null) return null;
-        List<ManagerVO> result = new ArrayList<>();
-        for (Manager entity : entities) {
-            result.add(convertToManagerVO(entity));
-        }
-        return result;
-    }
-
-    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-    public List<ManagerVO> findAllActive() {
-        List<Manager> entities = dao.findAll("Manager.findAllActive", null);
         if (entities == null) return null;
         List<ManagerVO> result = new ArrayList<>();
         for (Manager entity : entities) {
@@ -72,37 +61,8 @@ public class ManagerService {
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public List<ManagerVO> putManagers(List<ManagerVO> managersVO) {
-        List<ManagerVO> result = new ArrayList<>();
-        for (ManagerVO managerVO : managersVO) {
-            if (managerVO != null) {
-                if (managerVO.getManagerId() > 0) {
-                    result.add(update(managerVO.getManagerId(), managerVO));
-                } else {
-                    result.add(create(managerVO));
-                }
-            }
-        }
-        return result;
-    }
-
-    @Transactional(propagation = Propagation.REQUIRED)
     public boolean deleteById(int managerID) {
         return dao.remove(managerID);
-    }
-
-    @Transactional(propagation = Propagation.REQUIRED)
-    public ManagerVO deactivateByID(int managerID) {
-        Manager manager = dao.findByID(managerID);
-        manager.setInactive(true);
-        return convertToManagerVO(dao.update(manager));
-    }
-
-    @Transactional(propagation = Propagation.REQUIRED)
-    public ManagerVO activateByID(int managerID) {
-        Manager manager = dao.findByID(managerID);
-        manager.setInactive(false);
-        return convertToManagerVO(dao.update(manager));
     }
 
     private ManagerVO convertToManagerVO(Manager manager) {
@@ -146,6 +106,48 @@ public class ManagerService {
 
 
     /*
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public List<ManagerVO> putManagers(List<ManagerVO> managersVO) {
+        List<ManagerVO> result = new ArrayList<>();
+        for (ManagerVO managerVO : managersVO) {
+            if (managerVO != null) {
+                if (managerVO.getManagerId() > 0) {
+                    result.add(update(managerVO.getManagerId(), managerVO));
+                } else {
+                    result.add(create(managerVO));
+                }
+            }
+        }
+        return result;
+    }
+
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+    public List<ManagerVO> findAllActive() {
+        List<Manager> entities = dao.findAll("Manager.findAllActive", null);
+        if (entities == null) return null;
+        List<ManagerVO> result = new ArrayList<>();
+        for (Manager entity : entities) {
+            result.add(convertToManagerVO(entity));
+        }
+        return result;
+    }
+
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public ManagerVO deactivateByID(int managerID) {
+        Manager manager = dao.findByID(managerID);
+        manager.setInactive(true);
+        return convertToManagerVO(dao.update(manager));
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public ManagerVO activateByID(int managerID) {
+        Manager manager = dao.findByID(managerID);
+        manager.setInactive(false);
+        return convertToManagerVO(dao.update(manager));
+    }
+
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<ManagerVO> getListByQuery(String hqlQuery, Map<String, Object> parameters) throws
             ApplicationException {

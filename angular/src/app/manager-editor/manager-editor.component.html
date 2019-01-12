@@ -1,56 +1,68 @@
 <ngx-toasta></ngx-toasta>
 <br><br><br>
-<img *ngIf="loading_managers" src="/assets/img/download.gif" style="max-width: 600px; min-width: 600px;"/>
-<div *ngIf="!loading_managers">
+<img [hidden]="!managers_loading" src="/assets/img/download.gif" style="max-width: 600px"/>
+<div *ngIf="!managers_loading">
   <div class="left-container" style="max-width: 800px; min-width: 550px; margin-left: 10px">
     <form [formGroup]="searchForm">
       <div class="input-group-prepend">
         <span class="input-group-text">Пошук :</span>
-        <input #search type="search" formControlName="searchControlForm"
+        <input #search id="search" type="search" formControlName="searchControlForm"
                [ngClass]="{'form-control border-left':true,
                     'is-valid':searchForm.valid,
                     'is-invalid':!searchForm.valid
-                    }"
-        (input)="filterManagers(search.value)">
+                    }">
       </div>
     </form>
   </div>
+
   <div class="left-container" style="max-width: 800px; min-width: 550px; margin-left: 10px">
     <p class="h3 text-center">Менеджери клініки :</p>
 
+    <label class="text-right">
+      <input type="checkbox" [(ngModel)]="hidden_managers"
+             class="text-right"> приховані
+    </label>
+
     <form [formGroup]="tableForm">
       <div class="table-responsive-lg">
-        <table class="table table-bordered table-sm table-hover">
+        <table id="table" class="table table-bordered table-sm table-hover">
 
           <thead>
           <tr class="table-info">
             <th scope="col" style="width: 30px;"></th>
-            <th scope="col" colspan="3">ПІБ Менеджера</th>
+            <th scope="col" colspan="3">
+              <img [hidden]="!sorting_order" src="/assets/img/sort/sort-ASC.png" style="max-width: 25px;"
+                   (click)="determineOrder()"/>
+              <img [hidden]="sorting_order" src="/assets/img/sort/sort-DESC.png" style="max-width: 25px;"
+                   (click)="determineOrder()"/>
+              <label>&nbsp; ПІБ Менеджера</label>
+            </th>
             <th scope="col" style="width: 80px;">Місто</th>
             <th scope="col" style="width: 40px;">Ст.</th>
+            <th scope="col" style="width: 40px;" *ngIf="hidden_managers">бл.</th>
           </tr>
           </thead>
 
           <tbody formArrayName="managersForm">
 
-          <tr *ngFor="let managerForm of tableForm.get('managersForm').controls; let i=index"
+          <tr *ngFor="let managerForm of (tableForm.get('managersForm').controls); let i=index"
+              [hidden]="managerForm.get('inactive').value && !hidden_managers"
               [ngClass]="{changed:managerForm.get('isChanged').value}">
 
             <td [formGroupName]="i">
               <input type="checkbox" formControlName="isChanged"
                      (change)="managerForm.invalid ? managerForm.get('isChanged')
                    .patchValue(false) : false"
-                     class="form-control form-control-sm input-style-active"
-              >
+                     class="form-control form-control-sm input-style-active">
             </td>
 
             <td [formGroupName]="i">
-              <input #surname type="text" formControlName="surname" title="" placeholder="  - Прізвище -  "
+              <input id="surname" #surname type="text" formControlName="surname" title="" placeholder="  - Прізвище -  "
                      [ngClass]="{'form-control form-control-sm':true,
                     'input-style-active':managerForm.get('surname').valid,
                     'is-invalid':!managerForm.get('surname').valid
                     }"
-                     (change)="managerForm.get('isChanged').patchValue(managerForm.valid)"
+                     (input)="managerForm.get('isChanged').patchValue(managerForm.valid)"
                      (keydown.space)="firstName.focus(); false">
             </td>
 
@@ -60,7 +72,7 @@
                     'input-style-active':managerForm.get('firstName').valid,
                     'is-invalid':!managerForm.get('firstName').valid
                     }"
-                     (change)="managerForm.get('isChanged').patchValue(managerForm.valid)"
+                     (input)="managerForm.get('isChanged').patchValue(managerForm.valid)"
                      (keydown.space)="secondName.focus(); false">
             </td>
 
@@ -70,7 +82,7 @@
                     'input-style-active':managerForm.get('secondName').valid,
                     'is-invalid':!managerForm.get('secondName').valid
                     }"
-                     (change)="managerForm.get('isChanged').patchValue(managerForm.valid)"
+                     (input)="managerForm.get('isChanged').patchValue(managerForm.valid)"
                      (keydown.space)="city.focus(); false">
             </td>
 
@@ -80,7 +92,7 @@
                     'input-style-active':managerForm.get('city').valid,
                     'is-invalid':!managerForm.get('city').valid
                     }"
-                     (change)="managerForm.get('isChanged').patchValue(managerForm.valid)"
+                     (input)="managerForm.get('isChanged').patchValue(managerForm.valid)"
                      (keydown.space)="sex.focus(); false">
             </td>
 
@@ -97,6 +109,11 @@
                 </option>
               </select>
             </td>
+            <td [formGroupName]="i" *ngIf="hidden_managers">
+              <input type="checkbox" formControlName="inactive"
+                     (change)="managerForm.get('isChanged').patchValue(managerForm.valid)"
+                     class="form-control form-control-sm input-style-active">
+            </td>
           </tr>
           </tbody>
         </table>
@@ -110,14 +127,14 @@
 <div class="left-container fixed-bottom bg-light">
   <button class="btn btn-min-style" (click)="onAdd()">Add</button>
   <button class="btn btn-success btn-min-style" (click)="onSave()"
-          [disabled]="getSelectedElementCount() == 0">Save
+          [disabled]="!(getSelectedElementCount() == 1)">Save
   </button>
-  <img *ngIf="loading_save" src="/assets/img/rotating-balls-spinner.gif" height="40" width="40"/>
+  <img [hidden]="!save_loading" src="/assets/img/rotating-balls-spinner.gif" height="40" width="40"/>
   <button class="btn btn-warning btn-min-style" (click)="onRefresh()">Refresh</button>
   <button class="btn btn-dark btn-min-style" (click)="onDelete()"
           [disabled]="!(getSelectedElementCount() == 1)">Delete
   </button>
-  <img *ngIf="loading_del" src="/assets/img/rotating-balls-spinner.gif" height="40" width="40"/>
+  <img [hidden]="!del_loading" src="/assets/img/rotating-balls-spinner.gif" height="40" width="40"/>
   <button class="btn btn-danger btn-min-style" (click)="onCancel()"
           [disabled]="getSelectedElementCount() == 0">Cancel
   </button>

@@ -47,18 +47,7 @@ public class SurgeonService {
         return result;
     }
 
-    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-    public List<SurgeonVO> findAllActive() {
-        List<Surgeon> entities = dao.findAll("Surgeon.findAllActive", null);
-        if (entities == null) return null;
-        List<SurgeonVO> result = new ArrayList<>();
-        for (Surgeon entity : entities) {
-            result.add(convertToSurgeonVO(entity));
-        }
-        return result;
-    }
-
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional(propagation = Propagation.REQUIRED)
     public SurgeonVO create(SurgeonVO surgeonVO) {
         Surgeon entity = copyToSurgeon(surgeonVO, null);
         return convertToSurgeonVO(dao.save(entity));
@@ -76,19 +65,6 @@ public class SurgeonService {
         return dao.remove(surgeonID);
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
-    public SurgeonVO deactivateByID(int surgeonID) {
-        Surgeon surgeon = dao.findByID(surgeonID);
-        surgeon.setInactive(true);
-        return convertToSurgeonVO(dao.update(surgeon));
-    }
-
-    @Transactional(propagation = Propagation.REQUIRED)
-    public SurgeonVO activateByID(int surgeonID) {
-        Surgeon surgeon = dao.findByID(surgeonID);
-        surgeon.setInactive(false);
-        return convertToSurgeonVO(dao.update(surgeon));
-    }
 
     private SurgeonVO convertToSurgeonVO(Surgeon surgeon) {
         if (surgeon == null) return null;
@@ -97,6 +73,7 @@ public class SurgeonService {
         result.setSurname(surgeon.getSurname());
         result.setFirstName(surgeon.getFirstName());
         result.setSecondName(surgeon.getSecondName());
+        result.setCity(surgeon.getCity());
         result.setSex(surgeon.getSex().toCharacter());
         result.setInactive(surgeon.isInactive());
         return result;
@@ -108,6 +85,7 @@ public class SurgeonService {
             result.setSurname(original.getSurname());
             result.setFirstName(original.getFirstName());
             result.setSecondName(original.getSecondName());
+            result.setCity(original.getCity());
             result.setSex(Sex.getInstance(original.getSex()));
             result.setInactive(original.isInactive());
         }
@@ -125,11 +103,34 @@ public class SurgeonService {
 
 
 
-
-
-
-
     /*
+
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public SurgeonVO deactivateByID(int surgeonID) {
+        Surgeon surgeon = dao.findByID(surgeonID);
+        surgeon.setInactive(true);
+        return convertToSurgeonVO(dao.update(surgeon));
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public SurgeonVO activateByID(int surgeonID) {
+        Surgeon surgeon = dao.findByID(surgeonID);
+        surgeon.setInactive(false);
+        return convertToSurgeonVO(dao.update(surgeon));
+    }
+
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+    public List<SurgeonVO> findAllActive() {
+        List<Surgeon> entities = dao.findAll("Surgeon.findAllActive", null);
+        if (entities == null) return null;
+        List<SurgeonVO> result = new ArrayList<>();
+        for (Surgeon entity : entities) {
+            result.add(convertToSurgeonVO(entity));
+        }
+        return result;
+    }
+
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<SurgeonVO> getListByQuery(String hqlQuery, Map<String, Object> parameters) throws
             ApplicationException {
