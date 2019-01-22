@@ -14,7 +14,8 @@ import java.util.Objects;
 @NamedQueries(value = {
         @NamedQuery(name = "Accomodation.findAll", query = "FROM Accomodation acc ORDER BY acc.ward, acc.wardPlace"),
         @NamedQuery(name = "Accomodation.getAllActive", query = "FROM Accomodation acc where acc.inactive = false ORDER BY acc.ward, acc.wardPlace"),
-        @NamedQuery(name = "Accomodation.getActiveWards", query = "SELECT DISTINCT acc.ward FROM Accomodation acc where acc.inactive = false ORDER BY acc.ward")
+        @NamedQuery(name = "Accomodation.getActiveWards", query = "SELECT DISTINCT acc.ward FROM Accomodation acc where acc.inactive = false ORDER BY acc.ward"),
+        @NamedQuery(name = "Accomodation.getWards", query = "SELECT DISTINCT acc.ward FROM Accomodation acc ORDER BY acc.ward")
 })
 @Table(name = "accomodation", uniqueConstraints = {
         @UniqueConstraint(columnNames = {"ward", "ward_place"})

@@ -16,9 +16,13 @@
         <a class="nav-link" routerLink="/client" [ngClass]="{active:statusNavbar=='client'}"
            (click)="statusNavbar = 'client'; isNavbarCollapsed = false">Клієнти </a>
       </li>
+      <!--<li class="nav-item">-->
+        <!--<a class="nav-link" routerLink="/accomodation" [ngClass]="{active:statusNavbar=='accomodation'}"-->
+           <!--(click)="statusNavbar = 'accomodation'; isNavbarCollapsed = false">Поселення</a>-->
+      <!--</li>-->
       <li class="nav-item">
-        <a class="nav-link" routerLink="/accomodation" [ngClass]="{active:statusNavbar=='accomodation'}"
-           (click)="statusNavbar = 'accomodation'; isNavbarCollapsed = false">Поселення</a>
+        <a class="nav-link" routerLink="/visit" [ngClass]="{active:statusNavbar=='visit'}"
+           (click)="statusNavbar = 'visit'; isNavbarCollapsed = false">Поселення(new)</a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="#" (click)="false" [ngClass]="{active:statusNavbar=='operation'}"
@@ -39,7 +43,7 @@
       </li>
 
       <li>
-        <div *ngIf="statusNavbar=='accomodation'">
+        <div *ngIf="statusNavbar=='accomodation' || statusNavbar=='visit'">
           <app-date-selector></app-date-selector>
         </div>
       </li>

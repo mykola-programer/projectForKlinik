@@ -1,0 +1,272 @@
+<ngx-toasta></ngx-toasta>
+<br><br><br>
+
+<div [hidden]="!calender_loading">
+  <p class="h5 text-center">Виберіть дату !</p>
+  <img class="center" src="/assets/img/calender.png"/>
+</div>
+
+<img [hidden]="!visits_loading" src="/assets/img/download.gif" style="max-width: 600px; min-width: 600px;"/>
+<div *ngIf="!visits_loading && !calender_loading" class="container-fluid"
+     style="max-width: 1200px; min-width: 550px; margin-left: 10px">
+
+  <form [formGroup]="operationTablesForm">
+    <input type="text" readonly class="h5"
+           formControlName="tablesLabel"
+           style="width: 100%; border: none">
+
+    <div formArrayName="tablesForm">
+      <div *ngFor="let tablesForm of (operationTablesForm.get('tablesForm').controls); let i=index"
+           class="container-fluid" style="min-width:500px;">
+
+        <div [formGroupName]="i">
+          <input type="text" readonly
+                 formControlName="tableLabel"
+                 class="h5"
+                 style="border: none">
+
+          <div class="table-responsive-lg">
+            <table id="table" class="table table-bordered table-sm table-hover">
+              <thead>
+              <tr class="table-info">
+                <th scope="col" style="width: 30px;"></th>
+                <th scope="col" style="width: 35px;">№м</th>
+                <th scope="col" style="width: 50px;">№п</th>
+                <th scope="col" style="width: 80px;">Час</th>
+                <th scope="col" style="min-width: 195px; max-width: 250px">ПІБ</th>
+                <th scope="col" style="min-width: 195px; max-width: 250px">ПІБ2</th>
+                <th scope="col" style="width: 35px;">Ст.</th>
+                <th scope="col" style="width: 60px;">Статус</th>
+                <th scope="col" style="width: 150px;">Супр. пацієнта</th>
+                <th scope="col" style="width: 150px;">Операція</th>
+                <th scope="col" style="width: 55px;">Око</th>
+                <th scope="col" style="width: 100px">Хірург</th>
+                <th scope="col" style="width: 100px">Менеджер</th>
+                <th scope="col">Примітки</th>
+                <th scope="col" style="width: 40px;" *ngIf="hidden_visits">бл.</th>
+              </tr>
+              </thead>
+
+              <tbody formArrayName="visitsForm">
+              <tr *ngFor="let visitForm of (tablesForm.get('visitsForm').controls); let j=index"
+                  [ngClass]="{changed:visitForm.get('isChanged').value}">
+
+                <!--Checkbox-->
+                <td [formGroupName]="j">
+                  <input type="checkbox" formControlName="isChanged"
+                         (change)="visitForm.invalid ? visitForm.get('isChanged')
+                   .patchValue(false) : false"
+                         class="form-control form-control-sm input-style-active">
+                </td>
+
+                <!--Ward Place-->
+                <td [formGroupName]="j" scope="row">
+                  <input type="text" formControlName="accomodation" readonly
+                         class="form-control font-weight-bold form-control-sm input-style-passive"
+                         style="border: none">
+                </td>
+
+                <!--Order For Come-->
+                <td [formGroupName]="j">
+                  <input type="number" formControlName="orderForCome"
+                         (change)="visitForm.get('isChanged').patchValue(visitForm.valid)"
+                         [ngClass]="{'form-control font-weight-bold form-control-sm': true,
+                    'is-invalid': !visitForm.get('orderForCome').valid,
+                    'input-style-active': visitForm.get('orderForCome').valid}">
+                </td>
+
+                <!--Time For Come-->
+                <td [formGroupName]="j">
+                  <input type="time" formControlName="timeForCome"
+                         (change)="visitForm.get('isChanged').patchValue(visitForm.valid)"
+                         [ngClass]="{'form-control form-control-sm': true,
+                    'is-invalid': !(visitForm.get('timeForCome').valid),
+                    'input-style-active': visitForm.get('timeForCome').valid}">
+
+                </td>
+
+                <!--Client-->
+                <td [formGroupName]="j">
+
+                  <input type="text" [matAutocomplete]="autoClient"
+                         formControlName="client"
+                         (change)="visitForm.get('isChanged').patchValue(visitForm.valid)"
+                         (focus)="search(visitForm.get('client'))"
+                         class="form-control form-control-sm input-style-active">
+
+                  <mat-autocomplete autoActiveFirstOption [displayWith]="displayFn" #autoClient="matAutocomplete">
+                    <mat-option *ngFor="let filtered_client of filteredClients" (onSelectionChange)="filtered_client"
+                                [value]="filtered_client">
+                      {{filtered_client.surname}} {{filtered_client.firstName}} {{filtered_client.secondName}}
+                    </mat-option>
+                  </mat-autocomplete>
+
+                </td>
+
+                <!--Client-->
+                <td [formGroupName]="j">
+
+                  <select type="text"
+                         formControlName="client2"
+                         class="form-control form-control-sm input-style-active">
+
+                    <option [selected]="visitForm.get('client2').value == 0"></option>
+                    <option *ngFor="let filtered_client of clients" [ngValue]="filtered_client.clientId"
+                            [selected]="visitForm.get('client2').value == filtered_client.clientId"  >
+                      {{filtered_client.surname}} {{filtered_client.firstName}} {{filtered_client.secondName}}
+                    </option>
+                  </select>
+                </td>
+
+                <!--Sex-->
+                <td [formGroupName]="j">
+                  <input type="text" formControlName="sex" readonly
+                         [ngClass]="{'form-control form-control-sm': true,
+                    'input-style-passive': true}">
+
+                </td>
+
+                <!--  Status  -->
+                <td [formGroupName]="j">
+                  <select type="text" formControlName="status"
+                          (change)="visitForm.get('isChanged').patchValue(visitForm.valid)"
+                          [ngClass]="{'form-control form-control-sm': true,
+                    'input-style-active': true}">
+                    <option *ngFor="let status of statuses"
+                            [selected]="status == visitForm.get('status').value">
+                      {{status}}
+                    </option>
+                  </select>
+                </td>
+
+                <!--Patient-->
+                <td [formGroupName]="j">
+                  <select formControlName="patient"
+                          class="form-control form-control-sm input-style-active"
+                          (change)="visitForm.get('isChanged').patchValue(visitForm.valid)"
+                          *ngIf="visitForm.get('status').value == 'супров.'">
+                    <option [selected]="visitForm.get('patient').value == 0"></option>
+                    <option *ngFor="let patient of patients" [ngValue]="patient.clientId"
+                            [selected]="visitForm.get('patient').value == patient.clientId">
+                      {{patient.surname}} {{patient.firstName}} {{patient.secondName}}
+                    </option>
+                  </select>
+
+                </td>
+
+                <!--Operation Type-->
+                <td [formGroupName]="j">
+                  <select formControlName="operationType"
+                          class="form-control form-control-sm input-style-active"
+                          (change)="visitForm.get('isChanged').patchValue(visitForm.valid)"
+                          *ngIf="visitForm.get('status').value == 'пацієнт'">
+                    <option [selected]="visitForm.get('operationType').value == 0"></option>
+                    <option *ngFor="let operation_type of operation_types" [ngValue]="operation_type.operationTypeId"
+                            [disabled]="operation_type.inactive"
+                            [selected]="visitForm.get('operationType').value == operation_type.operationTypeId">
+                      {{operation_type.name}}
+                    </option>
+                  </select>
+                </td>
+
+                <!--EYE-->
+                <td [formGroupName]="j">
+                  <select formControlName="eye"
+                          class="form-control form-control-sm input-style-active"
+                          (change)="visitForm.get('isChanged').patchValue(visitForm.valid)"
+                          *ngIf="visitForm.get('status').value == 'пацієнт'">
+                    <option [selected]="visitForm.get('eye').value == null"></option>
+                    <option *ngFor="let eye of eyes" [ngValue]="eye"
+                            [selected]="eye == visitForm.get('eye').value">
+                      {{eye}}
+                    </option>
+                  </select>
+                </td>
+
+                <!--Surgeon-->
+                <td [formGroupName]="j">
+                  <select formControlName="surgeon"
+                          class="form-control form-control-sm input-style-active"
+                          (change)="visitForm.get('isChanged').patchValue(visitForm.valid)"
+                          *ngIf="visitForm.get('status').value == 'пацієнт'">
+                    <option [selected]="visitForm.get('surgeon').value == 0"></option>
+                    <option *ngFor="let surgeon of surgeons" [ngValue]="surgeon.surgeonId"
+                            [disabled]="surgeon.inactive"
+                            [selected]="visitForm.get('surgeon').value == surgeon.surgeonId">
+                      {{surgeon.surname}}
+                      {{surgeon.firstName.substring(0,1)}}.{{surgeon.secondName.substring(0,1)}}.({{surgeon.city}})
+                    </option>
+                  </select>
+                </td>
+
+                <!--Manager-->
+                <td [formGroupName]="j">
+                  <select formControlName="manager"
+                          class="form-control form-control-sm input-style-active"
+                          (change)="visitForm.get('isChanged').patchValue(visitForm.valid)"
+                          *ngIf="visitForm.get('status').value == 'пацієнт'">
+                    <option [selected]="visitForm.get('manager').value == 0"></option>
+                    <option *ngFor="let manager of managers" [ngValue]="manager.managerId"
+                            [disabled]="manager.inactive"
+                            [selected]="visitForm.get('manager').value == manager.managerId">
+                      {{manager.surname}}
+                      {{manager.firstName.substring(0,1)}}.{{manager.secondName.substring(0,1)}}.({{manager.city}})
+                    </option>
+                  </select>
+                </td>
+
+                <!--Note-->
+                <td [formGroupName]="j">
+                  <input type="text" formControlName="note"
+                         (input)="visitForm.get('isChanged').patchValue(visitForm.valid)"
+                         class="form-control form-control-sm input-style-active"
+                  >
+                </td>
+
+                <td [formGroupName]="j">
+                  <img *ngIf="visitForm.get('inactive').value"
+                       src="/assets/img/icons8/lock-48.png"
+                       style="width: 70%">
+
+                </td>
+              </tr>
+              </tbody>
+
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+
+
+<br><br><br>
+
+<div class="left-container fixed-bottom bg-light">
+
+  <button class="btn btn-min-style" (click)="onAdd()">Add</button>
+
+  <button class="btn btn-success btn-min-style" (click)="onSave()"
+          [disabled]="!(getSelectedElementCount() == 1)">Save
+  </button>
+  <img [hidden]="!save_loading" src="/assets/img/rotating-balls-spinner.gif" height="40" width="40"/>
+
+  <button class="btn btn-warning btn-min-style" (click)="onRefresh()">Refresh</button>
+
+  <button class="btn btn-dark btn-min-style" (click)="onDelete()"
+          [disabled]="!(getSelectedElementCount() == 1)">Delete
+  </button>
+  <img [hidden]="!del_loading" src="/assets/img/rotating-balls-spinner.gif" height="40" width="40"/>
+
+  <button class="btn btn-info btn-min-style" (click)="onDisplace()">Displace</button>
+  <img *ngIf="displace_loading" src="/assets/img/rotating-balls-spinner.gif" height="40" width="40"/>
+
+  <button class="btn btn-info btn-min-style" (click)="moveToAnotherDatePlace()">Move to ...</button>
+
+  <button class="btn btn-danger btn-min-style" (click)="onCancel()"
+          [disabled]="getSelectedElementCount() == 0">Cancel
+  </button>
+  <button class="btn btn-danger btn-min-style" (click)="test()">Test</button>
+</div>
+

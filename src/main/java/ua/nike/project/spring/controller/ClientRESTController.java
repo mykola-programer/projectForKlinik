@@ -24,9 +24,9 @@ public class ClientRESTController {
     @RequestMapping(value = "", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public List<ClientVO> getClients() {
         List<ClientVO> test = clientService.findAll();
-        for (int i = 0; i < 3; i++) {
-            test.addAll(test);
-        }
+//        for (int i = 0; i < 3; i++) {
+//            test.addAll(test);
+//        }
         return test;
     }
 

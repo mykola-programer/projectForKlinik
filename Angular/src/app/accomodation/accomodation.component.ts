@@ -75,6 +75,7 @@ export class AccomodationComponent implements OnInit {
         this.onRefresh();
       }
     );
+
   }
 
   private getVisits() {
@@ -98,7 +99,8 @@ export class AccomodationComponent implements OnInit {
   }
 
   private getVisitsWithWards() {
-    this.accomodationService.getActiveAccomodations().toPromise().then((accomodations: Accomodation[]) => {
+    this.accomodationService.getAccomodations().toPromise().then((value: Accomodation[]) => {
+      const accomodations = value.filter(accomodation => !accomodation.inactive);
       this.visits_with_wards = [];
       accomodations.forEach((accomodation: Accomodation) => {
         let isAdd = false;
@@ -137,8 +139,10 @@ export class AccomodationComponent implements OnInit {
     this.visits_without_wards = this.visits_of_date.filter((visit: Visit) => visit.accomodation == null);
   }
 
-  private getWards() {
-    this.accomodationService.getWards().toPromise().then(wards => this.wards = wards);
+  private getAccomodations() {
+    this.accomodationService.getAccomodations().toPromise().then(accomodations => {
+      this.wards = accomodations.map(value => value.ward).filter((value, index, self) => self.indexOf(value) === index);
+    });
   }
 
   private getClients() {
@@ -387,7 +391,7 @@ export class AccomodationComponent implements OnInit {
 
   onRefresh() {
     this.getVisits();
-    this.getWards();
+    this.getAccomodations();
     this.getSurgeons();
     this.getManagers();
     this.getOperationTypes();

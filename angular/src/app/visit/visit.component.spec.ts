@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { NoWardComponent } from './no-ward.component';
+import { VisitComponent } from './visit.component';
 
-describe('NoWardComponent', () => {
-  let component: NoWardComponent;
-  let fixture: ComponentFixture<NoWardComponent>;
+describe('VisitComponent', () => {
+  let component: VisitComponent;
+  let fixture: ComponentFixture<VisitComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ NoWardComponent ]
+      declarations: [ VisitComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(NoWardComponent);
+    fixture = TestBed.createComponent(VisitComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

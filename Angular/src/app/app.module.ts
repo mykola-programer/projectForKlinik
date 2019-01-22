@@ -7,8 +7,6 @@ import {DateSelectorComponent} from "./date/date-selector/date-selector.componen
 import {HttpClientModule} from "@angular/common/http";
 import {HttpClientInMemoryWebApiModule} from "angular-in-memory-web-api";
 import {VisitDateService} from "./service/visit-date.service";
-import {WardComponent} from "./accomodation/ward/ward.component";
-import {NoWardComponent} from "./accomodation/no-ward/no-ward.component";
 import {ClientEditorComponent} from "./client-editor/client-editor.component";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {MatAutocompleteModule} from "@angular/material/autocomplete";
@@ -23,6 +21,7 @@ import { DateSelectorDialogComponent } from "./date/date-selector-dialog/date-se
 import { SurgeonEditorComponent } from "./surgeon-editor/surgeon-editor.component";
 import {ToastaModule} from "ngx-toasta";
 import { ManagerEditorComponent } from "./manager-editor/manager-editor.component";
+import { VisitComponent } from "./visit/visit.component";
 
 // import {ngContentDef} from "@angular/core/src/view";
 
@@ -30,8 +29,6 @@ import { ManagerEditorComponent } from "./manager-editor/manager-editor.componen
   declarations: [
     AppComponent,
     DateSelectorComponent,
-    WardComponent,
-    NoWardComponent,
     ClientEditorComponent,
     DateEditorComponent,
     NavbarComponent,
@@ -40,6 +37,7 @@ import { ManagerEditorComponent } from "./manager-editor/manager-editor.componen
     DateSelectorDialogComponent,
     SurgeonEditorComponent,
     ManagerEditorComponent,
+    VisitComponent,
   ],
   imports: [
     ReactiveFormsModule,

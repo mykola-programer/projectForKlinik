@@ -132,7 +132,7 @@ export class DateSelectorComponent implements OnInit {
 
   onClick(calendar) {
     calendar.toggle();
-    this.getDates();
+    // this.getDates();
   }
 
 

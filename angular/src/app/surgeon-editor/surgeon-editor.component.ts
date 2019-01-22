@@ -7,6 +7,8 @@ import {FormArray, FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {ToastMessageService} from "../service/toast-message.service";
 import {debounceTime} from "rxjs/operators";
 import {AbstractControl} from "@angular/forms/src/model";
+import {Accomodation} from "../backend_types/accomodation";
+import {Visit} from "../backend_types/visit";
 
 @Component({
   selector: "app-surgeon-editor",
@@ -17,6 +19,7 @@ export class SurgeonEditorComponent implements OnInit {
   public surgeons: Surgeon[];
   public genders: string[] = ["Ч", "Ж"];
 
+  map: Map<Accomodation, Visit>;
   searchForm: FormGroup = this.fb.group({
     searchControlForm: ["", [Validators.maxLength(50), Validators.pattern("[A-Za-zА-Яа-яЁёІіЇїЄє ]*")]],
   });

@@ -19,24 +19,4 @@ export class NavbarComponent implements OnInit {
     this.serviceNavbar.statusNavbar.subscribe(statusNavbar => this.statusNavbar = statusNavbar);
   }
 
-  // addDate() {
-  //   this.openDialogChangeDate();
-  //   return false;
-  // }
-
-  private openDialogChangeDate() {
-    const dialogRef = this.dialog.open(DateEditorComponent, {
-      width: "550px",
-      height: "330px",
-    });
-    dialogRef.afterClosed().subscribe(() => {
-      console.log("The dialog was closed !");
-      // this.setNgbDatepickerConfig();
-      // this.getVisitDates();
-    });
-  }
-
-  stop() {
-    return false;
-  }
 }

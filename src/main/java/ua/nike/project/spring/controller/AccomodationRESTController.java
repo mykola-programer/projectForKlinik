@@ -14,32 +14,26 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/accomodations")
-public class AccomodationRESTController {
+public class AccomodationRESTController implements RESTController<AccomodationVO> {
 
     @Autowired
     private AccomodationService accomodationService;
 
     @CrossOrigin
     @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public AccomodationVO getAccomodation(@PathVariable("id") int accomodationID) {
+    public AccomodationVO getByID(@PathVariable("id") int accomodationID) {
         return accomodationService.findByID(accomodationID);
     }
 
     @CrossOrigin
     @RequestMapping(value = "", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public List<AccomodationVO> getAccomodations() {
+    public List<AccomodationVO> getAll() {
         return accomodationService.findAll();
     }
 
     @CrossOrigin
-    @RequestMapping(value = "/active", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public List<AccomodationVO> getActiveAccomodations() {
-        return accomodationService.findAllActive();
-    }
-
-    @CrossOrigin
     @RequestMapping(value = "", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public AccomodationVO addAccomodation(@RequestBody @NotNull @Valid AccomodationVO accomodationVO, BindingResult bindingResult) throws ValidationException {
+    public AccomodationVO add(@RequestBody @NotNull @Valid AccomodationVO accomodationVO, BindingResult bindingResult) throws ValidationException {
         if (bindingResult != null && bindingResult.hasErrors()) {
             throw new ValidationException("Object is not valid", bindingResult);
         }
@@ -48,7 +42,7 @@ public class AccomodationRESTController {
 
     @CrossOrigin
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public AccomodationVO editAccomodation(@PathVariable("id") int accomodationID, @RequestBody @NotNull @Valid AccomodationVO accomodationVO, BindingResult bindingResult) throws ValidationException {
+    public AccomodationVO editByID(@PathVariable("id") int accomodationID, @RequestBody @NotNull @Valid AccomodationVO accomodationVO, BindingResult bindingResult) throws ValidationException {
         if (bindingResult != null && bindingResult.hasErrors()) {
             throw new ValidationException("Object is not valid", bindingResult);
         }
@@ -57,25 +51,8 @@ public class AccomodationRESTController {
 
     @CrossOrigin
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public boolean deleteAccomodationByID(@PathVariable("id") int accomodationID) {
+    public boolean deleteByID(@PathVariable("id") int accomodationID) {
         return accomodationService.deleteById(accomodationID);
     }
 
-    @CrossOrigin
-    @RequestMapping(value = "/{id}/deactivate", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public AccomodationVO deactivateByID(@PathVariable("id") int accomodationID) {
-        return accomodationService.deactivateByID(accomodationID);
-    }
-
-    @CrossOrigin
-    @RequestMapping(value = "/{id}/activate", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public AccomodationVO activateByID(@PathVariable("id") int accomodationID) {
-        return accomodationService.activateByID(accomodationID);
-    }
-
-    @CrossOrigin
-    @RequestMapping(value = "/wards", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public List<Integer> getActiveWards() {
-        return accomodationService.getActiveWards();
-    }
 }

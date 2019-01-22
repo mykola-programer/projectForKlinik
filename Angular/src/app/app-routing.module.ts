@@ -5,10 +5,12 @@ import {DateEditorComponent} from "./date/date-editor/date-editor.component";
 import {AccomodationComponent} from "./accomodation/accomodation.component";
 import {SurgeonEditorComponent} from "./surgeon-editor/surgeon-editor.component";
 import {ManagerEditorComponent} from "./manager-editor/manager-editor.component";
+import {VisitComponent} from "./visit/visit.component";
 
 const routes: Routes = [
-  {path: "", pathMatch: "full", redirectTo: "accomodation"},
-  {path: "accomodation", component: AccomodationComponent},
+  {path: "", pathMatch: "full", redirectTo: "visit"},
+  // {path: "accomodation", component: AccomodationComponent},
+  {path: "visit", component: VisitComponent},
   {path: "dates", component: DateEditorComponent},
   {path: "client", component: ClientEditorComponent},
   {path: "surgeon", component: SurgeonEditorComponent},

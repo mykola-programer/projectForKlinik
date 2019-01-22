@@ -60,6 +60,15 @@ public class AccomodationService {
     }
 
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+    public List<Integer> getWards() {
+        List<Ward> wards = (List<Ward>) dao.getObjectsByQuery("Accomodation.getWards", null, Ward.class);
+        if (wards == null) return null;
+        List<Integer> result = new ArrayList<>();
+        for (Ward ward : wards) result.add(ward.toInteger());
+        return result;
+    }
+
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<Integer> getActiveWards() {
         List<Ward> wards = (List<Ward>) dao.getObjectsByQuery("Accomodation.getActiveWards", null, Ward.class);
         if (wards == null) return null;
@@ -119,7 +128,6 @@ public class AccomodationService {
         }
         return result;
     }
-
 
 }
 
