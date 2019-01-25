@@ -26,13 +26,13 @@ public class SurgeonVO implements VisualObject {
 
     @NotNull(message = "manager.city.null")
     @Size(min = 1, max = 50, message = "manager.city.size")
-    @Pattern(regexp = "[A-Za-zА-Яа-яЁёІіЇїЄє]+", message = "manager.city.pattern")
+    @Pattern(regexp = "[A-Za-zА-Яа-яЁёІіЇїЄє]+", message = "surgeon.city.pattern")
     private String city;
 
     @NotNull(message = "surgeon.sex.null")
     private Character sex;
 
-    private boolean inactive;
+    private boolean disable;
 
     public Integer getSurgeonId() {
         return surgeonId;
@@ -83,12 +83,12 @@ public class SurgeonVO implements VisualObject {
         this.sex = sex;
     }
 
-    public boolean isInactive() {
-        return inactive;
+    public boolean isDisable() {
+        return disable;
     }
 
-    public void setInactive(boolean inactive) {
-        this.inactive = inactive;
+    public void setDisable(boolean disable) {
+        this.disable = disable;
     }
 
     private String firstUpperCase(String word) {
@@ -123,7 +123,7 @@ public class SurgeonVO implements VisualObject {
         sb.append(", secondName='").append(secondName).append('\'');
         sb.append(", city='").append(city).append('\'');
         sb.append(", sex=").append(sex);
-        sb.append(", inactive=").append(inactive);
+        sb.append(", disable=").append(disable);
         sb.append('}');
         return sb.toString();
     }

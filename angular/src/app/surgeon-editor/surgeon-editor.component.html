@@ -32,9 +32,9 @@
             <th scope="col" style="width: 30px;"></th>
             <th scope="col" colspan="3">
               <img [hidden]="!sorting_order" src="/assets/img/sort/sort-ASC.png" style="max-width: 25px;"
-                   (click)="determineOrder()"/>
+                   (click)="change_sorting()"/>
               <img [hidden]="sorting_order" src="/assets/img/sort/sort-DESC.png" style="max-width: 25px;"
-                   (click)="determineOrder()"/>
+                   (click)="change_sorting()"/>
               <label>&nbsp; ПІБ Хірурга</label>
             </th>
             <th scope="col" style="width: 80px;">Місто</th>
@@ -46,7 +46,7 @@
           <tbody formArrayName="surgeonsForm">
 
           <tr *ngFor="let surgeonForm of (tableForm.get('surgeonsForm').controls); let i=index"
-              [hidden]="surgeonForm.get('inactive').value && !hidden_surgeons"
+              [hidden]="surgeonForm.get('disable').value && !hidden_surgeons"
               [ngClass]="{changed:surgeonForm.get('isChanged').value}">
 
             <td [formGroupName]="i">
@@ -110,7 +110,7 @@
               </select>
             </td>
             <td [formGroupName]="i" *ngIf="hidden_surgeons">
-              <input type="checkbox" formControlName="inactive"
+              <input type="checkbox" formControlName="disable"
                      (change)="surgeonForm.get('isChanged').patchValue(surgeonForm.valid)"
                      class="form-control form-control-sm input-style-active">
             </td>
@@ -127,15 +127,15 @@
 <div class="left-container fixed-bottom bg-light">
   <button class="btn btn-min-style" (click)="onAdd()">Add</button>
   <button class="btn btn-success btn-min-style" (click)="onSave()"
-          [disabled]="!(getSelectedElementCount() == 1)">Save
+          [disabled]="count_of_surgeons == 0">Save
   </button>
   <img [hidden]="!save_loading" src="/assets/img/rotating-balls-spinner.gif" height="40" width="40"/>
   <button class="btn btn-warning btn-min-style" (click)="onRefresh()">Refresh</button>
   <button class="btn btn-dark btn-min-style" (click)="onDelete()"
-          [disabled]="!(getSelectedElementCount() == 1)">Delete
+          [disabled]="count_of_surgeons == 0">Delete
   </button>
   <img [hidden]="!del_loading" src="/assets/img/rotating-balls-spinner.gif" height="40" width="40"/>
   <button class="btn btn-danger btn-min-style" (click)="onCancel()"
-          [disabled]="getSelectedElementCount() == 0">Cancel
+          [disabled]="count_of_surgeons == 0">Cancel
   </button>
 </div>

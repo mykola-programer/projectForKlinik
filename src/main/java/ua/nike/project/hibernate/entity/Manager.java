@@ -46,7 +46,7 @@ public class Manager implements EntityObject {
     @Column(name = "city_from", length = 50, nullable = false)
     private String city;
 
-    @Column(name = "inactive")
+    @Column(name = "disable")
     private Boolean inactive;
 
     @OneToMany(targetEntity = Visit.class, fetch = FetchType.LAZY, mappedBy = "manager")

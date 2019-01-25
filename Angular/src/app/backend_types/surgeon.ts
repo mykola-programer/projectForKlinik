@@ -5,6 +5,6 @@ export class Surgeon {
   public secondName: string;
   public city: string;
   public sex: string;
-  public inactive: boolean;
+  public disable: boolean;
   public isChanged: boolean = false;
 }

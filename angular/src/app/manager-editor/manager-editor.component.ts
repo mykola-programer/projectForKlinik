@@ -5,7 +5,6 @@ import {Manager} from "../backend_types/manager";
 import {FormArray, FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {HttpErrorResponse} from "@angular/common/http";
 import {ToastMessageService} from "../service/toast-message.service";
-import {AbstractControl} from "@angular/forms/src/model";
 import {debounceTime} from "rxjs/operators";
 
 @Component({
@@ -15,6 +14,7 @@ import {debounceTime} from "rxjs/operators";
 })
 export class ManagerEditorComponent implements OnInit {
   public managers: Manager[];
+  public count_of_managers = 0;
   public genders: string[] = ["Ч", "Ж"];
 
   searchForm: FormGroup = this.fb.group({
@@ -52,12 +52,16 @@ export class ManagerEditorComponent implements OnInit {
       .pipe(debounceTime(900))
       .subscribe(value => {
         if (value === "INVALID") {
-          this.toastMessageService.inform("Некорректне значення пошуку",
+          this.toastMessageService.inform("Некорректне значення для пошуку",
             "Вводьте тільки літери та пробіли." + "<br>" +
             "Не більше 50 символів", "info");
         }
       });
-
+    this.tableForm.valueChanges.pipe(debounceTime(1000)).subscribe(() => {
+      this.count_of_managers = (<Manager[]>this.tableForm.get("managersForm").value).filter((manager: Manager) => {
+        return manager.isChanged;
+      }).length;
+    });
   }
 
   getManagers() {
@@ -93,13 +97,6 @@ export class ManagerEditorComponent implements OnInit {
       document.getElementById("surname").focus();
     }, 1000);
     window.scroll(0, 0);
-  }
-
-  getSelectedElementCount(): number {
-    // @ts-ignore
-    return (this.tableForm.get("managersForm").controls).filter((control: AbstractControl) => {
-      return control.valid && (<Manager>control.value).isChanged;
-    }).length;
   }
 
   onSave() {
@@ -222,7 +219,7 @@ export class ManagerEditorComponent implements OnInit {
     });
   }
 
-  filterManagers(search_value: string) {
+  private filterManagers(search_value: string) {
     if (search_value) {
       const filterValue: string[] = search_value.toLowerCase().split(" ");
       const filteredManagers = this.managers.filter(manager => {
@@ -258,7 +255,7 @@ export class ManagerEditorComponent implements OnInit {
     }
   }
 
-  determineOrder() {
+  change_sorting() {
     this.sorting_order = !this.sorting_order;
     this.tableForm.setControl("managersForm", this.updateFormGroups(<Manager[]>this.tableForm.get("managersForm").value));
     this.managersForm = this.updateFormGroups(<Manager[]>this.managersForm.value);
@@ -278,15 +275,17 @@ export class ManagerEditorComponent implements OnInit {
       return manager1.secondName.localeCompare(manager2.secondName);
     }
   }
-
-  // test(value?: any) {
-    // console.log(value);
-    // console.log(this.sorting_order);
-    // console.log(this.searchForm);
-    // console.log(this.tableForm.statusChanges);
-    // console.log((<FormArray>this.tableForm.controls.managersForm).controls);
-    // (this.managersForm.value).forEach(value1 => console.log(value1));
-  // }
 }
+
+// test(value?: any) {
+// console.log(value);
+// console.log(this.sorting_order);
+// console.log(this.searchForm);
+// console.log(this.tableForm.get("managersForm").value);
+// console.log(this.count_of_managers);
+// console.log((<FormArray>this.tableForm.controls.managersForm).controls);
+// (this.managersForm.value).forEach(value1 => console.log(value1));
+// }
+// }
 
 

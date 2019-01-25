@@ -3,12 +3,9 @@ import {Surgeon} from "../backend_types/surgeon";
 import {SurgeonService} from "../service/surgeon.service";
 import {NavbarService} from "../service/navbar.service";
 import {HttpErrorResponse} from "@angular/common/http";
-import {FormArray, FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {ToastMessageService} from "../service/toast-message.service";
 import {debounceTime} from "rxjs/operators";
-import {AbstractControl} from "@angular/forms/src/model";
-import {Accomodation} from "../backend_types/accomodation";
-import {Visit} from "../backend_types/visit";
 
 @Component({
   selector: "app-surgeon-editor",
@@ -17,12 +14,13 @@ import {Visit} from "../backend_types/visit";
 })
 export class SurgeonEditorComponent implements OnInit {
   public surgeons: Surgeon[];
+  public count_of_surgeons = 0;
   public genders: string[] = ["Ч", "Ж"];
 
-  map: Map<Accomodation, Visit>;
   searchForm: FormGroup = this.fb.group({
     searchControlForm: ["", [Validators.maxLength(50), Validators.pattern("[A-Za-zА-Яа-яЁёІіЇїЄє ]*")]],
   });
+
   surgeonsForm: FormArray = this.fb.array([]);
   tableForm: FormGroup = this.fb.group({
     surgeonsForm: this.surgeonsForm
@@ -55,11 +53,16 @@ export class SurgeonEditorComponent implements OnInit {
       .pipe(debounceTime(900))
       .subscribe(value => {
         if (value === "INVALID") {
-          this.toastMessageService.inform("Некорректне значення пошуку",
+          this.toastMessageService.inform("Некорректне значення для пошуку",
             "Вводьте тільки літери та пробіли." + "<br>" +
             "Не більше 50 символів", "info");
         }
       });
+    this.tableForm.valueChanges.pipe(debounceTime(800)).subscribe(() => {
+      this.count_of_surgeons = (<Surgeon[]>this.tableForm.get("surgeonsForm").value).filter((surgeon: Surgeon) => {
+        return surgeon.isChanged;
+      }).length;
+    });
   }
 
   getSurgeons() {
@@ -85,7 +88,7 @@ export class SurgeonEditorComponent implements OnInit {
   onAdd() {
     const surgeon = new Surgeon();
     surgeon.surgeonId = 0;
-    surgeon.inactive = false;
+    surgeon.disable = false;
     surgeon.isChanged = false;
     this.searchForm.get("searchControlForm").setValue("");
     if (this.surgeonsForm.controls[0].valid && (<Surgeon>this.surgeonsForm.controls[0].value).surgeonId !== 0) {
@@ -97,93 +100,100 @@ export class SurgeonEditorComponent implements OnInit {
     window.scroll(0, 0);
   }
 
-  getSelectedElementCount(): number {
-    // @ts-ignore
-    return (this.tableForm.get("surgeonsForm").controls).filter((control: AbstractControl) => {
-      return control.valid && (<Surgeon>control.value).isChanged;
-    }).length;
-  }
-
   onSave() {
     this.save_loading = true;
-    const edited_surgeon: Surgeon = (<Surgeon[]>this.tableForm.get("surgeonsForm").value).find((surgeon: Surgeon) => {
-      return surgeon.isChanged;
-    });
-    if (edited_surgeon && edited_surgeon.surgeonId > 0) {
-      this.surgeonService.editSurgeon(edited_surgeon).toPromise().then(() => {
-        this.toastMessageService.inform("Збережено !", "Хірург успішно збережений !", "success");
-        this.getSurgeons();
-        this.save_loading = false;
-      }).catch((err: HttpErrorResponse) => {
-          this.save_loading = false;
-          if (err.status === 422) {
-            this.toastMessageService.inform("Помилка при збережені! <br> Хірург не відповідає критеріям !",
-              err.error, "error");
-          } else if (err.status === 404) {
-            this.toastMessageService.inform("Помилка при збережені!",
-              err.error + "<br> Обновіть сторінку та спробуйте знову.", "error");
-          } else if (err.status === 409) {
-            this.toastMessageService.inform("Помилка при збережені! <br> Конфлікт в базі даних !",
-              err.error + "<br> Обновіть сторінку та спробуйте знову. <br> Можливо ваш хірург існує серед прихованих.", "error");
-          } else {
-            this.toastMessageService.inform("Помилка при збережені!",
-              err.error + "<br>" + "HTTP status: " + err.status, "error");
+    // @ts-ignore
+    const control = (<AbstractControl>(this.tableForm.get("surgeonsForm").controls).find((abstractControl: AbstractControl) => {
+      return abstractControl.get("isChanged").value;
+    }));
+
+    if (control && control.value) {
+      const edited_surgeon = control.value;
+      if (edited_surgeon.surgeonId > 0) {
+        this.surgeonService.editSurgeon(edited_surgeon).toPromise().then((surgeon: Surgeon) => {
+          control.get("isChanged").setValue(false);
+          this.success_saving(surgeon);
+        }).catch((err: HttpErrorResponse) => {
+            this.error_saving(err);
           }
-        }
-      );
-    } else if (edited_surgeon && edited_surgeon.surgeonId === 0) {
-      this.surgeonService.addSurgeon(edited_surgeon).toPromise().then(() => {
-        this.toastMessageService.inform("Збережено !", "Хірург успішно збережений !", "success");
-        this.getSurgeons();
-        this.save_loading = false;
-      }).catch((err: HttpErrorResponse) => {
-          this.save_loading = false;
-          if (err.status === 422) {
-            this.toastMessageService.inform("Помилка при збережені! <br> Хірург не відповідає критеріям !",
-              err.error, "error");
-          } else if (err.status === 404) {
-            this.toastMessageService.inform("Помилка при збережені!",
-              err.error + "<br> Обновіть сторінку та спробуйте знову.", "error");
-          } else if (err.status === 409) {
-            this.toastMessageService.inform("Помилка при збережені! <br> Конфлікт в базі даних !",
-              err.error + "<br> Обновіть сторінку та спробуйте знову. <br> Можливо ваш хірург існує серед прихованих.", "error");
-          } else {
-            this.toastMessageService.inform("Помилка при збережені!",
-              err.error + "<br>" + "HTTP status: " + err.status, "error");
+        );
+      } else {
+        this.surgeonService.addSurgeon(edited_surgeon).toPromise().then((surgeon: Surgeon) => {
+          control.get("isChanged").setValue(false);
+          this.success_saving(surgeon);
+        }).catch((err: HttpErrorResponse) => {
+            this.error_saving(err);
           }
-        }
-      );
+        );
+      }
     } else {
       this.save_loading = false;
-      this.toastMessageService.inform("Виберіть хоча б один запис!", "", "info");
+      this.onRefresh();
+    }
+  }
+
+  private success_saving(surgeon?: Surgeon) {
+    this.toastMessageService.inform("Збережено !", "Хірург успішно збережений !", "success");
+    this.onSave();
+  }
+
+  private error_saving(err: HttpErrorResponse) {
+    this.save_loading = false;
+    if (err.status === 422) {
+      this.toastMessageService.inform("Помилка при збережені! <br> Хірург не відповідає критеріям !",
+        err.error, "error");
+    } else if (err.status === 404) {
+      this.toastMessageService.inform("Помилка при збережені!",
+        err.error + "<br> Обновіть сторінку та спробуйте знову.", "error");
+    } else if (err.status === 409) {
+      this.toastMessageService.inform("Помилка при збережені! <br> Конфлікт в базі даних !",
+        err.error + "<br> Обновіть сторінку та спробуйте знову. <br> Можливо ваш хірург існує серед прихованих.", "error");
+    } else {
+      this.toastMessageService.inform("Помилка при збережені!",
+        err.error + "<br>" + "HTTP status: " + err.status, "error");
     }
   }
 
   onDelete() {
     this.del_loading = true;
-    const surgeon_for_del: Surgeon = (<Surgeon[]>this.tableForm.get("surgeonsForm").value).find((surgeon: Surgeon) => {
-      return surgeon.isChanged;
-    });
-    if (surgeon_for_del.surgeonId > 0) {
-      this.surgeonService.deleteSurgeon(surgeon_for_del.surgeonId).toPromise().then((success: boolean) => {
-        if (success) {
-          this.toastMessageService.inform("Видалено !", "Хірург успішно видалений !", "success");
-          this.del_loading = false;
-          this.getSurgeons();
-        }
-      }).catch((err: HttpErrorResponse) => {
-        this.del_loading = false;
-        if (err.status === 409) {
-          this.toastMessageService.inform("Помилка при видалені!", "Хірург має активні візити! <br>" +
-            " Спочатку видаліть операції цього хірурга ! <br> Або приховайте його.", "error");
-        } else {
-          this.toastMessageService.inform("Помилка при видалені!",
-            err.error + "<br>" + "HTTP status: " + err.status, "error");
-        }
-      });
+    // @ts-ignore
+    const control = (<AbstractControl>(this.tableForm.get("surgeonsForm").controls).find((abstractControl: AbstractControl) => {
+      return abstractControl.get("isChanged").value;
+    }));
+
+    if (control && control.value) {
+      const surgeon_for_del = control.value;
+      if (surgeon_for_del.surgeonId > 0) {
+        this.surgeonService.deleteSurgeon(surgeon_for_del.surgeonId).toPromise().then(() => {
+          control.get("isChanged").setValue(false);
+          this.success_deleting();
+        }).catch((err: HttpErrorResponse) => {
+          this.error_deleting(err);
+        });
+      } else {
+        control.get("isChanged").setValue(false);
+        this.onDelete();
+      }
     } else {
       this.del_loading = false;
       this.onRefresh();
+    }
+  }
+
+
+  private success_deleting(surgeon?: Surgeon) {
+    this.toastMessageService.inform("Видалено !", "Хірург успішно видалений !", "success");
+    this.onDelete();
+  }
+
+  private error_deleting(err: HttpErrorResponse) {
+    this.del_loading = false;
+    if (err.status === 409) {
+      this.toastMessageService.inform("Помилка при видалені!", "Хірург має активні візити! <br>" +
+        " Спочатку видаліть операції цього хірурга ! <br> Або приховайте його.", "error");
+    } else {
+      this.toastMessageService.inform("Помилка при видалені!",
+        err.error + "<br>" + "HTTP status: " + err.status, "error");
     }
   }
 
@@ -219,12 +229,12 @@ export class SurgeonEditorComponent implements OnInit {
       secondName: [surgeon.secondName, [Validators.required, Validators.maxLength(50), Validators.pattern("[A-Za-zА-Яа-яЁёІіЇїЄє ]*")]],
       city: [surgeon.city, [Validators.required, Validators.maxLength(50), Validators.pattern("[A-Za-zА-Яа-яЁёІіЇїЄє ]*")]],
       sex: [surgeon.sex, [Validators.required, Validators.maxLength(1), Validators.pattern("^[ЧЖ]*$")]],
-      inactive: [surgeon.inactive],
+      disable: [surgeon.disable],
       isChanged: [false],
     });
   }
 
-  filterSurgeons(search_value: string) {
+  private filterSurgeons(search_value: string) {
     if (search_value) {
       const filterValue: string[] = search_value.toLowerCase().split(" ");
       const filteredSurgeons = this.surgeons.filter((surgeon: Surgeon) => {
@@ -260,14 +270,14 @@ export class SurgeonEditorComponent implements OnInit {
     }
   }
 
-  determineOrder() {
+  change_sorting() {
     this.sorting_order = !this.sorting_order;
     this.tableForm.setControl("surgeonsForm", this.updateFormGroups(<Surgeon[]>this.tableForm.get("surgeonsForm").value));
     this.surgeonsForm = this.updateFormGroups(<Surgeon[]>this.surgeonsForm.value);
 
   }
 
-  private compareSurgeons = (surgeon1, surgeon2) => {
+  compareSurgeons = (surgeon1, surgeon2) => {
     if (surgeon1.surgeonId === 0) {
       return !this.sorting_order;
     } else if (surgeon2.surgeonId === 0) {

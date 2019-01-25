@@ -32,9 +32,9 @@
             <th scope="col" style="width: 30px;"></th>
             <th scope="col" colspan="3">
               <img [hidden]="!sorting_order" src="/assets/img/sort/ascending-sorting-48.png" style="max-width: 25px;"
-                   (click)="determineOrder()"/>
+                   (click)="change_sorting()"/>
               <img [hidden]="sorting_order" src="/assets/img/sort/descending-sorting-48.png" style="max-width: 25px;"
-                   (click)="determineOrder()"/>
+                   (click)="change_sorting()"/>
               <label>&nbsp; ПІБ Менеджера</label>
             </th>
             <th scope="col" style="width: 80px;">Місто</th>
@@ -125,18 +125,25 @@
 <br><br><br>
 
 <div class="left-container fixed-bottom bg-light">
-  <button class="btn btn-min-style" (click)="onAdd()">Add</button>
-  <button class="btn btn-success btn-min-style" (click)="onSave()"
-          [disabled]="!(getSelectedElementCount() == 1)">Save
+  <button class="btn btn-min-style" (click)="onAdd()" title="Додати">
+    <img src="/assets/img/icons8/add-48.png">
+  </button>
+  <button class="btn btn-min-style" (click)="onSave()" title="Зберегти"
+          [disabled]="count_of_managers == 0">
+    <img src="/assets/img/icons8/save-48.png">
   </button>
   <img [hidden]="!save_loading" src="/assets/img/rotating-balls-spinner.gif" height="40" width="40"/>
-  <button class="btn btn-warning btn-min-style" (click)="onRefresh()">Refresh</button>
-  <button class="btn btn-dark btn-min-style" (click)="onDelete()"
-          [disabled]="!(getSelectedElementCount() == 1)">Delete
+  <button class="btn btn-min-style" (click)="onRefresh()" title="Обновити">
+    <img src="/assets/img/icons8/synchronize-48.png">
+  </button>
+  <button class="btn btn-min-style" (click)="onDelete()" title="Видалити"
+          [disabled]="count_of_managers == 0">
+    <img src="/assets/img/icons8/delete-48.png">
   </button>
   <img [hidden]="!del_loading" src="/assets/img/rotating-balls-spinner.gif" height="40" width="40"/>
-  <button class="btn btn-danger btn-min-style" (click)="onCancel()"
-          [disabled]="getSelectedElementCount() == 0">Cancel
+  <button class="btn btn-min-style" (click)="onCancel()" title="Відмінити"
+          [disabled]="count_of_managers == 0">
+    <img src="/assets/img/icons8/cancel-48.png">
   </button>
   <!--<button class="btn btn-danger btn-min-style" (click)="test()">Test</button>-->
 </div>

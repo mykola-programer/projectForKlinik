@@ -85,12 +85,12 @@ export class VisitComponent implements OnInit {
 
   ngOnInit() {
     this.navbarService.change("visit");
-    // this.calender_loading = true;
+    this.calender_loading = true;
 
     this.dateService.selected_date.subscribe(
       (selected_visit_date: VisitDate) => {
-        // this.calender_loading = false;
-        // this.visits_loading = true;
+        this.calender_loading = false;
+        this.visits_loading = true;
         this.selected_visit_date = selected_visit_date;
         this.selected_date = new Date(selected_visit_date.date[0], selected_visit_date.date[1] - 1, selected_visit_date.date[2]);
         this.getAccomodations();
@@ -103,7 +103,7 @@ export class VisitComponent implements OnInit {
   }
 
   private getAccomodations() {
-    // this.visits_loading = true;
+    this.visits_loading = true;
     this.accomodationService.getAccomodations().toPromise().then(accomodations => {
       this.accomodations = accomodations;
       this.wards = accomodations.map(value => value.ward).filter((value, index, self) => self.indexOf(value) === index);
@@ -128,7 +128,7 @@ export class VisitComponent implements OnInit {
   }
 
   private getVisits() {
-    // this.visits_loading = true;
+    this.visits_loading = true;
     if (this.selected_date !== null) {
       this.visitService.findVisits(this.selected_date)
         .toPromise().then((visits_by_date) => {
@@ -177,6 +177,7 @@ export class VisitComponent implements OnInit {
 
     {
       const filtered_visits = visits.filter(visit => (visit.accomodation == null));
+      filtered_visits.unshift(new Visit());
       const wardTableForm = this.fb.group({
         tableLabel: this.fb.control("Безстаціонарні "),
         visitsForm: this.createVisitsTableForm(filtered_visits)

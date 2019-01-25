@@ -22,8 +22,7 @@ import { SurgeonEditorComponent } from "./surgeon-editor/surgeon-editor.componen
 import {ToastaModule} from "ngx-toasta";
 import { ManagerEditorComponent } from "./manager-editor/manager-editor.component";
 import { VisitComponent } from "./visit/visit.component";
-
-// import {ngContentDef} from "@angular/core/src/view";
+import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 
 @NgModule({
   declarations: [
@@ -52,6 +51,7 @@ import { VisitComponent } from "./visit/visit.component";
     ReactiveFormsModule,
     HttpClientModule,
     HttpClientInMemoryWebApiModule,
+    MatProgressSpinnerModule,
     NgbModule.forRoot(),
     ToastaModule.forRoot()
   ],

@@ -162,7 +162,7 @@
                           *ngIf="visitForm.get('status').value == 'пацієнт'">
                     <option [selected]="visitForm.get('operationType').value == 0"></option>
                     <option *ngFor="let operation_type of operation_types" [ngValue]="operation_type.operationTypeId"
-                            [disabled]="operation_type.inactive"
+                            [disabled]="operation_type.disable"
                             [selected]="visitForm.get('operationType').value == operation_type.operationTypeId">
                       {{operation_type.name}}
                     </option>
@@ -191,7 +191,7 @@
                           *ngIf="visitForm.get('status').value == 'пацієнт'">
                     <option [selected]="visitForm.get('surgeon').value == 0"></option>
                     <option *ngFor="let surgeon of surgeons" [ngValue]="surgeon.surgeonId"
-                            [disabled]="surgeon.inactive"
+                            [disabled]="surgeon.disable"
                             [selected]="visitForm.get('surgeon').value == surgeon.surgeonId">
                       {{surgeon.surname}}
                       {{surgeon.firstName.substring(0,1)}}.{{surgeon.secondName.substring(0,1)}}.({{surgeon.city}})
@@ -207,7 +207,7 @@
                           *ngIf="visitForm.get('status').value == 'пацієнт'">
                     <option [selected]="visitForm.get('manager').value == 0"></option>
                     <option *ngFor="let manager of managers" [ngValue]="manager.managerId"
-                            [disabled]="manager.inactive"
+                            [disabled]="manager.disable"
                             [selected]="visitForm.get('manager').value == manager.managerId">
                       {{manager.surname}}
                       {{manager.firstName.substring(0,1)}}.{{manager.secondName.substring(0,1)}}.({{manager.city}})
@@ -245,9 +245,7 @@
 
 <div class="left-container fixed-bottom bg-light">
 
-  <button class="btn btn-min-style" (click)="onAdd()">Add</button>
-
-  <button class="btn btn-success btn-min-style" (click)="onSave()"
+  <button class="btn btn-success btn-min-style" (click)="onSave()" title="Зберегти"
           [disabled]="!(getSelectedElementCount() == 1)">Save
   </button>
   <img [hidden]="!save_loading" src="/assets/img/rotating-balls-spinner.gif" height="40" width="40"/>

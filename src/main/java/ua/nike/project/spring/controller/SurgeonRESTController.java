@@ -14,20 +14,26 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/surgeons")
-public class SurgeonRESTController {
+public class SurgeonRESTController implements RESTController<SurgeonVO> {
 
     @Autowired
     private SurgeonService surgeonService;
 
     @CrossOrigin
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public SurgeonVO getByID(@PathVariable("id") int surgeonID) {
+        return surgeonService.findByID(surgeonID);
+    }
+
+    @CrossOrigin
     @RequestMapping(value = "", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public List<SurgeonVO> getSurgeons() {
+    public List<SurgeonVO> getAll() {
         return surgeonService.findAll();
     }
 
     @CrossOrigin
     @RequestMapping(value = "", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public SurgeonVO addSurgeon(@RequestBody @NotNull @Valid SurgeonVO surgeonVO, BindingResult bindingResult) throws ValidationException {
+    public SurgeonVO add(@RequestBody @NotNull @Valid SurgeonVO surgeonVO, BindingResult bindingResult) throws ValidationException {
         if (bindingResult != null && bindingResult.hasErrors())
             throw new ValidationException("Object is not valid", bindingResult);
         return surgeonService.create(surgeonVO);
@@ -35,7 +41,7 @@ public class SurgeonRESTController {
 
     @CrossOrigin
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public SurgeonVO editSurgeon(@PathVariable("id") int surgeonID, @RequestBody @NotNull @Valid SurgeonVO surgeonVO, BindingResult bindingResult) throws ValidationException {
+    public SurgeonVO editByID(@PathVariable("id") int surgeonID, @RequestBody @NotNull @Valid SurgeonVO surgeonVO, BindingResult bindingResult) throws ValidationException {
         if (bindingResult != null && bindingResult.hasErrors())
             throw new ValidationException("Object is not valid", bindingResult);
         return surgeonService.update(surgeonID, surgeonVO);
@@ -49,36 +55,3 @@ public class SurgeonRESTController {
 
 }
 
-
-
-
-
-
-/*
-
-    @CrossOrigin
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public SurgeonVO getSurgeon(@PathVariable("id") int surgeonID) {
-        return surgeonService.findByID(surgeonID);
-    }
-
-    @CrossOrigin
-    @RequestMapping(value = "/active", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public List<SurgeonVO> getActiveSurgeons() {
-        return surgeonService.findAllActive();
-    }
-
-    @CrossOrigin
-    @RequestMapping(value = "/{id}/deactivate", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public SurgeonVO deactivateByID(@PathVariable("id") int surgeonID) {
-        return surgeonService.deactivateByID(surgeonID);
-    }
-
-    @CrossOrigin
-    @RequestMapping(value = "/{id}/activate", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public SurgeonVO activateByID(@PathVariable("id") int surgeonID) {
-        return surgeonService.activateByID(surgeonID);
-    }
-
-
-*/

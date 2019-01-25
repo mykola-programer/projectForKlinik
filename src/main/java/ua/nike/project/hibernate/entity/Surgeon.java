@@ -6,14 +6,12 @@ import ua.nike.project.hibernate.type.PostgreSQLEnumType;
 import ua.nike.project.hibernate.type.Sex;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
 @Entity
 @NamedQueries(value = {
         @NamedQuery(name = "Surgeon.findAll", query = "FROM Surgeon ORDER BY surname, firstName, secondName"),
-//        @NamedQuery(name = "Surgeon.findAllActive", query = "FROM Surgeon s WHERE s.inactive = false ORDER BY surname")
 })
 @Table(name = "surgeon", uniqueConstraints = {
         @UniqueConstraint(name = "surgeon_pk", columnNames = {"surname", "first_name", "second_name", "city_from"})
@@ -47,7 +45,7 @@ public class Surgeon implements EntityObject {
     @Column(name = "city_from", length = 50, nullable = false)
     private String city;
 
-    private boolean inactive;
+    private boolean disable;
 
     @OneToMany(targetEntity = Visit.class, fetch = FetchType.LAZY, mappedBy = "surgeon")
     private List<Visit> visits;
@@ -101,12 +99,12 @@ public class Surgeon implements EntityObject {
         return this;
     }
 
-    public boolean isInactive() {
-        return inactive;
+    public boolean isDisable() {
+        return disable;
     }
 
-    public void setInactive(boolean inactive) {
-        this.inactive = inactive;
+    public void setDisable(boolean disable) {
+        this.disable = disable;
     }
 
     public List<Visit> getVisits() {
@@ -149,7 +147,7 @@ public class Surgeon implements EntityObject {
         sb.append(", secondName='").append(secondName).append('\'');
         sb.append(", sex=").append(sex);
         sb.append(", city='").append(city).append('\'');
-        sb.append(", inactive=").append(inactive);
+        sb.append(", disable=").append(disable);
         sb.append('}');
         return sb.toString();
     }
