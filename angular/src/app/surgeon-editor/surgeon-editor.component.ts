@@ -58,7 +58,7 @@ export class SurgeonEditorComponent implements OnInit {
             "Не більше 50 символів", "info");
         }
       });
-    this.tableForm.valueChanges.pipe(debounceTime(800)).subscribe(() => {
+    this.tableForm.valueChanges.pipe(debounceTime(600)).subscribe(() => {
       this.count_of_surgeons = (<Surgeon[]>this.tableForm.get("surgeonsForm").value).filter((surgeon: Surgeon) => {
         return surgeon.isChanged;
       }).length;

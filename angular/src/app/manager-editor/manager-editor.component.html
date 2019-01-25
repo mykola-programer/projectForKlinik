@@ -1,6 +1,6 @@
 <ngx-toasta></ngx-toasta>
 <br><br><br>
-<img [hidden]="!managers_loading" src="/assets/img/download.gif" style="max-width: 600px"/>
+<img [hidden]="!managers_loading" src="/assets/img/download.gif" style="width: 100%"/>
 <div *ngIf="!managers_loading">
   <div class="left-container" style="max-width: 800px; min-width: 550px; margin-left: 10px">
     <form [formGroup]="searchForm">
@@ -46,7 +46,7 @@
           <tbody formArrayName="managersForm">
 
           <tr *ngFor="let managerForm of (tableForm.get('managersForm').controls); let i=index"
-              [hidden]="managerForm.get('inactive').value && !hidden_managers"
+              [hidden]="managerForm.get('disable').value && !hidden_managers"
               [ngClass]="{changed:managerForm.get('isChanged').value}">
 
             <td [formGroupName]="i">
@@ -110,7 +110,7 @@
               </select>
             </td>
             <td [formGroupName]="i" *ngIf="hidden_managers">
-              <input type="checkbox" formControlName="inactive"
+              <input type="checkbox" formControlName="disable"
                      (change)="managerForm.get('isChanged').patchValue(managerForm.valid)"
                      class="form-control form-control-sm input-style-active">
             </td>

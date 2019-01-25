@@ -215,7 +215,7 @@ export class VisitComponent implements OnInit {
       manager: [visit.manager ? visit.manager.managerId : 0],
       accomodation: [visit.accomodation ? visit.accomodation.wardPlace : null],
       note: [visit.note],
-      inactive: [visit.accomodation ? visit.accomodation.inactive : false],
+      disable: [visit.accomodation ? visit.accomodation.inactive : false],
       isChanged: [false],
     });
     return form_group;

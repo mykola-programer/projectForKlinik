@@ -12,7 +12,6 @@ import java.util.Objects;
 @Entity
 @NamedQueries(value = {
         @NamedQuery(name = "Manager.findAll", query = "FROM Manager ORDER BY surname, firstName, secondName"),
-//        @NamedQuery(name = "Manager.findAllActive", query = "FROM Manager WHERE inactive = false  ORDER BY surname, firstName, secondName")
 })
 @Table(name = "manager", uniqueConstraints = {
         @UniqueConstraint(name = "manager_pk", columnNames = {"surname", "first_name", "second_name", "city_from"})
@@ -47,7 +46,7 @@ public class Manager implements EntityObject {
     private String city;
 
     @Column(name = "disable")
-    private Boolean inactive;
+    private Boolean disable;
 
     @OneToMany(targetEntity = Visit.class, fetch = FetchType.LAZY, mappedBy = "manager")
     private List<Visit> visits;
@@ -100,12 +99,12 @@ public class Manager implements EntityObject {
         this.city = firstUpperCase(cityFrom);
     }
 
-    public Boolean isInactive() {
-        return inactive;
+    public Boolean isDisable() {
+        return disable;
     }
 
-    public void setInactive(Boolean inactive) {
-        this.inactive = inactive;
+    public void setDisable(Boolean disable) {
+        this.disable = disable;
     }
 
     public List<Visit> getVisits() {
@@ -148,7 +147,7 @@ public class Manager implements EntityObject {
         sb.append(", secondName='").append(secondName).append('\'');
         sb.append(", sex=").append(sex);
         sb.append(", cityFrom='").append(city).append('\'');
-        sb.append(", inactive=").append(inactive);
+        sb.append(", disable=").append(disable);
         sb.append('}');
         return sb.toString();
     }

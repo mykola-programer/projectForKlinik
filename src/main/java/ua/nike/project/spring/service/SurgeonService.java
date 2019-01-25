@@ -49,13 +49,14 @@ public class SurgeonService {
 
     @Transactional(propagation = Propagation.REQUIRED)
     public SurgeonVO create(SurgeonVO surgeonVO) {
-        Surgeon entity = copyToSurgeon(0, surgeonVO);
+        Surgeon entity = copyToSurgeon(surgeonVO, null);
         return convertToSurgeonVO(dao.save(entity));
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
     public SurgeonVO update(int surgeonID, SurgeonVO surgeonVO) {
-        Surgeon updatedEntity = copyToSurgeon(surgeonID, surgeonVO);
+        Surgeon originalEntity = dao.findByID(surgeonID);
+        Surgeon updatedEntity = copyToSurgeon(surgeonVO, originalEntity);
         return convertToSurgeonVO(dao.update(updatedEntity));
     }
 
@@ -78,10 +79,9 @@ public class SurgeonService {
         return result;
     }
 
-    private Surgeon copyToSurgeon(int surgeonID, SurgeonVO original) {
+    private Surgeon copyToSurgeon(SurgeonVO original, Surgeon result) {
         if (original == null) return null;
-        Surgeon result = new Surgeon();
-        result.setSurgeonId(surgeonID);
+        if (result == null) result = new Surgeon();
         result.setSurname(original.getSurname());
         result.setFirstName(original.getFirstName());
         result.setSecondName(original.getSecondName());

@@ -152,7 +152,7 @@ export class AccomodationComponent implements OnInit {
   }
 
   private getSurgeons() {
-    this.surgeonService.getActiveSurgeons().toPromise().then(surgeons => this.surgeons = surgeons);
+    this.surgeonService.getSurgeons().toPromise().then(surgeons => this.surgeons = surgeons);
   }
 
   private getManagers() {

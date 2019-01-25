@@ -2,7 +2,7 @@ import {Component, OnInit} from "@angular/core";
 import {NavbarService} from "../service/navbar.service";
 import {ManagerService} from "../service/manager.service";
 import {Manager} from "../backend_types/manager";
-import {FormArray, FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {HttpErrorResponse} from "@angular/common/http";
 import {ToastMessageService} from "../service/toast-message.service";
 import {debounceTime} from "rxjs/operators";
@@ -20,6 +20,7 @@ export class ManagerEditorComponent implements OnInit {
   searchForm: FormGroup = this.fb.group({
     searchControlForm: ["", [Validators.maxLength(50), Validators.pattern("[A-Za-zА-Яа-яЁёІіЇїЄє ]*")]],
   });
+
   managersForm: FormArray = this.fb.array([]);
   tableForm: FormGroup = this.fb.group({
     managersForm: this.managersForm
@@ -57,7 +58,7 @@ export class ManagerEditorComponent implements OnInit {
             "Не більше 50 символів", "info");
         }
       });
-    this.tableForm.valueChanges.pipe(debounceTime(1000)).subscribe(() => {
+    this.tableForm.valueChanges.pipe(debounceTime(600)).subscribe(() => {
       this.count_of_managers = (<Manager[]>this.tableForm.get("managersForm").value).filter((manager: Manager) => {
         return manager.isChanged;
       }).length;
@@ -87,7 +88,7 @@ export class ManagerEditorComponent implements OnInit {
   onAdd() {
     const manager = new Manager();
     manager.managerId = 0;
-    manager.inactive = false;
+    manager.disable = false;
     manager.isChanged = false;
     this.searchForm.get("searchControlForm").setValue("");
     if (this.managersForm.controls[0].valid && (<Manager>this.managersForm.controls[0].value).managerId !== 0) {
@@ -101,84 +102,95 @@ export class ManagerEditorComponent implements OnInit {
 
   onSave() {
     this.save_loading = true;
-    const edited_manager: Manager = (<Manager[]>this.tableForm.get("managersForm").value).find((manager: Manager) => {
-      return manager.isChanged;
-    });
-    if (edited_manager && edited_manager.managerId > 0) {
-      this.managerService.editManager(edited_manager).toPromise().then(() => {
-        this.toastMessageService.inform("Збережено !", "Менеджер успішно збережений !", "success");
-        this.getManagers();
-        this.save_loading = false;
-      }).catch((err: HttpErrorResponse) => {
-          this.save_loading = false;
-          if (err.status === 422) {
-            this.toastMessageService.inform("Помилка при збережені! <br> Менеджер не відповідає критеріям !",
-              err.error, "error");
-          } else if (err.status === 404) {
-            this.toastMessageService.inform("Помилка при збережені!",
-              err.error + "<br> Обновіть сторінку та спробуйте знову.", "error");
-          } else if (err.status === 409) {
-            this.toastMessageService.inform("Помилка при збережені! <br> Конфлікт в базі даних !",
-              err.error + "<br> Обновіть сторінку та спробуйте знову. <br> Можливо ваш менеджер існує серед прихованих.", "error");
-          } else {
-            this.toastMessageService.inform("Помилка при збережені!",
-              err.error + "<br>" + "HTTP status: " + err.status, "error");
+    // @ts-ignore
+    const control = (<AbstractControl>(this.tableForm.get("managersForm").controls).find((abstractControl: AbstractControl) => {
+      return abstractControl.get("isChanged").value;
+    }));
+    if (control && control.value) {
+      const edited_manager: Manager = control.value;
+      if (edited_manager && edited_manager.managerId > 0) {
+        this.managerService.editManager(edited_manager).toPromise().then((manager: Manager) => {
+          control.get("isChanged").setValue(false);
+          this.success_saving(manager);
+        }).catch((err: HttpErrorResponse) => {
+            this.error_saving(err);
           }
-        }
-      );
-    } else if (edited_manager && edited_manager.managerId === 0) {
-      this.managerService.addManager(edited_manager).toPromise().then(() => {
-        this.toastMessageService.inform("Збережено !", "Менеджер успішно збережений !", "success");
-        this.getManagers();
-        this.save_loading = false;
-      }).catch((err: HttpErrorResponse) => {
-          this.save_loading = false;
-          if (err.status === 422) {
-            this.toastMessageService.inform("Помилка при збережені! <br> Менеджер не відповідає критеріям !",
-              err.error, "error");
-          } else if (err.status === 404) {
-            this.toastMessageService.inform("Помилка при збережені!",
-              err.error + "<br> Обновіть сторінку та спробуйте знову.", "error");
-          } else if (err.status === 409) {
-            this.toastMessageService.inform("Помилка при збережені! <br> Конфлікт в базі даних !",
-              err.error + "<br> Обновіть сторінку та спробуйте знову. <br> Можливо ваш менеджер існує серед прихованих.", "error");
-          } else {
-            this.toastMessageService.inform("Помилка при збережені!",
-              err.error + "<br>" + "HTTP status: " + err.status, "error");
+        );
+      } else if (edited_manager && edited_manager.managerId === 0) {
+        this.managerService.addManager(edited_manager).toPromise().then((manager: Manager) => {
+          control.get("isChanged").setValue(false);
+          this.success_saving(manager);
+        }).catch((err: HttpErrorResponse) => {
+            this.error_saving(err);
           }
-        }
-      );
+        );
+      }
     } else {
       this.save_loading = false;
-      this.toastMessageService.inform("Виберіть хоча б один запис!", "", "info");
+      this.onRefresh();
+    }
+  }
+
+  private success_saving(manager?: Manager) {
+    this.toastMessageService.inform("Збережено !", "Менеджер успішно збережений !", "success");
+    this.onSave();
+  }
+
+  private error_saving(err: HttpErrorResponse) {
+    this.save_loading = false;
+    if (err.status === 422) {
+      this.toastMessageService.inform("Помилка при збережені! <br> Менеджер не відповідає критеріям !",
+        err.error, "error");
+    } else if (err.status === 404) {
+      this.toastMessageService.inform("Помилка при збережені!",
+        err.error + "<br> Обновіть сторінку та спробуйте знову.", "error");
+    } else if (err.status === 409) {
+      this.toastMessageService.inform("Помилка при збережені! <br> Конфлікт в базі даних !",
+        err.error + "<br> Обновіть сторінку та спробуйте знову. <br> Можливо ваш менеджер існує серед прихованих.", "error");
+    } else {
+      this.toastMessageService.inform("Помилка при збережені!",
+        err.error + "<br>" + "HTTP status: " + err.status, "error");
     }
   }
 
   onDelete() {
     this.del_loading = true;
-    const manager_for_del: Manager = (<Manager[]>this.tableForm.get("managersForm").value).find((manager: Manager) => {
-      return manager.isChanged;
-    });
-    if (manager_for_del.managerId > 0) {
-      this.managerService.deleteManager(manager_for_del.managerId).toPromise().then((success: boolean) => {
-        if (success) {
-          this.toastMessageService.inform("Видалено !", "Менеджер успішно видалений !", "success");
-          this.del_loading = false;
-          this.getManagers();
-        }
-      }).catch((err: HttpErrorResponse) => {
-        this.del_loading = false;
-        if (err.status === 409) {
-          this.toastMessageService.inform("Помилка при видалені!", "Менеджер має активні візити! <br>" +
-            " Спочатку видаліть візити цього менеджера ! <br> Або приховайте його.", "error");
-        } else {
-          this.toastMessageService.inform("Помилка при видалені!",
-            err.error + "<br>" + "HTTP status: " + err.status, "error");
-        }
-      });
+    // @ts-ignore
+    const control = (<AbstractControl>(this.tableForm.get("managersForm").controls).find((abstractControl: AbstractControl) => {
+      return abstractControl.get("isChanged").value;
+    }));
+    if (control && control.value) {
+      const manager_for_del = control.value;
+      if (manager_for_del.managerId > 0) {
+        this.managerService.deleteManager(manager_for_del.managerId).toPromise().then(() => {
+          control.get("isChanged").setValue(false);
+          this.success_deleting();
+        }).catch((err: HttpErrorResponse) => {
+        });
+      } else {
+        control.get("isChanged").setValue(false);
+        this.onDelete();
+      }
     } else {
       this.del_loading = false;
       this.onRefresh();
+    }
+
+  }
+
+  private success_deleting(manager?: Manager) {
+    this.toastMessageService.inform("Видалено !", "Менеджер успішно видалений !", "success");
+    this.onDelete();
+  }
+
+  private error_deleting(err: HttpErrorResponse) {
+    this.del_loading = false;
+    if (err.status === 409) {
+      this.toastMessageService.inform("Помилка при видалені!", "Менеджер має активні візити! <br>" +
+        " Спочатку видаліть візити цього менеджера ! <br> Або приховайте його.", "error");
+    } else {
+      this.toastMessageService.inform("Помилка при видалені!",
+        err.error + "<br>" + "HTTP status: " + err.status, "error");
     }
   }
 
@@ -214,7 +226,7 @@ export class ManagerEditorComponent implements OnInit {
       secondName: [manager.secondName, [Validators.required, Validators.maxLength(50), Validators.pattern("[A-Za-zА-Яа-яЁёІіЇїЄє ]*")]],
       city: [manager.city, [Validators.required, Validators.maxLength(50), Validators.pattern("[A-Za-zА-Яа-яЁёІіЇїЄє ]*")]],
       sex: [manager.sex, [Validators.required, Validators.maxLength(1), Validators.pattern("^[ЧЖ]*$")]],
-      inactive: [manager.inactive],
+      disable: [manager.disable],
       isChanged: [false],
     });
   }
@@ -274,7 +286,7 @@ export class ManagerEditorComponent implements OnInit {
     } else if (manager1.secondName && manager2.secondName && manager1.secondName.localeCompare(manager2.secondName) !== 0) {
       return manager1.secondName.localeCompare(manager2.secondName);
     }
-  }
+  };
 }
 
 // test(value?: any) {

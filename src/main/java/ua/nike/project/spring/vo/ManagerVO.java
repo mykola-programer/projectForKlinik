@@ -31,7 +31,7 @@ public class ManagerVO implements VisualObject {
 
     @NotNull(message = "manager.sex.null")
     private Character sex;
-    private Boolean inactive;
+    private Boolean disable;
 
     public Integer getManagerId() {
         return managerId;
@@ -81,12 +81,12 @@ public class ManagerVO implements VisualObject {
         this.sex = sex;
     }
 
-    public Boolean isInactive() {
-        return inactive;
+    public Boolean isDisable() {
+        return disable;
     }
 
-    public void setInactive(Boolean inactive) {
-        this.inactive = inactive;
+    public void setDisable(Boolean disable) {
+        this.disable = disable;
     }
 
     private String firstUpperCase(String word) {
@@ -121,7 +121,7 @@ public class ManagerVO implements VisualObject {
         sb.append(", secondName='").append(secondName).append('\'');
         sb.append(", city='").append(city).append('\'');
         sb.append(", sex=").append(sex);
-        sb.append(", inactive=").append(inactive);
+        sb.append(", disable=").append(disable);
         sb.append('}');
         return sb.toString();
     }

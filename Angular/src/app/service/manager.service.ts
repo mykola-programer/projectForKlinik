@@ -11,7 +11,6 @@ import {MyObjectList} from "../backend_types/my-object-list";
 export class ManagerService {
   private serverUrl = "http://localhost:8080/";  // URL to REST-server
   private managersUrl = "managers/";
-  // private activeUrl = "active/";
   private readonly httpOptions = {
     headers: new HttpHeaders({
       "Content-Type": "application/json"
@@ -25,16 +24,9 @@ export class ManagerService {
     return this.http.get<Manager[]>(this.serverUrl + this.managersUrl);
   }
 
-  /** @deprecated */
-  getActiveManagers(): Observable<Manager[]> {
-    return this.http.get<Manager[]>(this.serverUrl + this.managersUrl);
-  }
-
-
   addManager(manager: Manager): Observable<Manager> {
     return this.http.post<Manager>(this.serverUrl + this.managersUrl, JSON.stringify(manager), this.httpOptions);
   }
-
 
   editManager(manager: Manager): Observable<Manager> {
     return this.http.put<Manager>(this.serverUrl + this.managersUrl + manager.managerId.toString(), JSON.stringify(manager),

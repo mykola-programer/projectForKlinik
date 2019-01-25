@@ -9,7 +9,6 @@ import {Surgeon} from "../backend_types/surgeon";
 export class SurgeonService {
   private serverUrl = "http://localhost:8080/";  // URL to REST-server
   private surgeonUrl = "surgeons/";
-  private activeUrl = "active/";
   private readonly httpOptions = {
     headers: new HttpHeaders({
       "Content-Type": "application/json"
@@ -20,11 +19,6 @@ export class SurgeonService {
   }
 
   getSurgeons(): Observable<Surgeon[]> {
-    return this.http.get<Surgeon[]>(this.serverUrl + this.surgeonUrl);
-  }
-
-  /** @deprecated */
-  getActiveSurgeons(): Observable<Surgeon[]> {
     return this.http.get<Surgeon[]>(this.serverUrl + this.surgeonUrl);
   }
 
