@@ -1,26 +1,24 @@
 package ua.nike.project.spring.vo;
 
-import ua.nike.project.hibernate.type.Eye;
-
 import java.time.LocalTime;
 import java.util.Objects;
 
 public class VisitVO implements VisualObject {
 
     private Integer visitId;
-    private VisitDateVO visitDate;
+    private int visitDateID;
     private LocalTime timeForCome;
     private Integer orderForCome;
-    private ClientVO client;
+    private int clientID;
     private String status;
-    private ClientVO patient;
-    private OperationTypeVO operationType;
+    private int patientID;
+    private int operationTypeID;
 
-//    @Pattern(regexp = "^(OD|OS|OU)$", message = "visit.eye.pattern")
-    private Eye eye;
-    private SurgeonVO surgeon;
-    private ManagerVO manager;
-    private AccomodationVO accomodation;
+    //    @Pattern(regexp = "^(OD|OS|OU)$", message = "visit.eye.pattern")
+    private String eye;
+    private int surgeonID;
+    private int managerID;
+    private int accomodationID;
     private String note;
 
     public Integer getVisitId() {
@@ -31,12 +29,12 @@ public class VisitVO implements VisualObject {
         this.visitId = visitId;
     }
 
-    public VisitDateVO getVisitDate() {
-        return visitDate;
+    public int getVisitDateID() {
+        return visitDateID;
     }
 
-    public void setVisitDate(VisitDateVO visitDate) {
-        this.visitDate = visitDate;
+    public void setVisitDateID(int visitDateID) {
+        this.visitDateID = visitDateID;
     }
 
     public LocalTime getTimeForCome() {
@@ -55,12 +53,12 @@ public class VisitVO implements VisualObject {
         this.orderForCome = orderForCome;
     }
 
-    public ClientVO getClient() {
-        return client;
+    public int getClientID() {
+        return clientID;
     }
 
-    public void setClient(ClientVO client) {
-        this.client = client;
+    public void setClientID(int clientID) {
+        this.clientID = clientID;
     }
 
     public String getStatus() {
@@ -71,52 +69,52 @@ public class VisitVO implements VisualObject {
         this.status = status;
     }
 
-    public ClientVO getPatient() {
-        return patient;
+    public int getPatientID() {
+        return patientID;
     }
 
-    public void setPatient(ClientVO patient) {
-        this.patient = patient;
+    public void setPatientID(int patientID) {
+        this.patientID = patientID;
     }
 
-    public OperationTypeVO getOperationType() {
-        return operationType;
+    public int getOperationTypeID() {
+        return operationTypeID;
     }
 
-    public void setOperationType(OperationTypeVO operationType) {
-        this.operationType = operationType;
+    public void setOperationTypeID(int operationTypeID) {
+        this.operationTypeID = operationTypeID;
     }
 
-    public Eye getEye() {
+    public String getEye() {
         return eye;
     }
 
-    public void setEye(Eye eye) {
+    public void setEye(String eye) {
         this.eye = eye;
     }
 
-    public SurgeonVO getSurgeon() {
-        return surgeon;
+    public int getSurgeonID() {
+        return surgeonID;
     }
 
-    public void setSurgeon(SurgeonVO surgeon) {
-        this.surgeon = surgeon;
+    public void setSurgeonID(int surgeonID) {
+        this.surgeonID = surgeonID;
     }
 
-    public ManagerVO getManager() {
-        return manager;
+    public int getManagerID() {
+        return managerID;
     }
 
-    public void setManager(ManagerVO manager) {
-        this.manager = manager;
+    public void setManagerID(int managerID) {
+        this.managerID = managerID;
     }
 
-    public AccomodationVO getAccomodation() {
-        return accomodation;
+    public int getAccomodationID() {
+        return accomodationID;
     }
 
-    public void setAccomodation(AccomodationVO accomodation) {
-        this.accomodation = accomodation;
+    public void setAccomodationID(int accomodationID) {
+        this.accomodationID = accomodationID;
     }
 
     public String getNote() {
@@ -132,32 +130,32 @@ public class VisitVO implements VisualObject {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         VisitVO visitVO = (VisitVO) o;
-        return Objects.equals(visitDate, visitVO.visitDate) &&
-                Objects.equals(client, visitVO.client) &&
-                Objects.equals(operationType, visitVO.operationType) &&
-                eye == visitVO.eye;
+        return visitDateID == visitVO.visitDateID &&
+                clientID == visitVO.clientID &&
+                operationTypeID == visitVO.operationTypeID &&
+                Objects.equals(eye, visitVO.eye);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(visitDate, client, operationType, eye);
+        return Objects.hash(visitDateID, clientID, operationTypeID, eye);
     }
 
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("VisitVO{");
         sb.append("visitId=").append(visitId);
-        sb.append(", visitDate=").append(visitDate);
+        sb.append(", visitDateID=").append(visitDateID);
         sb.append(", timeForCome=").append(timeForCome);
         sb.append(", orderForCome=").append(orderForCome);
-        sb.append(", client=").append(client);
+        sb.append(", clientID=").append(clientID);
         sb.append(", status='").append(status).append('\'');
-        sb.append(", patient=").append(patient);
-        sb.append(", operationType=").append(operationType);
-        sb.append(", eye=").append(eye);
-        sb.append(", surgeon=").append(surgeon);
-        sb.append(", manager=").append(manager);
-        sb.append(", accomodation=").append(accomodation);
+        sb.append(", patientID=").append(patientID);
+        sb.append(", operationTypeID=").append(operationTypeID);
+        sb.append(", eye='").append(eye).append('\'');
+        sb.append(", surgeonID=").append(surgeonID);
+        sb.append(", managerID=").append(managerID);
+        sb.append(", accomodationID=").append(accomodationID);
         sb.append(", note='").append(note).append('\'');
         sb.append('}');
         return sb.toString();

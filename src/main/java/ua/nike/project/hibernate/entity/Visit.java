@@ -14,6 +14,7 @@ import java.util.Objects;
 @Entity
 @NamedQueries(value = {
         @NamedQuery(name = "Visit.findAll", query = "FROM Visit "),
+        @NamedQuery(name = "Visit.findAllByDate", query = "FROM Visit v WHERE v.visitDate.date = :date "),
 })
 @Table(name = "visit", uniqueConstraints = {
         @UniqueConstraint(name = "visit_date_client_operation_type_eye", columnNames = {"visit_date_id", "client_id", "operation_type_id", "eye"}),

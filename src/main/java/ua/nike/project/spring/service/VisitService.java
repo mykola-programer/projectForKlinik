@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import ua.nike.project.hibernate.entity.Visit;
 import ua.nike.project.hibernate.type.ClientStatus;
+import ua.nike.project.hibernate.type.Eye;
 import ua.nike.project.spring.dao.DAO;
 import ua.nike.project.spring.vo.VisitVO;
 
@@ -57,17 +58,6 @@ public class VisitService {
         return result;
     }
 
-    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-    public List<VisitVO> findAllActive() {
-        List<Visit> entities = dao.findAll("Visit.findAllActive", null);
-        if (entities == null) return null;
-        List<VisitVO> result = new ArrayList<>();
-        for (Visit entity : entities) {
-            result.add(convertToVisitVO(entity));
-        }
-        return result;
-    }
-
     @Transactional(propagation = Propagation.REQUIRED)
     public VisitVO create(VisitVO visitVO) {
         Visit entity = copyToVisit(visitVO, null);
@@ -92,7 +82,7 @@ public class VisitService {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("date", date);
 
-        List<Visit> entities = dao.findAll("Visit.findAllActiveByDate", parameters);
+        List<Visit> entities = dao.findAll("Visit.findAllByDate", parameters);
         if (entities == null) return null;
         List<VisitVO> result = new ArrayList<>();
         for (Visit entity : entities) {
@@ -117,63 +107,47 @@ public class VisitService {
         return result;
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public List<VisitVO> displaceVisits(List<VisitVO> visitsVO) {
-        List<VisitVO> result = new ArrayList<>();
-        for (VisitVO visitVO : visitsVO) {
-            if (visitVO != null) {
-                visitVO.setAccomodation(null);
-                if (visitVO.getVisitId() > 0) {
-                    result.add(update(visitVO.getVisitId(), visitVO));
-                } else {
-                    result.add(create(visitVO));
-                }
-            }
-        }
-        return result;
-    }
-
     private Visit copyToVisit(VisitVO original, Visit result) {
         if (original != null) {
             if (result == null) result = new Visit();
             result.setTimeForCome(original.getTimeForCome());
             result.setOrderForCome(original.getOrderForCome());
             result.setStatus(ClientStatus.getInstance(original.getStatus()));
-            result.setEye(original.getEye());
             result.setNote(original.getNote());
 
-            if (original.getVisitDate() != null && original.getVisitDate().getVisitDateId() > 0) {
-                result.setVisitDate(visitDateService.findEntityByID(original.getVisitDate().getVisitDateId()));
+            if (original.getVisitDateID() > 0) {
+                result.setVisitDate(visitDateService.findEntityByID(original.getVisitDateID()));
             } else result.setVisitDate(null);
 
-
-            if (original.getPatient() != null && original.getPatient().getClientId() > 0 && !original.getStatus().equals("пацієнт")) {
-                result.setPatient(clientService.findEntityByID(original.getPatient().getClientId()));
-            } else result.setPatient(null);
-
-
-            if (original.getClient() != null && original.getClient().getClientId() > 0) {
-                result.setClient(clientService.findEntityByID(original.getClient().getClientId()));
+            if (original.getClientID() > 0) {
+                result.setClient(clientService.findEntityByID(original.getClientID()));
             } else result.setClient(null);
 
+            if (original.getAccomodationID() > 0) {
+                result.setAccomodation(accomodationService.findEntityByID(original.getAccomodationID()));
+            } else result.setAccomodation(null);
 
-            if (original.getOperationType() != null && original.getOperationType().getOperationTypeId() > 0) {
-                result.setOperationType(operationTypeService.findEntityByID(original.getOperationType().getOperationTypeId()));
-            } else result.setOperationType(null);
-
-
-            if (original.getSurgeon() != null && original.getSurgeon().getSurgeonId() > 0) {
-                result.setSurgeon(surgeonService.findEntityByID(original.getSurgeon().getSurgeonId()));
-            } else result.setSurgeon(null);
-
-
-            if (original.getManager() != null && original.getManager().getManagerId() > 0) {
-                result.setManager(managerService.findEntityByID(original.getManager().getManagerId()));
+            if (original.getManagerID() > 0) {
+                result.setManager(managerService.findEntityByID(original.getManagerID()));
             } else result.setManager(null);
 
-            if (original.getAccomodation() != null && original.getAccomodation().getAccomodationId() > 0) {
-                result.setAccomodation(accomodationService.findEntityByID(original.getAccomodation().getAccomodationId()));
-            } else result.setAccomodation(null);
+
+
+            if (original.getPatientID() > 0 && !original.getStatus().equals("пацієнт")) {
+                result.setPatient(clientService.findEntityByID(original.getPatientID()));
+            } else result.setPatient(null);
+
+            if (original.getOperationTypeID() > 0 && original.getStatus().equals("пацієнт")) {
+                result.setOperationType(operationTypeService.findEntityByID(original.getOperationTypeID()));
+            } else result.setOperationType(null);
+
+            if (original.getSurgeonID() > 0 && original.getStatus().equals("пацієнт")) {
+                result.setSurgeon(surgeonService.findEntityByID(original.getSurgeonID()));
+            } else result.setSurgeon(null);
+
+            if (original.getEye() != null && original.getStatus().equals("пацієнт")) {
+                result.setEye(Eye.valueOf(original.getEye()));
+            } else result.setEye(null);
         }
         return result;
     }
@@ -185,42 +159,42 @@ public class VisitService {
         result.setVisitId(visit.getVisitId());
         result.setTimeForCome(visit.getTimeForCome());
         result.setOrderForCome(visit.getOrderForCome());
-        result.setEye(visit.getEye());
         result.setStatus(visit.getStatus().convertToCyrillic());
         result.setNote(visit.getNote());
 
         if (visit.getVisitDate() != null) {
-            result.setVisitDate(visitDateService.findByID(visit.getVisitDate().getVisitDateId()));
-        } else result.setVisitDate(null);
+            result.setVisitDateID(visit.getVisitDate().getVisitDateId());
+        } else result.setVisitDateID(0);
 
         if (visit.getClient() != null) {
-            result.setClient(clientService.findByID(visit.getClient().getClientId()));
-        } else result.setClient(null);
-
-        if (visit.getPatient() != null && visit.getStatus() != null && visit.getStatus().toString().equals(ClientStatus.RELATIVE.toString())) {
-            result.setPatient(clientService.findByID(visit.getPatient().getClientId()));
-        } else result.setPatient(null);
-
-
-        if (visit.getOperationType() != null) {
-            result.setOperationType(operationTypeService.findByID(visit.getOperationType().getOperationTypeId()));
-        } else result.setOperationType(null);
-
-
-        if (visit.getSurgeon() != null) {
-            result.setSurgeon(surgeonService.findByID(visit.getSurgeon().getSurgeonId()));
-        } else result.setSurgeon(null);
-
-
-        if (visit.getManager() != null) {
-            result.setManager(managerService.findByID(visit.getManager().getManagerId()));
-        } else result.setManager(null);
+            result.setClientID(visit.getClient().getClientId());
+        } else result.setClientID(0);
 
         if (visit.getAccomodation() != null) {
-            result.setAccomodation(accomodationService.findByID(visit.getAccomodation().getAccomodationId()));
-        } else result.setAccomodation(null);
+            result.setAccomodationID(visit.getAccomodation().getAccomodationId());
+        } else result.setAccomodationID(0);
+
+        if (visit.getManager() != null) {
+            result.setManagerID(visit.getManager().getManagerId());
+        } else result.setManagerID(0);
 
 
+
+        if (visit.getPatient() != null && visit.getStatus() != null && visit.getStatus().toString().equals(ClientStatus.RELATIVE.toString())) {
+            result.setPatientID(visit.getPatient().getClientId());
+        } else result.setPatientID(0);
+
+        if (visit.getOperationType() != null && visit.getStatus() != null && visit.getStatus().toString().equals(ClientStatus.PATIENT.toString())) {
+            result.setOperationTypeID(visit.getOperationType().getOperationTypeId());
+        } else result.setOperationTypeID(0);
+
+        if (visit.getSurgeon() != null && visit.getStatus() != null && visit.getStatus().toString().equals(ClientStatus.PATIENT.toString())) {
+            result.setSurgeonID(visit.getSurgeon().getSurgeonId());
+        } else result.setSurgeonID(0);
+
+        if (visit.getEye() != null && visit.getStatus() != null && visit.getStatus().toString().equals(ClientStatus.PATIENT.toString())) {
+            result.setEye(visit.getEye().toString());
+        } else result.setEye(null);
         return result;
     }
 }
