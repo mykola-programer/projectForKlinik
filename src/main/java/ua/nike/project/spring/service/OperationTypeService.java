@@ -78,14 +78,14 @@ public class OperationTypeService {
     @Transactional(propagation = Propagation.REQUIRED)
     public OperationTypeVO deactivateByID(int operationTypeID) {
         OperationType operationType = dao.findByID(operationTypeID);
-        operationType.setInactive(true);
+        operationType.setDisable(true);
         return convertToOperationTypeVO(dao.update(operationType));
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
     public OperationTypeVO activateByID(int operationTypeID) {
         OperationType operationType = dao.findByID(operationTypeID);
-        operationType.setInactive(false);
+        operationType.setDisable(false);
         return convertToOperationTypeVO(dao.update(operationType));
     }
 
@@ -94,7 +94,7 @@ public class OperationTypeService {
         OperationTypeVO operationTypeVO = new OperationTypeVO();
         operationTypeVO.setOperationTypeId(operationType.getOperationTypeId());
         operationTypeVO.setName(operationType.getName());
-        operationTypeVO.setInactive(operationType.isInactive());
+        operationTypeVO.setDisable(operationType.isDisable());
         return operationTypeVO;
     }
 
@@ -102,7 +102,7 @@ public class OperationTypeService {
         if (original != null) {
             if (result == null) result = new OperationType();
             result.setName(original.getName());
-            result.setInactive(original.isInactive());
+            result.setDisable(original.isDisable());
         }
         return result;
     }
@@ -195,7 +195,7 @@ public class OperationTypeService {
             result.setManager(transformToManagerVO(visit.getManager()));
             result.setOperationType(transformToOperationTypeVO(visit.getOperationType()));
             result.setNote(visit.getNote());
-            result.setInactive(visit.getInactive());
+            result.setDisable(visit.isDisable());
             return result;
         }
 
@@ -218,7 +218,7 @@ public class OperationTypeService {
             result.setOperationTypeId(operationType.getOperationTypeId());
             result.setWard(Integer.valueOf(operationType.getWard().toString().substring(1)));
             result.setWardPlace(operationType.getWardPlace());
-            result.setInactive(operationType.isInactive());
+            result.setDisable(operationType.isDisable());
             return result;
         }
 
@@ -231,7 +231,7 @@ public class OperationTypeService {
             result.setSecondName(manager.getSecondName());
             result.setSex(convertSex(manager.getSex()));
             result.setCity(manager.getCity());
-            result.setInactive(manager.isInactive());
+            result.setDisable(manager.isDisable());
             return result;
         }
 
@@ -243,7 +243,7 @@ public class OperationTypeService {
             result.setFirstName(surgeon.getFirstName());
             result.setSecondName(surgeon.getSecondName());
             result.setSex(convertSex(surgeon.getSex()));
-            result.setInactive(surgeon.isInactive());
+            result.setDisable(surgeon.isDisable());
             return result;
         }
 
@@ -252,7 +252,7 @@ public class OperationTypeService {
             OperationTypeVO operationTypeVO = new OperationTypeVO();
             operationTypeVO.setOperationTypeId(operationType.getOperationTypeId());
             operationTypeVO.setName(operationType.getName());
-            operationTypeVO.setInactive(operationType.isInactive());
+            operationTypeVO.setDisable(operationType.isDisable());
             return operationTypeVO;
         }
 
@@ -261,7 +261,7 @@ public class OperationTypeService {
             VisitDateVO result = new VisitDateVO();
             result.setVisitDateId(visitDate.getVisitDateId());
             result.setDate(visitDate.getDate());
-            result.setInactive(visitDate.isInactive());
+            result.setDisable(visitDate.isDisable());
             return result;
         }
 
@@ -311,7 +311,7 @@ public class OperationTypeService {
                 result.setStatus(convertOperationTypeStatus(original.getStatus()));
                 result.setEye(original.getEye());
                 result.setNote(original.getNote());
-                result.setInactive(original.getInactive());
+                result.setDisable(original.isDisable());
 
                 if (original.getVisitDate() != null && original.getVisitDate().getVisitDateId() > 0) {
                     VisitDate visitDate = new VisitDate();
@@ -363,7 +363,7 @@ public class OperationTypeService {
         private VisitDate copyToVisitDate(VisitDateVO original, VisitDate result) {
             if (original != null) {
                 result.setDate(original.getDate());
-                result.setInactive(original.isInactive());
+                result.setDisable(original.isDisable());
             }
             return result;
         }
@@ -374,7 +374,7 @@ public class OperationTypeService {
                 result.setFirstName(original.getFirstName());
                 result.setSecondName(original.getSecondName());
                 result.setSex(convertSex(original.getSex()));
-                result.setInactive(original.isInactive());
+                result.setDisable(original.isDisable());
             }
             return result;
         }
@@ -382,7 +382,7 @@ public class OperationTypeService {
         private OperationType copyToOperationType(OperationTypeVO original, OperationType result) {
             if (original != null) {
                 result.setName(original.getName());
-                result.setInactive(original.isInactive());
+                result.setDisable(original.isDisable());
             }
             return result;
         }
@@ -394,7 +394,7 @@ public class OperationTypeService {
                 result.setSecondName(original.getSecondName());
                 result.setCity(original.getCity());
                 result.setSex(convertSex(original.getSex()));
-                result.setInactive(original.isInactive());
+                result.setDisable(original.isDisable());
             }
             return result;
         }
@@ -403,7 +403,7 @@ public class OperationTypeService {
             if (original != null) {
                 result.setWard(Ward.valueOf("N" + original.getWard()));
                 result.setWardPlace(original.getWardPlace());
-                result.setInactive(original.isInactive());
+                result.setDisable(original.isDisable());
             }
             return result;
         }

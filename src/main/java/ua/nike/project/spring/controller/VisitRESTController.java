@@ -86,20 +86,6 @@ public class VisitRESTController {
         return visitService.deleteById(visitID);
     }
 
-
-    @CrossOrigin
-    @RequestMapping(value = "/{id}/deactivate", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public VisitVO deactivateByID(@PathVariable("id") int visitID) {
-        return visitService.deactivateByID(visitID);
-    }
-
-    @CrossOrigin
-    @RequestMapping(value = "/{id}/activate", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public VisitVO activateByID(@PathVariable("id") int visitID) {
-        return visitService.activateByID(visitID);
-    }
-
-
     @CrossOrigin
     @RequestMapping(value = "/all/{date}/", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public List<VisitVO> getVisitsByDate(@PathVariable("date") String reqDate) throws ApplicationException {

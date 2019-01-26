@@ -11,7 +11,7 @@ public class VisitDateVO implements VisualObject {
     @NotNull(message = "visit_dates.date.null")
     @Future(message = "visit_dates.date.future")
     private LocalDate date;
-    private boolean inactive;
+    private boolean disable;
 
     public Integer getVisitDateId() {
         return visitDateId;
@@ -29,12 +29,12 @@ public class VisitDateVO implements VisualObject {
         this.date = date;
     }
 
-    public boolean isInactive() {
-        return inactive;
+    public boolean isDisable() {
+        return disable;
     }
 
-    public void setInactive(boolean inactive) {
-        this.inactive = inactive;
+    public void setDisable(boolean disable) {
+        this.disable = disable;
     }
 
     @Override
@@ -57,7 +57,7 @@ public class VisitDateVO implements VisualObject {
         final StringBuilder sb = new StringBuilder("VisitDateVO{");
         sb.append("visitDateId=").append(visitDateId);
         sb.append(", date=").append(date);
-        sb.append(", inactive=").append(inactive);
+        sb.append(", disable=").append(disable);
         sb.append('}');
         return sb.toString();
     }

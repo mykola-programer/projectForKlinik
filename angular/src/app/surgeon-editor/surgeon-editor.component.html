@@ -1,6 +1,6 @@
 <ngx-toasta></ngx-toasta>
 <br><br><br>
-<img [hidden]="!surgeons_loading" src="/assets/img/download.gif" style="max-width: 600px"/>
+<img [hidden]="!surgeons_loading" src="/assets/img/download.gif" style="max-width: 500px"/>
 <div *ngIf="!surgeons_loading">
   <div class="left-container" style="max-width: 800px; min-width: 550px; margin-left: 10px">
     <form [formGroup]="searchForm">
@@ -125,17 +125,17 @@
 <br><br><br>
 
 <div class="left-container fixed-bottom bg-light">
-  <button class="btn btn-min-style" (click)="onAdd()">Add</button>
-  <button class="btn btn-success btn-min-style" (click)="onSave()"
+  <button class="btn btn-min-style" (click)="onAdd()" title="Додати">Add</button>
+  <button class="btn btn-success btn-min-style" (click)="onSave()" title="Зберегти"
           [disabled]="count_of_surgeons == 0">Save
   </button>
   <img [hidden]="!save_loading" src="/assets/img/rotating-balls-spinner.gif" height="40" width="40"/>
-  <button class="btn btn-warning btn-min-style" (click)="onRefresh()">Refresh</button>
-  <button class="btn btn-dark btn-min-style" (click)="onDelete()"
+  <button class="btn btn-warning btn-min-style" (click)="onRefresh()" title="Обновити">Refresh</button>
+  <button class="btn btn-dark btn-min-style" (click)="onDelete()" title="Видалити"
           [disabled]="count_of_surgeons == 0">Delete
   </button>
   <img [hidden]="!del_loading" src="/assets/img/rotating-balls-spinner.gif" height="40" width="40"/>
-  <button class="btn btn-danger btn-min-style" (click)="onCancel()"
+  <button class="btn btn-danger btn-min-style" (click)="onCancel()" title="Відмінити"
           [disabled]="count_of_surgeons == 0">Cancel
   </button>
 </div>

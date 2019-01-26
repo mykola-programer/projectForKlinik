@@ -24,6 +24,7 @@ export class OperationTypeService {
     return this.http.get<OperationType[]>(this.serverUrl + this.proceduresUrl);
   }
 
+  /** @deprecated */
   getActiveProcedures(): Observable<OperationType[]> {
     return this.http.get<OperationType[]>(this.serverUrl + this.proceduresUrl + this.activeUrl);
   }

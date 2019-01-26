@@ -6,15 +6,14 @@ import ua.nike.project.hibernate.type.PostgreSQLEnumType;
 import ua.nike.project.hibernate.type.Ward;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
 @Entity
 @NamedQueries(value = {
         @NamedQuery(name = "Accomodation.findAll", query = "FROM Accomodation acc ORDER BY acc.ward, acc.wardPlace"),
-        @NamedQuery(name = "Accomodation.getAllActive", query = "FROM Accomodation acc where acc.inactive = false ORDER BY acc.ward, acc.wardPlace"),
-        @NamedQuery(name = "Accomodation.getActiveWards", query = "SELECT DISTINCT acc.ward FROM Accomodation acc where acc.inactive = false ORDER BY acc.ward"),
+        @NamedQuery(name = "Accomodation.getAllActive", query = "FROM Accomodation acc where acc.disable = false ORDER BY acc.ward, acc.wardPlace"),
+        @NamedQuery(name = "Accomodation.getActiveWards", query = "SELECT DISTINCT acc.ward FROM Accomodation acc where acc.disable = false ORDER BY acc.ward"),
         @NamedQuery(name = "Accomodation.getWards", query = "SELECT DISTINCT acc.ward FROM Accomodation acc ORDER BY acc.ward")
 })
 @Table(name = "accomodation", uniqueConstraints = {
@@ -40,8 +39,8 @@ public class Accomodation implements EntityObject {
     @Column(name = "ward_place")
     private Integer wardPlace;
 
-    @Column(name = "inactive")
-    private Boolean inactive;
+    @Column(name = "disable")
+    private Boolean disable;
 
     @OneToMany(targetEntity = Visit.class, fetch = FetchType.LAZY, mappedBy = "accomodation")
     private List<Visit> visits;
@@ -70,16 +69,12 @@ public class Accomodation implements EntityObject {
         this.wardPlace = wardPlace;
     }
 
-    public Boolean isInactive() {
-        return inactive;
+    public Boolean isDisable() {
+        return disable;
     }
 
-    public void setInactive(Boolean placeBlocked) {
-        this.inactive = placeBlocked;
-    }
-
-    public Boolean getInactive() {
-        return inactive;
+    public void setDisable(Boolean disable) {
+        this.disable = disable;
     }
 
     public List<Visit> getVisits() {
@@ -110,7 +105,7 @@ public class Accomodation implements EntityObject {
         sb.append("accomodationId=").append(accomodationId);
         sb.append(", ward=").append(ward);
         sb.append(", wardPlace=").append(wardPlace);
-        sb.append(", placeLocked=").append(inactive);
+        sb.append(", disable=").append(disable);
         sb.append('}');
         return sb.toString();
     }

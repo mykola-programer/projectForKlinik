@@ -23,20 +23,18 @@ export class ClientService {
     return this.http.get<Client[]>(this.serverUrl + this.clientsUrl);
   }
 
+  /** @deprecated */
   putClients(clients: Client[]): Observable<Client[]> {
     const myClients: MyObjectList<Client> = new MyObjectList();
     myClients.objects = clients;
     return this.http.put<Client[]>(this.serverUrl + this.clientsUrl + "list/", JSON.stringify(myClients), this.httpOptions);
   }
 
+  /** @deprecated */
   deleteClients(client_ids: number[]): Observable<boolean> {
     return this.http.delete<boolean>(this.serverUrl + this.clientsUrl + "list/" + client_ids.toString(), this.httpOptions);
   }
-}
 
-
-
-  /*
   getClient(client_id: number): Observable<Client> {
     return this.http.get<Client>(this.serverUrl + this.clientsUrl + client_id);
   }
@@ -46,12 +44,12 @@ export class ClientService {
   }
 
   editClient(client: Client): Observable<Client> {
-    return this.http.put<Client>(this.serverUrl + this.clientsUrl + client.clientId.toString(), JSON.stringify(client), this.httpOptions);
+    return this.http.put<Client>(this.serverUrl + this.clientsUrl + client.clientId, JSON.stringify(client), this.httpOptions);
   }
 
   deleteClient(client_id: number): Observable<boolean> {
     return this.http.delete<boolean>(this.serverUrl + this.clientsUrl + client_id.toString(), this.httpOptions);
   }
-*/
+}
 
 

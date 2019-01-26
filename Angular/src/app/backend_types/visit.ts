@@ -18,7 +18,6 @@ export class Visit {
   public surgeon: Surgeon;
   public manager: Manager;
   public accomodation: Accomodation;
-  public inactive = false;
   public note: string;
   public isChanged = false;
 

@@ -100,7 +100,7 @@ export class AccomodationComponent implements OnInit {
 
   private getVisitsWithWards() {
     this.accomodationService.getAccomodations().toPromise().then((value: Accomodation[]) => {
-      const accomodations = value.filter(accomodation => !accomodation.inactive);
+      const accomodations = value.filter(accomodation => !accomodation.disable);
       this.visits_with_wards = [];
       accomodations.forEach((accomodation: Accomodation) => {
         let isAdd = false;

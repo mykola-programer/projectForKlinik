@@ -98,14 +98,14 @@ public class AccomodationService {
     @Transactional(propagation = Propagation.REQUIRED)
     public AccomodationVO deactivateByID(int accomodationID) {
         Accomodation accomodation = dao.findByID(accomodationID);
-        accomodation.setInactive(true);
+        accomodation.setDisable(true);
         return convertToAccomodationVO(dao.update(accomodation));
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
     public AccomodationVO activateByID(int accomodationID) {
         Accomodation accomodation = dao.findByID(accomodationID);
-        accomodation.setInactive(false);
+        accomodation.setDisable(false);
         return convertToAccomodationVO(dao.update(accomodation));
     }
 
@@ -115,7 +115,7 @@ public class AccomodationService {
         result.setAccomodationId(accomodation.getAccomodationId());
         result.setWard(accomodation.getWard().toInteger());
         result.setWardPlace(accomodation.getWardPlace());
-        result.setInactive(accomodation.isInactive());
+        result.setDisable(accomodation.isDisable());
         return result;
     }
 
@@ -124,7 +124,7 @@ public class AccomodationService {
             if (result == null) result = new Accomodation();
             result.setWard(Ward.valueOf("N" + original.getWard()));
             result.setWardPlace(original.getWardPlace());
-            result.setInactive(original.isInactive());
+            result.setDisable(original.isInactive());
         }
         return result;
     }
@@ -216,7 +216,7 @@ public class AccomodationService {
             result.setManager(transformToManagerVO(visit.getManager()));
             result.setAccomodation(transformToAccomodationVO(visit.getAccomodation()));
             result.setNote(visit.getNote());
-            result.setInactive(visit.getInactive());
+            result.setDisable(visit.isDisable());
             return result;
         }
 
@@ -239,7 +239,7 @@ public class AccomodationService {
             result.setAccomodationId(accomodation.getAccomodationId());
             result.setWard(Integer.valueOf(accomodation.getWard().toString().substring(1)));
             result.setWardPlace(accomodation.getWardPlace());
-            result.setInactive(accomodation.isInactive());
+            result.setDisable(accomodation.isDisable());
             return result;
         }
 
@@ -252,7 +252,7 @@ public class AccomodationService {
             result.setSecondName(manager.getSecondName());
             result.setSex(convertSex(manager.getSex()));
             result.setCity(manager.getCity());
-            result.setInactive(manager.isInactive());
+            result.setDisable(manager.isDisable());
             return result;
         }
 
@@ -264,7 +264,7 @@ public class AccomodationService {
             result.setFirstName(surgeon.getFirstName());
             result.setSecondName(surgeon.getSecondName());
             result.setSex(convertSex(surgeon.getSex()));
-            result.setInactive(surgeon.isInactive());
+            result.setDisable(surgeon.isDisable());
             return result;
         }
 
@@ -273,7 +273,7 @@ public class AccomodationService {
             OperationTypeVO operationTypeVO = new OperationTypeVO();
             operationTypeVO.setOperationTypeId(operationType.getOperationTypeId());
             operationTypeVO.setName(operationType.getName());
-            operationTypeVO.setInactive(operationType.isInactive());
+            operationTypeVO.setDisable(operationType.isDisable());
             return operationTypeVO;
         }
 
@@ -282,7 +282,7 @@ public class AccomodationService {
             VisitDateVO result = new VisitDateVO();
             result.setVisitDateId(visitDate.getVisitDateId());
             result.setDate(visitDate.getDate());
-            result.setInactive(visitDate.isInactive());
+            result.setDisable(visitDate.isDisable());
             return result;
         }
 
@@ -332,7 +332,7 @@ public class AccomodationService {
                 result.setStatus(convertAccomodationStatus(original.getStatus()));
                 result.setEye(original.getEye());
                 result.setNote(original.getNote());
-                result.setInactive(original.getInactive());
+                result.setDisable(original.isDisable());
 
                 if (original.getVisitDate() != null && original.getVisitDate().getVisitDateId() > 0) {
                     VisitDate visitDate = new VisitDate();
@@ -384,7 +384,7 @@ public class AccomodationService {
         private VisitDate copyToVisitDate(VisitDateVO original, VisitDate result) {
             if (original != null) {
                 result.setDate(original.getDate());
-                result.setInactive(original.isInactive());
+                result.setDisable(original.isDisable());
             }
             return result;
         }
@@ -395,7 +395,7 @@ public class AccomodationService {
                 result.setFirstName(original.getFirstName());
                 result.setSecondName(original.getSecondName());
                 result.setSex(convertSex(original.getSex()));
-                result.setInactive(original.isInactive());
+                result.setDisable(original.isDisable());
             }
             return result;
         }
@@ -403,7 +403,7 @@ public class AccomodationService {
         private OperationType copyToOperationType(OperationTypeVO original, OperationType result) {
             if (original != null) {
                 result.setName(original.getName());
-                result.setInactive(original.isInactive());
+                result.setDisable(original.isDisable());
             }
             return result;
         }
@@ -415,7 +415,7 @@ public class AccomodationService {
                 result.setSecondName(original.getSecondName());
                 result.setCity(original.getCity());
                 result.setSex(convertSex(original.getSex()));
-                result.setInactive(original.isInactive());
+                result.setDisable(original.isDisable());
             }
             return result;
         }
@@ -424,7 +424,7 @@ public class AccomodationService {
             if (original != null) {
                 result.setWard(Ward.valueOf("N" + original.getWard()));
                 result.setWardPlace(original.getWardPlace());
-                result.setInactive(original.isInactive());
+                result.setDisable(original.isDisable());
             }
             return result;
         }

@@ -13,7 +13,7 @@ import {debounceTime} from "rxjs/operators";
   styleUrls: ["./surgeon-editor.component.css"]
 })
 export class SurgeonEditorComponent implements OnInit {
-  public surgeons: Surgeon[];
+  public surgeons: Surgeon[] = [];
   public count_of_surgeons = 0;
   public genders: string[] = ["Ч", "Ж"];
 
@@ -68,7 +68,12 @@ export class SurgeonEditorComponent implements OnInit {
   getSurgeons() {
     this.surgeons_loading = true;
     this.surgeonService.getSurgeons().toPromise().then((surgeons: Surgeon[]) => {
-      this.surgeons = surgeons;
+      if (surgeons) {
+        this.surgeons = surgeons;
+      } else {
+        this.surgeons = [];
+        this.surgeons.push(new Surgeon());
+      }
       this.surgeonsForm = this.updateFormGroups(this.surgeons);
       this.tableForm.setControl("surgeonsForm", this.surgeonsForm);
       this.surgeons_loading = false;
@@ -91,7 +96,7 @@ export class SurgeonEditorComponent implements OnInit {
     surgeon.disable = false;
     surgeon.isChanged = false;
     this.searchForm.get("searchControlForm").setValue("");
-    if (this.surgeonsForm.controls[0].valid && (<Surgeon>this.surgeonsForm.controls[0].value).surgeonId !== 0) {
+    if (this.surgeonsForm.controls[0].valid) {
       this.surgeonsForm.insert(0, this.createFormGroup(surgeon));
     }
     setTimeout(() => {
@@ -198,6 +203,7 @@ export class SurgeonEditorComponent implements OnInit {
   }
 
   onRefresh() {
+    this.surgeons_loading = true;
     this.hidden_surgeons = false;
     this.sorting_order = true;
     this.getSurgeons();

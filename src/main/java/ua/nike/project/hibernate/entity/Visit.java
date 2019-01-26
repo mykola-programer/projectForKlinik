@@ -14,10 +14,6 @@ import java.util.Objects;
 @Entity
 @NamedQueries(value = {
         @NamedQuery(name = "Visit.findAll", query = "FROM Visit "),
-        @NamedQuery(name = "Visit.findAllActive", query = "FROM Visit WHERE inactive = false "),
-        @NamedQuery(name = "Visit.findAllActiveByDate", query = "FROM Visit v WHERE v.visitDate.date = :date AND v.inactive = false "),
-//        @NamedQuery(name = "Visit.findAllByDateWithWards", query = "FROM Visit v WHERE v.visitDate.date = :date AND v.accomodation IS NOT NULL ORDER BY v.accomodation.ward, v.accomodation.wardPlace"),
-//        @NamedQuery(name = "Visit.findAllByDateWithoutWards", query = "FROM Visit v WHERE v.visitDate.date = :date AND v.accomodation IS NULL order by v.orderForCome")
 })
 @Table(name = "visit", uniqueConstraints = {
         @UniqueConstraint(name = "visit_date_client_operation_type_eye", columnNames = {"visit_date_id", "client_id", "operation_type_id", "eye"}),
@@ -84,9 +80,6 @@ public class Visit implements EntityObject {
     private Accomodation accomodation;
 
     private String note;
-
-    @Column(name = "inactive")
-    private Boolean inactive;
 
     public long getVersion() {
         return version;
@@ -200,14 +193,6 @@ public class Visit implements EntityObject {
         this.note = note;
     }
 
-    public Boolean getInactive() {
-        return inactive;
-    }
-
-    public void setInactive(Boolean inactive) {
-        this.inactive = inactive;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -240,7 +225,6 @@ public class Visit implements EntityObject {
         sb.append(", manager=").append(manager);
         sb.append(", accomodation=").append(accomodation);
         sb.append(", note='").append(note).append('\'');
-        sb.append(", inactive=").append(inactive);
         sb.append('}');
         return sb.toString();
     }

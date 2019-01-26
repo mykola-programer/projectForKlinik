@@ -25,10 +25,12 @@ export class VisitService {
     return this.http.get<Visit[]>(this.serverUrl + this.visitUrl + "all/" + select_date.toLocaleDateString() + "/");
   }
 
+  /** @deprecated */
   getVisitsWithWard(select_date: Date): Observable<Visit[]> {
     return this.http.get<Visit[]>(this.serverUrl + this.visitUrl + this.isWardsUrl + select_date.toLocaleDateString() + "/");
   }
 
+  /** @deprecated */
   getVisitsWithoutWard(select_date: Date): Observable<Visit[]> {
     return this.http.get<Visit[]>(this.serverUrl + this.visitUrl + this.noWardUrl + select_date.toLocaleDateString() + "/");
   }
@@ -41,12 +43,14 @@ export class VisitService {
     return this.http.put<Visit>(this.serverUrl + this.visitUrl + visit.visitId.toString(), JSON.stringify(visit), this.httpOptions);
   }
 
+  /** @deprecated */
   putVisits(visits: Visit[]): Observable<Visit[]> {
     const myVisits: MyObjectList<Visit> = new MyObjectList();
     myVisits.objects = visits;
     return this.http.put<Visit[]>(this.serverUrl + this.visitUrl + "list/", JSON.stringify(myVisits), this.httpOptions);
   }
 
+  /** @deprecated */
   displaceVisits(visits: Visit[]): Observable<Visit[]> {
     const myVisits: MyObjectList<Visit> = new MyObjectList();
     myVisits.objects = visits;

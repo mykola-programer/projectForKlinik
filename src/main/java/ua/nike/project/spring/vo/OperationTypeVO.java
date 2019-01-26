@@ -6,7 +6,7 @@ public class OperationTypeVO implements VisualObject {
 
     private Integer operationTypeId;
     private String name;
-    private boolean inactive;
+    private boolean disable;
 
     public Integer getOperationTypeId() {
         return operationTypeId;
@@ -24,12 +24,12 @@ public class OperationTypeVO implements VisualObject {
         this.name = name;
     }
 
-    public boolean isInactive() {
-        return inactive;
+    public boolean isDisable() {
+        return disable;
     }
 
-    public void setInactive(boolean inactive) {
-        this.inactive = inactive;
+    public void setDisable(boolean disable) {
+        this.disable = disable;
     }
 
     @Override
@@ -50,7 +50,7 @@ public class OperationTypeVO implements VisualObject {
         final StringBuilder sb = new StringBuilder("OperationTypeVO{");
         sb.append("operationTypeId=").append(operationTypeId);
         sb.append(", name='").append(name).append('\'');
-        sb.append(", inactive=").append(inactive);
+        sb.append(", disable=").append(disable);
         sb.append('}');
         return sb.toString();
     }

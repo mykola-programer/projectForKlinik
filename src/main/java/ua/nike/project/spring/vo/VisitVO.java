@@ -2,8 +2,6 @@ package ua.nike.project.spring.vo;
 
 import ua.nike.project.hibernate.type.Eye;
 
-import javax.validation.constraints.Pattern;
-import java.io.Serializable;
 import java.time.LocalTime;
 import java.util.Objects;
 
@@ -24,7 +22,6 @@ public class VisitVO implements VisualObject {
     private ManagerVO manager;
     private AccomodationVO accomodation;
     private String note;
-    private Boolean inactive;
 
     public Integer getVisitId() {
         return visitId;
@@ -130,14 +127,6 @@ public class VisitVO implements VisualObject {
         this.note = note;
     }
 
-    public Boolean getInactive() {
-        return inactive;
-    }
-
-    public void setInactive(Boolean inactive) {
-        this.inactive = inactive;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -170,7 +159,6 @@ public class VisitVO implements VisualObject {
         sb.append(", manager=").append(manager);
         sb.append(", accomodation=").append(accomodation);
         sb.append(", note='").append(note).append('\'');
-        sb.append(", inactive=").append(inactive);
         sb.append('}');
         return sb.toString();
     }

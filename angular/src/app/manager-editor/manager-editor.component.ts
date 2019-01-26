@@ -13,7 +13,7 @@ import {debounceTime} from "rxjs/operators";
   styleUrls: ["./manager-editor.component.css"]
 })
 export class ManagerEditorComponent implements OnInit {
-  public managers: Manager[];
+  public managers: Manager[] = [];
   public count_of_managers = 0;
   public genders: string[] = ["Ч", "Ж"];
 
@@ -68,7 +68,12 @@ export class ManagerEditorComponent implements OnInit {
   getManagers() {
     this.managers_loading = true;
     this.managerService.getManagers().toPromise().then((managers: Manager[]) => {
-      this.managers = managers;
+      if (managers) {
+        this.managers = managers;
+      } else {
+        this.managers = [];
+        this.managers.push(new Manager());
+      }
       this.managersForm = this.updateFormGroups(this.managers);
       this.tableForm.setControl("managersForm", this.managersForm);
       this.managers_loading = false;
@@ -91,7 +96,7 @@ export class ManagerEditorComponent implements OnInit {
     manager.disable = false;
     manager.isChanged = false;
     this.searchForm.get("searchControlForm").setValue("");
-    if (this.managersForm.controls[0].valid && (<Manager>this.managersForm.controls[0].value).managerId !== 0) {
+    if (this.managersForm.controls[0].valid) {
       this.managersForm.insert(0, this.createFormGroup(manager));
     }
     setTimeout(() => {
@@ -160,12 +165,13 @@ export class ManagerEditorComponent implements OnInit {
       return abstractControl.get("isChanged").value;
     }));
     if (control && control.value) {
-      const manager_for_del = control.value;
+      const manager_for_del: Manager = control.value;
       if (manager_for_del.managerId > 0) {
         this.managerService.deleteManager(manager_for_del.managerId).toPromise().then(() => {
           control.get("isChanged").setValue(false);
           this.success_deleting();
         }).catch((err: HttpErrorResponse) => {
+          this.error_deleting(err);
         });
       } else {
         control.get("isChanged").setValue(false);
@@ -195,6 +201,7 @@ export class ManagerEditorComponent implements OnInit {
   }
 
   onRefresh() {
+    this.managers_loading = true;
     this.hidden_managers = false;
     this.sorting_order = true;
     this.getManagers();

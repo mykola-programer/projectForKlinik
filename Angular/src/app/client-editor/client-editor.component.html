@@ -1,183 +1,138 @@
 <ngx-toasta></ngx-toasta>
 <br><br><br>
-<img *ngIf="loading_clients" src="/assets/img/download.gif" style="max-width: 600px; min-width: 600px;"/>
-<div *ngIf="!loading_clients" >
-<div class="left-container" style="max-width: 800px; min-width: 550px; margin-left: 10px">
-  <div class="input-group-prepend">
-      <span class="input-group-text">Пошук :</span>
-    <input #search type="search"
-           (input)="filterClients(search.value)"
-           class="form-control border-left">
+<img [hidden]="!clients_loading" src="/assets/img/download.gif" style="max-width: 500px"/>
+<div *ngIf="!clients_loading">
+  <div class="left-container" style="max-width: 800px; min-width: 550px; margin-left: 10px">
+    <form [formGroup]="searchForm">
+      <div class="input-group-prepend">
+        <span class="input-group-text">Пошук :</span>
+        <input id="search" type="search" formControlName="searchControlForm"
+               [ngClass]="{'form-control border-left':true,
+                    'is-valid':searchForm.valid,
+                    'is-invalid':!searchForm.valid
+                    }">
+      </div>
+    </form>
   </div>
-</div>
-<div class="left-container" style="max-width: 800px; min-width: 550px; margin-left: 10px">
-  <p class="h3 text-center">Клієнти клініки :</p>
+  <div class="left-container" style="max-width: 800px; min-width: 550px; margin-left: 10px">
+    <p class="h3 text-center">Клієнти клініки :</p>
 
-  <div class="table-responsive-lg">
-    <table class="table table-bordered table-sm table-hover" *ngIf="filteredClients">
-      <thead>
+    <form [formGroup]="tableForm">
+      <div class="table-responsive-lg">
+        <table class="table table-bordered table-sm table-hover">
 
-      <tr class="table-info">
-        <th scope="col" style="width: 30px;"></th>
-        <th scope="col" colspan="3">ПІБ Клієнта</th>
-        <th scope="col" style="width: 40px;">Ст.</th>
-        <th scope="col" style="width: 40px;">Дата народж.</th>
-        <th scope="col">Телефон</th>
-      </tr>
+          <thead>
+          <tr class="table-info">
+            <th scope="col" style="width: 30px;"></th>
+            <th scope="col" colspan="3">
+              <img [hidden]="!sorting_order" src="/assets/img/sort/ascending-sorting-48.png" style="max-width: 25px;"
+                   (click)="change_sorting()"/>
+              <img [hidden]="sorting_order" src="/assets/img/sort/descending-sorting-48.png" style="max-width: 25px;"
+                   (click)="change_sorting()"/>
+              <label>&nbsp; ПІБ Клієнта</label>
+            </th>
+            <th scope="col" style="width: 40px;">Ст.</th>
+            <th scope="col" style="width: 40px;">Дата народж.</th>
+            <th scope="col">Телефон</th>
+          </tr>
 
-      </thead>
-      <tbody>
+          </thead>
 
-      <tr *ngFor="let client of filteredClients" [ngClass]="{changed:client.isChanged}">
-        <th>
-          <input type="checkbox" [ngModel]="client.isChanged" (change)="client.isChanged=!client.isChanged">
-        </th>
+          <tbody formArrayName="clientsForm">
+          <tr *ngFor="let clientForm of (tableForm.get('clientsForm').controls); let i=index"
+              [ngClass]="{changed:clientForm.get('isChanged').value}">
 
-        <td>
-          <input #surname type="text" placeholder="  - Прізвище -  "
-                 class="form-control font-weight-bold form-control-sm input-style-active"
-                 [ngModel]="client.surname"
-                 (change)="changeSurname(client, surname)"
-                 (keydown.space)="firstName.focus(); false"
-                 (blur)="onBlur(client, surname)">
-          <!--pattern="[A-Za-zА-Яа-яЁёІіЇїЄє]{1,50}" required-->
-          <div *ngIf="!surname.checkValidity()" class="invalid">Введіть коректне значення !</div>
-        </td>
-        <td>
-          <input #firstName type="text" placeholder="  - Ім'я -  "
-                 pattern="[A-Za-zА-Яа-яЁёІіЇїЄє]{1,50}" required
-                 class="form-control font-weight-bold form-control-sm input-style-active"
-                 [ngModel]="client.firstName"
-                 (change)="changeFirstName(client, firstName)"
-                 (keydown.space)="secondName.focus(); false"
-                 (blur)="onBlur(client, firstName)">
+            <td [formGroupName]="i">
+              <input type="checkbox" formControlName="isChanged"
+                     (change)="clientForm.invalid ? clientForm.get('isChanged').patchValue(false) : false"
+                     class="form-control form-control-sm input-style-active">
+            </td>
 
-          <div *ngIf="!firstName.checkValidity()" class="invalid">Введіть коректне значення !</div>
-        </td>
-        <td>
-          <input #secondName type="text" placeholder="  - по-Батькові -  "
-                 pattern="[A-Za-zА-Яа-яЁёІіЇїЄє]{1,50}" required
-                 class="form-control font-weight-bold form-control-sm input-style-active"
-                 [ngModel]="client.secondName"
-                 (change)="changeSecondName(client, secondName)"
-                 (keydown.space)="sex.focus(); false"
-                 (blur)="onBlur(client, secondName)">
+            <td [formGroupName]="i">
+              <input #surname id="surname" type="text" formControlName="surname" title="" placeholder="  - Прізвище -  "
+                     [ngClass]="{'form-control form-control-sm':true,
+                    'input-style-active':clientForm.get('surname').valid,
+                    'is-invalid':!clientForm.get('surname').valid
+                    }"
+                     (input)="clientForm.get('isChanged').patchValue(clientForm.valid)"
+                     (keydown.space)="firstName.focus(); false">
+            </td>
 
-          <div *ngIf="!secondName.checkValidity()" class="invalid">Введіть коректне значення !</div>
-        </td>
+            <td [formGroupName]="i">
+              <input #firstName type="text" formControlName="firstName" placeholder="  - Ім'я -  "
+                     [ngClass]="{'form-control form-control-sm':true,
+                    'input-style-active':clientForm.get('firstName').valid,
+                    'is-invalid':!clientForm.get('firstName').valid
+                    }"
+                     (input)="clientForm.get('isChanged').patchValue(clientForm.valid)"
+                     (keydown.space)="secondName.focus(); false">
+            </td>
 
-        <td>
-          <select #sex class="form-control form-control-sm input-style-active"
-                  pattern="[ЧЖ]" required
-                  (change)="changeSex(client, sex)">
-            <option *ngFor="let sex of genders" [selected]="client.sex === sex" value="{{sex}}">{{sex}}</option>
-          </select>
-        </td>
+            <td [formGroupName]="i">
+              <input #secondName type="text" formControlName="secondName" placeholder="  - по-Батькові -  "
+                     [ngClass]="{'form-control form-control-sm':true,
+                    'input-style-active':clientForm.get('secondName').valid,
+                    'is-invalid':!clientForm.get('secondName').valid
+                    }"
+                     (input)="clientForm.get('isChanged').patchValue(clientForm.valid)"
+                     (keydown.space)="sex.focus(); false">
+            </td>
 
-        <td>
-          <input #birthday type="date"
-                 class="form-control font-weight-bold form-control-sm input-style-active"
-                 min="{{min_date | date: 'yyyy-MM-dd'}}" max="{{max_date | date: 'yyyy-MM-dd'}}" required
-                 [ngModel]="refactorDate(client.birthday) | date: 'yyyy-MM-dd'"
-                 (change)="changeBirthday(client, birthday)"
-                 (blur)="onBlur(client, birthday)">
-          <div *ngIf="!birthday.checkValidity()" class="invalid">Введіть значення !</div>
-        </td>
+            <td [formGroupName]="i">
+              <select #sex type="text" formControlName="sex"
+                      [ngClass]="{'form-control form-control-sm':true,
+                    'input-style-active':clientForm.get('sex').valid,
+                    'is-invalid':!clientForm.get('sex').valid
+                    }"
+                      (change)="clientForm.get('isChanged').patchValue(clientForm.valid)"
+              >
+                <option *ngFor="let sex of genders" [selected]="clientForm.get('sex').value === sex" value="{{sex}}">
+                  {{sex}}
+                </option>
+              </select>
+            </td>
 
-        <td>
-          <input #telephone type="tel" placeholder="  - Телефон -  "
-                 pattern="[ ()0-9+-]{10,19}"
-                 class="form-control font-weight-bold form-control-sm input-style-active"
-                 [ngModel]="client.telephone"
-                 (change)="changeTelephone(client, telephone)"
-                 (blur)="onBlur(client, telephone)">
-          <div *ngIf="!telephone.checkValidity()" class="invalid">Введіть коректне значення !</div>
-        </td>
-      </tr>
-      </tbody>
-    </table>
+            <td [formGroupName]="i">
+              <input #birthday type="date" formControlName="birthday"
+                     min="{{min_date | date: 'yyyy-MM-dd'}}" max="{{max_date | date: 'yyyy-MM-dd'}}"
+                     [ngClass]="{'form-control form-control-sm':true,
+                    'input-style-active':clientForm.get('birthday').valid,
+                    'is-invalid':!clientForm.get('birthday').valid }"
+                     (change)="clientForm.get('isChanged').patchValue(clientForm.valid)"
+              >
+            </td>
+
+            <td [formGroupName]="i">
+              <input #telephone type="tel" formControlName="telephone" placeholder="  - Телефон -  "
+                     [ngClass]="{'form-control form-control-sm':true,
+                    'input-style-active':clientForm.get('telephone').valid,
+                    'is-invalid':!clientForm.get('telephone').valid }"
+                     (change)="clientForm.get('isChanged').patchValue(clientForm.valid)"
+              >
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </form>
   </div>
-</div>
-<br><br>
+  <br><br>
 
-<div class="left-container fixed-bottom bg-light">
-  <button class="btn btn-min-style" (click)="onAdd()">Add</button>
-  <button class="btn btn-success btn-min-style" (click)="onSave()">
-    <div>Save</div>
-  </button>
-  <img *ngIf="loading_save" src="/assets/img/rotating-balls-spinner.gif" height="40" width="40"/>
-  <button class="btn btn-warning btn-min-style" (click)="onRefresh()">Refresh</button>
-  <button class="btn btn-dark btn-min-style" (click)="onDelete()">Delete</button>
-  <img *ngIf="loading_del" src="/assets/img/rotating-balls-spinner.gif" height="40" width="40"/>
-  <button class="btn btn-danger btn-min-style" (click)="onCancel()">Cancel</button>
-</div>
-
-</div>
-<!--
-
-<div>
-<mat-dialog-content>
-
-  <div class="input-group">
-    <div class="input-group-prepend">
-      <span class="input-group-text">ПІБ пацієнта</span>
-    </div>
-    <input #surname type="text" placeholder="Прізвище" class="form-control font-weight-bold"
-           [ngModel]="client.surname">
-    <input #firstName type="text" placeholder="Ім'я" class="form-control font-weight-bold"
-           [ngModel]="client.firstName">
-    <input #secondName type="text" placeholder="по-Батькові" class="form-control font-weight-bold"
-           [ngModel]="client.secondName">
-  </div>
-  <br>
-  <div class="input-group">
-    <div class="input-group-prepend">
-      <span class="input-group-text"> Стать </span>
-    </div>
-
-    <select #sex class="form-control" ([ngModel])="client.sex">
-      &lt;!&ndash;<option [selected]="client.sex == null" disabled >Виберіть стать</option>&ndash;&gt;
-      <option [selected]="client.sex == 'Ж'">Ж</option>
-      <option [selected]="client.sex == 'Ч'">Ч</option>
-    </select>
-
-    &lt;!&ndash;<span class="input-group-text"> Cтатус </span>&ndash;&gt;
-&lt;!&ndash;&ndash;&gt;
-    &lt;!&ndash;<select #status class="form-control" ([ngModel])="client.status">&ndash;&gt;
-      &lt;!&ndash;<option [selected]="client.sex == null" disabled >Виберіть стать</option>&ndash;&gt;
-      &lt;!&ndash;<option [selected]="client.status == 'пацієнт'">пацієнт</option>&ndash;&gt;
-      &lt;!&ndash;<option [selected]="client.status == 'супроводжуючий'">супроводжуючий</option>&ndash;&gt;
-    &lt;!&ndash;</select>&ndash;&gt;
+  <div class="left-container fixed-bottom bg-light">
+    <button class="btn btn-min-style" (click)="onAdd()" title="Додати">Add</button>
+    <button class="btn btn-success btn-min-style" (click)="onSave()" title="Зберегти"
+            [disabled]="count_of_clients == 0">Save
+    </button>
+    <img [hidden]="!save_loading" src="/assets/img/rotating-balls-spinner.gif" height="40" width="40"/>
+    <button class="btn btn-warning btn-min-style" (click)="onRefresh()" title="Обновити">Refresh</button>
+    <button class="btn btn-dark btn-min-style" (click)="onDelete()" title="Видалити"
+            [disabled]="count_of_clients == 0">Delete
+    </button>
+    <img [hidden]="!del_loading" src="/assets/img/rotating-balls-spinner.gif" height="40" width="40"/>
+    <button class="btn btn-danger btn-min-style" (click)="onCancel()" title="Відмінити"
+            [disabled]="count_of_clients == 0">Cancel
+    </button>
+    <!--<button class="btn btn-danger btn-min-style" (click)="test()">Test</button>-->
   </div>
 
-  <br>
-
-  <div class="input-group">
-    <div class="input-group-prepend">
-      <span class="input-group-text">Телефон</span>
-    </div>
-    <input #telephone type="tel" placeholder="Телефон" class="form-control" [ngModel]="client.telephone">
-  </div>
-
-  <br>
-
-  <div class="input-group" >
-    <div class="input-group-prepend">
-      <span class="input-group-text">Супроводжуючий</span>
-    </div>
-    <select #selected_relative class="form-control">
-      &lt;!&ndash;<option [selected]="client.relativeID == 0">Відсутній</option>&ndash;&gt;
-      &lt;!&ndash;<option *ngFor="let patient of relatives" [selected]="patient.clientId == client.relativeID">&ndash;&gt;
-        &lt;!&ndash;{{patient.clientId}} {{patient.surname}} {{patient.firstName}} {{patient.secondName}}&ndash;&gt;
-      &lt;!&ndash;</option>&ndash;&gt;
-
-    </select>
-  </div>
-
-</mat-dialog-content>
-
-
-
 </div>
-</div>
--->

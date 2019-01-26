@@ -120,7 +120,7 @@ export class DateEditorComponent implements OnInit {
         const visit_date: VisitDate = new VisitDate();
         visit_date.visitDateId = 0;
         visit_date.date = [value.year, value.month, value.day];
-        visit_date.inactive = false;
+        visit_date.disable = false;
         visitDates.push(visit_date);
       }
     });

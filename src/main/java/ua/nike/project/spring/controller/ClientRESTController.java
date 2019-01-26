@@ -15,14 +15,14 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/clients")
-public class ClientRESTController {
+public class ClientRESTController implements RESTController<ClientVO> {
 
     @Autowired
     private ClientService clientService;
 
     @CrossOrigin
     @RequestMapping(value = "", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public List<ClientVO> getClients() {
+    public List<ClientVO> getAll() {
         List<ClientVO> test = clientService.findAll();
 //        for (int i = 0; i < 3; i++) {
 //            test.addAll(test);
@@ -31,7 +31,37 @@ public class ClientRESTController {
     }
 
     @CrossOrigin
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ClientVO getByID(@PathVariable("id") int clientID) {
+        return clientService.findByID(clientID);
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ClientVO add(@RequestBody @NotNull @Valid ClientVO clientVO, BindingResult bindingResult) throws ValidationException {
+        if (bindingResult != null && bindingResult.hasErrors()) {
+            throw new ValidationException("Object is not valid", bindingResult);
+        }
+        return clientService.create(clientVO);
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ClientVO editByID(@PathVariable("id") int clientID, @RequestBody @NotNull @Valid ClientVO clientVO, BindingResult bindingResult) throws ValidationException {
+        if (bindingResult != null && bindingResult.hasErrors())
+            throw new ValidationException("Object is not valid", bindingResult);
+        return clientService.update(clientID, clientVO);
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public boolean deleteByID(@PathVariable("id") int clientID) {
+        return clientService.deleteById(clientID);
+    }
+
+    @CrossOrigin
     @RequestMapping(value = "/list", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @Deprecated
     public List<ClientVO> putClients(@RequestBody @NotNull @Valid MyObjectVOList<ClientVO> clientsVO, BindingResult bindingResult) throws ValidationException {
         if (bindingResult != null && bindingResult.hasErrors()) {
             throw new ValidationException("Object is not valid", bindingResult);
@@ -41,6 +71,7 @@ public class ClientRESTController {
 
     @CrossOrigin
     @RequestMapping(value = "/list/{ids}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @Deprecated
     public boolean deleteByIDs(@PathVariable("ids") List<Integer> clientIDs) {
         return clientService.deleteByIDs(clientIDs);
     }

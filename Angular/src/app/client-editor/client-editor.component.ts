@@ -1,10 +1,11 @@
 import {Component, OnInit} from "@angular/core";
 import {Client} from "../backend_types/client";
 import {ClientService} from "../service/client.service";
-import {Router} from "@angular/router";
 import {NavbarService} from "../service/navbar.service";
 import {HttpErrorResponse} from "@angular/common/http";
 import {ToastMessageService} from "../service/toast-message.service";
+import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {debounceTime} from "rxjs/operators";
 
 @Component({
   selector: "app-client-editor",
@@ -12,126 +13,239 @@ import {ToastMessageService} from "../service/toast-message.service";
   styleUrls: ["./client-editor.component.css"]
 })
 export class ClientEditorComponent implements OnInit {
-  public clients: Client[];
-  public filteredClients: Client[];
+  public clients: Client[] = [];
+  public count_of_clients = 0;
   public genders: string[] = ["Ч", "Ж"];
-  min_date: Date = new Date(new Date(Date.now()).getFullYear() - 50, 0, 0);
-  max_date: Date = new Date(new Date(Date.now()).getFullYear() - 3, 0, 0);
-  loading_save = false;
-  loading_del = false;
-  loading_clients = false;
 
-  // "1" - ASC,
-  // "-1" - DESC
-  private sorting_order = 1;
+  min_date: Date = new Date(new Date(Date.now()).getFullYear() - 100, 0, 1);
+  max_date: Date = new Date(new Date(Date.now()).getFullYear() - 3, 0, 1);
+
+
+  searchForm: FormGroup = this.fb.group({
+    searchControlForm: ["", [Validators.maxLength(50), Validators.pattern("[A-Za-zА-Яа-яЁёІіЇїЄє ]*")]],
+  });
+
+  clientsForm: FormArray = this.fb.array([]);
+  tableForm: FormGroup = this.fb.group({
+    clientsForm: this.clientsForm
+  });
+
+  save_loading = false;
+  del_loading = false;
+  clients_loading = false;
+
+  // "true" - ASC,
+  // "false" - DESC
+  sorting_order = true;
 
   constructor(
     private clientService: ClientService,
     private navbarService: NavbarService,
     private toastMessageService: ToastMessageService,
-  ) {
+    private fb: FormBuilder) {
   }
 
   ngOnInit(): void {
-    this.getClients();
     this.navbarService.change("client");
+    this.clients_loading = true;
+    this.getClients();
+    this.searchForm.get("searchControlForm").valueChanges
+      .pipe(debounceTime(900))
+      .subscribe(search_value => this.filterClients(search_value));
+
+    this.searchForm.get("searchControlForm").statusChanges
+      .pipe(debounceTime(900))
+      .subscribe(value => {
+        if (value === "INVALID") {
+          this.toastMessageService.inform("Некорректне значення для пошуку",
+            "Вводьте тільки літери та пробіли." + "<br>" +
+            "Не більше 50 символів", "info");
+        }
+      });
+    this.tableForm.valueChanges.pipe(debounceTime(600)).subscribe(() => {
+      this.count_of_clients = (<Client[]>this.tableForm.get("clientsForm").value).filter((client: Client) => {
+        return client.isChanged;
+      }).length;
+    });
+
   }
 
   getClients() {
-    this.loading_clients = true;
+    this.clients_loading = true;
     this.clientService.getClients().toPromise().then((clients: Client[]) => {
-      this.clients = clients;
-      this.sortClients(this.clients);
-      this.filteredClients = this.clients;
-      this.loading_clients = false;
+      if (clients) {
+        this.clients = clients;
+      } else {
+        this.clients = [];
+        this.clients.push(new Client());
+      }
+      this.clientsForm = this.updateFormGroups(this.clients);
+      this.tableForm.setControl("clientsForm", this.clientsForm);
+      this.clients_loading = false;
+      setTimeout(() => {
+        document.getElementById("search").focus();
+      });
+    }).catch((err: HttpErrorResponse) => {
+      this.clients_loading = true;
+      this.toastMessageService.inform("Сервер недоступний!",
+        "Спробуйте пізніше !" + "<br>" + err.error + "<br>" + err.message, "error", 10000);
+      setTimeout(() => {
+        this.getClients();
+      }, 15000);
     });
   }
 
-  onBlur(client: Client, element: HTMLInputElement) {
-    if (!element.checkValidity()) {
-      client.isChanged = false;
+  onAdd() {
+    const client = new Client();
+    client.clientId = 0;
+    client.isChanged = false;
+    this.searchForm.get("searchControlForm").setValue("");
+    if (this.clientsForm.controls[0].valid) {
+      this.clientsForm.insert(0, this.createFormGroup(client));
     }
+    setTimeout(() => {
+      document.getElementById("surname").focus();
+    }, 1000);
+    window.scroll(0, 0);
   }
 
-  changeSurname(client: Client, surnameElement: HTMLInputElement) {
-    if (surnameElement.checkValidity()) {
-      client.isChanged = true;
-      client.surname = surnameElement.value;
+  onSave() {
+    this.save_loading = true;
+    // @ts-ignore
+    const control = (<AbstractControl>(this.tableForm.get("clientsForm").controls).find((abstractControl: AbstractControl) => {
+      return abstractControl.get("isChanged").value;
+    }));
+    if (control && control.value) {
+      const edited_client: Client = this.convertToClient(control.value);
+      if (edited_client && edited_client.clientId > 0) {
+        this.clientService.editClient(edited_client).toPromise().then((client: Client) => {
+          control.get("isChanged").setValue(false);
+          this.success_saving(client);
+        }).catch((err: HttpErrorResponse) => {
+            this.error_saving(err);
+          }
+        );
+      } else if (edited_client && edited_client.clientId === 0) {
+        this.clientService.addClient(edited_client).toPromise().then((client: Client) => {
+          control.get("isChanged").setValue(false);
+          this.success_saving(client);
+        }).catch((err: HttpErrorResponse) => {
+            this.error_saving(err);
+          }
+        );
+      }
     } else {
-      client.isChanged = false;
-      this.toastMessageService.inform("Помилка !",
-        "Введіть корректне Прізвище! <br> 1. Не пусте поле. <br> 2. Тільки букви. <br> 3. Макс. - 50",
-        "info");
+      this.save_loading = false;
+      this.onRefresh();
     }
   }
 
-  changeFirstName(client: Client, firstNameElement: HTMLInputElement) {
-    if (firstNameElement.checkValidity()) {
-      client.isChanged = true;
-      client.firstName = firstNameElement.value;
+  private success_saving(client?: Client) {
+    this.toastMessageService.inform("Збережено !", "Клієнт успішно збережений !", "success");
+    this.onSave();
+  }
+
+  private error_saving(err: HttpErrorResponse) {
+    this.save_loading = false;
+    if (err.status === 422) {
+      this.toastMessageService.inform("Помилка при збережені! <br> Клієнт не відповідає критеріям !",
+        err.error, "error");
+    } else if (err.status === 404) {
+      this.toastMessageService.inform("Помилка при збережені!",
+        err.error + "<br> Обновіть сторінку та спробуйте знову.", "error");
+    } else if (err.status === 409) {
+      this.toastMessageService.inform("Помилка при збережені! <br> Конфлікт в базі даних !",
+        err.error + "<br> Обновіть сторінку та спробуйте знову. <br> Можливо ваш клієнт існує серед прихованих.", "error");
     } else {
-      client.isChanged = false;
-      this.toastMessageService.inform("Помилка !",
-        "Введіть корректне Ім'я! <br> 1. Не пусте поле. <br> 2. Тільки букви. <br> 3. Макс. - 50",
-        "info");
+      this.toastMessageService.inform("Помилка при збережені!",
+        err.error + "<br>" + "HTTP status: " + err.status, "error");
     }
   }
 
-  changeSecondName(client: Client, secondNameElement: HTMLInputElement) {
-    if (secondNameElement.checkValidity()) {
-      client.isChanged = true;
-      client.secondName = secondNameElement.value;
+  onDelete() {
+    this.del_loading = true;
+    // @ts-ignore
+    const control = (<AbstractControl>(this.tableForm.get("clientsForm").controls).find((abstractControl: AbstractControl) => {
+      return abstractControl.get("isChanged").value;
+    }));
+    if (control && control.value) {
+      const client_for_del: Client = control.value;
+      if (client_for_del.clientId > 0) {
+        this.clientService.deleteClient(client_for_del.clientId).toPromise().then(() => {
+          control.get("isChanged").setValue(false);
+          this.success_deleting();
+        }).catch((err: HttpErrorResponse) => {
+          this.error_deleting(err);
+        });
+      } else {
+        control.get("isChanged").setValue(false);
+        this.onDelete();
+      }
     } else {
-      client.isChanged = false;
-      this.toastMessageService.inform("Помилка !",
-        "Введіть корректне по-Батькові! <br> 1. Не пусте поле. <br> 2. Тільки букви. <br> 3. Макс. - 50",
-        "info");
+      this.del_loading = false;
+      this.onRefresh();
     }
   }
 
-  changeSex(client: Client, sexElement: HTMLInputElement) {
-    client.isChanged = true;
-    client.sex = sexElement.value;
+  private success_deleting(client?: Client) {
+    this.toastMessageService.inform("Видалено !", "Клієнта успішно видалений !", "success");
+    this.onDelete();
   }
 
-  changeBirthday(client: Client, birthdayElement: HTMLInputElement) {
-    const year = Number(birthdayElement.value.substring(0, 4));
-    const month = Number(birthdayElement.value.substring(5, 7));
-    const day = Number(birthdayElement.value.substring(8, 10));
-
-    if (birthdayElement.checkValidity()) {
-      client.isChanged = true;
-      client.birthday = [year, month, day];
+  private error_deleting(err: HttpErrorResponse) {
+    this.del_loading = false;
+    if (err.status === 409) {
+      this.toastMessageService.inform("Помилка при видалені!", "Кліент має активні візити! <br>" +
+        " Спочатку видаліть візити цього клієнта !", "error");
     } else {
-      client.isChanged = false;
+      this.toastMessageService.inform("Помилка при видалені!",
+        err.error + "<br>" + "HTTP status: " + err.status, "error");
     }
   }
 
-  refactorDate(birthday: number[]): Date {
-    if (birthday) {
-      return new Date(birthday[0], birthday[1] - 1, birthday[2]);
-    } else {
-      return new Date();
-    }
+  onRefresh() {
+    this.clients_loading = true;
+    this.sorting_order = true;
+    this.getClients();
+    this.searchForm.get("searchControlForm").setValue("");
   }
 
-  changeTelephone(client: Client, telephoneElement: HTMLInputElement) {
-    if (telephoneElement.checkValidity()) {
-      client.isChanged = true;
-      client.telephone = telephoneElement.value;
-    } else {
-      client.isChanged = false;
-      this.toastMessageService.inform("Помилка !",
-        "Введіть корректний телефон! <br> " +
-        "Мін. - 10, Макс. - 19 <br>  Формати :<br> 099 888 88 88 <br> (099)888-88-88 <br> +38 099 888 88 88",
-        "info");
-    }
+  onCancel() {
+    this.searchForm.get("searchControlForm").setValue("");
+    this.clientsForm = this.updateFormGroups(this.clients);
+    this.tableForm.setControl("clientsForm", this.clientsForm);
   }
 
-  filterClients(client_value: string) {
+  private updateFormGroups(clients: Client[]): FormArray {
+    this.clients_loading = true;
+    this.sorting_order ? clients.sort(this.compareClients) : clients.sort(this.compareClients).reverse();
+    const clientsForm = this.fb.array([]);
+    clients.forEach((client: Client) => {
+      clientsForm.push(this.createFormGroup(client));
+    });
+    this.clients_loading = false;
+    return clientsForm;
+  }
+
+  private createFormGroup(client: Client): FormGroup {
+    return this.fb.group({
+      clientId: [client.clientId],
+      surname: [client.surname, [Validators.required, Validators.maxLength(50), Validators.pattern("[A-Za-zА-Яа-яЁёІіЇїЄє ]*")]],
+      firstName: [client.firstName, [Validators.required, Validators.maxLength(50), Validators.pattern("[A-Za-zА-Яа-яЁёІіЇїЄє ]*")]],
+      secondName: [client.secondName, [Validators.required, Validators.maxLength(50), Validators.pattern("[A-Za-zА-Яа-яЁёІіЇїЄє ]*")]],
+      sex: [client.sex, [Validators.required, Validators.maxLength(1), Validators.pattern("^[ЧЖ]*$")]],
+      birthday: [client.birthday ? (new Date(client.birthday[0], client.birthday[1] - 1, client.birthday[2]).toISOString().substring(0, 10)) : null,
+        [Validators.required]],
+      telephone: [client.telephone, [Validators.pattern("[ ()0123456789+-]*")]],
+      isChanged: [false],
+    });
+  }
+
+
+  private filterClients(client_value: string) {
     if (client_value) {
       const filterValue: string[] = client_value.toLowerCase().split(" ");
-      this.filteredClients = this.clients.filter(client => {
+      const filteredClients = this.clients.filter(client => {
         switch (filterValue.length) {
           case 0:
             return true;
@@ -158,112 +272,46 @@ export class ClientEditorComponent implements OnInit {
             }
         }
       });
+      this.tableForm.setControl("clientsForm", this.updateFormGroups(filteredClients));
     } else {
-      this.filteredClients = this.clients;
+      this.tableForm.setControl("clientsForm", this.clientsForm);
     }
   }
 
-  onAdd() {
-    if (this.filteredClients[0].surname != null) {
-      const client = new Client();
-      client.sex = "Ч";
-      this.filteredClients.unshift(client);
-      window.scroll(0, 0);
+  change_sorting() {
+    this.sorting_order = !this.sorting_order;
+    this.tableForm.setControl("clientsForm", this.updateFormGroups(<Client[]>this.tableForm.get("clientsForm").value));
+    this.clientsForm = this.updateFormGroups(<Client[]>this.clientsForm.value);
+  }
+
+  private compareClients = (client1, client2) => {
+    if (client1.clientId === 0) {
+      return !this.sorting_order;
+    } else if (client2.clientId === 0) {
+      return this.sorting_order;
+    } else if (client1.surname && client2.surname && client1.surname.localeCompare(client2.surname) !== 0) {
+      return client1.surname.localeCompare(client2.surname);
+    } else if (client1.firstName && client2.firstName && client1.firstName.localeCompare(client2.firstName) !== 0) {
+      return client1.firstName.localeCompare(client2.firstName);
+    } else if (client1.secondName && client2.secondName && client1.secondName.localeCompare(client2.secondName) !== 0) {
+      return client1.secondName.localeCompare(client2.secondName);
     }
-  }
+  };
 
-  onRefresh() {
-    this.loading_clients = true;
-    this.getClients();
-  }
+  // test(value?: any) {
+  //   console.log(this.tableForm.getRawValue());
+  // }
 
-  onSave() {
-    this.loading_save = true;
-    const edit_clients: Client[] = this.filteredClients.filter((client: Client) => {
-      return client.isChanged;
-    });
-    if (edit_clients.length) {
-      this.clientService.putClients(edit_clients).toPromise().then(() => {
-        this.toastMessageService.inform("Збережено !", "Кліенти успішно збережені !", "success");
-        this.getClients();
-        this.loading_save = false;
-      }).catch((err: HttpErrorResponse) => {
-          this.loading_save = false;
-          if (err.status === 422) {
-            this.toastMessageService.inform("Помилка при збережені! <br> Кліент не відповідає критеріям !",
-              err.error, "error");
-          } else if (err.status === 404) {
-            this.toastMessageService.inform("Помилка при збережені!",
-              err.error + "<br> Обновіть сторінку та спробуйте знову.", "error");
-          } else if (err.status === 409) {
-            this.toastMessageService.inform("Помилка при збережені! <br> Конфлікт в базі даних !",
-              err.error + "<br> Обновіть сторінку та спробуйте знову.", "error");
-          } else {
-            this.toastMessageService.inform("Помилка при збережені!",
-              err.error + "<br>" + "HTTP status: " + err.status, "error");
-          }
-        }
-      );
-    } else {
-      this.loading_save = false;
-      this.toastMessageService.inform("Виберіть хоча б один запис!", "", "info");
-    }
+  private convertToClient(value: any): Client {
+    const client: Client = new Client();
+    client.clientId = value.clientId;
+    client.surname = value.surname;
+    client.firstName = value.firstName;
+    client.secondName = value.secondName;
+    client.sex = value.sex;
+    client.birthday = (<string>value.birthday).split("-").map(value1 => Number(value1));
+    client.telephone = value.telephone;
+    return client;
   }
-
-  onDelete() {
-    this.loading_del = true;
-    const ids_for_delete: number[] = [];
-    this.filteredClients.forEach((client: Client) => {
-      if (client.isChanged && client.clientId > 0) {
-        ids_for_delete.push(client.clientId);
-      }
-    });
-    if (ids_for_delete.length) {
-      this.clientService.deleteClients(ids_for_delete).toPromise().then((success: boolean) => {
-        if (success) {
-          this.toastMessageService.inform("Видалено !", "Кліенти успішно видалені !", "success");
-          this.loading_del = false;
-          this.getClients();
-        }
-      }).catch((err: HttpErrorResponse) => {
-        this.loading_del = false;
-        if (err.status === 409) {
-          this.toastMessageService.inform("Помилка при видалені!", "Клієнт має активні візити! <br>" +
-            " Спочатку видаліть візити цього кілєнта !", "error");
-        } else {
-          this.toastMessageService.inform("Помилка при видалені!",
-            err.error + "<br>" + "HTTP status: " + err.status, "error");
-        }
-      });
-    } else {
-      this.loading_del = false;
-      this.toastMessageService.inform("Виберіть хоча б один запис!", "", "info");
-    }
-  }
-
-  onCancel() {
-    this.onRefresh();
-  }
-
-  private sortClients(clients: Client[]) {
-    clients.sort((client1, client2) => {
-      if (client1.surname.localeCompare(client2.surname) !== 0) {
-        return client1.surname.localeCompare(client2.surname) * this.sorting_order;
-      } else if (client1.firstName.localeCompare(client2.firstName) !== 0) {
-        return client1.firstName.localeCompare(client2.firstName) * this.sorting_order;
-      } else if (client1.secondName.localeCompare(client2.secondName) !== 0) {
-        return client1.secondName.localeCompare(client2.secondName) * this.sorting_order;
-      } else {
-        if (client1.birthday[0] !== client2.birthday[0]) {
-          return (client1.birthday[0] - client2.birthday[0]) * this.sorting_order;
-        } else if (client1.birthday[1] !== client2.birthday[1]) {
-          return (client1.birthday[1] - client2.birthday[1]) * this.sorting_order;
-        } else {
-          return (client1.birthday[2] - client2.birthday[2]) * this.sorting_order;
-        }
-      }
-    });
-  }
-
 
 }

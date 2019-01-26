@@ -65,6 +65,7 @@ public class ClientService {
         return convertToClientVO(dao.update(updatedEntity));
     }
 
+    @Deprecated
     @Transactional(propagation = Propagation.REQUIRED)
     public List<ClientVO> putClients(List<ClientVO> clientsVO) {
         List<ClientVO> result = new ArrayList<>();
@@ -81,6 +82,12 @@ public class ClientService {
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
+    public boolean deleteById(int clientID) {
+        return dao.remove(clientID);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    @Deprecated
     public boolean deleteByIDs(List<Integer> clientIDs) {
         return dao.remove("Client.deleteByIDs", clientIDs);
     }
@@ -99,30 +106,16 @@ public class ClientService {
     }
 
     private Client copyToClient(ClientVO original, Client result) {
+        if (original == null) return null;
 
-        if (original != null) {
-            if (result == null) result = new Client();
-            result.setSurname(original.getSurname());
-            result.setFirstName(original.getFirstName());
-            result.setSecondName(original.getSecondName());
-            result.setSex(Sex.getInstance(original.getSex()));
-            result.setBirthday(original.getBirthday());
-            result.setTelephone(original.getTelephone());
-        }
+        if (result == null) result = new Client();
+        result.setSurname(original.getSurname());
+        result.setFirstName(original.getFirstName());
+        result.setSecondName(original.getSecondName());
+        result.setSex(Sex.getInstance(original.getSex()));
+        result.setBirthday(original.getBirthday());
+        result.setTelephone(original.getTelephone());
+
         return result;
     }
 }
-
-
-
-/*
-
-
-    @Transactional(propagation = Propagation.REQUIRED)
-    public boolean deleteById(int clientID) {
-        return dao.remove(clientID);
-    }
-
-
-
- */

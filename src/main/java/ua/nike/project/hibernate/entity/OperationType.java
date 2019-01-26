@@ -10,7 +10,6 @@ import java.util.Objects;
 })
 @NamedQueries(value = {
         @NamedQuery(name = "OperationType.findAll", query = "FROM OperationType ORDER BY name"),
-        @NamedQuery(name = "OperationType.getAllActive", query = "FROM OperationType WHERE inactive = false ORDER BY name")
 
 })
 public class OperationType implements EntityObject {
@@ -24,8 +23,8 @@ public class OperationType implements EntityObject {
     @Column(name = "name", length = 50, nullable = false)
     private String name;
 
-    @Column(name = "inactive", nullable = false)
-    private boolean inactive;
+    @Column(name = "disable", nullable = false)
+    private boolean disable;
 
     @OneToMany(targetEntity = Visit.class, fetch = FetchType.LAZY, mappedBy = "operationType")
     private List<Visit> visits;
@@ -46,12 +45,12 @@ public class OperationType implements EntityObject {
         this.name = name;
     }
 
-    public boolean isInactive() {
-        return inactive;
+    public boolean isDisable() {
+        return disable;
     }
 
-    public void setInactive(boolean lockType) {
-        this.inactive = lockType;
+    public void setDisable(boolean lockType) {
+        this.disable = lockType;
     }
 
     public List<Visit> getVisits() {
@@ -80,7 +79,7 @@ public class OperationType implements EntityObject {
         final StringBuilder sb = new StringBuilder("OperationType{");
         sb.append("operationTypeId=").append(operationTypeId);
         sb.append(", name='").append(name).append('\'');
-        sb.append(", inactive=").append(inactive);
+        sb.append(", disable=").append(disable);
         sb.append('}');
         return sb.toString();
     }

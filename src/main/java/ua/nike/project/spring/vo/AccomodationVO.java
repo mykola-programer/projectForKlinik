@@ -7,7 +7,7 @@ public class AccomodationVO implements VisualObject {
     private Integer accomodationId;
     private Integer ward;
     private Integer wardPlace;
-    private Boolean inactive;
+    private Boolean disable;
 
     public Integer getAccomodationId() {
         return accomodationId;
@@ -34,11 +34,11 @@ public class AccomodationVO implements VisualObject {
     }
 
     public Boolean isInactive() {
-        return inactive;
+        return disable;
     }
 
-    public void setInactive(Boolean inactive) {
-        this.inactive = inactive;
+    public void setDisable(Boolean disable) {
+        this.disable = disable;
     }
 
     @Override
@@ -61,7 +61,7 @@ public class AccomodationVO implements VisualObject {
                 "accomodationId=" + accomodationId +
                 ", ward=" + ward +
                 ", wardPlace=" + wardPlace +
-                ", inactive=" + inactive +
+                ", disable=" + disable +
                 '}';
     }
 

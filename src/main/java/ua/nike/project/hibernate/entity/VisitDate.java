@@ -11,7 +11,7 @@ import java.util.Set;
 })
 @NamedQueries(value = {
         @NamedQuery(name = "VisitDate.findAll", query = "FROM VisitDate ORDER BY date"),
-        @NamedQuery(name = "VisitDate.findAllActive", query = "FROM VisitDate vd WHERE vd.inactive = false ORDER BY date"),
+        @NamedQuery(name = "VisitDate.findAllActive", query = "FROM VisitDate vd WHERE vd.disable = false ORDER BY date"),
         @NamedQuery(name = "VisitDate.deleteByIDs", query = "DELETE VisitDate vd WHERE vd.visitDateId IN (:IDs)")
 })
 public class VisitDate implements Serializable, EntityObject {
@@ -25,8 +25,8 @@ public class VisitDate implements Serializable, EntityObject {
     @Column(name = "date", nullable = false)
     private LocalDate date;
 
-    @Column(name = "inactive", nullable = false)
-    private boolean inactive = false;
+    @Column(name = "disable", nullable = false)
+    private boolean disable;
 
     @OneToMany(targetEntity = Visit.class, fetch = FetchType.LAZY, mappedBy = "visitDate")
     private Set<Visit> visits;
@@ -47,12 +47,12 @@ public class VisitDate implements Serializable, EntityObject {
         this.date = date;
     }
 
-    public boolean isInactive() {
-        return inactive;
+    public boolean isDisable() {
+        return disable;
     }
 
-    public void setInactive(boolean inactive) {
-        this.inactive = inactive;
+    public void setDisable(boolean disable) {
+        this.disable = disable;
     }
 
     public Set<Visit> getVisits() {
@@ -83,7 +83,7 @@ public class VisitDate implements Serializable, EntityObject {
         final StringBuilder sb = new StringBuilder("VisitDate{");
         sb.append("visitDateId=").append(visitDateId);
         sb.append(", date=").append(date);
-        sb.append(", inactive=").append(inactive);
+        sb.append(", disable=").append(disable);
         sb.append('}');
         return sb.toString();
     }
