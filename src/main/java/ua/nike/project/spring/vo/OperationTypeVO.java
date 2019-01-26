@@ -1,10 +1,17 @@
 package ua.nike.project.spring.vo;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import java.util.Objects;
 
 public class OperationTypeVO implements VisualObject {
 
     private Integer operationTypeId;
+
+    @NotNull(message = "operationType.name.null")
+    @Size(min = 1, max = 50, message = "operationType.name.size")
+    @Pattern(regexp = "[A-Za-zА-Яа-яЁёІіЇїЄє +-.]+", message = "operationType.name.pattern")
     private String name;
     private boolean disable;
 

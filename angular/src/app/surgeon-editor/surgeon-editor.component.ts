@@ -113,7 +113,7 @@ export class SurgeonEditorComponent implements OnInit {
     }));
 
     if (control && control.value) {
-      const edited_surgeon = control.value;
+      const edited_surgeon: Surgeon = control.value;
       if (edited_surgeon.surgeonId > 0) {
         this.surgeonService.editSurgeon(edited_surgeon).toPromise().then((surgeon: Surgeon) => {
           control.get("isChanged").setValue(false);

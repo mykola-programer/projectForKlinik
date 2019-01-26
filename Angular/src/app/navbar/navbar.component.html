@@ -25,8 +25,8 @@
            (click)="statusNavbar = 'visit'; isNavbarCollapsed = false">Поселення(new)</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="#" (click)="false" [ngClass]="{active:statusNavbar=='operation'}"
-           (click)="statusNavbar = 'operation'; isNavbarCollapsed = false">Види операцій</a>
+        <a class="nav-link" routerLink="/operation-type" [ngClass]="{active:statusNavbar=='operation-type'}"
+           (click)="statusNavbar = 'operation-type'; isNavbarCollapsed = false">Види операцій</a>
       </li>
       <li class="nav-item">
         <a class="nav-link" routerLink="/surgeon" [ngClass]="{active:statusNavbar=='surgeon'}"

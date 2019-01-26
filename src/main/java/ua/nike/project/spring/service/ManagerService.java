@@ -79,14 +79,15 @@ public class ManagerService {
     }
 
     private Manager copyToManager(ManagerVO original, Manager result) {
-        if (original == null) return null;
-        if (result == null) result = new Manager();
-        result.setSurname(original.getSurname());
-        result.setFirstName(original.getFirstName());
-        result.setSecondName(original.getSecondName());
-        result.setCity(original.getCity());
-        result.setSex(Sex.getInstance(original.getSex()));
-        result.setDisable(original.isDisable());
+        if (original != null) {
+            if (result == null) result = new Manager();
+            result.setSurname(original.getSurname());
+            result.setFirstName(original.getFirstName());
+            result.setSecondName(original.getSecondName());
+            result.setCity(original.getCity());
+            result.setSex(Sex.getInstance(original.getSex()));
+            result.setDisable(original.isDisable());
+        }
         return result;
     }
 }

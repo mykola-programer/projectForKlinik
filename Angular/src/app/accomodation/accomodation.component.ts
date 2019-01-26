@@ -160,7 +160,7 @@ export class AccomodationComponent implements OnInit {
   }
 
   private getOperationTypes() {
-    this.operationTypeService.getActiveProcedures().toPromise().then(operation_types => this.operation_types = operation_types);
+    this.operationTypeService.getProcedures().toPromise().then(operation_types => this.operation_types = operation_types);
   }
 
 

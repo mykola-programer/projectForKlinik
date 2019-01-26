@@ -80,14 +80,15 @@ public class SurgeonService {
     }
 
     private Surgeon copyToSurgeon(SurgeonVO original, Surgeon result) {
-        if (original == null) return null;
-        if (result == null) result = new Surgeon();
-        result.setSurname(original.getSurname());
-        result.setFirstName(original.getFirstName());
-        result.setSecondName(original.getSecondName());
-        result.setCity(original.getCity());
-        result.setSex(Sex.getInstance(original.getSex()));
-        result.setDisable(original.isDisable());
+        if (original != null) {
+            if (result == null) result = new Surgeon();
+            result.setSurname(original.getSurname());
+            result.setFirstName(original.getFirstName());
+            result.setSecondName(original.getSecondName());
+            result.setCity(original.getCity());
+            result.setSex(Sex.getInstance(original.getSex()));
+            result.setDisable(original.isDisable());
+        }
         return result;
     }
 

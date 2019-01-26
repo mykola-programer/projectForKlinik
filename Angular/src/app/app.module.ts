@@ -23,6 +23,7 @@ import {ToastaModule} from "ngx-toasta";
 import { ManagerEditorComponent } from "./manager-editor/manager-editor.component";
 import { VisitComponent } from "./visit/visit.component";
 import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
+import { OperationTypeEditorComponent } from "./operation-type-editor/operation-type-editor.component";
 
 @NgModule({
   declarations: [
@@ -37,6 +38,7 @@ import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
     SurgeonEditorComponent,
     ManagerEditorComponent,
     VisitComponent,
+    OperationTypeEditorComponent,
   ],
   imports: [
     ReactiveFormsModule,

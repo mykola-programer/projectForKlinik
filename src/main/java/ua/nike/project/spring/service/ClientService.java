@@ -106,16 +106,15 @@ public class ClientService {
     }
 
     private Client copyToClient(ClientVO original, Client result) {
-        if (original == null) return null;
-
-        if (result == null) result = new Client();
-        result.setSurname(original.getSurname());
-        result.setFirstName(original.getFirstName());
-        result.setSecondName(original.getSecondName());
-        result.setSex(Sex.getInstance(original.getSex()));
-        result.setBirthday(original.getBirthday());
-        result.setTelephone(original.getTelephone());
-
+        if (original != null) {
+            if (result == null) result = new Client();
+            result.setSurname(original.getSurname());
+            result.setFirstName(original.getFirstName());
+            result.setSecondName(original.getSecondName());
+            result.setSex(Sex.getInstance(original.getSex()));
+            result.setBirthday(original.getBirthday());
+            result.setTelephone(original.getTelephone());
+        }
         return result;
     }
 }

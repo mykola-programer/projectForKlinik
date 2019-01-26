@@ -1,0 +1,95 @@
+<ngx-toasta></ngx-toasta>
+<br><br><br>
+<img [hidden]="!operation_types_loading" src="/assets/img/download.gif" style="max-width: 500px"/>
+<div *ngIf="!operation_types_loading">
+  <div class="left-container" style="max-width: 800px; min-width: 550px; margin-left: 10px">
+    <form [formGroup]="searchForm">
+      <div class="input-group-prepend">
+        <span class="input-group-text">Пошук :</span>
+        <input #search id="search" type="search" formControlName="searchControlForm"
+               [ngClass]="{'form-control border-left':true,
+                    'is-valid':searchForm.valid,
+                    'is-invalid':!searchForm.valid
+                    }">
+      </div>
+    </form>
+  </div>
+
+  <div class="left-container" style="max-width: 800px; min-width: 550px; margin-left: 10px">
+    <p class="h3 text-center">Види операцій :</p>
+
+    <label class="text-right">
+      <input type="checkbox" [(ngModel)]="hidden_operation_types"
+             class="text-right"> приховані
+    </label>
+
+    <form [formGroup]="tableForm">
+      <div class="table-responsive-lg">
+        <table id="table" class="table table-bordered table-sm table-hover">
+
+          <thead>
+          <tr class="table-info">
+            <th scope="col" style="width: 30px"></th>
+            <th scope="col">
+              <img [hidden]="!sorting_order" src="/assets/img/sort/sort-ASC.png" style="max-width: 25px;"
+                   (click)="change_sorting()"/>
+              <img [hidden]="sorting_order" src="/assets/img/sort/sort-DESC.png" style="max-width: 25px;"
+                   (click)="change_sorting()"/>
+              <label>&nbsp; Назва</label>
+            </th>
+            <th scope="col" style="width: 30px" *ngIf="hidden_operation_types">бл.</th>
+          </tr>
+          </thead>
+
+          <tbody formArrayName="operationTypesForm">
+
+          <tr *ngFor="let operationTypeForm of (tableForm.get('operationTypesForm').controls); let i=index"
+              [hidden]="operationTypeForm.get('disable').value && !hidden_operation_types"
+              [ngClass]="{changed:operationTypeForm.get('isChanged').value}">
+
+            <td [formGroupName]="i">
+              <input type="checkbox" formControlName="isChanged"
+                     (change)="operationTypeForm.invalid ? operationTypeForm.get('isChanged')
+                   .patchValue(false) : false"
+                     class="form-control form-control-sm input-style-active">
+            </td>
+
+            <td [formGroupName]="i">
+              <input id="name" #name type="text" formControlName="name" title="" placeholder="  - Назва операції -  "
+                     [ngClass]="{'form-control form-control-sm':true,
+                    'input-style-active':operationTypeForm.get('name').valid,
+                    'is-invalid':!operationTypeForm.get('name').valid
+                    }"
+                     (input)="operationTypeForm.get('isChanged').patchValue(operationTypeForm.valid)">
+            </td>
+
+            <td [formGroupName]="i" *ngIf="hidden_operation_types">
+              <input type="checkbox" formControlName="disable"
+                     (change)="operationTypeForm.get('isChanged').patchValue(operationTypeForm.valid)"
+                     class="form-control form-control-sm input-style-active">
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </form>
+
+  </div>
+</div>
+<br><br><br>
+
+<div class="left-container fixed-bottom bg-light">
+  <button class="btn btn-min-style" (click)="onAdd()" title="Додати">Add</button>
+  <button class="btn btn-success btn-min-style" (click)="onSave()" title="Зберегти"
+          [disabled]="count_of_operation_type == 0">Save
+  </button>
+  <img [hidden]="!save_loading" src="/assets/img/rotating-balls-spinner.gif" height="40" width="40"/>
+  <button class="btn btn-warning btn-min-style" (click)="onRefresh()" title="Обновити">Refresh</button>
+  <button class="btn btn-dark btn-min-style" (click)="onDelete()" title="Видалити"
+          [disabled]="count_of_operation_type == 0">Delete
+  </button>
+  <img [hidden]="!del_loading" src="/assets/img/rotating-balls-spinner.gif" height="40" width="40"/>
+  <button class="btn btn-danger btn-min-style" (click)="onCancel()" title="Відмінити"
+          [disabled]="count_of_operation_type == 0">Cancel
+  </button>
+</div>

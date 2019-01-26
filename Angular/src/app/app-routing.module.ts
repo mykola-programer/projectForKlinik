@@ -6,6 +6,7 @@ import {AccomodationComponent} from "./accomodation/accomodation.component";
 import {SurgeonEditorComponent} from "./surgeon-editor/surgeon-editor.component";
 import {ManagerEditorComponent} from "./manager-editor/manager-editor.component";
 import {VisitComponent} from "./visit/visit.component";
+import {OperationTypeEditorComponent} from "./operation-type-editor/operation-type-editor.component";
 
 const routes: Routes = [
   {path: "", pathMatch: "full", redirectTo: "visit"},
@@ -15,6 +16,7 @@ const routes: Routes = [
   {path: "client", component: ClientEditorComponent},
   {path: "surgeon", component: SurgeonEditorComponent},
   {path: "manager", component: ManagerEditorComponent},
+  {path: "operation-type", component: OperationTypeEditorComponent},
 ];
 
 @NgModule({

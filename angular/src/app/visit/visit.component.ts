@@ -65,7 +65,7 @@ export class VisitComponent implements OnInit {
     }
   };
 
-  validateOrder = (control: AbstractControl) => {
+  validateQueue = (control: AbstractControl) => {
 // TODO Method
     return null;
   };
@@ -112,7 +112,7 @@ export class VisitComponent implements OnInit {
   }
 
   private getOperationTypes() {
-    this.operationTypeService.getActiveProcedures().toPromise().then(operation_types => this.operation_types = operation_types);
+    this.operationTypeService.getProcedures().toPromise().then(operation_types => this.operation_types = operation_types);
   }
   private getSurgeons() {
     this.surgeonService.getSurgeons().toPromise().then(surgeons => this.surgeons = surgeons);
@@ -203,7 +203,7 @@ export class VisitComponent implements OnInit {
       timeForCome:
         [visit.timeForCome ? new Date(1970, 0, 1, visit.timeForCome[0], visit.timeForCome[1]).toLocaleTimeString().substring(0, 5) : null,
           [this.validateTime]],
-      orderForCome: [visit.orderForCome, [Validators.min(1), Validators.max(100), this.validateOrder]],
+      orderForCome: [visit.orderForCome, [Validators.min(1), Validators.max(100), this.validateQueue]],
       client: [visit.client],
       client2: [visit.client ? visit.client.clientId : 0],
       sex: [visit.client ? visit.client.sex : null],

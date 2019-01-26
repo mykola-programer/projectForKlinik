@@ -17,7 +17,6 @@ public class OperationType implements EntityObject {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "operation_type_id")
-//    @Access(AccessType.FIELD) // TODO Work without annotation !
     private Integer operationTypeId;
 
     @Column(name = "name", length = 50, nullable = false)
@@ -49,8 +48,8 @@ public class OperationType implements EntityObject {
         return disable;
     }
 
-    public void setDisable(boolean lockType) {
-        this.disable = lockType;
+    public void setDisable(boolean disable) {
+        this.disable = disable;
     }
 
     public List<Visit> getVisits() {

@@ -46,18 +46,7 @@ public class OperationTypeService {
         return result;
     }
 
-    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-    public List<OperationTypeVO> findAllActive() {
-        List<OperationType> entities = dao.findAll("OperationType.getAllActive", null);
-        if (entities == null) return null;
-        List<OperationTypeVO> result = new ArrayList<>();
-        for (OperationType entity : entities) {
-            result.add(convertToOperationTypeVO(entity));
-        }
-        return result;
-    }
-
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional(propagation = Propagation.REQUIRED)
     public OperationTypeVO create(OperationTypeVO operationTypeVO) {
         OperationType entity = copyToOperationType(operationTypeVO, null);
         return convertToOperationTypeVO(dao.save(entity));
@@ -73,20 +62,6 @@ public class OperationTypeService {
     @Transactional(propagation = Propagation.REQUIRED)
     public boolean deleteById(int operationTypeID) {
         return dao.remove(operationTypeID);
-    }
-
-    @Transactional(propagation = Propagation.REQUIRED)
-    public OperationTypeVO deactivateByID(int operationTypeID) {
-        OperationType operationType = dao.findByID(operationTypeID);
-        operationType.setDisable(true);
-        return convertToOperationTypeVO(dao.update(operationType));
-    }
-
-    @Transactional(propagation = Propagation.REQUIRED)
-    public OperationTypeVO activateByID(int operationTypeID) {
-        OperationType operationType = dao.findByID(operationTypeID);
-        operationType.setDisable(false);
-        return convertToOperationTypeVO(dao.update(operationType));
     }
 
     private OperationTypeVO convertToOperationTypeVO(OperationType operationType) {
