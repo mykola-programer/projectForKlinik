@@ -124,7 +124,7 @@ public class AccomodationService {
             if (result == null) result = new Accomodation();
             result.setWard(Ward.valueOf("N" + original.getWard()));
             result.setWardPlace(original.getWardPlace());
-            result.setDisable(original.isInactive());
+            result.setDisable(original.isDisable());
         }
         return result;
     }

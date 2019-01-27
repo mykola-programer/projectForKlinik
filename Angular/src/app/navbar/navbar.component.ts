@@ -1,5 +1,4 @@
 import {Component, Input, OnInit} from "@angular/core";
-import {DateEditorComponent} from "../date/date-editor/date-editor.component";
 import {MatDialog} from "@angular/material";
 import {NavbarService} from "../service/navbar.service";
 

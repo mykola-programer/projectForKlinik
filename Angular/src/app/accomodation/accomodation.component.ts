@@ -81,7 +81,7 @@ export class AccomodationComponent implements OnInit {
   private getVisits() {
     this.loading_visits = true;
     if (this.selected_date !== null) {
-      this.visitService.findVisits(this.selected_date)
+      this.visitService.getVisitsByDate(this.selected_date)
         .subscribe(
           (visits_of_date) => {
             this.visits_of_date = visits_of_date;
@@ -105,9 +105,7 @@ export class AccomodationComponent implements OnInit {
       accomodations.forEach((accomodation: Accomodation) => {
         let isAdd = false;
         this.visits_of_date.forEach((visit: Visit) => {
-          if (visit.accomodation
-            && visit.accomodation.ward === accomodation.ward
-            && visit.accomodation.wardPlace === accomodation.wardPlace) {
+          if (visit.accomodationID === accomodation.accomodationId) {
 
             this.visits_with_wards.push(visit);
             isAdd = true;
@@ -115,16 +113,16 @@ export class AccomodationComponent implements OnInit {
         });
         if (!isAdd) {
           const visit = new Visit();
-          visit.visitDate = this.selected_visit_date;
-          visit.accomodation = accomodation;
+          visit.visitDateID = this.selected_visit_date.visitDateId;
+          visit.accomodationID = accomodation.accomodationId;
           this.visits_with_wards.push(visit);
         }
       });
 
       this.patients = [];
       this.visits_with_wards.forEach((visit: Visit) => {
-        if (visit.client && visit.status === "пацієнт") {
-          this.patients.push(visit.client);
+        if (visit.clientID > 0 && visit.status === "пацієнт") {
+          // this.patients.push(visit.clientID);
         }
       });
 
@@ -136,7 +134,7 @@ export class AccomodationComponent implements OnInit {
   }
 
   private getVisitsWithoutWards() {
-    this.visits_without_wards = this.visits_of_date.filter((visit: Visit) => visit.accomodation == null);
+    this.visits_without_wards = this.visits_of_date.filter((visit: Visit) => visit.accomodationID == 0);
   }
 
   private getAccomodations() {
@@ -225,10 +223,10 @@ export class AccomodationComponent implements OnInit {
   // Clients
 
   selectedClient(visit: Visit, client: Client) {
-    if (visit && client && (!visit.client || visit.client.clientId !== client.clientId)) {
+    if (visit && client && (!visit.clientID || visit.clientID !== client.clientId)) {
       visit.isChanged = true;
       visit.status = "пацієнт";
-      visit.client = client;
+      visit.clientID = client.clientId;
     }
   }
 
@@ -259,9 +257,9 @@ export class AccomodationComponent implements OnInit {
   // Patients
 
   selectedPatient(visit: Visit, patient: Client) {
-    if (visit && patient && (!visit.patient || visit.patient.clientId !== patient.clientId)) {
+    if (visit && patient && (visit.patientID !== patient.clientId)) {
       visit.isChanged = true;
-      visit.patient = patient;
+      visit.patientID = patient.clientId;
     }
   }
 
@@ -325,7 +323,7 @@ export class AccomodationComponent implements OnInit {
     place_in_ward.isChanged = true;
     this.surgeons.forEach((surgeon: Surgeon) => {
       if (surgeon.surgeonId == surgeon_id) {
-        place_in_ward.surgeon = surgeon;
+        place_in_ward.surgeonID = surgeon.surgeonId;
       }
     });
   }
@@ -334,7 +332,7 @@ export class AccomodationComponent implements OnInit {
     place_in_ward.isChanged = true;
     this.managers.forEach((manager: Manager) => {
       if (manager.managerId == manager_id) {
-        place_in_ward.manager = manager;
+        place_in_ward.managerID = manager.managerId;
       }
     });
   }
@@ -343,7 +341,7 @@ export class AccomodationComponent implements OnInit {
     place_in_ward.isChanged = true;
     this.operation_types.forEach((operation_type: OperationType) => {
       if (operation_type.operationTypeId == operation_type_id) {
-        place_in_ward.operationType = operation_type;
+        place_in_ward.operationTypeID = operation_type.operationTypeId;
       }
     });
   }
@@ -355,10 +353,10 @@ export class AccomodationComponent implements OnInit {
 
 
   onAdd() {
-    if (this.visits_of_date[0] == null || this.visits_of_date[0].client != null) {
+    if (this.visits_of_date[0] == null || this.visits_of_date[0].clientID > 0) {
       const visit = new Visit();
       visit.status = "пацієнт";
-      visit.visitDate = this.selected_visit_date;
+      visit.visitDateID = this.selected_visit_date.visitDateId;
       this.visits_of_date.unshift(visit);
       this.getVisitsWithoutWards();
     }
@@ -369,7 +367,7 @@ export class AccomodationComponent implements OnInit {
   onSave() {
     this.loading_save = true;
     const changedVisits = this.visits_of_date.filter((visit: Visit) => {
-      return visit.isChanged && visit.client && visit.client.clientId > 0;
+      return visit.isChanged && visit.clientID > 0;
     });
 
     if (changedVisits.length !== 0) {
@@ -404,14 +402,14 @@ export class AccomodationComponent implements OnInit {
         if (value.visitId > 0) {
           this.visitService.removeVisit(this.visits_with_wards[i].visitId).toPromise().then(() => {
             const visit: Visit = new Visit();
-            visit.accomodation = this.visits_with_wards[i].accomodation;
-            visit.visitDate = this.visits_with_wards[i].visitDate;
+            visit.accomodationID = this.visits_with_wards[i].accomodationID;
+            visit.visitDateID = this.visits_with_wards[i].visitDateID;
             this.visits_with_wards.splice(i, 1, visit);
           });
         } else {
           const visit: Visit = new Visit();
-          visit.accomodation = this.visits_with_wards[i].accomodation;
-          visit.visitDate = this.visits_with_wards[i].visitDate;
+          visit.accomodationID = this.visits_with_wards[i].accomodationID;
+          visit.visitDateID = this.visits_with_wards[i].visitDateID;
           this.visits_with_wards.splice(i, 1, visit);
         }
       }
@@ -421,7 +419,7 @@ export class AccomodationComponent implements OnInit {
   onDisplace() {
     this.loading_displace = true;
     const changedVisits = this.visits_with_wards.filter((visit: Visit) => {
-      return visit.isChanged && visit.client && visit.client.clientId > 0;
+      return visit.isChanged && visit.clientID > 0;
     });
 
     if (changedVisits.length !== 0) {

@@ -1,23 +1,16 @@
-import {VisitDate} from "./visit-date";
-import {Client} from "./client";
-import {OperationType} from "./operation-type";
-import {Surgeon} from "./surgeon";
-import {Manager} from "./manager";
-import {Accomodation} from "./accomodation";
-
 export class Visit {
   public visitId = 0;
-  public visitDate: VisitDate;
+  public visitDateID = 0;
   public timeForCome: number[];
-  public orderForCome: number;
-  public client: Client;
+  public orderForCome = 0;
+  public clientID = 0;
   public status: string;
-  public patient: Client;
-  public operationType: OperationType;
+  public patientID = 0;
+  public operationTypeID = 0;
   public eye: string;
-  public surgeon: Surgeon;
-  public manager: Manager;
-  public accomodation: Accomodation;
+  public surgeonID = 0;
+  public managerID = 0;
+  public accomodationID = 0;
   public note: string;
   public isChanged = false;
 

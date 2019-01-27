@@ -78,7 +78,7 @@ export class DateSelectorDialogComponent implements OnInit {
     private visitService: VisitService,
     private toastMessageService: ToastMessageService,
     @Inject(MAT_DIALOG_DATA) public data: { visit: Visit }) {
-    this.selected_date = this.data.visit.visitDate;
+    // this.selected_date = this.data.visit.visitDate;
     this.selected_accomodation = null;
   }
 
@@ -139,9 +139,9 @@ export class DateSelectorDialogComponent implements OnInit {
   }
 
   onMove() {
-    this.data.visit.visitDate = this.selected_date;
+    // this.data.visit.visitDate = this.selected_date;
     if (this.selected_accomodation != null) {
-      this.data.visit.accomodation = this.selected_accomodation;
+      this.data.visit.accomodationID = this.selected_accomodation.accomodationId;
       this.visitService.editVisit(this.data.visit).toPromise().then((visit: Visit) => {
         this.onRefresh();
         this.dialogRef.close(visit);
@@ -157,7 +157,7 @@ export class DateSelectorDialogComponent implements OnInit {
   }
 
   onRefresh() {
-    this.selected_date = this.data.visit.visitDate;
+    // this.selected_date = this.data.visit.visitDate;
     this.selected_accomodation = null;
     this.getDates();
     this.getVisits();
@@ -196,8 +196,7 @@ export class DateSelectorDialogComponent implements OnInit {
 
       visits_of_date.forEach((visit: Visit) => {
         const index = this.accomodations.findIndex((accomodation: Accomodation) => {
-          return visit != null && visit.accomodation != null && accomodation != null &&
-            visit.accomodation.ward === accomodation.ward && visit.accomodation.wardPlace === accomodation.wardPlace;
+          return visit.accomodationID === accomodation.accomodationId;
         });
         this.accomodations.splice(index, 1);
       });

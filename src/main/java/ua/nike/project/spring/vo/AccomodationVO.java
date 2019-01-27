@@ -33,7 +33,7 @@ public class AccomodationVO implements VisualObject {
         this.wardPlace = wardPlace;
     }
 
-    public Boolean isInactive() {
+    public Boolean isDisable() {
         return disable;
     }
 

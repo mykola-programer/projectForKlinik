@@ -83,8 +83,8 @@ export class DateEditorComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.getDates();
     this.serviceNavbar.change("date");
+    this.getDates();
   }
 
   onSelect(date: NgbDateStruct) {

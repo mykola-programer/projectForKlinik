@@ -4,6 +4,7 @@
     <exclude-output />
     <content url="file://$MODULE_DIR$">
       <excludeFolder url="file://$MODULE_DIR$/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/src/app/accomodation" />
       <excludeFolder url="file://$MODULE_DIR$/src/app/accomodation/no-ward" />
       <excludeFolder url="file://$MODULE_DIR$/src/app/accomodation/ward" />
       <excludeFolder url="file://$MODULE_DIR$/tmp" />

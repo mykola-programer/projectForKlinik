@@ -21,7 +21,7 @@ export class VisitService {
   constructor(private http: HttpClient) {
   }
 
-  findVisits(select_date: Date): Observable<Visit[]> {
+  getVisitsByDate(select_date: Date): Observable<Visit[]> {
     return this.http.get<Visit[]>(this.serverUrl + this.visitUrl + "all/" + select_date.toLocaleDateString() + "/");
   }
 

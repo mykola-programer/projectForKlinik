@@ -10,13 +10,13 @@
 <div *ngIf="!visits_loading && !calender_loading" class="container-fluid"
      style="max-width: 1200px; min-width: 550px; margin-left: 10px">
 
-  <form [formGroup]="operationTablesForm">
+  <form [formGroup]="pageForm">
     <input type="text" readonly class="h5"
            formControlName="tablesLabel"
            style="width: 100%; border: none">
 
     <div formArrayName="tablesForm">
-      <div *ngFor="let tablesForm of (operationTablesForm.get('tablesForm').controls); let i=index"
+      <div *ngFor="let tablesForm of (pageForm.get('tablesForm').controls); let i=index"
            class="container-fluid" style="min-width:500px;">
 
         <div [formGroupName]="i">
@@ -34,9 +34,8 @@
                 <th scope="col" style="width: 50px;">№п</th>
                 <th scope="col" style="width: 80px;">Час</th>
                 <th scope="col" style="min-width: 195px; max-width: 250px">ПІБ</th>
-                <th scope="col" style="min-width: 195px; max-width: 250px">ПІБ2</th>
                 <th scope="col" style="width: 35px;">Ст.</th>
-                <th scope="col" style="width: 60px;">Статус</th>
+                <th scope="col" style="width: 65px;">Статус</th>
                 <th scope="col" style="width: 150px;">Супр. пацієнта</th>
                 <th scope="col" style="width: 150px;">Операція</th>
                 <th scope="col" style="width: 55px;">Око</th>
@@ -61,7 +60,7 @@
 
                 <!--Ward Place-->
                 <td [formGroupName]="j" scope="row">
-                  <input type="text" formControlName="accomodation" readonly
+                  <input type="text" formControlName="accomodation_place" readonly
                          class="form-control font-weight-bold form-control-sm input-style-passive"
                          style="border: none">
                 </td>
@@ -69,7 +68,7 @@
                 <!--Order For Come-->
                 <td [formGroupName]="j">
                   <input type="number" formControlName="orderForCome"
-                         (change)="visitForm.get('isChanged').patchValue(visitForm.valid)"
+                         (change)="changeState(visitForm)"
                          [ngClass]="{'form-control font-weight-bold form-control-sm': true,
                     'is-invalid': !visitForm.get('orderForCome').valid,
                     'input-style-active': visitForm.get('orderForCome').valid}">
@@ -78,49 +77,61 @@
                 <!--Time For Come-->
                 <td [formGroupName]="j">
                   <input type="time" formControlName="timeForCome"
-                         (change)="visitForm.get('isChanged').patchValue(visitForm.valid)"
+                         (change)="changeState(visitForm)"
                          [ngClass]="{'form-control form-control-sm': true,
                     'is-invalid': !(visitForm.get('timeForCome').valid),
                     'input-style-active': visitForm.get('timeForCome').valid}">
 
                 </td>
+                <!--
+                                &lt;!&ndash;Client&ndash;&gt;
+                                <td [formGroupName]="j">
+
+                                  <input type="text" [matAutocomplete]="autoClient"
+                                         formControlName="client"
+                                         (change)="visitForm.get('isChanged').patchValue(visitForm.valid)"
+                                         (focus)="search(visitForm.get('client'))"
+                                         class="form-control form-control-sm input-style-active">
+
+                                  <mat-autocomplete autoActiveFirstOption [displayWith]="displayFn" #autoClient="matAutocomplete">
+                                    <mat-option *ngFor="let filtered_client of filteredClients" (onSelectionChange)="filtered_client.clientId"
+                                                [value]="filtered_client.clientId">
+                                      {{filtered_client.surname}} {{filtered_client.firstName}} {{filtered_client.secondName}}
+                                    </mat-option>
+                                  </mat-autocomplete>
+
+                                </td>-->
+                <!--
+                                &lt;!&ndash;Client&ndash;&gt;
+                                <td [formGroupName]="j">
+                                  <input type="text" formControlName="client" list="clients" [value]="displayFn(visitForm.get('client').value)"
+                                         class="form-control form-control-sm input-style-active">
+                                  <datalist id="clients">
+                                    <select>
+                                      <option *ngFor="let client of clients" [value]="client.clientId">
+                                        {{client.surname}} {{client.firstName}} {{client.secondName}}
+                                      </option>
+                                    </select>
+                                  </datalist>
+                                </td>
+                -->
 
                 <!--Client-->
                 <td [formGroupName]="j">
-
-                  <input type="text" [matAutocomplete]="autoClient"
-                         formControlName="client"
-                         (change)="visitForm.get('isChanged').patchValue(visitForm.valid)"
-                         (focus)="search(visitForm.get('client'))"
-                         class="form-control form-control-sm input-style-active">
-
-                  <mat-autocomplete autoActiveFirstOption [displayWith]="displayFn" #autoClient="matAutocomplete">
-                    <mat-option *ngFor="let filtered_client of filteredClients" (onSelectionChange)="filtered_client"
-                                [value]="filtered_client">
-                      {{filtered_client.surname}} {{filtered_client.firstName}} {{filtered_client.secondName}}
-                    </mat-option>
-                  </mat-autocomplete>
-
-                </td>
-
-                <!--Client-->
-                <td [formGroupName]="j">
-
-                  <select type="text"
-                         formControlName="client2"
-                         class="form-control form-control-sm input-style-active">
-
-                    <option [selected]="visitForm.get('client2').value == 0"></option>
-                    <option *ngFor="let filtered_client of clients" [ngValue]="filtered_client.clientId"
-                            [selected]="visitForm.get('client2').value == filtered_client.clientId"  >
-                      {{filtered_client.surname}} {{filtered_client.firstName}} {{filtered_client.secondName}}
+                  <select type="text" formControlName="client"
+                          (change)="changeClients(visitForm)"
+                          class="form-control form-control-sm input-style-active">
+                    <option [selected]="visitForm.value.client == 0"></option>
+                    <option *ngFor="let client of clients" [value]="client.clientId"
+                            [selected]="visitForm.value.client == client.clientId">
+                      {{client.surname}} {{client.firstName}} {{client.secondName}}
                     </option>
                   </select>
                 </td>
 
                 <!--Sex-->
                 <td [formGroupName]="j">
-                  <input type="text" formControlName="sex" readonly
+                  <input type="text" formControlName="sex"
                          [ngClass]="{'form-control form-control-sm': true,
                     'input-style-passive': true}">
 
@@ -129,7 +140,7 @@
                 <!--  Status  -->
                 <td [formGroupName]="j">
                   <select type="text" formControlName="status"
-                          (change)="visitForm.get('isChanged').patchValue(visitForm.valid)"
+                          (change)="changeState(visitForm)"
                           [ngClass]="{'form-control form-control-sm': true,
                     'input-style-active': true}">
                     <option *ngFor="let status of statuses"
@@ -143,7 +154,7 @@
                 <td [formGroupName]="j">
                   <select formControlName="patient"
                           class="form-control form-control-sm input-style-active"
-                          (change)="visitForm.get('isChanged').patchValue(visitForm.valid)"
+                          (change)="changeState(visitForm)"
                           *ngIf="visitForm.get('status').value == 'супров.'">
                     <option [selected]="visitForm.get('patient').value == 0"></option>
                     <option *ngFor="let patient of patients" [ngValue]="patient.clientId"
@@ -158,7 +169,7 @@
                 <td [formGroupName]="j">
                   <select formControlName="operationType"
                           class="form-control form-control-sm input-style-active"
-                          (change)="visitForm.get('isChanged').patchValue(visitForm.valid)"
+                          (change)="changeState(visitForm)"
                           *ngIf="visitForm.get('status').value == 'пацієнт'">
                     <option [selected]="visitForm.get('operationType').value == 0"></option>
                     <option *ngFor="let operation_type of operation_types" [ngValue]="operation_type.operationTypeId"
@@ -173,7 +184,7 @@
                 <td [formGroupName]="j">
                   <select formControlName="eye"
                           class="form-control form-control-sm input-style-active"
-                          (change)="visitForm.get('isChanged').patchValue(visitForm.valid)"
+                          (change)="changeState(visitForm)"
                           *ngIf="visitForm.get('status').value == 'пацієнт'">
                     <option [selected]="visitForm.get('eye').value == null"></option>
                     <option *ngFor="let eye of eyes" [ngValue]="eye"
@@ -187,7 +198,7 @@
                 <td [formGroupName]="j">
                   <select formControlName="surgeon"
                           class="form-control form-control-sm input-style-active"
-                          (change)="visitForm.get('isChanged').patchValue(visitForm.valid)"
+                          (change)="changeState(visitForm)"
                           *ngIf="visitForm.get('status').value == 'пацієнт'">
                     <option [selected]="visitForm.get('surgeon').value == 0"></option>
                     <option *ngFor="let surgeon of surgeons" [ngValue]="surgeon.surgeonId"
@@ -203,7 +214,7 @@
                 <td [formGroupName]="j">
                   <select formControlName="manager"
                           class="form-control form-control-sm input-style-active"
-                          (change)="visitForm.get('isChanged').patchValue(visitForm.valid)"
+                          (change)="changeState(visitForm)"
                           *ngIf="visitForm.get('status').value == 'пацієнт'">
                     <option [selected]="visitForm.get('manager').value == 0"></option>
                     <option *ngFor="let manager of managers" [ngValue]="manager.managerId"
@@ -218,6 +229,7 @@
                 <!--Note-->
                 <td [formGroupName]="j">
                   <input type="text" formControlName="note"
+                         (change)="changeState(visitForm)"
                          (input)="visitForm.get('isChanged').patchValue(visitForm.valid)"
                          class="form-control form-control-sm input-style-active"
                   >
