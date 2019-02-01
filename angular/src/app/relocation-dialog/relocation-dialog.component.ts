@@ -94,6 +94,8 @@ export class RelocationDialogComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.visits_loading = true;
+    this.dates_loading = true;
     this.getDates();
     this.getVisits();
     this.setNgbDatepickerConfig();
@@ -134,7 +136,6 @@ export class RelocationDialogComponent implements OnInit {
   }
 
   private getVisits() {
-    this.visits_loading = true;
     if (this.selected_date != null) {
       this.visitService.getVisitsByDate(new Date(this.selected_date.date[0], this.selected_date.date[1] - 1, this.selected_date.date[2]))
         .toPromise().then((visits_of_date: Visit[]) => {
@@ -176,6 +177,7 @@ export class RelocationDialogComponent implements OnInit {
     this.selected_date = this.data.visitDate;
     this.selected_accomodationID = this.data.visit.accomodationID;
     this.getDates();
+    this.visits_loading = true;
     this.getVisits();
   }
 

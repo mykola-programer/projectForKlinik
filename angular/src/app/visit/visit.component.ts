@@ -72,7 +72,6 @@ export class VisitComponent implements OnInit {
       || this.operationType_loading
       || this.managers_loading
       || this.visits_loading
-      || this.calender_loading
       || this.form_building
       || this.surgeons_loading);
   };
