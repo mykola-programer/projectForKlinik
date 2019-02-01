@@ -1,13 +1,13 @@
 <ngx-toasta></ngx-toasta>
 <br><br><br>
-
 <div [hidden]="!calender_loading">
   <p class="h5 text-center">Виберіть дату !</p>
   <img class="center" src="/assets/img/calender.png"/>
 </div>
 
-<img [hidden]="!visits_loading" src="/assets/img/download.gif" style="max-width: 600px; min-width: 600px;"/>
-<div *ngIf="!visits_loading && !calender_loading" class="container-fluid"
+<!--<img [hidden]="isLoadingOFF()" src="/assets/img/download.gif" style="max-width: 600px; min-width: 600px;"/>-->
+<mat-spinner [hidden]="isLoadingOFF()"></mat-spinner>
+<div *ngIf="isLoadingOFF()" class="container-fluid"
      style="max-width: 1200px; min-width: 550px; margin-left: 10px">
 
   <form [formGroup]="pageForm">
@@ -31,9 +31,9 @@
               <tr class="table-info">
                 <th scope="col" style="width: 30px;"></th>
                 <th scope="col" style="width: 35px;">№м</th>
-                <th scope="col" style="width: 50px;">№п</th>
+                <th scope="col" style="width: 60px;">№п</th>
                 <th scope="col" style="width: 80px;">Час</th>
-                <th scope="col" style="min-width: 195px; max-width: 250px">ПІБ</th>
+                <th scope="col" style="width: 250px">ПІБ</th>
                 <th scope="col" style="width: 35px;">Ст.</th>
                 <th scope="col" style="width: 65px;">Статус</th>
                 <th scope="col" style="width: 150px;">Супр. пацієнта</th>
@@ -42,18 +42,18 @@
                 <th scope="col" style="width: 100px">Хірург</th>
                 <th scope="col" style="width: 100px">Менеджер</th>
                 <th scope="col">Примітки</th>
-                <th scope="col" style="width: 40px;" *ngIf="hidden_visits">бл.</th>
+                <th scope="col" style="width: 40px;" [hidden]="!hidden_visits">бл.</th>
               </tr>
               </thead>
 
               <tbody formArrayName="visitsForm">
               <tr *ngFor="let visitForm of (tablesForm.get('visitsForm').controls); let j=index"
-                  [ngClass]="{changed:visitForm.get('isChanged').value}">
+                  [ngClass]="{changed:visitForm.get('isChanged').value}" [hidden]="(!hidden_visits && (hidden_visits || visitForm.get('disable').value))">
 
                 <!--Checkbox-->
                 <td [formGroupName]="j">
                   <input type="checkbox" formControlName="isChanged"
-                         (change)="visitForm.invalid ? visitForm.get('isChanged')
+                         (change)="visitForm.invalid || visitForm.value.disable ? visitForm.get('isChanged')
                    .patchValue(false) : false"
                          class="form-control form-control-sm input-style-active">
                 </td>
@@ -70,7 +70,8 @@
                   <input type="number" formControlName="orderForCome"
                          (change)="changeState(visitForm)"
                          [ngClass]="{'form-control font-weight-bold form-control-sm': true,
-                    'is-invalid': !visitForm.get('orderForCome').valid,
+                    'is-invalid': visitForm.get('orderForCome').errors && visitForm.get('orderForCome').errors.invalidQueue,
+                    'is-valid': visitForm.get('orderForCome').errors && visitForm.get('orderForCome').errors.nullQueue,
                     'input-style-active': visitForm.get('orderForCome').valid}">
                 </td>
 
@@ -120,8 +121,11 @@
                 <td [formGroupName]="j">
                   <select type="text" formControlName="client"
                           (change)="changeClients(visitForm)"
-                          class="form-control form-control-sm input-style-active">
-                    <option [selected]="visitForm.value.client == 0"></option>
+                          [ngClass]="{'form-control font-weight-bold form-control-sm': true,
+                    'is-invalid': visitForm.get('client').errors && visitForm.get('client').errors.invalidClient,
+                    'is-valid': visitForm.get('client').errors && visitForm.get('client').errors.nullClient,
+                    'input-style-active': visitForm.get('client').valid}">
+                    <option [selected]="visitForm.value.client == 0" [value]="0"></option>
                     <option *ngFor="let client of clients" [value]="client.clientId"
                             [selected]="visitForm.value.client == client.clientId">
                       {{client.surname}} {{client.firstName}} {{client.secondName}}
@@ -132,19 +136,17 @@
                 <!--Sex-->
                 <td [formGroupName]="j">
                   <input type="text" formControlName="sex"
-                         [ngClass]="{'form-control form-control-sm': true,
-                    'input-style-passive': true}">
-
+                        class="form-control form-control-sm input-style-passive">
                 </td>
 
                 <!--  Status  -->
                 <td [formGroupName]="j">
                   <select type="text" formControlName="status"
                           (change)="changeState(visitForm)"
-                          [ngClass]="{'form-control form-control-sm': true,
-                    'input-style-active': true}">
+                          *ngIf="visitForm.value.client > 0"
+                          class="form-control form-control-sm input-style-active">
                     <option *ngFor="let status of statuses"
-                            [selected]="status == visitForm.get('status').value">
+                            [selected]="status == visitForm.value.status">
                       {{status}}
                     </option>
                   </select>
@@ -153,7 +155,9 @@
                 <!--Patient-->
                 <td [formGroupName]="j">
                   <select formControlName="patient"
-                          class="form-control form-control-sm input-style-active"
+                          [ngClass]="{'form-control font-weight-bold form-control-sm': true,
+                    'is-invalid': visitForm.get('patient').errors && visitForm.get('patient').errors.invalidPatient,
+                    'input-style-active': visitForm.get('patient').valid}"
                           (change)="changeState(visitForm)"
                           *ngIf="visitForm.get('status').value == 'супров.'">
                     <option [selected]="visitForm.get('patient').value == 0"></option>
@@ -170,7 +174,7 @@
                   <select formControlName="operationType"
                           class="form-control form-control-sm input-style-active"
                           (change)="changeState(visitForm)"
-                          *ngIf="visitForm.get('status').value == 'пацієнт'">
+                          *ngIf="visitForm.get('status').value == 'пацієнт' && visitForm.get('client').value > 0">
                     <option [selected]="visitForm.get('operationType').value == 0"></option>
                     <option *ngFor="let operation_type of operation_types" [ngValue]="operation_type.operationTypeId"
                             [disabled]="operation_type.disable"
@@ -185,7 +189,7 @@
                   <select formControlName="eye"
                           class="form-control form-control-sm input-style-active"
                           (change)="changeState(visitForm)"
-                          *ngIf="visitForm.get('status').value == 'пацієнт'">
+                          *ngIf="visitForm.get('status').value == 'пацієнт' && visitForm.get('client').value > 0">
                     <option [selected]="visitForm.get('eye').value == null"></option>
                     <option *ngFor="let eye of eyes" [ngValue]="eye"
                             [selected]="eye == visitForm.get('eye').value">
@@ -199,7 +203,7 @@
                   <select formControlName="surgeon"
                           class="form-control form-control-sm input-style-active"
                           (change)="changeState(visitForm)"
-                          *ngIf="visitForm.get('status').value == 'пацієнт'">
+                          *ngIf="visitForm.get('status').value == 'пацієнт' && visitForm.get('client').value > 0">
                     <option [selected]="visitForm.get('surgeon').value == 0"></option>
                     <option *ngFor="let surgeon of surgeons" [ngValue]="surgeon.surgeonId"
                             [disabled]="surgeon.disable"
@@ -215,7 +219,7 @@
                   <select formControlName="manager"
                           class="form-control form-control-sm input-style-active"
                           (change)="changeState(visitForm)"
-                          *ngIf="visitForm.get('status').value == 'пацієнт'">
+                          *ngIf="visitForm.get('client').value > 0">
                     <option [selected]="visitForm.get('manager').value == 0"></option>
                     <option *ngFor="let manager of managers" [ngValue]="manager.managerId"
                             [disabled]="manager.disable"
@@ -229,13 +233,14 @@
                 <!--Note-->
                 <td [formGroupName]="j">
                   <input type="text" formControlName="note"
+                         [readonly]="visitForm.get('disable').value"
                          (change)="changeState(visitForm)"
                          (input)="visitForm.get('isChanged').patchValue(visitForm.valid)"
                          class="form-control form-control-sm input-style-active"
                   >
                 </td>
 
-                <td [formGroupName]="j">
+                <td [formGroupName]="j" [hidden]="(!hidden_visits)">
                   <img *ngIf="visitForm.get('disable').value"
                        src="/assets/img/icons8/lock-48.png"
                        style="width: 70%">
@@ -258,25 +263,28 @@
 <div class="left-container fixed-bottom bg-light">
 
   <button class="btn btn-success btn-min-style" (click)="onSave()" title="Зберегти"
-          [disabled]="!(getSelectedElementCount() == 1)">Save
+          [disabled]="number_of_changed_values == 0">Save
   </button>
   <img [hidden]="!save_loading" src="/assets/img/rotating-balls-spinner.gif" height="40" width="40"/>
 
   <button class="btn btn-warning btn-min-style" (click)="onRefresh()">Refresh</button>
 
   <button class="btn btn-dark btn-min-style" (click)="onDelete()"
-          [disabled]="!(getSelectedElementCount() == 1)">Delete
+          [disabled]="number_of_changed_values == 0">Delete
   </button>
   <img [hidden]="!del_loading" src="/assets/img/rotating-balls-spinner.gif" height="40" width="40"/>
 
-  <button class="btn btn-info btn-min-style" (click)="onDisplace()">Displace</button>
+  <button class="btn btn-info btn-min-style" (click)="onDisplace()"
+          [disabled]="number_of_changed_values == 0">Displace</button>
   <img *ngIf="displace_loading" src="/assets/img/rotating-balls-spinner.gif" height="40" width="40"/>
 
-  <button class="btn btn-info btn-min-style" (click)="moveToAnotherDatePlace()">Move to ...</button>
+  <button class="btn btn-info btn-min-style" (click)="moveToAnotherDatePlace()"
+          [disabled]="number_of_changed_values == 0">Move to ...</button>
 
-  <button class="btn btn-danger btn-min-style" (click)="onCancel()"
-          [disabled]="getSelectedElementCount() == 0">Cancel
-  </button>
-  <button class="btn btn-danger btn-min-style" (click)="test()">Test</button>
+  <!--<button class="btn btn-danger btn-min-style" (click)="test()">Test</button>-->
+  <label class="text-right">
+    <input type="checkbox" [(ngModel)]="hidden_visits"
+           class="text-right"> приховані
+  </label>
 </div>
 

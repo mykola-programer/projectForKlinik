@@ -200,8 +200,6 @@ export class DateSelectorDialogComponent implements OnInit {
         });
         this.accomodations.splice(index, 1);
       });
-
-
     });
   }
 

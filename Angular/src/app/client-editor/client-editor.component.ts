@@ -111,10 +111,9 @@ export class ClientEditorComponent implements OnInit {
 
   onSave() {
     this.save_loading = true;
-    // @ts-ignore
-    const control = (<AbstractControl>(this.tableForm.get("clientsForm").controls).find((abstractControl: AbstractControl) => {
+    const control = (<FormArray>this.tableForm.get("clientsForm")).controls.find((abstractControl: AbstractControl) => {
       return abstractControl.get("isChanged").value;
-    }));
+    });
     if (control && control.value) {
       const edited_client: Client = this.convertToClient(control.value);
       if (edited_client && edited_client.clientId > 0) {

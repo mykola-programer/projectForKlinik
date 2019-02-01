@@ -1,0 +1,54 @@
+<mat-spinner [hidden]="isLoadingOFF()"></mat-spinner>
+<div class="left-container" [hidden]="!isLoadingOFF()">
+  <p class="text-center h5">Поселення клієнта : {{data.client.surname}} {{data.client.firstName}}
+    {{data.client.secondName}} ({{refactorDate(data.client.birthday) | date: 'dd.MM.yyyy'}}) </p>
+  <p class="text-center h5">Вибрана дата: {{refactorDate(selected_date.date) | date: 'dd.MM.yyyy'}} </p>
+  <br>
+  <div class="row">
+    <div class="col-lg-8">
+      <p class="text-center h5">Виберіть поточну або іншу дату :</p>
+
+      <ngb-datepicker [minDate]="minDate" [maxDate]="maxDate" [dayTemplate]="editedCustomDay">
+      </ngb-datepicker>
+
+      <ng-template #editedCustomDay let-date="date" let-currentMonth="currentMonth" let-selected="selected"
+                   let-disabled="disabled" let-focused="focused">
+          <span class="custom-day" [class.work-day]="isPresented(date)" [class.focused]="focused"
+                (click)="onSelectDate(date, disabled)"
+                [class.bg-primary]="isSelected(date)" [class.hidden]="date.month !== currentMonth"
+                [class.text-muted]="disabled">
+                  {{ date.day }}
+          </span>
+
+      </ng-template>
+
+    </div>
+
+    <div class="col-lg-4">
+      <div class="left-container">
+        <p class="text-center h5">Виберіть інше місце поселення:</p>
+        <mat-spinner *ngIf="accomodations_loading" [diameter]="40"></mat-spinner>
+        <select class="form-control form-control-sm"
+                *ngIf="!accomodations_loading"
+                [(ngModel)]="selected_accomodationID">
+          <option [value]="0"
+                  [selected]="selected_accomodationID == 0">Без стаціонару
+          </option>
+          <option *ngFor="let accomodation of accomodations"
+                  [value]="accomodation.accomodationId"
+                  [selected]="selected_accomodationID == accomodation.accomodationId"
+                  [disabled]="accomodation.disable">
+            Палата:{{accomodation.ward}}, місце:{{accomodation.wardPlace}}
+          </option>
+        </select>
+      </div>
+    </div>
+
+    <div>
+      <button class="btn btn-success btn-min-style" (click)="onMove()">Move</button>
+      <button class="btn btn-warning btn-min-style" (click)="onRefresh()">Refresh</button>
+      <button class="btn btn-danger btn-min-style" (click)="onCancel()">Cancel</button>
+      <button class="btn btn-danger btn-min-style" (click)="test()">test</button>
+    </div>
+  </div>
+</div>

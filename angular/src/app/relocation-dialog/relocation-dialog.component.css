@@ -1,0 +1,39 @@
+.mat-spinner {
+  position: relative;
+  margin-left: 40%;
+  margin-right: 40%;
+  display: block
+}
+
+.custom-day {
+  text-align: center;
+  padding: 0.185rem 0.25rem;
+  border-radius: 0.25rem;
+  display: inline-block;
+  width: 2rem;
+}
+.custom-day:hover, .custom-day.focused {
+  background-color: #e6e6e6;
+}
+.work-day {
+  background-color: #f0ad4e;
+  border-radius: 1rem;
+  color: white;
+}
+.hidden {
+  display: none;
+}
+.btn {
+  margin-right: 5px;
+  margin-top: 5px;
+  min-width: 65px;
+}
+
+select[readonly]{
+  background: #eee;
+  cursor:no-drop;
+}
+
+select[readonly] option{
+  display:none;
+}

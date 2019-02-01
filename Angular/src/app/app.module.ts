@@ -23,6 +23,7 @@ import {VisitComponent} from "./visit/visit.component";
 import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 import {OperationTypeEditorComponent} from "./operation-type-editor/operation-type-editor.component";
 import {DateSelectorComponent} from "./date/date-selector/date-selector.component";
+import { RelocationDialogComponent } from './relocation-dialog/relocation-dialog.component';
 
 @NgModule({
   declarations: [
@@ -38,6 +39,7 @@ import {DateSelectorComponent} from "./date/date-selector/date-selector.componen
     ManagerEditorComponent,
     VisitComponent,
     OperationTypeEditorComponent,
+    RelocationDialogComponent,
   ],
   imports: [
     ReactiveFormsModule,
@@ -59,7 +61,7 @@ import {DateSelectorComponent} from "./date/date-selector/date-selector.componen
   exports: [BrowserModule, ToastaModule],
   providers: [VisitDateService, NavbarService],
   entryComponents: [
-    // ClientEditorComponent,
+    RelocationDialogComponent,
     DateSelectorDialogComponent,
   ],
   bootstrap: [AppComponent]

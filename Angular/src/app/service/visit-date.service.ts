@@ -25,7 +25,7 @@ export class VisitDateService {
   }
 
   getVisitDates(): Observable<VisitDate[]> {
-    return this.http.get<VisitDate[]>(this.serverUrl + this.visitDatesUrl + "active");
+    return this.http.get<VisitDate[]>(this.serverUrl + this.visitDatesUrl);
   }
 
   addVisitDates(visitDates: VisitDate[]): Observable<VisitDate[]> {
