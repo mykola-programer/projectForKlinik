@@ -1,4 +1,4 @@
-import {Component, OnInit} from "@angular/core";
+import {Compiler, Component, OnDestroy, OnInit} from "@angular/core";
 import {NavbarService} from "../service/navbar.service";
 import {VisitService} from "../service/visit.service";
 import {AccomodationService} from "../service/accomodation.service";
@@ -20,6 +20,7 @@ import {SurgeonService} from "../service/surgeon.service";
 import {ManagerService} from "../service/manager.service";
 import {MatDialog} from "@angular/material";
 import {RelocationDialogComponent} from "../relocation-dialog/relocation-dialog.component";
+import {Subscription} from "rxjs";
 
 @Component({
   selector: "app-visit",
@@ -27,7 +28,7 @@ import {RelocationDialogComponent} from "../relocation-dialog/relocation-dialog.
   styleUrls: ["./visit.component.css"]
 })
 
-export class VisitComponent implements OnInit {
+export class VisitComponent implements OnInit, OnDestroy {
 
   save_loading = false;
   del_loading = false;
@@ -148,6 +149,9 @@ export class VisitComponent implements OnInit {
     }
   };
 
+  private selected_date_Subscriber: Subscription;
+  private page_form_Subscriber: Subscription;
+
   constructor(private navbarService: NavbarService,
               private dateService: DateService,
               private accomodationService: AccomodationService,
@@ -158,6 +162,7 @@ export class VisitComponent implements OnInit {
               private visitService: VisitService,
               private toastMessageService: ToastMessageService,
               private dialog: MatDialog,
+              private compiler: Compiler,
               private fb: FormBuilder
   ) {
   }
@@ -166,7 +171,7 @@ export class VisitComponent implements OnInit {
     this.navbarService.change("visit");
     this.calender_loading = true;
 
-    this.dateService.selected_date.subscribe(
+    this.selected_date_Subscriber = this.dateService.selected_date.subscribe(
       (selected_visit_date: VisitDate) => {
         this.calender_loading = false;
         this.selected_visit_date = selected_visit_date;
@@ -178,7 +183,7 @@ export class VisitComponent implements OnInit {
       }
     );
 
-    this.pageForm.valueChanges
+    this.page_form_Subscriber = this.pageForm.valueChanges
       .pipe(debounceTime(400))
       .subscribe((value) => {
         this.number_of_changed_values = 0;
@@ -201,6 +206,12 @@ export class VisitComponent implements OnInit {
         });
         this.patients.sort(this.compareClients);
       });
+  }
+
+  ngOnDestroy(): void {
+    this.selected_date_Subscriber.unsubscribe();
+    this.page_form_Subscriber.unsubscribe();
+    this.compiler.clearCache();
   }
 
   private getAccomodations() {

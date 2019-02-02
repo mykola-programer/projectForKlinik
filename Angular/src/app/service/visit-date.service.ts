@@ -1,44 +1,47 @@
 import {Injectable} from "@angular/core";
 import {Observable} from "rxjs/internal/Observable";
-import {HttpClient, HttpHeaders} from "@angular/common/http";
+import {HttpClient} from "@angular/common/http";
 import {VisitDate} from "../backend_types/visit-date";
 import {MyObjectList} from "../backend_types/my-object-list";
+import {UrlProperty} from "./url-property";
 
 @Injectable({
   providedIn: "root"
 })
 export class VisitDateService {
-  private serverUrl = "http://localhost:8080/";  // URL to REST-server
-  private visitDatesUrl = "visit_dates/";  // URL to web api
-
-  private readonly httpOptions = {
-    headers: new HttpHeaders({
-      "Content-Type": "application/json"
-    })
-  };
 
   constructor(private http: HttpClient) {
   }
 
   getVisitDate(visitDateId: number): Observable<VisitDate> {
-    return this.http.get<VisitDate>(this.serverUrl + this.visitDatesUrl + visitDateId);
+    return this.http.get<VisitDate>(UrlProperty.serverUrl + UrlProperty.visitDatesUrl + visitDateId);
   }
 
   getVisitDates(): Observable<VisitDate[]> {
-    return this.http.get<VisitDate[]>(this.serverUrl + this.visitDatesUrl);
+    return this.http.get<VisitDate[]>(UrlProperty.serverUrl + UrlProperty.visitDatesUrl);
   }
 
-  addVisitDates(visitDates: VisitDate[]): Observable<VisitDate[]> {
-    const myVisitDates: MyObjectList<VisitDate> = new MyObjectList();
-    myVisitDates.objects = visitDates;
-    return this.http.put<VisitDate[]>(this.serverUrl + this.visitDatesUrl + "list/", JSON.stringify(myVisitDates), this.httpOptions);
+  addVisitDate(visitDate: VisitDate): Observable<VisitDate> {
+    return this.http.post<VisitDate>(UrlProperty.serverUrl + UrlProperty.visitDatesUrl, JSON.stringify(visitDate), UrlProperty.httpOptions);
+  }
+
+  editVisitDate(visitDate: VisitDate): Observable<VisitDate> {
+    return this.http.put<VisitDate>(UrlProperty.serverUrl + UrlProperty.visitDatesUrl + visitDate.visitDateId, JSON.stringify(visitDate), UrlProperty.httpOptions);
   }
 
   removeVisitDate(visitDateId: number): Observable<boolean> {
-    return this.http.delete<boolean>(this.serverUrl + this.visitDatesUrl + visitDateId + "/", this.httpOptions);
+    return this.http.delete<boolean>(UrlProperty.serverUrl + UrlProperty.visitDatesUrl + visitDateId + "/", UrlProperty.httpOptions);
   }
 
+  /** @deprecated */
+  addVisitDates(visitDates: VisitDate[]): Observable<VisitDate[]> {
+    const myVisitDates: MyObjectList<VisitDate> = new MyObjectList();
+    myVisitDates.objects = visitDates;
+    return this.http.put<VisitDate[]>(UrlProperty.serverUrl + UrlProperty.visitDatesUrl + "list/", JSON.stringify(myVisitDates), UrlProperty.httpOptions);
+  }
+
+  /** @deprecated */
   removeVisitDates(ids: number[]): Observable<boolean> {
-    return this.http.delete<boolean>(this.serverUrl + this.visitDatesUrl + "list/" + ids.toString(), this.httpOptions);
+    return this.http.delete<boolean>(UrlProperty.serverUrl + UrlProperty.visitDatesUrl + "list/" + ids.toString(), UrlProperty.httpOptions);
   }
 }

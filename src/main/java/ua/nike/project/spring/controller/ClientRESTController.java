@@ -23,11 +23,11 @@ public class ClientRESTController implements RESTController<ClientVO> {
     @CrossOrigin
     @RequestMapping(value = "", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public List<ClientVO> getAll() {
-        List<ClientVO> test = clientService.findAll();
-//        for (int i = 0; i < 3; i++) {
-//            test.addAll(test);
+        List<ClientVO> clients = clientService.findAll();
+//        for (int i = 0; i < 4; i++) {
+//            clients.addAll(clients);
 //        }
-        return test;
+        return clients;
     }
 
     @CrossOrigin
@@ -78,6 +78,14 @@ public class ClientRESTController implements RESTController<ClientVO> {
 }
 
 
+
+
+
+
+
+
+
+
 /*
 
     final int indexOfACSUserFriendlyException = ExceptionUtils.indexOfThrowable(exception, ACSUserFriendlyException.class);
@@ -116,35 +124,3 @@ final ACSException firstAcsException = (ACSException) getThrowableChildByFQFN(AC
         jsonResponseBody.put(USER_MESSAGE_RESPONSE_KEY, USER_MESSAGE);
         }
         */
-
-/*
-    @CrossOrigin
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ClientVO getClient(@PathVariable("id") int clientID) {
-        return clientService.findByID(clientID);
-    }
-
-    @CrossOrigin
-    @RequestMapping(value = "", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ClientVO addClient(@RequestBody @NotNull @Valid ClientVO clientVO, BindingResult bindingResult) throws ValidationException {
-        if (bindingResult != null && bindingResult.hasErrors()) {
-            throw new ValidationException("Object is not valid", bindingResult);
-        }
-        return clientService.create(clientVO);
-    }
-
-    @CrossOrigin
-    @RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ClientVO editClient(@PathVariable("id") int clientID, @RequestBody @NotNull @Valid ClientVO clientVO, BindingResult bindingResult) throws ValidationException {
-        if (bindingResult != null && bindingResult.hasErrors())
-            throw new ValidationException("Object is not valid", bindingResult);
-        return clientService.update(clientID, clientVO);
-    }
-
-    @CrossOrigin
-    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public boolean deleteClientByID(@PathVariable("id") int clientID) {
-        return clientService.deleteById(clientID);
-    }
-
-*/

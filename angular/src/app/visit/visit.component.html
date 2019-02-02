@@ -281,10 +281,16 @@
   <button class="btn btn-info btn-min-style" (click)="moveToAnotherDatePlace()"
           [disabled]="number_of_changed_values == 0">Move to ...</button>
 
-  <!--<button class="btn btn-danger btn-min-style" (click)="test()">Test</button>-->
+  <button class="btn btn-danger btn-min-style" (click)="test()">Test</button>
   <label class="text-right">
     <input type="checkbox" [(ngModel)]="hidden_visits"
            class="text-right"> приховані
   </label>
 </div>
 
+<!--<div class="combo-container">-->
+  <!--<input type="text" formControlName="client" (click)="opening = true">-->
+  <!--<div class="data-container" *ngIf="opening">-->
+    <!--<p *ngFor="let client of clients; let i = index" class="data-list">{{client.surname}}</p>-->
+  <!--</div>-->
+<!--</div>-->

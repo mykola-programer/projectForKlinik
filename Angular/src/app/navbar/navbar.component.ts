@@ -1,6 +1,7 @@
 import {Component, Input, OnInit} from "@angular/core";
 import {MatDialog} from "@angular/material";
 import {NavbarService} from "../service/navbar.service";
+import {MatIconModule} from '@angular/material/icon/';
 
 @Component({
   selector: "app-navbar",

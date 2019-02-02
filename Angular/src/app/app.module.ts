@@ -23,7 +23,7 @@ import {VisitComponent} from "./visit/visit.component";
 import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 import {OperationTypeEditorComponent} from "./operation-type-editor/operation-type-editor.component";
 import {DateSelectorComponent} from "./date/date-selector/date-selector.component";
-import { RelocationDialogComponent } from './relocation-dialog/relocation-dialog.component';
+import {RelocationDialogComponent} from "./relocation-dialog/relocation-dialog.component";
 
 @NgModule({
   declarations: [

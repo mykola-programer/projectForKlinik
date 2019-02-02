@@ -10,7 +10,7 @@ export class ToastMessageService {
               private toastaConfig: ToastaConfig,
   ) {
     this.toastaConfig.position = "top-center";
-   }
+  }
 
   public inform(title: string, msg: string, command: string, timeout?: number) {
     const toastOptions: ToastOptions = {

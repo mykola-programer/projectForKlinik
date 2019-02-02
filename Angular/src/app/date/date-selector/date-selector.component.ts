@@ -108,7 +108,7 @@ export class DateSelectorComponent implements OnInit {
   ngOnInit(): void {
     this.getDates();
     // Delete
-    this.visitDateService.getVisitDate(117).toPromise().then(value => this.dateService.change(value));
+    // this.visitDateService.getVisitDate(117).toPromise().then(value => this.dateService.change(value));
   }
 
   onChangeDate(date: NgbDate, disabled): void {
