@@ -1,51 +1,45 @@
 import {Injectable} from "@angular/core";
-import {HttpClient, HttpHeaders} from "@angular/common/http";
+import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs/internal/Observable";
 import {Surgeon} from "../backend_types/surgeon";
+import {UrlProperty} from "./url-property";
 
 @Injectable({
   providedIn: "root"
 })
 export class SurgeonService {
-  private serverUrl = "http://localhost:8080/";  // URL to REST-server
-  private surgeonUrl = "surgeons/";
-  private readonly httpOptions = {
-    headers: new HttpHeaders({
-      "Content-Type": "application/json"
-    })
-  };
 
   constructor(private http: HttpClient) {
   }
 
   getSurgeons(): Observable<Surgeon[]> {
-    return this.http.get<Surgeon[]>(this.serverUrl + this.surgeonUrl);
+    return this.http.get<Surgeon[]>(UrlProperty.serverUrl + UrlProperty.surgeonUrl);
   }
 
   addSurgeon(surgeon: Surgeon): Observable<Surgeon> {
-    return this.http.post<Surgeon>(this.serverUrl + this.surgeonUrl, JSON.stringify(surgeon), this.httpOptions);
+    return this.http.post<Surgeon>(UrlProperty.serverUrl + UrlProperty.surgeonUrl, JSON.stringify(surgeon), UrlProperty.httpOptions);
   }
 
   editSurgeon(surgeon: Surgeon): Observable<Surgeon> {
-    return this.http.put<Surgeon>(this.serverUrl + this.surgeonUrl + surgeon.surgeonId.toString(), JSON.stringify(surgeon),
-      this.httpOptions);
+    return this.http.put<Surgeon>(UrlProperty.serverUrl + UrlProperty.surgeonUrl + surgeon.surgeonId, JSON.stringify(surgeon),
+      UrlProperty.httpOptions);
   }
 
   deleteSurgeon(surgeon_id: number): Observable<boolean> {
-    return this.http.delete<boolean>(this.serverUrl + this.surgeonUrl + surgeon_id.toString(), this.httpOptions);
+    return this.http.delete<boolean>(UrlProperty.serverUrl + UrlProperty.surgeonUrl + surgeon_id, UrlProperty.httpOptions);
   }
 
 }
 
 
 // getSurgeon(surgeonId: number): Observable<Surgeon[]> {
-//   return this.http.get<Surgeon[]>(this.serverUrl + this.surgeonUrl + surgeonId.toString());
+//   return this.http.get<Surgeon[]>(UrlProperty.serverUrl + UrlProperty.surgeonUrl + surgeonId.toString());
 // }
 //
 // activateSurgeon(surgeon_id: number): Observable<boolean> {
-//   return this.http.delete<boolean>(this.serverUrl + this.surgeonUrl + surgeon_id.toString() + this.activateUrl, this.httpOptions);
+//   return this.http.delete<boolean>(UrlProperty.serverUrl + UrlProperty.surgeonUrl + surgeon_id.toString() + UrlProperty.activateUrl, UrlProperty.httpOptions);
 // }
 //
 // deactivateSurgeon(surgeon_id: number): Observable<boolean> {
-//   return this.http.delete<boolean>(this.serverUrl + this.surgeonUrl + surgeon_id.toString() + this.deactivateUrl, this.httpOptions);
+//   return this.http.delete<boolean>(UrlProperty.serverUrl + UrlProperty.surgeonUrl + surgeon_id.toString() + UrlProperty.deactivateUrl, UrlProperty.httpOptions);
 // }

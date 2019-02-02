@@ -1,18 +1,22 @@
 <ngx-toasta></ngx-toasta>
 <br><br><br>
-<div class="container-fluid" style="min-width:500px; max-width: 1000px">
+<mat-spinner *ngIf="dates_loading"></mat-spinner>
+<div *ngIf="!dates_loading" class="container-fluid" style="min-width:500px; max-width: 1000px">
   <div class="row">
     <div class="col-lg-5">
 
       <ngb-datepicker
-        [minDate]="minDate" [maxDate]="maxDate" [dayTemplate]="editedCustomDay">
+        [minDate]="minDate" [maxDate]="maxDate" [dayTemplate]="customDay">
       </ngb-datepicker>
 
-      <ng-template #editedCustomDay let-date="date" let-currentMonth="currentMonth" let-selected="selected"
+      <ng-template #customDay let-date="date" let-currentMonth="currentMonth" let-selected="selected"
                    let-disabled="disabled" let-focused="focused">
-          <span class="custom-day" [class.work-day]="isPresented(date)" [class.focused]="focused"
-                (click)="onSelect(date)"
-                [class.bg-primary]="isSelected(date)" [class.hidden]="date.month !== currentMonth"
+          <span class="custom-day"
+                (click)="onSelect(date, disabled)"
+                [class.work-day]="isPresented(date)"
+                [class.lock-day]="isDisabled(date)"
+                [class.bg-primary]="isSelected(date)"
+                [class.hidden]="date.month !== currentMonth"
                 [class.text-muted]="disabled">
                   {{ date.day }}
           </span>
@@ -22,14 +26,14 @@
       <div>
         <button class="btn btn-success btn-min-style" (click)="onSave()" [disabled]="!(selectedDates.length > 0)">Save
         </button>
-        <img *ngIf="loading_save" src="/assets/img/rotating-balls-spinner.gif" height="40" width="40"/>
+        <button class="btn btn-success btn-min-style" (click)="onUnlock()" [disabled]="!(selectedDates.length > 0)">Unlock
+        </button>
         <button class="btn btn-warning btn-min-style" (click)="onRefresh()">Refresh</button>
         <button class="btn btn-dark btn-min-style" (click)="onDelete()" [disabled]="!(selectedDates.length > 0)">
           Delete
         </button>
-        <img *ngIf="loading_del" src="/assets/img/rotating-balls-spinner.gif" height="40" width="40"/>
-        <button class="btn btn-danger btn-min-style" (click)="onCancel()" [disabled]="!(selectedDates.length > 0)">
-          Cancel
+        <button class="btn btn-dark btn-min-style" (click)="onLock()" [disabled]="!(selectedDates.length > 0)">
+          Lock
         </button>
       </div>
 
@@ -41,11 +45,10 @@
         <br>
         <p class="h5 text-center">Вибрані дати візитів :</p>
 
-
-        <ol>
-          <li class="h6 text-center" *ngFor="let sdate of selectedDates">
-            {{sdate.day < 10 ? "0" + sdate.day : sdate.day}}{{sdate.month < 10 ? ".0" + sdate.month : "." +
-            sdate.month}}{{sdate.year < 10 ? ".0" + sdate.year : "." + sdate.year}}
+        <mat-spinner *ngIf="!isLoadingOFF()" style="margin-left: 2%" [diameter]="60"></mat-spinner>
+        <ol  *ngIf="isLoadingOFF()">
+          <li class="h6 text" *ngFor="let selectedDate of selectedDates">
+            {{refactorDay(selectedDate)}}  <img *ngIf="selectedDate.disable" src="/assets/img/icons8/lock-48.png" height="15" width="15"/>
           </li>
         </ol>
       </div>

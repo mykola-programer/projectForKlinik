@@ -11,14 +11,28 @@
 }
 .work-day {
   background-color: #f0ad4e;
-  border-radius: 1rem;
-  color: white;
+  border-radius: 0.5rem;
+  color: black;
 }
+.lock-day {
+  background-color: bisque;
+  border-radius: 0.5rem;
+  color: black;
+}
+
 .hidden {
   display: none;
 }
+
 .btn {
   margin-right: 5px;
   margin-top: 5px;
   min-width: 65px;
+}
+
+.mat-spinner {
+  position: fixed;
+  margin-left: 30%;
+  margin-right: 30%;
+  display: block
 }
