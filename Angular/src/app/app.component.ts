@@ -26,7 +26,7 @@ export class AppComponent {
   ) {
   }
 
-  onChangeDate(selected_date: NgbDateStruct) {
+  onSelect(selected_date: NgbDateStruct) {
     if (selected_date != null) {
       this.selected_date = selected_date;
       this.getHospitalizations(selected_date);

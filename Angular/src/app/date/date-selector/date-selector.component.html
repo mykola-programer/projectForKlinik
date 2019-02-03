@@ -1,8 +1,11 @@
 <form class="form-inline">
   <div class="form-group">
     <div class="input-group">
-      <input class="form-control" placeholder="Виберіть дату:" ngbDatepicker #calendar="ngbDatepicker" [minDate]="minDate"
-             [maxDate]="maxDate" (click)="onClick (calendar)" [dayTemplate]="selectedCustomDay">
+      <input class="form-control" placeholder="Виберіть дату:" ngbDatepicker #calendar="ngbDatepicker"
+             (click)="calendar.toggle();"
+             [minDate]="minDate"
+             [maxDate]="maxDate"
+             [dayTemplate]="selectedCustomDay" >
 
       <div class="input-group-append">
         <button mat-raised-button matTooltip="Додати нову дату операційного дня." class="btn btn-outline-secondary" (click)="addDate()" (click)="calendar.close()" type="button"  > +
@@ -13,8 +16,12 @@
 </form>
 
 <ng-template #selectedCustomDay let-date="date" let-currentMonth="currentMonth" let-selected="selected" let-disabled="disabled" let-focused="focused" >
-  <span class="selected-day"  [class.focused]="focused" (click)="onChangeDate(date, disabled)"
-        [class.bg-primary]="isPresented(date)" [class.hidden]="date.month !== currentMonth" [class.text-muted]="disabled" >
+  <span class="custom-day"
+        (click)="onSelect(date, disabled)"
+        [class.work-day]="isPresented(date)"
+        [class.lock-day]="isDisabled(date)"
+        [class.hidden]="date.month !== currentMonth"
+        [class.text-muted]="disabled" >
     {{ date.day }}
   </span>
 </ng-template>

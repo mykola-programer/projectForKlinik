@@ -26,6 +26,7 @@ export class ClientEditorComponent implements OnInit {
   });
 
   clientsForm: FormArray = this.fb.array([]);
+
   tableForm: FormGroup = this.fb.group({
     clientsForm: this.clientsForm
   });
@@ -62,8 +63,9 @@ export class ClientEditorComponent implements OnInit {
             "Не більше 50 символів", "info");
         }
       });
-    this.tableForm.valueChanges.pipe(debounceTime(600)).subscribe(() => {
-      this.count_of_clients = (<Client[]>this.tableForm.get("clientsForm").value).filter((client: Client) => {
+
+    this.tableForm.valueChanges.pipe(debounceTime(500)).subscribe((value) => {
+      this.count_of_clients = value.clientsForm.filter((client: Client) => {
         return client.isChanged;
       }).length;
     });
@@ -144,29 +146,34 @@ export class ClientEditorComponent implements OnInit {
     this.onSave();
   }
 
-  private error_saving(err: HttpErrorResponse) {
+  private error_saving(err: HttpErrorResponse, client?: Client) {
     this.save_loading = false;
     if (err.status === 422) {
-      this.toastMessageService.inform("Помилка при збережені! <br> Клієнт не відповідає критеріям !",
+      this.toastMessageService.inform("Помилка при збережені! <br> " +
+        + client.surname + " " + client.firstName + " " + client.secondName +
+        "<br> не відповідає критеріям !",
         err.error, "error");
     } else if (err.status === 404) {
-      this.toastMessageService.inform("Помилка при збережені!",
+      this.toastMessageService.inform("Помилка при збережені! <br>"
+        + client.surname + " " + client.firstName + " " + client.secondName,
         err.error + "<br> Обновіть сторінку та спробуйте знову.", "error");
     } else if (err.status === 409) {
-      this.toastMessageService.inform("Помилка при збережені! <br> Конфлікт в базі даних !",
-        err.error + "<br> Обновіть сторінку та спробуйте знову. <br> Можливо ваш клієнт існує серед прихованих.", "error");
+      this.toastMessageService.inform("Помилка при збережені! <br>" +
+        + client.surname + " " + client.firstName + " " + client.secondName +
+        " <br> Конфлікт в базі даних !",
+        err.error + "<br> Обновіть сторінку та спробуйте знову.", "error");
     } else {
-      this.toastMessageService.inform("Помилка при збережені!",
+      this.toastMessageService.inform("Помилка при збережені! <br>"
+        + client.surname + " " + client.firstName + " " + client.secondName,
         err.error + "<br>" + "HTTP status: " + err.status, "error");
     }
   }
 
   onDelete() {
     this.del_loading = true;
-    // @ts-ignore
-    const control = (<AbstractControl>(this.tableForm.get("clientsForm").controls).find((abstractControl: AbstractControl) => {
+    const control = ((<FormArray>this.tableForm.get("clientsForm")).controls).find((abstractControl: AbstractControl) => {
       return abstractControl.get("isChanged").value;
-    }));
+    });
     if (control && control.value) {
       const client_for_del: Client = control.value;
       if (client_for_del.clientId > 0) {
@@ -174,7 +181,7 @@ export class ClientEditorComponent implements OnInit {
           control.get("isChanged").setValue(false);
           this.success_deleting();
         }).catch((err: HttpErrorResponse) => {
-          this.error_deleting(err);
+          this.error_deleting(err, client_for_del);
         });
       } else {
         control.get("isChanged").setValue(false);
@@ -191,10 +198,12 @@ export class ClientEditorComponent implements OnInit {
     this.onDelete();
   }
 
-  private error_deleting(err: HttpErrorResponse) {
+  private error_deleting(err: HttpErrorResponse, client?: Client) {
     this.del_loading = false;
     if (err.status === 409) {
-      this.toastMessageService.inform("Помилка при видалені!", "Кліент має активні візити! <br>" +
+      this.toastMessageService.inform("Помилка при видалені! <br>"
+        + client.surname + " " + client.firstName + " " + client.secondName,
+        "Кліент має активні візити! <br>" +
         " Спочатку видаліть візити цього клієнта !", "error");
     } else {
       this.toastMessageService.inform("Помилка при видалені!",

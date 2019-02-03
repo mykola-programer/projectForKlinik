@@ -1,4 +1,4 @@
-import {Component, Injectable, OnInit} from "@angular/core";
+import {Compiler, Component, Injectable, OnDestroy, OnInit} from "@angular/core";
 import {VisitDateService} from "../../service/visit-date.service";
 
 import {NgbCalendar, NgbDateParserFormatter, NgbDatepickerConfig, NgbDatepickerI18n, NgbDateStruct} from "@ng-bootstrap/ng-bootstrap";
@@ -7,6 +7,8 @@ import {Router} from "@angular/router";
 import {VisitDate} from "../../backend_types/visit-date";
 import {DateService} from "../../service/date.service";
 import {NgbDate} from "@ng-bootstrap/ng-bootstrap/datepicker/ngb-date";
+import {HttpErrorResponse} from "@angular/common/http";
+import {ToastMessageService} from "../../service/toast-message.service";
 
 const I18N_VALUES = {
   "ua": {
@@ -82,18 +84,19 @@ export class NgbDateCustomParserFormatter extends NgbDateParserFormatter {
   }] // define custom NgbDatepickerI18n provider
 
 })
-export class DateSelectorComponent implements OnInit {
+export class DateSelectorComponent implements OnInit, OnDestroy {
   minDate: NgbDate = new NgbDate(this.calendar.getToday().year, this.calendar.getToday().month - 3, this.calendar.getToday().day);
   maxDate: NgbDate = new NgbDate(this.calendar.getToday().year + 5, 12, 31);
 
   visitDates: VisitDate[] = [];
-  dates: NgbDate[] = [];
 
   constructor(
     private visitDateService: VisitDateService,
     private config: NgbDatepickerConfig,
     private calendar: NgbCalendar,
     private router: Router,
+    private compiler: Compiler,
+    private toastMessageService: ToastMessageService,
     private dateService: DateService) {
 
     this.config.outsideDays = "hidden";
@@ -101,8 +104,7 @@ export class DateSelectorComponent implements OnInit {
     this.config.navigation = "select";
     this.config.showWeekNumbers = false;
     this.config.firstDayOfWeek = 1;
-
-    this.config.markDisabled = (date: NgbDate) => this.indexOf(date, this.dates) === -1;
+    this.config.markDisabled = (date: NgbDate) => {return !this.isPresented(date)}
   }
 
   ngOnInit(): void {
@@ -111,50 +113,50 @@ export class DateSelectorComponent implements OnInit {
     // this.visitDateService.getVisitDate(117).toPromise().then(value => this.dateService.change(value));
   }
 
-  onChangeDate(date: NgbDate, disabled): void {
-    if (this.isPresented(date) && !disabled) {
+  ngOnDestroy(): void {
+    this.compiler.clearCache();
+  }
+
+  onSelect(date: NgbDate, disabled): void {
+    if (!disabled) {
       const selected_visitDate: VisitDate = this.visitDates.find((visitDate: VisitDate) => {
         return (visitDate.date[0] == date.year &&
           visitDate.date[1] == date.month &&
           visitDate.date[2] == date.day);
       });
       this.dateService.change(selected_visitDate);
-    }
+    } else false;
   }
 
   isPresented(date: NgbDate): boolean {
-    return this.indexOf(date, this.dates) !== -1;
+    const index = this.indexOf(date, this.visitDates);
+    return index !== -1 && !this.visitDates[index].disable;
+  }
+
+  isDisabled(date: NgbDate): boolean {
+    const index = this.indexOf(date, this.visitDates);
+    return index !== -1 && this.visitDates[index].disable;
   }
 
   addDate() {
     this.router.navigateByUrl("dates");
   }
 
-  onClick(calendar) {
-    calendar.toggle();
-    // this.getDates();
-  }
-
-
   private getDates(): void {
     this.visitDateService.getVisitDates().toPromise().then((visitDates: VisitDate[]) => {
       this.visitDates = visitDates;
-
-      this.dates.splice(0, this.dates.length);
-      this.visitDates.forEach((visitDate: VisitDate) => {
-        const d: NgbDate = new NgbDate(visitDate.date[0], visitDate.date[1], visitDate.date[2]);
-        this.dates.push(d);
-      });
+    }).catch((err: HttpErrorResponse) => {
+      this.toastMessageService.inform("Сервер недоступний!",
+        "Спробуйте пізніше !" + "<br>" + err.error + "<br>" + err.message, "error", 10000);
+      setTimeout(() => {
+        this.getDates();
+      }, 15000);
     });
   }
 
-  private indexOf(date: NgbDate, dates: NgbDate[]): number {
-    for (let i = 0; i < dates.length; i++) {
-      if (NgbDate.from(date).equals(dates[i])) {
-        return i;
-      }
-    }
-    return -1;
+  private indexOf(date: NgbDateStruct, visitDates: VisitDate[]): number {
+    return visitDates.findIndex((visitDate: VisitDate) => {
+      return visitDate.date[0] == date.year && visitDate.date[1] == date.month && visitDate.date[2] == date.day;
+    });
   }
-
 }

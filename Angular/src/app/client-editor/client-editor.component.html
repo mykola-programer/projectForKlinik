@@ -1,16 +1,15 @@
 <ngx-toasta></ngx-toasta>
 <br><br><br>
 <img [hidden]="!clients_loading" src="/assets/img/download.gif" style="max-width: 500px"/>
+<mat-spinner *ngIf="clients_loading"></mat-spinner>
 <div *ngIf="!clients_loading">
   <div class="left-container" style="max-width: 800px; min-width: 550px; margin-left: 10px">
     <form [formGroup]="searchForm">
       <div class="input-group-prepend">
         <span class="input-group-text">Пошук :</span>
         <input id="search" type="search" formControlName="searchControlForm"
-               [ngClass]="{'form-control border-left':true,
-                    'is-valid':searchForm.valid,
-                    'is-invalid':!searchForm.valid
-                    }">
+               class="form-control border-left"
+               [ngClass]="{'is-valid':searchForm.valid, 'is-invalid':!searchForm.valid }">
       </div>
     </form>
   </div>
@@ -60,18 +59,17 @@
 
             <td [formGroupName]="i">
               <input #firstName type="text" formControlName="firstName" placeholder="  - Ім'я -  "
-                     [ngClass]="{'form-control form-control-sm':true,
-                    'input-style-active':clientForm.get('firstName').valid,
-                    'is-invalid':!clientForm.get('firstName').valid
-                    }"
+                     class="form-control form-control-sm"
+                     [ngClass]="{'input-style-active':clientForm.get('firstName').valid,
+                    'is-invalid':!clientForm.get('firstName').valid }"
                      (input)="clientForm.get('isChanged').patchValue(clientForm.valid)"
                      (keydown.space)="secondName.focus(); false">
             </td>
 
             <td [formGroupName]="i">
               <input #secondName type="text" formControlName="secondName" placeholder="  - по-Батькові -  "
-                     [ngClass]="{'form-control form-control-sm':true,
-                    'input-style-active':clientForm.get('secondName').valid,
+                     class="form-control form-control-sm"
+                     [ngClass]="{'input-style-active':clientForm.get('secondName').valid,
                     'is-invalid':!clientForm.get('secondName').valid
                     }"
                      (input)="clientForm.get('isChanged').patchValue(clientForm.valid)"
@@ -80,12 +78,10 @@
 
             <td [formGroupName]="i">
               <select #sex type="text" formControlName="sex"
-                      [ngClass]="{'form-control form-control-sm':true,
-                    'input-style-active':clientForm.get('sex').valid,
-                    'is-invalid':!clientForm.get('sex').valid
-                    }"
-                      (change)="clientForm.get('isChanged').patchValue(clientForm.valid)"
-              >
+                      class="form-control form-control-sm"
+                      [ngClass]="{'input-style-active':clientForm.get('sex').valid,
+                    'is-invalid':!clientForm.get('sex').valid    }"
+                      (change)="clientForm.get('isChanged').patchValue(clientForm.valid)">
                 <option *ngFor="let sex of genders" [selected]="clientForm.get('sex').value === sex" value="{{sex}}">
                   {{sex}}
                 </option>
@@ -95,20 +91,18 @@
             <td [formGroupName]="i">
               <input #birthday type="date" formControlName="birthday"
                      min="{{min_date | date: 'yyyy-MM-dd'}}" max="{{max_date | date: 'yyyy-MM-dd'}}"
-                     [ngClass]="{'form-control form-control-sm':true,
-                    'input-style-active':clientForm.get('birthday').valid,
+                     class="form-control form-control-sm"
+                     [ngClass]="{'input-style-active':clientForm.get('birthday').valid,
                     'is-invalid':!clientForm.get('birthday').valid }"
-                     (change)="clientForm.get('isChanged').patchValue(clientForm.valid)"
-              >
+                     (change)="clientForm.get('isChanged').patchValue(clientForm.valid)">
             </td>
 
             <td [formGroupName]="i">
               <input #telephone type="tel" formControlName="telephone" placeholder="  - Телефон -  "
-                     [ngClass]="{'form-control form-control-sm':true,
-                    'input-style-active':clientForm.get('telephone').valid,
+                     class="form-control form-control-sm"
+                     [ngClass]="{'input-style-active':clientForm.get('telephone').valid,
                     'is-invalid':!clientForm.get('telephone').valid }"
-                     (change)="clientForm.get('isChanged').patchValue(clientForm.valid)"
-              >
+                     (change)="clientForm.get('isChanged').patchValue(clientForm.valid)">
             </td>
           </tr>
           </tbody>

@@ -1,6 +1,6 @@
 export class VisitDate {
-  public visitDateId: number;
+  public visitDateId = 0;
   public date: number[];
-  public disable: boolean;
+  public disable = false;
 
 }

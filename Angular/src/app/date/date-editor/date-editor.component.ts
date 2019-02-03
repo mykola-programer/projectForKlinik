@@ -103,6 +103,7 @@ export class DateEditorComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.compiler.clearCache();
   }
+
   onSelect(date: NgbDateStruct, disabled: boolean) {
     if (!disabled) {
       const date_index: number = this.indexOf(date, this.selectedDates);
@@ -139,7 +140,7 @@ export class DateEditorComponent implements OnInit, OnDestroy {
           this.selectedDates.splice(0, 1);
           this.success_saving(visitDate);
         }).catch((err: HttpErrorResponse) => {
-          this.error_saving(err);
+          this.error_saving(err, this.selectedDates[0]);
         });
       } else if (this.selectedDates[0].visitDateId > 0) {
         this.dateService.editVisitDate(this.selectedDates[0]).toPromise().then((visitDate: VisitDate) => {
@@ -158,26 +159,26 @@ export class DateEditorComponent implements OnInit, OnDestroy {
     }
   }
 
-  private error_saving(err: HttpErrorResponse) {
-    this.loading_save = false;
-    if (err.status === 422) {
-      this.toastMessageService.inform("Помилка при збережені! <br> Дата не відповідає критеріям !",
-        err.error, "error");
-    } else if (err.status === 404) {
-      this.toastMessageService.inform("Помилка при збережені!",
-        err.error + "<br> Обновіть сторінку та спробуйте знову.", "error");
-    } else if (err.status === 409) {
-      this.toastMessageService.inform("Помилка при збережені! <br> Конфлікт в базі даних !",
-        err.error + "<br> Обновіть сторінку та спробуйте знову. <br> Можливо дата існує серед прихованих.", "error");
-    } else {
-      this.toastMessageService.inform("Помилка при збережені!",
-        err.error + "<br>" + "HTTP status: " + err.status, "error");
-    }
-  }
-
   private success_saving(visitDate?: VisitDate) {
     this.toastMessageService.inform("Збережено !", "Операційна дата успішно збережена !", "success");
     this.onSave();
+  }
+
+  private error_saving(err: HttpErrorResponse, visitDate?: VisitDate) {
+    this.loading_save = false;
+    if (err.status === 422) {
+      this.toastMessageService.inform("Помилка при збережені! <br>" + this.refactorDay(visitDate) + "<br> не відповідає критеріям !",
+        err.error, "error");
+    } else if (err.status === 404) {
+      this.toastMessageService.inform("Помилка при збережені! <br>" + this.refactorDay(visitDate),
+        err.error + "<br> Обновіть сторінку та спробуйте знову.", "error");
+    } else if (err.status === 409) {
+      this.toastMessageService.inform("Помилка при збережені! <br>" + this.refactorDay(visitDate) + "<br> Конфлікт в базі даних !",
+        err.error + "<br> Обновіть сторінку та спробуйте знову. <br> Можливо дата існує серед прихованих.", "error");
+    } else {
+      this.toastMessageService.inform("Помилка при збережені! <br>" + this.refactorDay(visitDate),
+        err.error + "<br>" + "HTTP status: " + err.status, "error");
+    }
   }
 
   onRefresh() {
@@ -204,7 +205,7 @@ export class DateEditorComponent implements OnInit, OnDestroy {
           this.selectedDates.splice(0, 1);
           this.success_deleting();
         }).catch((err: HttpErrorResponse) => {
-          this.error_deleting(err);
+          this.error_deleting(err, this.selectedDates[0]);
         });
       } else {
         this.selectedDates.splice(0, 1);
@@ -221,19 +222,18 @@ export class DateEditorComponent implements OnInit, OnDestroy {
     this.onDelete();
   }
 
-  private error_deleting(err: HttpErrorResponse) {
+  private error_deleting(err: HttpErrorResponse, visitDate?: VisitDate) {
     this.del_loading = false;
     if (err.status === 409) {
-      this.toastMessageService.inform("Помилка при видалені!", "В даних датах існують активні візити! <br>" +
-        " Спочатку видаліть візити цього числа !", "error");
-      this.toastMessageService.inform("Рекомендація.","Можна заблокувати можна через кнопку 'Lock'", "info", 10000);
+      this.toastMessageService.inform("Помилка при видалені! <br>" + this.refactorDay(visitDate), "Цього числа існують активні візити! <br>" +
+        " Спочатку видаліть візити !", "error");
+      this.toastMessageService.inform("Рекомендація.","Можна заблокувати через кнопку 'Lock'", "info", 10000);
     } else {
-      this.toastMessageService.inform("Помилка при видалені!",
+      this.toastMessageService.inform("Помилка при видалені! <br>" + this.refactorDay(visitDate),
         err.error + "<br>" + "HTTP status: " + err.status, "error");
     }
   }
 
-  // This is selected dates
   isSelected(date: NgbDate): boolean {
     return this.indexOf(date, this.selectedDates) !== -1;
   }
