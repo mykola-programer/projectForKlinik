@@ -17,8 +17,8 @@
            (click)="statusNavbar = 'client'; isNavbarCollapsed = false">Клієнти </a>
       </li>
       <!--<li class="nav-item">-->
-        <!--<a class="nav-link" routerLink="/accomodation" [ngClass]="{active:statusNavbar=='accomodation'}"-->
-           <!--(click)="statusNavbar = 'accomodation'; isNavbarCollapsed = false">Поселення</a>-->
+      <!--<a class="nav-link" routerLink="/accomodation" [ngClass]="{active:statusNavbar=='accomodation'}"-->
+      <!--(click)="statusNavbar = 'accomodation'; isNavbarCollapsed = false">Поселення</a>-->
       <!--</li>-->
       <li class="nav-item">
         <a class="nav-link" routerLink="/visit" [ngClass]="{active:statusNavbar=='visit'}"
@@ -36,19 +36,30 @@
         <a class="nav-link" routerLink="/manager" [ngClass]="{active:statusNavbar=='manager'}"
            (click)="statusNavbar = 'manager'; isNavbarCollapsed = false">Менеджери</a>
       </li>
+<!--
 
       <li class="nav-item">
         <a class="nav-link disabled" href="#" (click)="false" [ngClass]="{active:statusNavbar=='other'}"
+           style="white-space: nowrap"
            (click)="statusNavbar = 'other'; isNavbarCollapsed = false">Інше</a>
       </li>
+-->
 
       <li>
         <div *ngIf="statusNavbar=='accomodation' || statusNavbar=='visit'">
           <app-date-selector></app-date-selector>
         </div>
       </li>
+      <li>
+        <a class="nav-link">        </a>
+      </li>
+    </ul>
+    <ul class="navbar-nav">
+      <a class="nav-link active" href="#"
+         (click)="logOut()">Sign Out</a>
     </ul>
   </div>
+
 </nav>
 
 

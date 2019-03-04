@@ -311,7 +311,7 @@ export class VisitComponent implements OnInit, OnDestroy {
         this.toastMessageService.inform("Сервер недоступний!",
           "Спробуйте пізніше !" + "<br>" + err.error + "<br>" + err.message, "error", 10000);
         setTimeout(() => {
-          this.getClients();
+          this.getAccomodations();
         }, 15000);
       });
     }
@@ -596,14 +596,14 @@ export class VisitComponent implements OnInit, OnDestroy {
     this.getManagers();
   }
 
-  test() {
+  // test() {
     //   // console.log(this.no_wardForm);
     //   // console.log(this.pageForm.get("tablesForm").value);
     //   // console.log(this.clients);
     //   // this.getAllValuesFromForm();
-    console.log(this.pageForm);
+    // console.log(this.pageForm);
     //   // console.log((<FormArray>this.pageForm.get("tablesForm")).getRawValue());
-  }
+  // }
 
   private convertToVisit(formValue: FormValue): Visit {
     const visit: Visit = new Visit();
@@ -628,7 +628,7 @@ export class VisitComponent implements OnInit, OnDestroy {
   }
 }
 
-class FormValue {
+interface FormValue {
   accomodation: number;
   accomodation_ward: number;
   accomodation_place: number;
@@ -647,114 +647,4 @@ class FormValue {
   note: string;
   isChanged: boolean;
 }
-
-
-// private createTablesForm(visits: Visit[]): FormArray {
-//   const tablesForm = this.fb.array([]);
-//   this.wards.forEach(ward => {
-//     const filtered_visits = visits.filter(visit => {
-//       return visit.accomodation && visit.accomodation.ward === ward;
-//     });
-//     const wardTableForm = this.fb.group({
-//       tableLabel: this.fb.control("Палата " + ward),
-//       visitsForm: this.createVisitsTableForm(filtered_visits)
-//     });
-//     tablesForm.push(wardTableForm);
-//   });
-//
-//   {
-//     const filtered_visits = visits.filter(visit => (visit.accomodation == null));
-//     filtered_visits.unshift(new Visit());
-//     const wardTableForm = this.fb.group({
-//       tableLabel: this.fb.control("Безстаціонарні "),
-//       visitsForm: this.createVisitsTableForm(filtered_visits)
-//     });
-//     tablesForm.push(wardTableForm);
-//   }
-//   this.visits_loading = false;
-//   this.calender_loading = false;
-//   return tablesForm;
-// }
-
-// private createVisitsTableForm(visits: Visit[]): FormArray {
-//   const visits_tableForm = this.fb.array([]);
-//   visits.forEach((visit: Visit) => {
-//     visits_tableForm.push(this.createVisitFormGroup(visit));
-//   });
-//   return visits_tableForm;
-// }
-
-// private createVisitFormGroup(visit: Visit): FormGroup {
-//   const form_group = this.fb.group({
-//     visitId: [visit.visitId],
-//     timeForCome:
-//       [visit.timeForCome ? new Date(1970, 0, 1, visit.timeForCome[0], visit.timeForCome[1]).toLocaleTimeString().substring(0, 5) : null,
-//         [this.validateTime]],
-//     orderForCome: [visit.orderForCome, [Validators.min(1), Validators.max(100), this.validateQueue]],
-//     client: [visit.client],
-//     client2: [visit.client ? visit.client.clientId : 0],
-//     sex: [visit.client ? visit.client.sex : null],
-//     status: [visit.status],
-//     patient: [visit.patient ? visit.patient.clientId : 0],
-//     operationType: [visit.operationType ? visit.operationType.operationTypeId : 0],
-//     eye: [visit.eye],
-//     surgeon: [visit.surgeon ? visit.surgeon.surgeonId : 0],
-//     manager: [visit.manager ? visit.manager.managerId : 0],
-//     accomodation: [visit.accomodation ? visit.accomodation.wardPlace : null],
-//     note: [visit.note],
-//     disable: [visit.accomodation ? visit.accomodation.disable : false],
-//     isChanged: [false],
-//   });
-//   return form_group;
-// }
-
-// private getVisitsWithoutWards() {
-//   this.visits_without_wards = this.visits_by_date.filter((visit: Visit) => visit.accomodation == null);
-//   this.no_wardForm.setControl("no_ward_tableForm", this.createVisitsTableForm(this.visits_without_wards));
-//
-// }
-
-// private replaceVisitsByWards(visits: Visit[]): Visit[] {
-//   const result: Visit[] = [];
-//   if (this.accomodations) {
-//     // replace Visits to Wards
-//     this.accomodations.forEach((accomodation: Accomodation) => {
-//       const found_visit = visits.find((visit: Visit) => {
-//         return (visit.accomodation
-//           && visit.accomodation.ward === accomodation.ward
-//           && visit.accomodation.wardPlace === accomodation.wardPlace);
-//       });
-//       if (found_visit) {
-//         result.push(found_visit);
-//       } else {
-//         const new_visit = new Visit();
-//         new_visit.visitDate = this.selected_visit_date;
-//         new_visit.accomodation = accomodation;
-//         result.push(new_visit);
-//       }
-//     });
-//
-//     // add NoWard Visits
-//     visits.forEach((visit: Visit) => {
-//       if (visit.accomodation == null) {
-//         result.push(visit);
-//       }
-//     });
-//   } else {
-//     this.getAccomodations();
-//   }
-//
-//   {
-//     this.patients = [];
-//     result.forEach((visit: Visit) => {
-//       if (visit.client && visit.status === "пацієнт") {
-//         this.patients.push(visit.client);
-//       }
-//     });
-//   }
-//   this.calender_loading = false;
-//   this.visits_loading = false;
-//
-//   return result;
-// }
 

@@ -15,11 +15,11 @@
   </div>
 </form>
 
-<ng-template #selectedCustomDay let-date="date" let-currentMonth="currentMonth" let-selected="selected" let-disabled="disabled" let-focused="focused" >
+<ng-template #selectedCustomDay let-date="date" let-currentMonth="currentMonth" let-disabled="disabled" >
   <span class="custom-day"
-        (click)="onSelect(date, disabled)"
-        [class.work-day]="isPresented(date)"
-        [class.lock-day]="isDisabled(date)"
+        (click)="!disabled ? onSelect(date): false"
+        [class.work-day]="!disabled"
+        [class.lock-day]="isLocked(date)"
         [class.hidden]="date.month !== currentMonth"
         [class.text-muted]="disabled" >
     {{ date.day }}

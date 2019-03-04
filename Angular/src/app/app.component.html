@@ -1,39 +1,9 @@
-<header>
-  <app-navbar ></app-navbar>
-</header>
+<div *ngIf="isLogging">
+  <header>
+    <app-navbar ></app-navbar>
+  </header>
 
-<router-outlet>Loading...</router-outlet>
-
-
-
-
-
-
-<!--<form class="form-inline my-2 my-lg-0">-->
-
-<!--<div class="container-fluid">-->
-<!--<div class="row">-->
-<!--<app-date-selector (selected_date)="onSelect($event)"></app-date-selector>-->
-
-<!--<button class="btn btn-primary" (click)="addClient()">Додати персону</button>-->
-<!--</div>-->
-<!--</div>-->
-<!--</form>-->
-
-
-<!--
-
-<div class="container-fluid">
-  <div class="row">
-    <div class="col-lg-6">
-      <app-ward (patient_id)="onChangePatient($event)" [(isHospitalizations)]="isHospitalizations"></app-ward>
-    </div>
-
-    <div class="col-lg-6">
-      <app-no-ward (patient_id)="onChangePatient($event)" [(noHospitalizations)]="noHospitalizations"></app-no-ward>
-
-    </div>
-  </div>
+  <router-outlet></router-outlet>
 </div>
--->
 
+<app-login *ngIf="!isLogging"></app-login>

@@ -1,4 +1,4 @@
-import {HttpHeaders} from "@angular/common/http";
+import {HttpHeaders, HttpParams} from "@angular/common/http";
 
 export class UrlProperty {
 
@@ -11,10 +11,14 @@ export class UrlProperty {
   static readonly managersUrl = "managers/";
   static readonly clientsUrl = "clients/";
   static readonly accomodationUrl = "accomodations/";
+  static readonly usersUrl = "users/";
 
   static readonly httpOptions = {
     headers: new HttpHeaders({
-      "Content-Type": "application/json"
+      "Content-Type": "application/json; charset=utf-8",
+      "Cache-Control": "no-cache, no-store, must-revalidate, post-check=0, pre-check=0",
+      "Pragma": "no-cache",
+      "Expires": "0"
     })
   };
 

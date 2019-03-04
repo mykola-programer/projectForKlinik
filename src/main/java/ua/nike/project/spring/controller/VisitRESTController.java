@@ -65,8 +65,8 @@ public class VisitRESTController implements RESTController<VisitVO> {
     }
 
     @CrossOrigin
-    @RequestMapping(value = "/all/{date}/", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public List<VisitVO> getVisitsByDate(@PathVariable("date") String reqDate) throws ApplicationException {
+    @RequestMapping(value = "", params = "date", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public List<VisitVO> getVisitsByDate(@RequestParam("date") String reqDate) throws ApplicationException {
         return visitService.getVisitsByDate(convertToDate(reqDate));
     }
 

@@ -19,5 +19,4 @@ public class ApplicationException extends Exception {
     public String getErrExceptMsg() {
         return errExceptMsg;
     }
-
 }

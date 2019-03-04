@@ -41,7 +41,7 @@ public class ExceptionControllerAdvice extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(ValidationException.class)
     protected ResponseEntity<Object> handleValidException(ValidationException ex, WebRequest request) {
-        String bodyOfResponse = transformValidMassage(ex.getBindingResult());
+        String bodyOfResponse = transformValidMassage(ex.getBindingResult()) + nl + ex.getErrUserMsg();
         return handleExceptionInternal(ex, bodyOfResponse, new HttpHeaders(), HttpStatus.UNPROCESSABLE_ENTITY, request);
     }
 

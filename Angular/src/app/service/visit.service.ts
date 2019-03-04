@@ -1,6 +1,6 @@
 import {Injectable} from "@angular/core";
 import {Observable} from "rxjs/internal/Observable";
-import {HttpClient} from "@angular/common/http";
+import {HttpClient, HttpParams} from "@angular/common/http";
 import {Visit} from "../backend_types/visit";
 import {MyObjectList} from "../backend_types/my-object-list";
 import {UrlProperty} from "./url-property";
@@ -13,8 +13,9 @@ export class VisitService {
   constructor(private http: HttpClient) {
   }
 
-  getVisitsByDate(select_date: Date): Observable<Visit[]> {
-    return this.http.get<Visit[]>(UrlProperty.serverUrl + UrlProperty.visitUrl + "all/" + select_date.toLocaleDateString() + "/");
+  getVisitsByDate(select_date?: Date): Observable<Visit[]> {
+    let params = new HttpParams().set("date", select_date.toLocaleDateString());
+    return this.http.get<Visit[]>(UrlProperty.serverUrl + UrlProperty.visitUrl, {headers: UrlProperty.httpOptions.headers, params: params} );
   }
 
   addVisit(visit: Visit): Observable<Visit> {

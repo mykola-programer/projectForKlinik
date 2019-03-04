@@ -14,8 +14,6 @@ import {DateEditorComponent} from "./date/date-editor/date-editor.component";
 import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {NavbarComponent} from "./navbar/navbar.component";
 import {NavbarService} from "./service/navbar.service";
-import {OperationEditorComponent} from "./operation-editor/operation-editor.component";
-import {DateSelectorDialogComponent} from "./date/date-selector-dialog/date-selector-dialog.component";
 import {SurgeonEditorComponent} from "./surgeon-editor/surgeon-editor.component";
 import {ToastaModule} from "ngx-toasta";
 import {ManagerEditorComponent} from "./manager-editor/manager-editor.component";
@@ -24,6 +22,7 @@ import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 import {OperationTypeEditorComponent} from "./operation-type-editor/operation-type-editor.component";
 import {DateSelectorComponent} from "./date/date-selector/date-selector.component";
 import {RelocationDialogComponent} from "./relocation-dialog/relocation-dialog.component";
+import { LoginComponent } from './login/login.component';
 
 @NgModule({
   declarations: [
@@ -32,14 +31,12 @@ import {RelocationDialogComponent} from "./relocation-dialog/relocation-dialog.c
     ClientEditorComponent,
     DateEditorComponent,
     NavbarComponent,
-    // AccomodationComponent,
-    OperationEditorComponent,
-    DateSelectorDialogComponent,
     SurgeonEditorComponent,
     ManagerEditorComponent,
     VisitComponent,
     OperationTypeEditorComponent,
     RelocationDialogComponent,
+    LoginComponent,
   ],
   imports: [
     ReactiveFormsModule,
@@ -48,8 +45,6 @@ import {RelocationDialogComponent} from "./relocation-dialog/relocation-dialog.c
     AppRoutingModule,
     BrowserAnimationsModule,
     MatDialogModule,
-    // MatTooltipModule,
-    // MatInputModule,
     MatAutocompleteModule,
     ReactiveFormsModule,
     HttpClientModule,
@@ -62,7 +57,6 @@ import {RelocationDialogComponent} from "./relocation-dialog/relocation-dialog.c
   providers: [VisitDateService, NavbarService],
   entryComponents: [
     RelocationDialogComponent,
-    DateSelectorDialogComponent,
   ],
   bootstrap: [AppComponent]
 })

@@ -104,36 +104,32 @@ export class DateSelectorComponent implements OnInit, OnDestroy {
     this.config.navigation = "select";
     this.config.showWeekNumbers = false;
     this.config.firstDayOfWeek = 1;
-    this.config.markDisabled = (date: NgbDate) => {return !this.isPresented(date)}
+    this.config.markDisabled = (date: NgbDate) => {
+      const index = this.indexOf(date, this.visitDates);
+      return !(index !== -1 && !this.visitDates[index].disable);
+    }
   }
 
   ngOnInit(): void {
     this.getDates();
     // Delete
-    // this.visitDateService.getVisitDate(117).toPromise().then(value => this.dateService.change(value));
+    this.visitDateService.getVisitDate(154).toPromise().then(value => this.dateService.change(value));
   }
 
   ngOnDestroy(): void {
     this.compiler.clearCache();
   }
 
-  onSelect(date: NgbDate, disabled): void {
-    if (!disabled) {
+  onSelect(date: NgbDate): void {
       const selected_visitDate: VisitDate = this.visitDates.find((visitDate: VisitDate) => {
         return (visitDate.date[0] == date.year &&
           visitDate.date[1] == date.month &&
           visitDate.date[2] == date.day);
       });
       this.dateService.change(selected_visitDate);
-    } else false;
   }
 
-  isPresented(date: NgbDate): boolean {
-    const index = this.indexOf(date, this.visitDates);
-    return index !== -1 && !this.visitDates[index].disable;
-  }
-
-  isDisabled(date: NgbDate): boolean {
+  isLocked(date: NgbDate): boolean {
     const index = this.indexOf(date, this.visitDates);
     return index !== -1 && this.visitDates[index].disable;
   }

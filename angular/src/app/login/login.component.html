@@ -1,0 +1,25 @@
+<ngx-toasta></ngx-toasta>
+<img [hidden]="!isBadConnection" src="/assets/img/no_connection.jpg" style="max-width: 500px"/>
+<form *ngIf="!isBadConnection" (submit)="loginUser(login.value, password.value)">
+  <div class="container">
+    <div>
+      <select #login type="text" autocomplete="off" placeholder="Login" id="login"
+              (change)="invalidLogin = false; password.focus()"
+              [ngStyle]="{'background': invalidLogin ? 'pink' : 'white'}">
+
+        <option disabled>Виберіть користувача</option>
+        <option *ngFor="let user of users" [value]="user.login">
+          {{user.login}}
+        </option>
+      </select>
+    </div>
+    <div>
+      <input #password type="password" autocomplete="off" placeholder="Password" id="password"
+             (keyup)="invalidPassword = false"
+             [ngStyle]="{'background': invalidPassword ? 'pink' : 'white'}">
+    </div>
+    <div>
+      <button type="submit" id="submit">Submit</button>
+    </div>
+  </div>
+</form>

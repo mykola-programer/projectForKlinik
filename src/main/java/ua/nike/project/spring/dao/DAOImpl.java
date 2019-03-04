@@ -64,6 +64,7 @@ public class DAOImpl<T extends EntityObject> implements DAO<T> {
     }
 
     @Override
+    @Deprecated
     public boolean remove(String namedQuery, List<Integer> entityIDs) {
         Query query = entityManager.createNamedQuery(namedQuery);
         query.setParameter("IDs", entityIDs);

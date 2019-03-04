@@ -1,6 +1,6 @@
 import {Injectable} from "@angular/core";
 import {Observable} from "rxjs/internal/Observable";
-import {HttpClient} from "@angular/common/http";
+import {HttpClient, HttpParams} from "@angular/common/http";
 import {Client} from "../backend_types/client";
 import {MyObjectList} from "../backend_types/my-object-list";
 import {UrlProperty} from "./url-property";
@@ -13,8 +13,9 @@ export class ClientService {
   constructor(private http: HttpClient) {
   }
 
-  getClients(): Observable<Client[]> {
-    return this.http.get<Client[]>(UrlProperty.serverUrl + UrlProperty.clientsUrl);
+  getClients(search?: string, limit?: number, offset? : number): Observable<Client[]> {
+    let params = new HttpParams().set("search", search).set("limit", limit.toString()).set("offset", offset.toString());
+    return this.http.get<Client[]>(UrlProperty.serverUrl + UrlProperty.clientsUrl, {headers: UrlProperty.httpOptions.headers, params: params} );
   }
 
   getClient(client_id: number): Observable<Client> {

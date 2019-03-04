@@ -19,6 +19,7 @@ public interface DAO<T extends EntityObject> {
 
     boolean remove(int entityID);
 
+    @Deprecated
     boolean remove(String namedQuery, List<Integer> entityIDs);
 
     List<? extends Object> getObjectsByQuery(String namedQuery, Map<String, Object> parameters, Class<? extends Object> oClass);

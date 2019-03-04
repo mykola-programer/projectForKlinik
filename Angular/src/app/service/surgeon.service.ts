@@ -13,7 +13,7 @@ export class SurgeonService {
   }
 
   getSurgeons(): Observable<Surgeon[]> {
-    return this.http.get<Surgeon[]>(UrlProperty.serverUrl + UrlProperty.surgeonUrl);
+    return this.http.get<Surgeon[]>(UrlProperty.serverUrl + UrlProperty.surgeonUrl, UrlProperty.httpOptions);
   }
 
   addSurgeon(surgeon: Surgeon): Observable<Surgeon> {

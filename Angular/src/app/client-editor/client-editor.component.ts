@@ -34,6 +34,7 @@ export class ClientEditorComponent implements OnInit {
   save_loading = false;
   del_loading = false;
   clients_loading = false;
+  badConnection = false;
 
   // "true" - ASC,
   // "false" - DESC
@@ -84,11 +85,13 @@ export class ClientEditorComponent implements OnInit {
       this.clientsForm = this.updateFormGroups(this.clients);
       this.tableForm.setControl("clientsForm", this.clientsForm);
       this.clients_loading = false;
+      this.badConnection = false;
       setTimeout(() => {
         document.getElementById("search").focus();
       });
     }).catch((err: HttpErrorResponse) => {
       this.clients_loading = true;
+      this.badConnection = true;
       this.toastMessageService.inform("Сервер недоступний!",
         "Спробуйте пізніше !" + "<br>" + err.error + "<br>" + err.message, "error", 10000);
       setTimeout(() => {

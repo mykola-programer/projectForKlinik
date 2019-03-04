@@ -91,16 +91,18 @@
 
                 <!--Client-->
                 <td [formGroupName]="j">
-                  <input type="text" formControlName="client" list="clients"
-                         [value]="displayFn(visitForm.get('client').value)"
-                         class="form-control form-control-sm input-style-active">
-                  <datalist id="clients">
-                    <select>
-                      <option *ngFor="let client of clients" [value]="client.clientId">
-                        {{client.surname}} {{client.firstName}} {{client.secondName}}
-                      </option>
-                    </select>
-                  </datalist>
+                  <select type="text" formControlName="client"
+                          (change)="changeClients(visitForm)"
+                          [ngClass]="{'form-control font-weight-bold form-control-sm': true,
+                                    'is-invalid': visitForm.get('client').errors && visitForm.get('client').errors.invalidClient,
+                                    'is-valid': visitForm.get('client').errors && visitForm.get('client').errors.nullClient,
+                                    'input-style-active': visitForm.get('client').valid}">
+                    <option [selected]="visitForm.value.client == 0" [value]="0"></option>
+                    <option *ngFor="let client of clients" [value]="client.clientId"
+                            [selected]="visitForm.value.client == client.clientId">
+                      {{client.surname}} {{client.firstName}} {{client.secondName}}
+                    </option>
+                  </select>
                 </td>
 
                 <!--Sex-->
@@ -260,3 +262,9 @@
   </label>
 </div>
 
+<!--<div class="combo-container">-->
+<!--<input type="text" formControlName="client" (click)="opening = true">-->
+<!--<div class="data-container" *ngIf="opening">-->
+<!--<p *ngFor="let client of clients; let i = index" class="data-list">{{client.surname}}</p>-->
+<!--</div>-->
+<!--</div>-->

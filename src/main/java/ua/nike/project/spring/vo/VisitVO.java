@@ -1,14 +1,18 @@
 package ua.nike.project.spring.vo;
 
+import javax.validation.constraints.PositiveOrZero;
 import java.time.LocalTime;
 import java.util.Objects;
 
 public class VisitVO implements VisualObject {
 
-    private Integer visitId;
+    private int visitId;
+    @PositiveOrZero
     private int visitDateID;
     private LocalTime timeForCome;
+    @PositiveOrZero
     private Integer orderForCome;
+    @PositiveOrZero
     private int clientID;
     private String status;
     private int patientID;
