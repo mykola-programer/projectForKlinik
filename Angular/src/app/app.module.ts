@@ -23,6 +23,7 @@ import {OperationTypeEditorComponent} from "./operation-type-editor/operation-ty
 import {DateSelectorComponent} from "./date/date-selector/date-selector.component";
 import {RelocationDialogComponent} from "./relocation-dialog/relocation-dialog.component";
 import { LoginComponent } from './login/login.component';
+import {MatPaginatorModule} from '@angular/material/paginator';
 
 @NgModule({
   declarations: [
@@ -50,6 +51,7 @@ import { LoginComponent } from './login/login.component';
     HttpClientModule,
     HttpClientInMemoryWebApiModule,
     MatProgressSpinnerModule,
+    MatPaginatorModule,
     NgbModule.forRoot(),
     ToastaModule.forRoot()
   ],

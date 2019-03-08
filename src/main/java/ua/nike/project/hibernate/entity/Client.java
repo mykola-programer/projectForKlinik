@@ -12,7 +12,19 @@ import java.util.Objects;
 
 @Entity
 @NamedQueries(value = {
-        @NamedQuery(name = "Client.findAll", query = "FROM Client cl ORDER BY surname,firstName,secondName"),
+//        @NamedQuery(name = "Client.getAll", query = "FROM Client cl ORDER BY surname,firstName,secondName"),
+        @NamedQuery(name = "Client.searchAllASC",
+                query = "FROM Client cl" +
+                        " WHERE surname like :searchedSurname" +
+                        " AND firstName like :searchedFirstName" +
+                        " AND secondName like :searchedSecondName" +
+                        " ORDER BY surname ASC ,firstName ASC,secondName ASC"),
+        @NamedQuery(name = "Client.searchAllDESC",
+                query = "FROM Client cl" +
+                        " WHERE surname like :searchedSurname" +
+                        " AND firstName like :searchedFirstName" +
+                        " AND secondName like :searchedSecondName" +
+                        " ORDER BY surname DESC ,firstName DESC,secondName DESC"),
         @NamedQuery(name = "Client.deleteByIDs", query = "DELETE Client cl WHERE cl.clientId IN (:IDs)")
 })
 
@@ -72,32 +84,32 @@ public class Client implements Comparable<Client>, EntityObject {
     }
 
     public Integer getClientId() {
-        System.out.println("getClientId");
+//        System.out.println("getClientId");
         return clientId;
     }
 
     public void setClientId(Integer clientId) {
-        System.out.println("setClientId");
+//        System.out.println("setClientId");
         this.clientId = clientId;
     }
 
     public String getSurname() {
-        System.out.println("getSurname");
+//        System.out.println("getSurname");
         return surname;
     }
 
     public void setSurname(String surname) {
-        System.out.println("setSurname");
+//        System.out.println("setSurname");
         this.surname = firstUpperCase(surname);
     }
 
     public String getFirstName() {
-        System.out.println("getFirstName");
+//        System.out.println("getFirstName");
         return firstName;
     }
 
     public void setFirstName(String firstName) {
-        System.out.println("setFirstName");
+//        System.out.println("setFirstName");
         this.firstName = firstUpperCase(firstName);
     }
 

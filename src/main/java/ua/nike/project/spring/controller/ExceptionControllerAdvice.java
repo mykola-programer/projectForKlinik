@@ -41,7 +41,7 @@ public class ExceptionControllerAdvice extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(ValidationException.class)
     protected ResponseEntity<Object> handleValidException(ValidationException ex, WebRequest request) {
-        String bodyOfResponse = transformValidMassage(ex.getBindingResult()) + nl + ex.getErrUserMsg();
+        String bodyOfResponse = transformValidMassage(ex.getBindingResult()) + nl + getValue(ex.getErrUserMsg());
         return handleExceptionInternal(ex, bodyOfResponse, new HttpHeaders(), HttpStatus.UNPROCESSABLE_ENTITY, request);
     }
 
@@ -77,7 +77,7 @@ public class ExceptionControllerAdvice extends ResponseEntityExceptionHandler {
 
 
     private String transformValidMassage(BindingResult bindingResult) {
-        if (bindingResult == null) return null;
+        if (bindingResult == null) return "";
         final StringBuilder result = new StringBuilder();
         result.append(getValue("violation.mistake"))
                 .append(nl);

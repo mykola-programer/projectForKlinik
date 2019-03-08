@@ -1,14 +1,17 @@
 
-<!-- TODO Pagination-->
 <meta http-equiv="cache-control" content="no-cache, must-revalidate, post-check=0, pre-check=0">
 <meta http-equiv="expires" content="0">
 <meta http-equiv="pragma" content="no-cache">
 <ngx-toasta></ngx-toasta>
-<br><br><br>
-<img [hidden]="!(clients_loading && !badConnection)" src="/assets/img/download.gif" style="max-width: 500px"/>
-<img [hidden]="!badConnection" src="/assets/img/no_connection.jpg" style="max-width: 500px"/>
-<mat-spinner *ngIf="clients_loading && !badConnection"></mat-spinner>
-<div *ngIf="!clients_loading">
+
+<mat-paginator [length]=countOfClients
+               [pageSize]=50
+               [showFirstLastButtons]="true"
+               [pageSizeOptions]="[5, 10, 25, 50, 100]">
+</mat-paginator>
+
+<!--<img [hidden]="!(clients_loading && !badConnection)" src="/assets/img/download.gif" style="max-width: 500px"/>-->
+<div>
   <div class="left-container" style="max-width: 800px; min-width: 550px; margin-left: 10px">
     <form [formGroup]="searchForm">
       <div class="input-group-prepend">
@@ -22,7 +25,9 @@
   <div class="left-container" style="max-width: 800px; min-width: 550px; margin-left: 10px">
     <p class="h3 text-center">Клієнти клініки :</p>
 
-    <form [formGroup]="tableForm">
+    <mat-spinner *ngIf="clients_loading && !badConnection"></mat-spinner>
+    <img [hidden]="!badConnection" src="/assets/img/no_connection.jpg" style="max-width: 500px"/>
+    <form *ngIf="!clients_loading" [formGroup]="tableForm">
       <div class="table-responsive-lg">
         <table class="table table-bordered table-sm table-hover">
 
@@ -121,16 +126,16 @@
   <div class="left-container fixed-bottom bg-light">
     <button class="btn btn-min-style" (click)="onAdd()" title="Додати">Add</button>
     <button class="btn btn-success btn-min-style" (click)="onSave()" title="Зберегти"
-            [disabled]="count_of_clients == 0">Save
+            [disabled]="countOfChangedClients == 0">Save
     </button>
     <img [hidden]="!save_loading" src="/assets/img/rotating-balls-spinner.gif" height="40" width="40"/>
     <button class="btn btn-warning btn-min-style" (click)="onRefresh()" title="Обновити">Refresh</button>
     <button class="btn btn-dark btn-min-style" (click)="onDelete()" title="Видалити"
-            [disabled]="count_of_clients == 0">Delete
+            [disabled]="countOfChangedClients == 0">Delete
     </button>
     <img [hidden]="!del_loading" src="/assets/img/rotating-balls-spinner.gif" height="40" width="40"/>
     <button class="btn btn-danger btn-min-style" (click)="onCancel()" title="Відмінити"
-            [disabled]="count_of_clients == 0">Cancel
+            [disabled]="countOfChangedClients == 0">Cancel
     </button>
     <!--<button class="btn btn-danger btn-min-style" (click)="test()">Test</button>-->
   </div>

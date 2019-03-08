@@ -13,7 +13,9 @@ import ua.nike.project.spring.vo.ClientVO;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Scope(BeanDefinition.SCOPE_SINGLETON)
@@ -39,8 +41,29 @@ public class ClientService {
 
 
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-    public List<ClientVO> findAll() {
-        List<Client> entities = dao.findAll("Client.findAll", null);
+    public List<ClientVO> getAll() {
+        return search(new String[]{""}, 0, 0, "ASC");
+    }
+
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+    public List<ClientVO> search(String[] searchParams, int limit, int offset, String sort) {
+        Map<String, Object> parameters = new HashMap<>();
+        setSearchParams(searchParams, parameters);
+        if (limit > 0) {
+            parameters.put("limit", limit);
+        }
+        if (offset > 0) {
+            parameters.put("offset", offset);
+        }
+
+        List<Client> entities;
+        if (sort.equals("ASC")) {
+            entities = dao.findAll("Client.searchAllASC", parameters);
+
+        } else {
+            entities = dao.findAll("Client.searchAllDESC", parameters);
+        }
+
         if (entities == null) return null;
         List<ClientVO> result = new ArrayList<>();
         for (Client entity : entities) {
@@ -117,4 +140,31 @@ public class ClientService {
         }
         return result;
     }
+
+    private void setSearchParams(String[] searchParams, Map<String, Object> parameters) {
+        if (searchParams.length == 1) {
+            parameters.put("searchedSurname", firstUpperCase(searchParams[0]) + "%");
+            parameters.put("searchedFirstName", "%");
+            parameters.put("searchedSecondName", "%");
+
+        } else if (searchParams.length == 2) {
+            parameters.put("searchedSurname", firstUpperCase(searchParams[0]) + "%");
+            parameters.put("searchedFirstName", firstUpperCase(searchParams[1]) + "%");
+            parameters.put("searchedSecondName", "%");
+
+        } else {
+            parameters.put("searchedSurname", firstUpperCase(searchParams[0]) + "%");
+            parameters.put("searchedFirstName", firstUpperCase(searchParams[1]) + "%");
+            parameters.put("searchedSecondName", firstUpperCase(searchParams[2]) + "%");
+
+        }
+    }
+
+    private String firstUpperCase(String word) {
+        if (word == null || word.isEmpty()) {
+            return "";
+        }
+        return word.substring(0, 1).toUpperCase() + word.substring(1).toLowerCase();
+    }
+
 }

@@ -1,6 +1,6 @@
 <ngx-toasta></ngx-toasta>
 <img [hidden]="!isBadConnection" src="/assets/img/no_connection.jpg" style="max-width: 500px"/>
-<form *ngIf="!isBadConnection" (submit)="loginUser(login.value, password.value)">
+<form  autocomplete="off" *ngIf="!isBadConnection" (submit)="loginUser(login.value, password.value)">
   <div class="container">
     <div>
       <select #login type="text" autocomplete="off" placeholder="Login" id="login"

@@ -38,10 +38,19 @@ public class DAOImpl<T extends EntityObject> implements DAO<T> {
         TypedQuery<T> namedQuery = entityManager.createNamedQuery(nQuery, classEO);
         if (parameters != null) {
             for (Map.Entry<String, Object> parameter : parameters.entrySet()) {
-                namedQuery.setParameter(parameter.getKey(), parameter.getValue());
+                switch (parameter.getKey()) {
+                    case "limit":
+                        namedQuery.setMaxResults((int) parameter.getValue());
+                        break;
+                    case "offset":
+                        namedQuery.setFirstResult((int) parameter.getValue());
+                        break;
+                    default:
+                        namedQuery.setParameter(parameter.getKey(), parameter.getValue());
+                        break;
+                }
             }
         }
-//        parameters.forEach((key, value) -> namedQuery.setParameter(key, value));
         return namedQuery.getResultList();
     }
 

@@ -12,6 +12,7 @@ export class UrlProperty {
   static readonly clientsUrl = "clients/";
   static readonly accomodationUrl = "accomodations/";
   static readonly usersUrl = "users/";
+  static readonly count = "count/";
 
   static readonly httpOptions = {
     headers: new HttpHeaders({

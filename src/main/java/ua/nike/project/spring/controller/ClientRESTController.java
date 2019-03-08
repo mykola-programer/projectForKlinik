@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import ua.nike.project.hibernate.entity.Client;
+import ua.nike.project.hibernate.type.Sex;
 import ua.nike.project.spring.exceptions.ValidationException;
 import ua.nike.project.spring.service.ClientService;
 import ua.nike.project.spring.vo.ClientVO;
@@ -11,7 +13,9 @@ import ua.nike.project.spring.vo.MyObjectVOList;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Random;
 
 @RestController
 @RequestMapping("/clients")
@@ -23,11 +27,34 @@ public class ClientRESTController implements RESTController<ClientVO> {
     @CrossOrigin
     @RequestMapping(value = "", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public List<ClientVO> getAll() {
-        List<ClientVO> clients = clientService.findAll();
-//        for (int i = 0; i < 4; i++) {
-//            clients.addAll(clients);
-//        }
-        return clients;
+        return clientService.getAll();
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "",
+            params = {"search", "limit", "offset", "sort"},
+            method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public List<ClientVO> searchWithLimit(
+            @RequestParam("search") String search,
+            @RequestParam("limit") Integer limit,
+            @RequestParam("offset") Integer offset,
+            @RequestParam("sort") String sort) throws ValidationException {
+        if (search == null || search.equals("undefined") || search.equals("null")) {
+           throw new ValidationException("incorrect.search", null);
+        }
+        if (limit == null || limit < 0) {
+            throw new ValidationException("incorrect.limit", null);
+        }
+        if (offset == null || offset < 0) {
+            throw new ValidationException("incorrect.offset", null);
+        }
+        return clientService.search(search.split(" "), limit, offset, sort);
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "/count", params = {"search"}, method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public Integer getCount(@RequestParam("search") String search) throws ValidationException {
+        return searchWithLimit(search, 0, 0, "ASC").size();
     }
 
     @CrossOrigin
