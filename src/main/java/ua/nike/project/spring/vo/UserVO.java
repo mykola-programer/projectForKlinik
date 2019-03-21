@@ -13,7 +13,6 @@ public class UserVO implements VisualObject {
     @NotNull
     private String login;
     private String password;
-    private String newPassword;
 
     public int getUserId() {
         return userId;
@@ -37,14 +36,6 @@ public class UserVO implements VisualObject {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public String getNewPassword() {
-        return newPassword;
-    }
-
-    public void setNewPassword(String newPassword) {
-        this.newPassword = newPassword;
     }
 
     @Override

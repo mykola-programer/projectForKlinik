@@ -13,7 +13,7 @@ import ua.nike.project.spring.vo.ClientVO;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -39,29 +39,30 @@ public class ClientService {
         return dao.findByID(entityID);
     }
 
-
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<ClientVO> getAll() {
-        return search(new String[]{""}, 0, 0, "ASC");
+        List<Client> entities = dao.findAll("Client.getAll");
+
+        if (entities == null) return null;
+        List<ClientVO> result = new ArrayList<>();
+        for (Client entity : entities) {
+            result.add(convertToClientVO(entity));
+        }
+        return result;
     }
 
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-    public List<ClientVO> search(String[] searchParams, int limit, int offset, String sort) {
-        Map<String, Object> parameters = new HashMap<>();
-        setSearchParams(searchParams, parameters);
-        if (limit > 0) {
-            parameters.put("limit", limit);
+    public List<ClientVO> search(String searchValue, int limit, int offset, String sort) {
+        String[] parameters = Arrays.copyOf(searchValue.split(" ", 4), 3);
+        for (int i = 0; i < parameters.length; i++) {
+            if (parameters[i] == null) parameters[i] = "";
         }
-        if (offset > 0) {
-            parameters.put("offset", offset);
-        }
-
         List<Client> entities;
         if (sort.equals("ASC")) {
-            entities = dao.findAll("Client.searchAllASC", parameters);
+            entities = dao.findAll("Client.searchAllASC", parameters, limit, offset);
 
         } else {
-            entities = dao.findAll("Client.searchAllDESC", parameters);
+            entities = dao.findAll("Client.searchAllDESC", parameters, limit, offset);
         }
 
         if (entities == null) return null;
@@ -88,31 +89,10 @@ public class ClientService {
         return convertToClientVO(dao.update(updatedEntity));
     }
 
-    @Deprecated
-    @Transactional(propagation = Propagation.REQUIRED)
-    public List<ClientVO> putClients(List<ClientVO> clientsVO) {
-        List<ClientVO> result = new ArrayList<>();
-        for (ClientVO clientVO : clientsVO) {
-            if (clientVO != null) {
-                if (clientVO.getClientId() > 0) {
-                    result.add(update(clientVO.getClientId(), clientVO));
-                } else {
-                    result.add(create(clientVO));
-                }
-            }
-        }
-        return result;
-    }
 
     @Transactional(propagation = Propagation.REQUIRED)
     public boolean deleteById(int clientID) {
         return dao.remove(clientID);
-    }
-
-    @Transactional(propagation = Propagation.REQUIRED)
-    @Deprecated
-    public boolean deleteByIDs(List<Integer> clientIDs) {
-        return dao.remove("Client.deleteByIDs", clientIDs);
     }
 
     private ClientVO convertToClientVO(Client client) {
@@ -141,30 +121,23 @@ public class ClientService {
         return result;
     }
 
-    private void setSearchParams(String[] searchParams, Map<String, Object> parameters) {
-        if (searchParams.length == 1) {
-            parameters.put("searchedSurname", firstUpperCase(searchParams[0]) + "%");
-            parameters.put("searchedFirstName", "%");
-            parameters.put("searchedSecondName", "%");
-
-        } else if (searchParams.length == 2) {
-            parameters.put("searchedSurname", firstUpperCase(searchParams[0]) + "%");
-            parameters.put("searchedFirstName", firstUpperCase(searchParams[1]) + "%");
-            parameters.put("searchedSecondName", "%");
-
-        } else {
-            parameters.put("searchedSurname", firstUpperCase(searchParams[0]) + "%");
-            parameters.put("searchedFirstName", firstUpperCase(searchParams[1]) + "%");
-            parameters.put("searchedSecondName", firstUpperCase(searchParams[2]) + "%");
-
-        }
-    }
-
-    private String firstUpperCase(String word) {
-        if (word == null || word.isEmpty()) {
-            return "";
-        }
-        return word.substring(0, 1).toUpperCase() + word.substring(1).toLowerCase();
-    }
-
 }
+
+/*
+
+    @Deprecated
+    @Transactional(propagation = Propagation.REQUIRED)
+    public List<ClientVO> putClients(List<ClientVO> clientsVO) {
+        List<ClientVO> result = new ArrayList<>();
+        for (ClientVO clientVO : clientsVO) {
+            if (clientVO != null) {
+                if (clientVO.getClientId() > 0) {
+                    result.add(update(clientVO.getClientId(), clientVO));
+                } else {
+                    result.add(create(clientVO));
+                }
+            }
+        }
+        return result;
+    }
+*/

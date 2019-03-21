@@ -14,7 +14,7 @@ import java.util.Objects;
         @NamedQuery(name = "Manager.findAll", query = "FROM Manager ORDER BY surname, firstName, secondName"),
 })
 @Table(name = "manager", uniqueConstraints = {
-        @UniqueConstraint(name = "manager_pk", columnNames = {"surname", "first_name", "second_name", "city_from"})
+        @UniqueConstraint(name = "manager_uk", columnNames = {"surname", "first_name", "second_name", "city_from"})
 })
 @TypeDef(
         name = "pgsql_enum",
@@ -25,7 +25,6 @@ public class Manager implements EntityObject {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "manager_id")
-//    @Access(AccessType.FIELD) // TODO Work without annotation !
     private Integer managerId;
 
     @Column(name = "surname", length = 50, nullable = false)

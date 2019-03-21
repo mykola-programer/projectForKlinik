@@ -87,16 +87,6 @@
             </td>
 
             <td [formGroupName]="i">
-              <input #city type="text" formControlName="city" placeholder="  - філіал -  "
-                     [ngClass]="{'form-control form-control-sm':true,
-                    'input-style-active':surgeonForm.get('city').valid,
-                    'is-invalid':!surgeonForm.get('city').valid
-                    }"
-                     (input)="surgeonForm.get('isChanged').patchValue(surgeonForm.valid)"
-                     (keydown.space)="sex.focus(); false">
-            </td>
-
-            <td [formGroupName]="i">
               <select #sex type="text" formControlName="sex"
                       [ngClass]="{'form-control form-control-sm':true,
                     'input-style-active':surgeonForm.get('sex').valid,

@@ -34,21 +34,17 @@ public class DAOImpl<T extends EntityObject> implements DAO<T> {
     }
 
     @Override
-    public List<T> findAll(String nQuery, Map<String, Object> parameters) {
+    public List<T> findAll(String nQuery, Object[] parameters, int limit, int offset) {
         TypedQuery<T> namedQuery = entityManager.createNamedQuery(nQuery, classEO);
+        if (limit > 0) {
+            namedQuery.setMaxResults(limit);
+        }
+        if (offset >= 0) {
+            namedQuery.setFirstResult(offset);
+        }
         if (parameters != null) {
-            for (Map.Entry<String, Object> parameter : parameters.entrySet()) {
-                switch (parameter.getKey()) {
-                    case "limit":
-                        namedQuery.setMaxResults((int) parameter.getValue());
-                        break;
-                    case "offset":
-                        namedQuery.setFirstResult((int) parameter.getValue());
-                        break;
-                    default:
-                        namedQuery.setParameter(parameter.getKey(), parameter.getValue());
-                        break;
-                }
+            for (int i = 0; i < parameters.length; i++) {
+                namedQuery.setParameter(i + 1, parameters[i]);
             }
         }
         return namedQuery.getResultList();

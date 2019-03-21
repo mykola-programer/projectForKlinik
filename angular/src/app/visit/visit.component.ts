@@ -2,7 +2,6 @@ import {Compiler, Component, OnDestroy, OnInit} from "@angular/core";
 import {NavbarService} from "../service/navbar.service";
 import {VisitService} from "../service/visit.service";
 import {AccomodationService} from "../service/accomodation.service";
-import {VisitDate} from "../backend_types/visit-date";
 import {DateService} from "../service/date.service";
 import {AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {Visit} from "../backend_types/visit";
@@ -21,6 +20,7 @@ import {ManagerService} from "../service/manager.service";
 import {MatDialog} from "@angular/material";
 import {RelocationDialogComponent} from "../relocation-dialog/relocation-dialog.component";
 import {Subscription} from "rxjs";
+import {DatePlan} from "../backend_types/date-plan";
 
 @Component({
   selector: "app-visit",
@@ -35,7 +35,7 @@ export class VisitComponent implements OnInit, OnDestroy {
   displace_loading = false;
   hidden_visits = false;
 
-  selected_visit_date: VisitDate;
+  selected_visit_date: DatePlan;
 
   visits_by_date: Visit[];
   number_of_changed_values = 0;
@@ -172,7 +172,7 @@ export class VisitComponent implements OnInit, OnDestroy {
     this.calender_loading = true;
 
     this.selected_date_Subscriber = this.dateService.selected_date.subscribe(
-      (selected_visit_date: VisitDate) => {
+      (selected_visit_date: DatePlan) => {
         this.calender_loading = false;
         this.selected_visit_date = selected_visit_date;
         this.getAccomodations();
@@ -362,7 +362,7 @@ export class VisitComponent implements OnInit, OnDestroy {
       patient: [visit.patientID, [this.validatePatient]],
       operationType: [visit.operationTypeID],
       eye: [visit.eye],
-      surgeon: [visit.surgeonID],
+      surgeonPlan: [visit.surgeonPlanId],
       manager: [visit.managerID],
       note: [visit.note],
       isChanged: [false],
@@ -597,18 +597,19 @@ export class VisitComponent implements OnInit, OnDestroy {
   }
 
   // test() {
-    //   // console.log(this.no_wardForm);
-    //   // console.log(this.pageForm.get("tablesForm").value);
-    //   // console.log(this.clients);
-    //   // this.getAllValuesFromForm();
-    // console.log(this.pageForm);
-    //   // console.log((<FormArray>this.pageForm.get("tablesForm")).getRawValue());
+  //   // console.log(this.no_wardForm);
+  //   // console.log(this.pageForm.get("tablesForm").value);
+  //   // console.log(this.clients);
+  //   // this.getAllValuesFromForm();
+  // console.log(this.pageForm);
+  //   // console.log((<FormArray>this.pageForm.get("tablesForm")).getRawValue());
   // }
 
   private convertToVisit(formValue: FormValue): Visit {
     const visit: Visit = new Visit();
     visit.visitId = formValue.visitId;
-    visit.visitDateID = this.selected_visit_date.visitDateId;
+    //TODO !!!!!!!
+    // visit.visitDateID = this.selected_visit_date.datePlanId;
     visit.clientID = formValue.client;
     visit.status = formValue.status;
     visit.accomodationID = formValue.accomodation;
@@ -621,7 +622,8 @@ export class VisitComponent implements OnInit, OnDestroy {
 
     visit.status == "пацієнт" ? visit.operationTypeID = formValue.operationType : visit.operationTypeID = 0;
     visit.status == "пацієнт" ? visit.eye = formValue.eye : visit.eye = null;
-    visit.status == "пацієнт" ? visit.surgeonID = formValue.surgeon : visit.surgeonID = 0;
+    // TODO !!!!!!
+    //  visit.status == "пацієнт" ? visit.surgeonID = formValue.surgeonPlan : visit.surgeonID = 0;
 
     visit.isChanged = false;
     return visit;

@@ -38,7 +38,7 @@ public class SurgeonService {
 
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<SurgeonVO> findAll() {
-        List<Surgeon> entities = dao.findAll("Surgeon.findAll", null);
+        List<Surgeon> entities = dao.findAll("Surgeon.findAll");
         if (entities == null) return null;
         List<SurgeonVO> result = new ArrayList<>();
         for (Surgeon entity : entities) {
@@ -73,7 +73,6 @@ public class SurgeonService {
         result.setSurname(surgeon.getSurname());
         result.setFirstName(surgeon.getFirstName());
         result.setSecondName(surgeon.getSecondName());
-        result.setCity(surgeon.getCity());
         result.setSex(surgeon.getSex().toCharacter());
         result.setDisable(surgeon.isDisable());
         return result;
@@ -85,7 +84,6 @@ public class SurgeonService {
             result.setSurname(original.getSurname());
             result.setFirstName(original.getFirstName());
             result.setSecondName(original.getSecondName());
-            result.setCity(original.getCity());
             result.setSex(Sex.getInstance(original.getSex()));
             result.setDisable(original.isDisable());
         }

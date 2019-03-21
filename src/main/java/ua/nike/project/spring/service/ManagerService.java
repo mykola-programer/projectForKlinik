@@ -38,7 +38,7 @@ public class ManagerService {
 
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<ManagerVO> findAll() {
-        List<Manager> entities = dao.findAll("Manager.findAll", null);
+        List<Manager> entities = dao.findAll("Manager.findAll");
         if (entities == null) return null;
         List<ManagerVO> result = new ArrayList<>();
         for (Manager entity : entities) {

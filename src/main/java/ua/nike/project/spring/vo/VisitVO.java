@@ -7,38 +7,33 @@ import java.util.Objects;
 public class VisitVO implements VisualObject {
 
     private int visitId;
-    @PositiveOrZero
-    private int visitDateID;
     private LocalTime timeForCome;
     @PositiveOrZero
     private Integer orderForCome;
     @PositiveOrZero
     private int clientID;
     private String status;
+    @PositiveOrZero
     private int patientID;
+    @PositiveOrZero
     private int operationTypeID;
 
     //    @Pattern(regexp = "^(OD|OS|OU)$", message = "visit.eye.pattern")
     private String eye;
-    private int surgeonID;
+    @PositiveOrZero
     private int managerID;
+    @PositiveOrZero
     private int accomodationID;
+    @PositiveOrZero
+    private int surgeonPlanId;
     private String note;
 
-    public Integer getVisitId() {
+    public int getVisitId() {
         return visitId;
     }
 
-    public void setVisitId(Integer visitId) {
+    public void setVisitId(int visitId) {
         this.visitId = visitId;
-    }
-
-    public int getVisitDateID() {
-        return visitDateID;
-    }
-
-    public void setVisitDateID(int visitDateID) {
-        this.visitDateID = visitDateID;
     }
 
     public LocalTime getTimeForCome() {
@@ -97,14 +92,6 @@ public class VisitVO implements VisualObject {
         this.eye = eye;
     }
 
-    public int getSurgeonID() {
-        return surgeonID;
-    }
-
-    public void setSurgeonID(int surgeonID) {
-        this.surgeonID = surgeonID;
-    }
-
     public int getManagerID() {
         return managerID;
     }
@@ -121,6 +108,14 @@ public class VisitVO implements VisualObject {
         this.accomodationID = accomodationID;
     }
 
+    public int getSurgeonPlanId() {
+        return surgeonPlanId;
+    }
+
+    public void setSurgeonPlanId(int surgeonPlanId) {
+        this.surgeonPlanId = surgeonPlanId;
+    }
+
     public String getNote() {
         return note;
     }
@@ -134,22 +129,21 @@ public class VisitVO implements VisualObject {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         VisitVO visitVO = (VisitVO) o;
-        return visitDateID == visitVO.visitDateID &&
-                clientID == visitVO.clientID &&
+        return clientID == visitVO.clientID &&
                 operationTypeID == visitVO.operationTypeID &&
+                surgeonPlanId == visitVO.surgeonPlanId &&
                 Objects.equals(eye, visitVO.eye);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(visitDateID, clientID, operationTypeID, eye);
+        return Objects.hash(clientID, operationTypeID, eye, surgeonPlanId);
     }
 
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("VisitVO{");
         sb.append("visitId=").append(visitId);
-        sb.append(", visitDateID=").append(visitDateID);
         sb.append(", timeForCome=").append(timeForCome);
         sb.append(", orderForCome=").append(orderForCome);
         sb.append(", clientID=").append(clientID);
@@ -157,9 +151,9 @@ public class VisitVO implements VisualObject {
         sb.append(", patientID=").append(patientID);
         sb.append(", operationTypeID=").append(operationTypeID);
         sb.append(", eye='").append(eye).append('\'');
-        sb.append(", surgeonID=").append(surgeonID);
         sb.append(", managerID=").append(managerID);
         sb.append(", accomodationID=").append(accomodationID);
+        sb.append(", surgeonPlanId=").append(surgeonPlanId);
         sb.append(", note='").append(note).append('\'');
         sb.append('}');
         return sb.toString();

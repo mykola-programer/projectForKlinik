@@ -2,15 +2,15 @@ import {Component, Inject, Injectable, OnInit} from "@angular/core";
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material";
 import {NgbCalendar, NgbDatepickerConfig, NgbDatepickerI18n, NgbDateStruct} from "@ng-bootstrap/ng-bootstrap";
 import {NgbDate} from "@ng-bootstrap/ng-bootstrap/datepicker/ngb-date";
-import {VisitDate} from "../backend_types/visit-date";
 import {Accomodation} from "../backend_types/accomodation";
 import {ToastMessageService} from "../service/toast-message.service";
-import {VisitDateService} from "../service/visit-date.service";
 import {Visit} from "../backend_types/visit";
 import {Client} from "../backend_types/client";
 import {AccomodationService} from "../service/accomodation.service";
 import {VisitService} from "../service/visit.service";
 import {HttpErrorResponse} from "@angular/common/http";
+import {DatePlan} from "../backend_types/date-plan";
+import {DatePlanService} from "../service/date-plan.service";
 
 const I18N_VALUES = {
   "ua": {
@@ -63,8 +63,8 @@ export class RelocationDialogComponent implements OnInit {
 
   minDate: NgbDate = NgbDate.from(this.calendar.getToday());
   maxDate: NgbDate = new NgbDate(this.calendar.getToday().year + 5, 12, 31);
-  visitDates: VisitDate[] = [];
-  selected_date: VisitDate = this.data.visitDate;
+  visitDates: DatePlan[] = [];
+  selected_date: DatePlan = this.data.visitDate;
   accomodations: Accomodation[] = [];
   selected_accomodationID: number = this.data.visit.accomodationID;
 
@@ -85,11 +85,11 @@ export class RelocationDialogComponent implements OnInit {
     private toastMessageService: ToastMessageService,
     private accomodationService: AccomodationService,
     private visitService: VisitService,
-    private dateService: VisitDateService,
+    private dateService: DatePlanService,
     @Inject(MAT_DIALOG_DATA) public data: {
       visit: Visit,
       client: Client,
-      visitDate: VisitDate
+      visitDate: DatePlan
     }) {
   }
 
@@ -117,9 +117,9 @@ export class RelocationDialogComponent implements OnInit {
 
   private getDates(): void {
     this.dates_loading = true;
-    this.dateService.getVisitDates().toPromise().then((visitDates: VisitDate[]) => {
+    this.dateService.getDatePlans().toPromise().then((visitDates: DatePlan[]) => {
       this.visitDates = visitDates;
-      setTimeout(() => this.dates_loading = false,1000);
+      setTimeout(() => this.dates_loading = false, 1000);
     });
   }
 
@@ -127,7 +127,7 @@ export class RelocationDialogComponent implements OnInit {
 
     if (!disabled) {
       this.selected_accomodationID = 0;
-      this.selected_date = this.visitDates.find((value: VisitDate) =>
+      this.selected_date = this.visitDates.find((value: DatePlan) =>
         ((value.date[0] == date.year) &&
           (value.date[1] == date.month) &&
           (value.date[2] == date.day)));
@@ -140,7 +140,7 @@ export class RelocationDialogComponent implements OnInit {
       this.visitService.getVisitsByDate(new Date(this.selected_date.date[0], this.selected_date.date[1] - 1, this.selected_date.date[2]))
         .toPromise().then((visits_of_date: Visit[]) => {
         this.getAllFreeAccomodations(visits_of_date);
-        setTimeout(() => this.visits_loading = false,500);
+        setTimeout(() => this.visits_loading = false, 500);
       });
     }
   }
@@ -158,19 +158,20 @@ export class RelocationDialogComponent implements OnInit {
           this.accomodations[index].disable = true;
         }
       });
-      setTimeout(() => this.accomodations_loading = false, 1000 );
+      setTimeout(() => this.accomodations_loading = false, 1000);
     });
   }
 
   onMove() {
-      this.data.visit.accomodationID = this.selected_accomodationID;
-      this.data.visit.visitDateID = this.selected_date.visitDateId;
-      this.visitService.editVisit(this.data.visit).toPromise().then((visit: Visit) => {
-        this.dialogRef.close(visit);
-      }).catch((err: HttpErrorResponse) => {
-        this.toastMessageService.inform("Помилка при переміщені!", err.error, "error");
-      });
-    }
+    this.data.visit.accomodationID = this.selected_accomodationID;
+    //TODO !!!!!!!!!!
+    // this.data.visit.visitDateID = this.selected_date.datePlanId;
+    this.visitService.editVisit(this.data.visit).toPromise().then((visit: Visit) => {
+      this.dialogRef.close(visit);
+    }).catch((err: HttpErrorResponse) => {
+      this.toastMessageService.inform("Помилка при переміщені!", err.error, "error");
+    });
+  }
 
 
   onRefresh() {

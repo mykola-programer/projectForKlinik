@@ -14,10 +14,10 @@ import java.util.Objects;
 @Entity
 @NamedQueries(value = {
         @NamedQuery(name = "Visit.findAll", query = "FROM Visit "),
-        @NamedQuery(name = "Visit.findAllByDate", query = "FROM Visit v WHERE v.visitDate.date = :date "),
+        @NamedQuery(name = "Visit.findAllByDate", query = "FROM Visit v WHERE v.surgeonPlan.datePlan.date = ?1 "),
 })
 @Table(name = "visit", uniqueConstraints = {
-        @UniqueConstraint(name = "visit_date_client_operation_type_eye", columnNames = {"visit_date_id", "client_id", "operation_type_id", "eye"}),
+        @UniqueConstraint(name = "visit_uk", columnNames = {"client_id", "operation_type_id", "surgeon_plan_id", "eye"}),
 //        @UniqueConstraint(name = "visit_date_order", columnNames = {"visit_date_id", "order_for_come"})
 })
 @TypeDef(
@@ -32,12 +32,7 @@ public class Visit implements EntityObject {
     @Id
     @Column(name = "visit_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    @Access(AccessType.FIELD) // TODO Work without annotation !
     private Integer visitId;
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "visit_date_id")
-    private VisitDate visitDate;
 
     @Column(name = "time_for_come")
     private LocalTime timeForCome;
@@ -69,16 +64,16 @@ public class Visit implements EntityObject {
     private Eye eye;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "surgeon_id")
-    private Surgeon surgeon;
-
-    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "manager_id")
     private Manager manager;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "accomodation_id")
     private Accomodation accomodation;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "surgeon_plan_id")
+    private SurgeonPlan surgeonPlan;
 
     private String note;
 
@@ -98,12 +93,12 @@ public class Visit implements EntityObject {
         this.visitId = visitId;
     }
 
-    public VisitDate getVisitDate() {
-        return visitDate;
+    public SurgeonPlan getSurgeonPlan() {
+        return surgeonPlan;
     }
 
-    public void setVisitDate(VisitDate visitDate) {
-        this.visitDate = visitDate;
+    public void setSurgeonPlan(SurgeonPlan surgeonPlan) {
+        this.surgeonPlan = surgeonPlan;
     }
 
     public LocalTime getTimeForCome() {
@@ -162,14 +157,6 @@ public class Visit implements EntityObject {
         this.eye = eye;
     }
 
-    public Surgeon getSurgeon() {
-        return surgeon;
-    }
-
-    public void setSurgeon(Surgeon surgeon) {
-        this.surgeon = surgeon;
-    }
-
     public Manager getManager() {
         return manager;
     }
@@ -199,22 +186,22 @@ public class Visit implements EntityObject {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Visit visit = (Visit) o;
-        return Objects.equals(visitDate, visit.visitDate) &&
-                Objects.equals(client, visit.client) &&
+        return Objects.equals(client, visit.client) &&
                 Objects.equals(operationType, visit.operationType) &&
-                eye == visit.eye;
+                eye == visit.eye &&
+                Objects.equals(surgeonPlan, visit.surgeonPlan);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(visitDate, client, operationType, eye);
+        return Objects.hash(client, operationType, eye, surgeonPlan);
     }
 
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("Visit{");
-        sb.append("visitId=").append(visitId);
-        sb.append(", visitDate=").append(visitDate);
+        sb.append("version=").append(version);
+        sb.append(", visitId=").append(visitId);
         sb.append(", timeForCome=").append(timeForCome);
         sb.append(", orderForCome=").append(orderForCome);
         sb.append(", client=").append(client);
@@ -222,9 +209,9 @@ public class Visit implements EntityObject {
         sb.append(", patient=").append(patient);
         sb.append(", operationType=").append(operationType);
         sb.append(", eye=").append(eye);
-        sb.append(", surgeon=").append(surgeon);
         sb.append(", manager=").append(manager);
         sb.append(", accomodation=").append(accomodation);
+        sb.append(", surgeonPlan=").append(surgeonPlan);
         sb.append(", note='").append(note).append('\'');
         sb.append('}');
         return sb.toString();

@@ -12,12 +12,12 @@ import java.util.Objects;
 @Entity
 @NamedQueries(value = {
         @NamedQuery(name = "Accomodation.findAll", query = "FROM Accomodation acc ORDER BY acc.ward, acc.wardPlace"),
-        @NamedQuery(name = "Accomodation.getAllActive", query = "FROM Accomodation acc where acc.disable = false ORDER BY acc.ward, acc.wardPlace"),
-        @NamedQuery(name = "Accomodation.getActiveWards", query = "SELECT DISTINCT acc.ward FROM Accomodation acc where acc.disable = false ORDER BY acc.ward"),
-        @NamedQuery(name = "Accomodation.getWards", query = "SELECT DISTINCT acc.ward FROM Accomodation acc ORDER BY acc.ward")
+//        @NamedQuery(name = "Accomodation.getAllActive", query = "FROM Accomodation acc where acc.disable = false ORDER BY acc.ward, acc.wardPlace"),
+//        @NamedQuery(name = "Accomodation.getActiveWards", query = "SELECT DISTINCT acc.ward FROM Accomodation acc where acc.disable = false ORDER BY acc.ward"),
+//        @NamedQuery(name = "Accomodation.getWards", query = "SELECT DISTINCT acc.ward FROM Accomodation acc ORDER BY acc.ward")
 })
 @Table(name = "accomodation", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"ward", "ward_place"})
+        @UniqueConstraint(name = "accomodation_uk", columnNames = {"ward", "ward_place"})
 })
 @TypeDef(
         name = "pgsql_enum",
@@ -28,7 +28,6 @@ public class Accomodation implements EntityObject {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "accomodation_id")
-//    @Access(AccessType.FIELD) // TODO Work without annotation !
     private Integer accomodationId;
 
     @Column(name = "ward")

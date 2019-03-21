@@ -8,25 +8,25 @@
     <!--<class>ua.nike.project.hibernate.entity.Surgeon</class>-->
     <!--<class>ua.nike.project.hibernate.entity.Accomodation</class>-->
     <!--<class>ua.nike.project.hibernate.entity.Visit</class>-->
-    <!--<class>ua.nike.project.hibernate.entity.VisitDate</class>-->
+    <!--<class>ua.nike.project.hibernate.entity.DatePlan/class>-->
     <!--<class>ua.nike.project.hibernate.entity.Client</class>-->
     <!--<class>ua.nike.project.hibernate.entity.OperationType</class>-->
 
 <!--    <named-query name="Visit.findAllHospitalizationBeanByOperationDate">
         <query>
             SELECT new ua.nike.project.hibernate.model.HospitalizationBean(
-            op.visitDate.id,
+            op.datePlan.id,
             hp.id, hp.numberOfPlace,
             p.id, p.surname, p.firstName, p.secondName, p.sex, p.status,
             op.id, op.numberOfOrder,
             pr.id, pr.name, op.eye, op.timeForCome,
             op.surgeon, op.manager, op.note )
             FROM Visit op
-            INNER JOIN op.visitDate ods
+            INNER JOIN op.datePlan ods
             INNER JOIN op.client p
             LEFT JOIN op.operationType pr
             INNER JOIN op.hospitalization hp
-            WHERE op.visitDate.day = :visitDate and hp.visitDate.id = op.visitDate.id and
+            WHERE op.datePlan.day = :datePlan and hp.datePlan.id = op.datePlan.id and
             op.hospitalization is not null
             ORDER BY hp.numberOfPlace
         </query>
@@ -35,18 +35,18 @@
     <named-query name="Visit.findAllNotHospitalizationBeanByOperationDate">
         <query>
             SELECT new ua.nike.project.hibernate.model.HospitalizationBean(
-            op.visitDate.id,
+            op.datePlan.id,
             hp.id, hp.numberOfPlace,
             p.id, p.surname, p.firstName, p.secondName, p.sex, p.status,
             op.id, op.numberOfOrder,
             pr.id, pr.name, op.eye, op.timeForCome,
             op.surgeon, op.manager, op.note )
             FROM Visit op
-            INNER JOIN op.visitDate ods
+            INNER JOIN op.datePlan ods
             INNER JOIN op.client p
             LEFT JOIN op.operationType pr
             LEFT JOIN op.hospitalization hp
-            WHERE op.visitDate.day = :visitDate and
+            WHERE op.datePlan.day = :datePlan and
             op.hospitalization is null
             ORDER BY hp.numberOfPlace
         </query>

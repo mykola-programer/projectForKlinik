@@ -1,6 +1,5 @@
 export class Visit {
   public visitId = 0;
-  public visitDateID = 0;
   public timeForCome: number[];
   public orderForCome = 0;
   public clientID = 0;
@@ -8,9 +7,9 @@ export class Visit {
   public patientID = 0;
   public operationTypeID = 0;
   public eye: string;
-  public surgeonID = 0;
   public managerID = 0;
   public accomodationID = 0;
+  public surgeonPlanId = 0;
   public note: string;
   public isChanged = false;
 

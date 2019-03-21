@@ -174,10 +174,10 @@
                           class="form-control form-control-sm input-style-active"
                           (change)="changeState(visitForm)"
                           *ngIf="visitForm.get('status').value == 'пацієнт' && visitForm.get('client').value > 0">
-                    <option [selected]="visitForm.get('surgeon').value == 0"></option>
+                    <option [selected]="visitForm.get('surgeonPlan').value == 0"></option>
                     <option *ngFor="let surgeon of surgeons" [ngValue]="surgeon.surgeonId"
                             [disabled]="surgeon.disable"
-                            [selected]="visitForm.get('surgeon').value == surgeon.surgeonId">
+                            [selected]="visitForm.get('surgeonPlan').value == surgeon.surgeonId">
                       {{surgeon.surname}}
                       {{surgeon.firstName.substring(0,1)}}.{{surgeon.secondName.substring(0,1)}}.({{surgeon.city}})
                     </option>

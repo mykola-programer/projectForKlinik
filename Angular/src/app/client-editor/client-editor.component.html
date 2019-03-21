@@ -1,18 +1,15 @@
 
-<meta http-equiv="cache-control" content="no-cache, must-revalidate, post-check=0, pre-check=0">
-<meta http-equiv="expires" content="0">
-<meta http-equiv="pragma" content="no-cache">
 <ngx-toasta></ngx-toasta>
-
-<mat-paginator [length]=countOfClients
-               [pageSize]=50
-               [showFirstLastButtons]="true"
-               [pageSizeOptions]="[5, 10, 25, 50, 100]">
-</mat-paginator>
 
 <!--<img [hidden]="!(clients_loading && !badConnection)" src="/assets/img/download.gif" style="max-width: 500px"/>-->
 <div>
   <div class="left-container" style="max-width: 800px; min-width: 550px; margin-left: 10px">
+    <mat-paginator [length]=countOfClients
+                   [pageSize]=pageSize
+                   [showFirstLastButtons]="true"
+                   [pageSizeOptions]="[10, 25, 50, 100]">
+    </mat-paginator>
+
     <form [formGroup]="searchForm">
       <div class="input-group-prepend">
         <span class="input-group-text">Пошук :</span>
@@ -27,7 +24,7 @@
 
     <mat-spinner *ngIf="clients_loading && !badConnection"></mat-spinner>
     <img [hidden]="!badConnection" src="/assets/img/no_connection.jpg" style="max-width: 500px"/>
-    <form *ngIf="!clients_loading" [formGroup]="tableForm">
+    <form [hidden]="clients_loading" [formGroup]="tableForm">
       <div class="table-responsive-lg">
         <table class="table table-bordered table-sm table-hover">
 
@@ -54,7 +51,6 @@
 
             <td [formGroupName]="i">
               <input type="checkbox" formControlName="isChanged"
-                     (change)="clientForm.invalid ? clientForm.get('isChanged').patchValue(false) : false"
                      class="form-control form-control-sm input-style-active">
             </td>
 
@@ -64,7 +60,7 @@
                     'input-style-active':clientForm.get('surname').valid,
                     'is-invalid':!clientForm.get('surname').valid
                     }"
-                     (input)="clientForm.get('isChanged').patchValue(clientForm.valid)"
+                     (input)="clientForm.get('isChanged').patchValue(true)"
                      (keydown.space)="firstName.focus(); false">
             </td>
 
@@ -73,7 +69,7 @@
                      class="form-control form-control-sm"
                      [ngClass]="{'input-style-active':clientForm.get('firstName').valid,
                     'is-invalid':!clientForm.get('firstName').valid }"
-                     (input)="clientForm.get('isChanged').patchValue(clientForm.valid)"
+                     (input)="clientForm.get('isChanged').patchValue(true)"
                      (keydown.space)="secondName.focus(); false">
             </td>
 
@@ -83,7 +79,7 @@
                      [ngClass]="{'input-style-active':clientForm.get('secondName').valid,
                     'is-invalid':!clientForm.get('secondName').valid
                     }"
-                     (input)="clientForm.get('isChanged').patchValue(clientForm.valid)"
+                     (input)="clientForm.get('isChanged').patchValue(true)"
                      (keydown.space)="sex.focus(); false">
             </td>
 
@@ -92,7 +88,7 @@
                       class="form-control form-control-sm"
                       [ngClass]="{'input-style-active':clientForm.get('sex').valid,
                     'is-invalid':!clientForm.get('sex').valid    }"
-                      (change)="clientForm.get('isChanged').patchValue(clientForm.valid)">
+                      (change)="clientForm.get('isChanged').patchValue(true)">
                 <option *ngFor="let sex of genders" [selected]="clientForm.get('sex').value === sex" value="{{sex}}">
                   {{sex}}
                 </option>
@@ -105,7 +101,7 @@
                      class="form-control form-control-sm"
                      [ngClass]="{'input-style-active':clientForm.get('birthday').valid,
                     'is-invalid':!clientForm.get('birthday').valid }"
-                     (change)="clientForm.get('isChanged').patchValue(clientForm.valid)">
+                     (change)="clientForm.get('isChanged').patchValue(true)">
             </td>
 
             <td [formGroupName]="i">
@@ -113,7 +109,7 @@
                      class="form-control form-control-sm"
                      [ngClass]="{'input-style-active':clientForm.get('telephone').valid,
                     'is-invalid':!clientForm.get('telephone').valid }"
-                     (change)="clientForm.get('isChanged').patchValue(clientForm.valid)">
+                     (change)="clientForm.get('isChanged').patchValue(true)">
             </td>
           </tr>
           </tbody>

@@ -1,0 +1,29 @@
+    public class SurgeonService {
+
+       private DAO<Surgeon> dao;
+        private DAO<VisitDate> visitDateDAO;
+
+        @Autowired
+        public void setDao(DAO<Surgeon> dao) {
+            this.dao = dao;
+            this.dao.setClassEO(Surgeon.class);
+        }
+        @Autowired
+        public void setVisitDateDAO(DAO<VisitDate> dao) {
+            this.visitDateDAO = dao;
+            this.visitDateDAO.setClassEO(VisitDate.class);
+        }
+
+
+
+Method    {
+            VisitDate visitDate = visitDateDAO.findByID(117);
+            Surgeon surgeon = entities.get(0);
+            visitDate.getSurgeons().add(surgeon);
+            surgeon.getVisitDates().add(visitDate);
+            visitDateDAO.save(visitDate);
+            dao.save(surgeon);
+        }
+
+
+        }

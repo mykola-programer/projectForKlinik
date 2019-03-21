@@ -11,7 +11,15 @@ public interface DAO<T extends EntityObject> {
 
     T findByID(int entityID);
 
-    List<T> findAll(String nQuery, Map<String, Object> parameters);
+    default List<T> findAll(String nQuery) {
+        return findAll(nQuery, null, 0, 0);
+    }
+
+    default List<T> findAll(String nQuery, Object[] parameters) {
+        return findAll(nQuery, parameters, 0, 0);
+    }
+
+    List<T> findAll(String nQuery, Object[] parameters, int limit, int offset);
 
     T save(T entity);
 

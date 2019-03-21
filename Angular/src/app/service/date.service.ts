@@ -1,16 +1,16 @@
 import {EventEmitter, Injectable} from "@angular/core";
-import {VisitDate} from "../backend_types/visit-date";
+import {DatePlan} from "../backend_types/date-plan";
 
 @Injectable({
   providedIn: "root"
 })
 export class DateService {
-  selected_date: EventEmitter<VisitDate> = new EventEmitter();
+  selected_date: EventEmitter<DatePlan> = new EventEmitter();
 
   constructor() {
   }
 
-  public change(selected_date: VisitDate) {
+  public change(selected_date: DatePlan) {
     this.selected_date.emit(selected_date);
   }
 }

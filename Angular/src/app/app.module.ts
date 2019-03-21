@@ -5,7 +5,6 @@ import {AppRoutingModule} from "./app-routing.module";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {HttpClientModule} from "@angular/common/http";
 import {HttpClientInMemoryWebApiModule} from "angular-in-memory-web-api";
-import {VisitDateService} from "./service/visit-date.service";
 import {ClientEditorComponent} from "./client-editor/client-editor.component";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {MatAutocompleteModule} from "@angular/material/autocomplete";
@@ -24,6 +23,7 @@ import {DateSelectorComponent} from "./date/date-selector/date-selector.componen
 import {RelocationDialogComponent} from "./relocation-dialog/relocation-dialog.component";
 import { LoginComponent } from './login/login.component';
 import {MatPaginatorModule} from '@angular/material/paginator';
+import {DatePlanService} from "./service/date-plan.service";
 
 @NgModule({
   declarations: [
@@ -56,7 +56,7 @@ import {MatPaginatorModule} from '@angular/material/paginator';
     ToastaModule.forRoot()
   ],
   exports: [BrowserModule, ToastaModule],
-  providers: [VisitDateService, NavbarService],
+  providers: [DatePlanService, NavbarService],
   entryComponents: [
     RelocationDialogComponent,
   ],

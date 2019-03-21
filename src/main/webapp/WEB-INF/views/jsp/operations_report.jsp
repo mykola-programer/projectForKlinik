@@ -39,7 +39,7 @@
 
         <c:forEach items="${visits}" var="visit">
             <tr>
-                <td>${visit.visitDate}</td>
+                <td>${visit.datePlan}</td>
                 <td>${visit.surname} ${visit.firstname} ${visit.secondname} </td>
                 <td>${visit.visit} ${visit.eye}</td>
                 <td>${visit.surgeon}</td>

@@ -12,24 +12,26 @@ import java.util.Objects;
 
 @Entity
 @NamedQueries(value = {
-//        @NamedQuery(name = "Client.getAll", query = "FROM Client cl ORDER BY surname,firstName,secondName"),
+        @NamedQuery(name = "Client.getAll", query = "FROM Client cl ORDER BY surname,firstName,secondName"),
         @NamedQuery(name = "Client.searchAllASC",
                 query = "FROM Client cl" +
-                        " WHERE surname like :searchedSurname" +
-                        " AND firstName like :searchedFirstName" +
-                        " AND secondName like :searchedSecondName" +
+                        " WHERE (lower(surname) like concat( lower(?1), '%')" +
+                        " AND lower(firstName) like concat( lower(?2), '%')" +
+                        " AND lower(secondName) like concat( lower(?3), '%'))" +
+                        " OR lower(telephone) like concat( '%', lower(?1), '%')" +
                         " ORDER BY surname ASC ,firstName ASC,secondName ASC"),
         @NamedQuery(name = "Client.searchAllDESC",
                 query = "FROM Client cl" +
-                        " WHERE surname like :searchedSurname" +
-                        " AND firstName like :searchedFirstName" +
-                        " AND secondName like :searchedSecondName" +
+                        " WHERE (lower(surname) like concat( lower(?1), '%')" +
+                        " AND lower(firstName) like concat( lower(?2), '%')" +
+                        " AND lower(secondName) like concat( lower(?3), '%'))" +
+                        " OR lower(telephone) like concat( '%', lower(?1), '%')" +
                         " ORDER BY surname DESC ,firstName DESC,secondName DESC"),
         @NamedQuery(name = "Client.deleteByIDs", query = "DELETE Client cl WHERE cl.clientId IN (:IDs)")
 })
 
 @Table(name = "client", uniqueConstraints = {
-        @UniqueConstraint(name = "client_pk", columnNames = {"surname", "first_name", "second_name", "birthday"})
+        @UniqueConstraint(name = "client_uk", columnNames = {"surname", "first_name", "second_name", "birthday"})
 })
 @TypeDef(
         name = "pgsql_enum",

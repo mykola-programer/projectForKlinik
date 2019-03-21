@@ -12,17 +12,17 @@ public class ClientVO implements VisualObject {
 
     @NotNull(message = "client.surname.null")
     @Size(min = 1, max = 50, message = "client.surname.size")
-    @Pattern(regexp = "[A-Za-zА-Яа-яЁёІіЇїЄє]+", message = "client.surname.pattern")
+    @Pattern(regexp = "[A-Za-zА-Яа-яЁёІіЇїЄє'\"]+", message = "client.surname.pattern")
     private String surname;
 
     @NotNull(message = "client.firstName.null")
     @Size(min = 1, max = 50, message = "client.firstName.size")
-    @Pattern(regexp = "[A-Za-zА-Яа-яЁёІіЇїЄє]+", message = "client.firstName.pattern")
+    @Pattern(regexp = "[A-Za-zА-Яа-яЁёІіЇїЄє'\"]+", message = "client.firstName.pattern")
     private String firstName;
 
     @NotNull(message = "client.secondName.null")
     @Size(min = 1, max = 50, message = "client.secondName.size")
-    @Pattern(regexp = "[A-Za-zА-Яа-яЁёІіЇїЄє]+", message = "client.secondName.pattern")
+    @Pattern(regexp = "[A-Za-zА-Яа-яЁёІіЇїЄє'\"]+", message = "client.secondName.pattern")
     private String secondName;
 
     @NotNull(message = "client.sex.null")

@@ -24,8 +24,8 @@ export class UserService {
     return this.http.post<User>(UrlProperty.serverUrl + UrlProperty.usersUrl, JSON.stringify(user), UrlProperty.httpOptions);
   }
 
-  editUser(user: User): Observable<User> {
-    return this.http.put<User>(UrlProperty.serverUrl + UrlProperty.usersUrl + user.userId, JSON.stringify(user), UrlProperty.httpOptions);
+  editUser(userID: number, currentUser: User, editedUser: User): Observable<User> {
+    return this.http.put<User>(UrlProperty.serverUrl + UrlProperty.usersUrl + userID, JSON.stringify({currentUser: currentUser, editedUser: editedUser}), UrlProperty.httpOptions);
   }
 
   loginUser(user: User): Observable<boolean> {

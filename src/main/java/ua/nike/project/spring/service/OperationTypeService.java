@@ -37,7 +37,7 @@ public class OperationTypeService {
 
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<OperationTypeVO> findAll() {
-        List<OperationType> entities = dao.findAll("OperationType.findAll", null);
+        List<OperationType> entities = dao.findAll("OperationType.findAll");
         if (entities == null) return null;
         List<OperationTypeVO> result = new ArrayList<>();
         for (OperationType entity : entities) {
@@ -145,8 +145,8 @@ public class OperationTypeService {
                     return (OperationTypeVO) transformToOperationTypeVO((OperationType) entity);
                 case "Surgeon":
                     return (OperationTypeVO) transformToSurgeonVO((Surgeon) entity);
-                case "VisitDate":
-                    return (OperationTypeVO) transformToVisitDateVO((VisitDate) entity);
+                case "DatePlan":
+                    return (OperationTypeVO) transformToVisitDateVO((DatePlan) entity);
 
                 default:
                     throw new ApplicationException("Class not find.");
@@ -158,7 +158,7 @@ public class OperationTypeService {
 
             VisitVO result = new VisitVO();
             result.setVisitId(visit.getVisitId());
-            result.setVisitDate(transformToVisitDateVO(visit.getVisitDate()));
+            result.setDatePlan(transformToVisitDateVO(visit.getDatePlan()));
             result.setTimeForCome(visit.getTimeForCome());
             result.setOrderForCome(visit.getOrderForCome());
             result.setOperationType(transformToOperationTypeVO(visit.getOperationType()));
@@ -231,10 +231,10 @@ public class OperationTypeService {
             return operationTypeVO;
         }
 
-        private VisitDateVO transformToVisitDateVO(VisitDate visitDate) {
+        private DatePlanVO transformToVisitDateVO(DatePlan visitDate) {
             if (visitDate == null) return null;
-            VisitDateVO result = new VisitDateVO();
-            result.setVisitDateId(visitDate.getVisitDateId());
+            DatePlanVO result = new DatePlanVO();
+            result.setDatePlanId(visitDate.getDatePlanId());
             result.setDate(visitDate.getDate());
             result.setDisable(visitDate.isDisable());
             return result;
@@ -267,9 +267,9 @@ public class OperationTypeService {
                     if (entity == null) entity = (OperationType) new Visit();
                     return (OperationType) copyToVisit((VisitVO) operationTypeVO, (Visit) entity);
                 }
-                case "VisitDateVO": {
-                    if (entity == null) entity = (OperationType) new VisitDate();
-                    return (OperationType) copyToVisitDate((VisitDateVO) operationTypeVO, (VisitDate) entity);
+                case "DatePlanVO": {
+                    if (entity == null) entity = (OperationType) new DatePlan();
+                    return (OperationType) copyToVisitDate((DatePlanVO) operationTypeVO, (DatePlan) entity);
                 }
 
                 default:
@@ -288,11 +288,11 @@ public class OperationTypeService {
                 result.setNote(original.getNote());
                 result.setDisable(original.isDisable());
 
-                if (original.getVisitDate() != null && original.getVisitDate().getVisitDateId() > 0) {
-                    VisitDate visitDate = new VisitDate();
-                    visitDate.setVisitDateId(original.getVisitDate().getVisitDateId());
-                    result.setVisitDate(copyToVisitDate(original.getVisitDate(), visitDate));
-                } else result.setVisitDate(null);
+                if (original.getDatePlan() != null && original.getDatePlan().getDatePlanId() > 0) {
+                    DatePlan visitDate = new DatePlan();
+                    visitDate.setDatePlanId(original.getDatePlan().getDatePlanId());
+                    result.setDatePlan(copyToVisitDate(original.getDatePlan(), visitDate));
+                } else result.setDatePlan(null);
 
                 if (original.getPatient() != null && original.getPatient().getOperationTypeId() > 0) {
                     OperationType patient = new OperationType();
@@ -335,7 +335,7 @@ public class OperationTypeService {
             return result;
         }
 
-        private VisitDate copyToVisitDate(VisitDateVO original, VisitDate result) {
+        private DatePlan copyToVisitDate(DatePlanVO original, DatePlan result) {
             if (original != null) {
                 result.setDate(original.getDate());
                 result.setDisable(original.isDisable());
@@ -474,7 +474,7 @@ public class OperationTypeService {
 //                parameters.put("surgeon", entity);
 //                return dao.getEntitiesByNamedQuery("Visit.findBySurgeon", parameters, (Class<OperationType>) Visit.class).size() != 0;
 //            }
-//            case "VisitDate": {
+//            case "DatePlan": {
 //                Map<String, Object> parameters = new HashMap<>();
 //                parameters.put("visitDate", entity);
 //                return dao.getEntitiesByNamedQuery("Visit.findByVisitDate", parameters, (Class<OperationType>) Visit.class).size() != 0;

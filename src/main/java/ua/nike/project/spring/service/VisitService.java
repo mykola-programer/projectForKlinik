@@ -14,9 +14,7 @@ import ua.nike.project.spring.vo.VisitVO;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 @Scope(BeanDefinition.SCOPE_SINGLETON)
@@ -24,13 +22,13 @@ public class VisitService {
 
     private DAO<Visit> dao;
     @Autowired
-    private VisitDateService visitDateService;
+    private DatePlanService datePlanService;
     @Autowired
     private ClientService clientService;
     @Autowired
     private OperationTypeService operationTypeService;
     @Autowired
-    private SurgeonService surgeonService;
+    private SurgeonPlanService surgeonPlanService;
     @Autowired
     private ManagerService managerService;
     @Autowired
@@ -49,7 +47,7 @@ public class VisitService {
 
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<VisitVO> findAll() {
-        List<Visit> entities = dao.findAll("Visit.findAll", null);
+        List<Visit> entities = dao.findAll("Visit.findAll");
         if (entities == null) return null;
         List<VisitVO> result = new ArrayList<>();
         for (Visit entity : entities) {
@@ -78,31 +76,11 @@ public class VisitService {
 
 
     public List<VisitVO> getVisitsByDate(LocalDate date) {
-
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put("date", date);
-
-        List<Visit> entities = dao.findAll("Visit.findAllByDate", parameters);
+        List<Visit> entities = dao.findAll("Visit.findAllByDate", new Object[]{date});
         if (entities == null) return null;
         List<VisitVO> result = new ArrayList<>();
         for (Visit entity : entities) {
             result.add(convertToVisitVO(entity));
-        }
-        return result;
-    }
-
-
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public List<VisitVO> putVisits(List<VisitVO> visitsVO) {
-        List<VisitVO> result = new ArrayList<>();
-        for (VisitVO visitVO : visitsVO) {
-            if (visitVO != null) {
-                if (visitVO.getVisitId() > 0) {
-                    result.add(update(visitVO.getVisitId(), visitVO));
-                } else {
-                    result.add(create(visitVO));
-                }
-            }
         }
         return result;
     }
@@ -115,9 +93,9 @@ public class VisitService {
             result.setStatus(ClientStatus.getInstance(original.getStatus()));
             result.setNote(original.getNote());
 
-            if (original.getVisitDateID() > 0) {
-                result.setVisitDate(visitDateService.findEntityByID(original.getVisitDateID()));
-            } else result.setVisitDate(null);
+            if (original.getSurgeonPlanId() > 0) {
+                result.setSurgeonPlan(surgeonPlanService.findEntityByID(original.getSurgeonPlanId()));
+            } else result.setSurgeonPlan(null);
 
             if (original.getClientID() > 0) {
                 result.setClient(clientService.findEntityByID(original.getClientID()));
@@ -131,8 +109,6 @@ public class VisitService {
                 result.setManager(managerService.findEntityByID(original.getManagerID()));
             } else result.setManager(null);
 
-
-
             if (original.getPatientID() > 0 && !original.getStatus().equals("пацієнт")) {
                 result.setPatient(clientService.findEntityByID(original.getPatientID()));
             } else result.setPatient(null);
@@ -140,10 +116,6 @@ public class VisitService {
             if (original.getOperationTypeID() > 0 && original.getStatus().equals("пацієнт")) {
                 result.setOperationType(operationTypeService.findEntityByID(original.getOperationTypeID()));
             } else result.setOperationType(null);
-
-            if (original.getSurgeonID() > 0 && original.getStatus().equals("пацієнт")) {
-                result.setSurgeon(surgeonService.findEntityByID(original.getSurgeonID()));
-            } else result.setSurgeon(null);
 
             if (original.getEye() != null && original.getStatus().equals("пацієнт")) {
                 result.setEye(Eye.valueOf(original.getEye()));
@@ -162,10 +134,6 @@ public class VisitService {
         result.setStatus(visit.getStatus().convertToCyrillic());
         result.setNote(visit.getNote());
 
-        if (visit.getVisitDate() != null) {
-            result.setVisitDateID(visit.getVisitDate().getVisitDateId());
-        } else result.setVisitDateID(0);
-
         if (visit.getClient() != null) {
             result.setClientID(visit.getClient().getClientId());
         } else result.setClientID(0);
@@ -178,8 +146,6 @@ public class VisitService {
             result.setManagerID(visit.getManager().getManagerId());
         } else result.setManagerID(0);
 
-
-
         if (visit.getPatient() != null && visit.getStatus() != null && visit.getStatus().toString().equals(ClientStatus.RELATIVE.toString())) {
             result.setPatientID(visit.getPatient().getClientId());
         } else result.setPatientID(0);
@@ -188,9 +154,9 @@ public class VisitService {
             result.setOperationTypeID(visit.getOperationType().getOperationTypeId());
         } else result.setOperationTypeID(0);
 
-        if (visit.getSurgeon() != null && visit.getStatus() != null && visit.getStatus().toString().equals(ClientStatus.PATIENT.toString())) {
-            result.setSurgeonID(visit.getSurgeon().getSurgeonId());
-        } else result.setSurgeonID(0);
+        if (visit.getSurgeonPlan() != null && visit.getStatus() != null && visit.getStatus().toString().equals(ClientStatus.PATIENT.toString())) {
+            result.setSurgeonPlanId(visit.getSurgeonPlan().getSurgeonPlanId());
+        } else result.setSurgeonPlanId(0);
 
         if (visit.getEye() != null && visit.getStatus() != null && visit.getStatus().toString().equals(ClientStatus.PATIENT.toString())) {
             result.setEye(visit.getEye().toString());
@@ -213,6 +179,27 @@ public class VisitService {
 
 
     /*
+
+
+
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public List<VisitVO> putVisits(List<VisitVO> visitsVO) {
+        List<VisitVO> result = new ArrayList<>();
+        for (VisitVO visitVO : visitsVO) {
+            if (visitVO != null) {
+                if (visitVO.getVisitId() > 0) {
+                    result.add(update(visitVO.getVisitId(), visitVO));
+                } else {
+                    result.add(create(visitVO));
+                }
+            }
+        }
+        return result;
+    }
+
+
+
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<VisitVO> getListByQuery(String hqlQuery, Map<String, Object> parameters) throws
             ApplicationException {
@@ -259,8 +246,8 @@ public class VisitService {
                     return (VisitVO) transformToOperationTypeVO((OperationType) entity);
                 case "Visit":
                     return (VisitVO) transformToVisitVO((Visit) entity);
-                case "VisitDate":
-                    return (VisitVO) transformToVisitDateVO((VisitDate) entity);
+                case "DatePlan":
+                    return (VisitVO) transformToVisitDateVO((DatePlan) entity);
 
                 default:
                     throw new ApplicationException("Class not find.");
@@ -272,7 +259,7 @@ public class VisitService {
 
             VisitVO result = new VisitVO();
             result.setVisitId(visit.getVisitId());
-            result.setVisitDate(transformToVisitDateVO(visit.getVisitDate()));
+            result.setDatePlan(transformToVisitDateVO(visit.getDatePlan()));
             result.setTimeForCome(visit.getTimeForCome());
             result.setOrderForCome(visit.getOrderForCome());
             result.setVisit(transformToVisitVO(visit.getVisit()));
@@ -345,10 +332,10 @@ public class VisitService {
             return operationTypeVO;
         }
 
-        private VisitDateVO transformToVisitDateVO(VisitDate visitDate) {
+        private DatePlanVO transformToVisitDateVO(DatePlan visitDate) {
             if (visitDate == null) return null;
-            VisitDateVO result = new VisitDateVO();
-            result.setVisitDateId(visitDate.getVisitDateId());
+            DatePlanVO result = new DatePlanVO();
+            result.setDatePlanId(visitDate.getDatePlanId());
             result.setDate(visitDate.getDate());
             result.setDisable(visitDate.isDisable());
             return result;
@@ -381,9 +368,9 @@ public class VisitService {
                     if (entity == null) entity = (Visit) new Visit();
                     return (Visit) copyToVisit((VisitVO) visitVO, (Visit) entity);
                 }
-                case "VisitDateVO": {
-                    if (entity == null) entity = (Visit) new VisitDate();
-                    return (Visit) copyToVisitDate((VisitDateVO) visitVO, (VisitDate) entity);
+                case "DatePlanVO": {
+                    if (entity == null) entity = (Visit) new DatePlan();
+                    return (Visit) copyToVisitDate((DatePlanVO) visitVO, (DatePlan) entity);
                 }
 
                 default:
@@ -402,11 +389,11 @@ public class VisitService {
                 result.setNote(original.getNote());
                 result.setDisable(original.isDisable());
 
-                if (original.getVisitDate() != null && original.getVisitDate().getVisitDateId() > 0) {
-                    VisitDate visitDate = new VisitDate();
-                    visitDate.setVisitDateId(original.getVisitDate().getVisitDateId());
-                    result.setVisitDate(copyToVisitDate(original.getVisitDate(), visitDate));
-                } else result.setVisitDate(null);
+                if (original.getDatePlan() != null && original.getDatePlan().getDatePlanId() > 0) {
+                    DatePlan visitDate = new DatePlan();
+                    visitDate.setDatePlanId(original.getDatePlan().getDatePlanId());
+                    result.setDatePlan(copyToVisitDate(original.getDatePlan(), visitDate));
+                } else result.setDatePlan(null);
 
                 if (original.getPatient() != null && original.getPatient().getVisitId() > 0) {
                     Visit patient = new Visit();
@@ -449,7 +436,7 @@ public class VisitService {
             return result;
         }
 
-        private VisitDate copyToVisitDate(VisitDateVO original, VisitDate result) {
+        private DatePlan copyToVisitDate(DatePlanVO original, DatePlan result) {
             if (original != null) {
                 result.setDate(original.getDate());
                 result.setDisable(original.isDisable());
@@ -588,7 +575,7 @@ public class VisitService {
 //                parameters.put("visit", entity);
 //                return dao.getEntitiesByNamedQuery("Visit.findByVisit", parameters, (Class<Visit>) Visit.class).size() != 0;
 //            }
-//            case "VisitDate": {
+//            case "DatePlan": {
 //                Map<String, Object> parameters = new HashMap<>();
 //                parameters.put("visitDate", entity);
 //                return dao.getEntitiesByNamedQuery("Visit.findByVisitDate", parameters, (Class<Visit>) Visit.class).size() != 0;

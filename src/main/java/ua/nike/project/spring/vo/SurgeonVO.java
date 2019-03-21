@@ -24,11 +24,6 @@ public class SurgeonVO implements VisualObject {
     @Pattern(regexp = "[A-Za-zА-Яа-яЁёІіЇїЄє]+", message = "surgeon.secondName.pattern")
     private String secondName;
 
-    @NotNull(message = "manager.city.null")
-    @Size(min = 1, max = 50, message = "manager.city.size")
-    @Pattern(regexp = "[A-Za-zА-Яа-яЁёІіЇїЄє]+", message = "surgeon.city.pattern")
-    private String city;
-
     @NotNull(message = "surgeon.sex.null")
     private Character sex;
 
@@ -66,15 +61,6 @@ public class SurgeonVO implements VisualObject {
         this.secondName = firstUpperCase(secondName);
     }
 
-    public String getCity() {
-        return city;
-    }
-
-    public SurgeonVO setCity(String city) {
-        this.city = firstUpperCase(city);
-        return this;
-    }
-
     public Character getSex() {
         return sex;
     }
@@ -105,13 +91,12 @@ public class SurgeonVO implements VisualObject {
         SurgeonVO surgeonVO = (SurgeonVO) o;
         return Objects.equals(surname, surgeonVO.surname) &&
                 Objects.equals(firstName, surgeonVO.firstName) &&
-                Objects.equals(secondName, surgeonVO.secondName) &&
-                Objects.equals(city, surgeonVO.city);
+                Objects.equals(secondName, surgeonVO.secondName);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(surname, firstName, secondName, city);
+        return Objects.hash(surname, firstName, secondName);
     }
 
     @Override
@@ -121,7 +106,6 @@ public class SurgeonVO implements VisualObject {
         sb.append(", surname='").append(surname).append('\'');
         sb.append(", firstName='").append(firstName).append('\'');
         sb.append(", secondName='").append(secondName).append('\'');
-        sb.append(", city='").append(city).append('\'');
         sb.append(", sex=").append(sex);
         sb.append(", disable=").append(disable);
         sb.append('}');

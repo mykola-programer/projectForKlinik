@@ -5,53 +5,53 @@ import org.springframework.http.MediaType;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ua.nike.project.spring.exceptions.ValidationException;
-import ua.nike.project.spring.service.OperationTypeService;
-import ua.nike.project.spring.vo.OperationTypeVO;
+import ua.nike.project.spring.service.SurgeonPlanService;
+import ua.nike.project.spring.vo.SurgeonPlanVO;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @RestController
-@RequestMapping("/operation_types")
-public class OperationTypeRESTController implements RESTController<OperationTypeVO> {
+@RequestMapping("/surgeon_plans")
+public class SurgeonPlanRESTController implements RESTController<SurgeonPlanVO> {
 
     @Autowired
-    private OperationTypeService operationTypeService;
+    private SurgeonPlanService surgeonPlanService;
 
     @CrossOrigin
     @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public OperationTypeVO getByID(@PathVariable("id") int operationTypeID) {
-        return operationTypeService.findByID(operationTypeID);
+    public SurgeonPlanVO getByID(@PathVariable("id") int surgeonPlanID) {
+        return surgeonPlanService.findByID(surgeonPlanID);
     }
 
     @CrossOrigin
     @RequestMapping(value = "", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public List<OperationTypeVO> getAll() {
-        return operationTypeService.findAll();
+    public List<SurgeonPlanVO> getAll() {
+        return surgeonPlanService.findAll();
     }
 
     @CrossOrigin
     @RequestMapping(value = "", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public OperationTypeVO add(@RequestBody @NotNull @Valid OperationTypeVO operationTypeVO, BindingResult bindingResult) throws ValidationException {
+    public SurgeonPlanVO add(@RequestBody @NotNull @Valid SurgeonPlanVO surgeonPlanVO, BindingResult bindingResult) throws ValidationException {
         if (bindingResult != null && bindingResult.hasErrors())
             throw new ValidationException("Object is not valid", bindingResult);
-        return operationTypeService.create(operationTypeVO);
+        return surgeonPlanService.create(surgeonPlanVO);
     }
 
     @CrossOrigin
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public OperationTypeVO editByID(@PathVariable("id") int operationTypeID, @RequestBody @NotNull @Valid OperationTypeVO operationTypeVO, BindingResult bindingResult) throws ValidationException {
+    public SurgeonPlanVO editByID(@PathVariable("id") int surgeonPlanID, @RequestBody @NotNull @Valid SurgeonPlanVO surgeonPlanVO, BindingResult bindingResult) throws ValidationException {
         if (bindingResult != null && bindingResult.hasErrors())
             throw new ValidationException("Object is not valid", bindingResult);
-        return operationTypeService.update(operationTypeID, operationTypeVO);
+        return surgeonPlanService.update(surgeonPlanID, surgeonPlanVO);
     }
 
 
     @CrossOrigin
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public boolean deleteByID(@PathVariable("id") int operationTypeID) {
-        return operationTypeService.deleteById(operationTypeID);
+    public boolean deleteByID(@PathVariable("id") int surgeonPlanID) {
+        return surgeonPlanService.deleteById(surgeonPlanID);
     }
 
 }

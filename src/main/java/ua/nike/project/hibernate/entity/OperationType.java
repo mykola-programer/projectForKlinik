@@ -6,7 +6,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "operation_type", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"name"})
+        @UniqueConstraint(name = "operation_type_uk", columnNames = {"name"})
 })
 @NamedQueries(value = {
         @NamedQuery(name = "OperationType.findAll", query = "FROM OperationType ORDER BY name"),

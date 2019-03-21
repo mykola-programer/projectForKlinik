@@ -11,7 +11,7 @@ import ua.nike.project.spring.dao.DAO;
 import ua.nike.project.spring.exceptions.ValidationException;
 import ua.nike.project.spring.vo.UserVO;
 
-import javax.persistence.EntityNotFoundException;
+import javax.validation.constraints.NotNull;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -41,7 +41,7 @@ public class UserService {
             throw new ValidationException("Uncorrected User !", null);
         } else {
             try {
-                return checkPassword(userVO.getPassword(), user.getHashedPassword());
+                return checkPassword(userVO, user);
             } catch (NoSuchAlgorithmException e) {
                 throw new ValidationException("Error to check password !", null);
             }
@@ -50,7 +50,7 @@ public class UserService {
 
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<UserVO> findAll() {
-        List<User> entities = dao.findAll("User.findAll", null);
+        List<User> entities = dao.findAll("User.findAll");
         if (entities == null) return null;
         List<UserVO> result = new ArrayList<>();
         for (User entity : entities) {
@@ -71,22 +71,14 @@ public class UserService {
 
     @Transactional(propagation = Propagation.REQUIRED)
     public UserVO update(int userID, UserVO userVO) throws ValidationException {
-        User originalEntity = dao.findByID(userID);
         try {
-            if (originalEntity == null) {
-                throw new EntityNotFoundException();
-            } else if (userVO != null && checkPassword(userVO.getPassword(), originalEntity.getHashedPassword())) {
-                userVO.setPassword(userVO.getNewPassword());
-                User updatedEntity = copyToUser(userVO, originalEntity);
-                return convertToUserVO(dao.update(updatedEntity));
-            } else {
-                throw new ValidationException("Error to check password !", null);
-            }
+            User currentEntity = dao.findByID(userID);
+            User updatedEntity = copyToUser(userVO, currentEntity);
+            return convertToUserVO(dao.update(updatedEntity));
         } catch (NoSuchAlgorithmException e) {
-            throw new ValidationException("Error to check password !", null);
+            throw new ValidationException("Error to save password !", null);
         }
     }
-
 
     private UserVO convertToUserVO(User user) {
         if (user == null) return null;
@@ -94,7 +86,6 @@ public class UserService {
         result.setUserId(user.getUserId());
         result.setLogin(user.getLogin());
         result.setPassword(null);
-        result.setNewPassword(null);
         return result;
     }
 
@@ -102,19 +93,19 @@ public class UserService {
         if (original != null) {
             if (result == null) result = new User();
             result.setLogin(original.getLogin());
-            result.setHashedPassword(encryptPasswordBySHA512(original.getPassword()));
+            result.setHashedPassword(encryptPasswordBySHA512(original));
         }
         return result;
     }
 
-    private String encryptPasswordBySHA512(String passwordToHash) throws NoSuchAlgorithmException {
-        if (passwordToHash == null || passwordToHash.equals("") || passwordToHash.equals(" ")) {
-            passwordToHash = getSalt();
+    private String encryptPasswordBySHA512(@NotNull UserVO userVO) throws NoSuchAlgorithmException {
+        if (userVO.getPassword() == null) {
+            userVO.setPassword("");
         }
-        String salt = getSalt();
         MessageDigest md = MessageDigest.getInstance("SHA-512");
-        md.update(salt.getBytes());
-        byte[] bytes = md.digest(passwordToHash.getBytes());
+        md.update(getSalt().getBytes());
+        md.update(userVO.getLogin().getBytes());
+        byte[] bytes = md.digest(userVO.getPassword().getBytes());
         StringBuilder hashedPassword = new StringBuilder();
         for (byte aByte : bytes) {
             hashedPassword.append(Integer.toString((aByte & 0xff) + 0x100, 16).substring(1));
@@ -122,8 +113,8 @@ public class UserService {
         return hashedPassword.toString();
     }
 
-    private boolean checkPassword(String password, String shaHash) throws NoSuchAlgorithmException {
-        return shaHash.equals(encryptPasswordBySHA512(password));
+    private boolean checkPassword(UserVO userVO, User user) throws NoSuchAlgorithmException {
+        return user.getHashedPassword().equals(encryptPasswordBySHA512(userVO));
     }
 
     private String getSalt() {

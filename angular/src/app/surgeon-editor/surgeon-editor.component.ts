@@ -42,7 +42,7 @@ export class SurgeonEditorComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.navbarService.change("surgeon");
+    this.navbarService.change("surgeonPlan");
     this.surgeons_loading = true;
     this.getSurgeons();
     this.searchForm.get("searchControlForm").valueChanges
@@ -233,7 +233,6 @@ export class SurgeonEditorComponent implements OnInit {
       surname: [surgeon.surname, [Validators.required, Validators.maxLength(50), Validators.pattern("[A-Za-zА-Яа-яЁёІіЇїЄє ]*")]],
       firstName: [surgeon.firstName, [Validators.required, Validators.maxLength(50), Validators.pattern("[A-Za-zА-Яа-яЁёІіЇїЄє ]*")]],
       secondName: [surgeon.secondName, [Validators.required, Validators.maxLength(50), Validators.pattern("[A-Za-zА-Яа-яЁёІіЇїЄє ]*")]],
-      city: [surgeon.city, [Validators.required, Validators.maxLength(50), Validators.pattern("[A-Za-zА-Яа-яЁёІіЇїЄє ]*")]],
       sex: [surgeon.sex, [Validators.required, Validators.maxLength(1), Validators.pattern("^[ЧЖ]*$")]],
       disable: [surgeon.disable],
       isChanged: [false],

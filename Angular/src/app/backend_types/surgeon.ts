@@ -3,7 +3,6 @@ export class Surgeon {
   public surname: string;
   public firstName: string;
   public secondName: string;
-  public city: string;
   public sex = "Ч";
   public disable = false;
   public isChanged = false;

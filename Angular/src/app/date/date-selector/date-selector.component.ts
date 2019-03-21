@@ -1,14 +1,14 @@
 import {Compiler, Component, Injectable, OnDestroy, OnInit} from "@angular/core";
-import {VisitDateService} from "../../service/visit-date.service";
 
 import {NgbCalendar, NgbDateParserFormatter, NgbDatepickerConfig, NgbDatepickerI18n, NgbDateStruct} from "@ng-bootstrap/ng-bootstrap";
 import {isNumber, padNumber, toInteger} from "@ng-bootstrap/ng-bootstrap/util/util";
 import {Router} from "@angular/router";
-import {VisitDate} from "../../backend_types/visit-date";
 import {DateService} from "../../service/date.service";
 import {NgbDate} from "@ng-bootstrap/ng-bootstrap/datepicker/ngb-date";
 import {HttpErrorResponse} from "@angular/common/http";
 import {ToastMessageService} from "../../service/toast-message.service";
+import {DatePlan} from "../../backend_types/date-plan";
+import {DatePlanService} from "../../service/date-plan.service";
 
 const I18N_VALUES = {
   "ua": {
@@ -88,10 +88,10 @@ export class DateSelectorComponent implements OnInit, OnDestroy {
   minDate: NgbDate = new NgbDate(this.calendar.getToday().year, this.calendar.getToday().month - 3, this.calendar.getToday().day);
   maxDate: NgbDate = new NgbDate(this.calendar.getToday().year + 5, 12, 31);
 
-  visitDates: VisitDate[] = [];
+  visitDates: DatePlan[] = [];
 
   constructor(
-    private visitDateService: VisitDateService,
+    private visitDateService: DatePlanService,
     private config: NgbDatepickerConfig,
     private calendar: NgbCalendar,
     private router: Router,
@@ -113,7 +113,7 @@ export class DateSelectorComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.getDates();
     // Delete
-    this.visitDateService.getVisitDate(154).toPromise().then(value => this.dateService.change(value));
+    this.visitDateService.getDatePlan(154).toPromise().then(value => this.dateService.change(value));
   }
 
   ngOnDestroy(): void {
@@ -121,7 +121,7 @@ export class DateSelectorComponent implements OnInit, OnDestroy {
   }
 
   onSelect(date: NgbDate): void {
-      const selected_visitDate: VisitDate = this.visitDates.find((visitDate: VisitDate) => {
+      const selected_visitDate: DatePlan = this.visitDates.find((visitDate: DatePlan) => {
         return (visitDate.date[0] == date.year &&
           visitDate.date[1] == date.month &&
           visitDate.date[2] == date.day);
@@ -139,7 +139,7 @@ export class DateSelectorComponent implements OnInit, OnDestroy {
   }
 
   private getDates(): void {
-    this.visitDateService.getVisitDates().toPromise().then((visitDates: VisitDate[]) => {
+    this.visitDateService.getDatePlans().toPromise().then((visitDates: DatePlan[]) => {
       this.visitDates = visitDates;
     }).catch((err: HttpErrorResponse) => {
       this.toastMessageService.inform("Сервер недоступний!",
@@ -150,8 +150,8 @@ export class DateSelectorComponent implements OnInit, OnDestroy {
     });
   }
 
-  private indexOf(date: NgbDateStruct, visitDates: VisitDate[]): number {
-    return visitDates.findIndex((visitDate: VisitDate) => {
+  private indexOf(date: NgbDateStruct, visitDates: DatePlan[]): number {
+    return visitDates.findIndex((visitDate: DatePlan) => {
       return visitDate.date[0] == date.year && visitDate.date[1] == date.month && visitDate.date[2] == date.day;
     });
   }
