@@ -19,13 +19,14 @@ export class ClientEditorComponent implements OnInit {
   public countOfChangedClients = 0;
   public genders: string[] = ["Ч", "Ж"];
   public countOfClients: number = 100;
+  public pageSize: number = 25;
 
   min_date: Date = new Date(new Date(Date.now()).getFullYear() - 100, 0, 1);
   max_date: Date = new Date(new Date(Date.now()).getFullYear() - 3, 0, 1);
 
 
   searchForm: FormGroup = this.fb.group({
-    searchControlForm: ["", [Validators.maxLength(50), Validators.pattern("[A-Za-zА-Яа-яЁёІіЇїЄє ]*")]],
+    searchControlForm: ["", [Validators.maxLength(50)]],
   });
 
   tableForm: FormGroup = this.fb.group({
@@ -54,7 +55,7 @@ export class ClientEditorComponent implements OnInit {
   ngOnInit(): void {
     this.navbarService.change("client");
     this.clients_loading = true;
-    this.getClients("", 50, 0, true);
+    this.getClients("", this.pageSize, 0, true);
 
     this.searchForm.get("searchControlForm").valueChanges
       .pipe(debounceTime(900))
@@ -63,16 +64,6 @@ export class ClientEditorComponent implements OnInit {
           this.getClients(search_value, this.paginator.pageSize, 0, this.sorting_order);
         } else {
           this.paginator.firstPage();
-        }
-      });
-
-    this.searchForm.get("searchControlForm").statusChanges
-      .pipe(debounceTime(900))
-      .subscribe(value => {
-        if (value === "INVALID") {
-          this.toastMessageService.inform("Некорректне значення для пошуку",
-            "Вводьте тільки літери та пробіли." + "<br>" +
-            "Не більше 50 символів", "info");
         }
       });
 
@@ -132,28 +123,36 @@ export class ClientEditorComponent implements OnInit {
   }
 
   onSave() {
-    this.save_loading = true;
     const control = (<FormArray>this.tableForm.get("clientsForm")).controls.find((abstractControl: AbstractControl) => {
       return abstractControl.get("isChanged").value;
     });
-    if (control && control.value) {
-      const edited_client: Client = this.convertToClient(control.value);
-      if (edited_client && edited_client.clientId > 0) {
-        this.clientService.editClient(edited_client).toPromise().then((client: Client) => {
-          control.get("isChanged").setValue(false);
-          this.success_saving(client);
-        }).catch((err: HttpErrorResponse) => {
-            this.error_saving(err);
+    if (control) {
+      if (control.valid) {
+        this.save_loading = true;
+        if (control.value) {
+          const edited_client: Client = this.convertToClient(control.value);
+          if (edited_client && edited_client.clientId > 0) {
+            this.clientService.editClient(edited_client).toPromise().then((client: Client) => {
+              control.get("isChanged").setValue(false);
+              this.success_saving(client);
+            }).catch((err: HttpErrorResponse) => {
+                this.error_saving(err, edited_client);
+              }
+            );
+          } else if (edited_client && edited_client.clientId === 0) {
+            this.clientService.addClient(edited_client).toPromise().then((client: Client) => {
+              control.get("isChanged").setValue(false);
+              this.success_saving(client);
+            }).catch((err: HttpErrorResponse) => {
+                this.error_saving(err, edited_client);
+              }
+            );
           }
-        );
-      } else if (edited_client && edited_client.clientId === 0) {
-        this.clientService.addClient(edited_client).toPromise().then((client: Client) => {
-          control.get("isChanged").setValue(false);
-          this.success_saving(client);
-        }).catch((err: HttpErrorResponse) => {
-            this.error_saving(err);
-          }
-        );
+        }
+      } else {
+        this.toastMessageService.inform("Помилка !", "Ви ввели некоректні дані !" + "<br>" +
+          control.value.surname + " " + control.value.firstName + " " + control.value.secondName, "error");
+        this.save_loading = false;
       }
     } else {
       this.save_loading = false;
@@ -166,25 +165,25 @@ export class ClientEditorComponent implements OnInit {
     this.onSave();
   }
 
-  private error_saving(err: HttpErrorResponse, client?: Client) {
+  private error_saving(err: HttpErrorResponse, client: Client) {
     this.save_loading = false;
     if (err.status === 422) {
       this.toastMessageService.inform("Помилка при збережені! <br> " +
-        +client.surname + " " + client.firstName + " " + client.secondName +
+        client.surname + " " + client.firstName + " " + client.secondName +
         "<br> не відповідає критеріям !",
         err.error, "error");
     } else if (err.status === 404) {
-      this.toastMessageService.inform("Помилка при збережені! <br>"
-        + client.surname + " " + client.firstName + " " + client.secondName,
+      this.toastMessageService.inform("Помилка при збережені! <br>" +
+        client.surname + " " + client.firstName + " " + client.secondName,
         err.error + "<br> Обновіть сторінку та спробуйте знову.", "error");
     } else if (err.status === 409) {
       this.toastMessageService.inform("Помилка при збережені! <br>" +
-        +client.surname + " " + client.firstName + " " + client.secondName +
+        client.surname + " " + client.firstName + " " + client.secondName +
         " <br> Конфлікт в базі даних !",
         err.error + "<br> Обновіть сторінку та спробуйте знову.", "error");
     } else {
-      this.toastMessageService.inform("Помилка при збережені! <br>"
-        + client.surname + " " + client.firstName + " " + client.secondName,
+      this.toastMessageService.inform("Помилка при збережені! <br>" +
+        client.surname + " " + client.firstName + " " + client.secondName,
         err.error + "<br>" + "HTTP status: " + err.status, "error");
     }
   }
@@ -268,9 +267,9 @@ export class ClientEditorComponent implements OnInit {
   private createFormGroup(client: Client): FormGroup {
     return this.fb.group({
       clientId: [client.clientId],
-      surname: [client.surname, [Validators.required, Validators.maxLength(50), Validators.pattern("[A-Za-zА-Яа-яЁёІіЇїЄє `]*")]],
-      firstName: [client.firstName, [Validators.required, Validators.maxLength(50), Validators.pattern("[A-Za-zА-Яа-яЁёІіЇїЄє `]*")]],
-      secondName: [client.secondName, [Validators.required, Validators.maxLength(50), Validators.pattern("[A-Za-zА-Яа-яЁёІіЇїЄє `]*")]],
+      surname: [client.surname, [Validators.required, Validators.maxLength(50), Validators.pattern("[A-Za-zА-Яа-яЁёІіЇїЄє '`]*")]],
+      firstName: [client.firstName, [Validators.required, Validators.maxLength(50), Validators.pattern("[A-Za-zА-Яа-яЁёІіЇїЄє '`]*")]],
+      secondName: [client.secondName, [Validators.required, Validators.maxLength(50), Validators.pattern("[A-Za-zА-Яа-яЁёІіЇїЄє '`]*")]],
       sex: [client.sex, [Validators.required, Validators.maxLength(1), Validators.pattern("^[ЧЖ]*$")]],
       birthday: [client.birthday ? (new Date(client.birthday[0], client.birthday[1] - 1, client.birthday[2]).toISOString().substring(0, 10)) : null,
         [Validators.required]],
@@ -281,9 +280,11 @@ export class ClientEditorComponent implements OnInit {
 
   change_sorting() {
     this.sorting_order = !this.sorting_order;
-    this.getClients(this.searchForm.getRawValue().searchControlForm, this.paginator.pageSize, this.paginator.pageIndex * this.paginator.pageSize, this.sorting_order);
-    // this.tableForm.setControl("clientsForm", this.updateFormGroups(<Client[]>this.tableForm.get("clientsForm").value));
-    // this.clientsForm = this.updateFormGroups(<Client[]>this.clientsForm.value);
+    if (this.paginator.pageIndex === 0) {
+      this.getClients(this.searchForm.getRawValue().searchControlForm, this.paginator.pageSize, this.paginator.pageIndex * this.paginator.pageSize, this.sorting_order);
+    } else {
+      this.paginator.firstPage();
+    }
   }
 
   /*

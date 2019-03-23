@@ -10,16 +10,16 @@
 
       <li class="nav-item">
         <a class="nav-link" routerLink="/dates" [ngClass]="{active:statusNavbar=='date'}"
-           (click)="statusNavbar = 'date'; isNavbarCollapsed = false">Дати</a>
+           (click)="statusNavbar = 'date'; isNavbarCollapsed = false">Графік філіалів</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/surgeonPlan" [ngClass]="{active:statusNavbar=='surgeonPlan'}"
+           (click)="statusNavbar = 'surgeonPlan'; isNavbarCollapsed = false">Графік хірурга</a>
       </li>
       <li class="nav-item ">
         <a class="nav-link" routerLink="/client" [ngClass]="{active:statusNavbar=='client'}"
            (click)="statusNavbar = 'client'; isNavbarCollapsed = false">Клієнти </a>
       </li>
-      <!--<li class="nav-item">-->
-      <!--<a class="nav-link" routerLink="/accomodation" [ngClass]="{active:statusNavbar=='accomodation'}"-->
-      <!--(click)="statusNavbar = 'accomodation'; isNavbarCollapsed = false">Поселення</a>-->
-      <!--</li>-->
       <li class="nav-item">
         <a class="nav-link" routerLink="/visit" [ngClass]="{active:statusNavbar=='visit'}"
            (click)="statusNavbar = 'visit'; isNavbarCollapsed = false">Поселення(new)</a>
@@ -46,7 +46,10 @@
 -->
 
       <li>
-        <div *ngIf="statusNavbar=='accomodation' || statusNavbar=='visit'">
+          <app-department-selector></app-department-selector>
+      </li>
+      <li>
+        <div>
           <app-date-selector></app-date-selector>
         </div>
       </li>

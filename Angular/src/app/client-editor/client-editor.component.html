@@ -1,139 +1,133 @@
+<div class="left-container" style="max-width: 800px; min-width: 550px; margin-left: 10px">
+  <mat-paginator [length]=countOfClients
+                 [pageSize]=pageSize
+                 [showFirstLastButtons]="true"
+                 [pageSizeOptions]="[10, 25, 50, 100]">
+  </mat-paginator>
 
-<ngx-toasta></ngx-toasta>
+  <form [formGroup]="searchForm">
+    <div class="input-group-prepend">
+      <span class="input-group-text">Пошук :</span>
+      <input id="search" type="search" formControlName="searchControlForm"
+             class="form-control border-left"
+             [ngClass]="{'is-valid':searchForm.valid, 'is-invalid':!searchForm.valid }">
+    </div>
+  </form>
+</div>
+<div class="left-container" style="max-width: 800px; min-width: 550px; margin-left: 10px">
+  <p class="h3 text-center">Клієнти клініки :</p>
 
-<!--<img [hidden]="!(clients_loading && !badConnection)" src="/assets/img/download.gif" style="max-width: 500px"/>-->
-<div>
-  <div class="left-container" style="max-width: 800px; min-width: 550px; margin-left: 10px">
-    <mat-paginator [length]=countOfClients
-                   [pageSize]=pageSize
-                   [showFirstLastButtons]="true"
-                   [pageSizeOptions]="[10, 25, 50, 100]">
-    </mat-paginator>
+  <mat-spinner *ngIf="clients_loading && !badConnection"></mat-spinner>
+  <img [hidden]="!badConnection" src="/assets/img/no_connection.jpg" style="max-width: 500px"/>
+  <form [hidden]="clients_loading" [formGroup]="tableForm">
+    <div class="table-responsive-lg">
+      <table class="table table-bordered table-sm table-hover">
 
-    <form [formGroup]="searchForm">
-      <div class="input-group-prepend">
-        <span class="input-group-text">Пошук :</span>
-        <input id="search" type="search" formControlName="searchControlForm"
-               class="form-control border-left"
-               [ngClass]="{'is-valid':searchForm.valid, 'is-invalid':!searchForm.valid }">
-      </div>
-    </form>
-  </div>
-  <div class="left-container" style="max-width: 800px; min-width: 550px; margin-left: 10px">
-    <p class="h3 text-center">Клієнти клініки :</p>
+        <thead>
+        <tr class="table-info">
+          <th scope="col" style="width: 30px;"></th>
+          <th scope="col" colspan="3">
+            <img [hidden]="!sorting_order" src="/assets/img/sort/ascending-sorting-48.png" style="max-width: 25px;"
+                 (click)="change_sorting()"/>
+            <img [hidden]="sorting_order" src="/assets/img/sort/descending-sorting-48.png" style="max-width: 25px;"
+                 (click)="change_sorting()"/>
+            <label>&nbsp; ПІБ Клієнта</label>
+          </th>
+          <th scope="col" style="width: 40px;">Ст.</th>
+          <th scope="col" style="width: 40px;">Дата народж.</th>
+          <th scope="col">Телефон</th>
+        </tr>
 
-    <mat-spinner *ngIf="clients_loading && !badConnection"></mat-spinner>
-    <img [hidden]="!badConnection" src="/assets/img/no_connection.jpg" style="max-width: 500px"/>
-    <form [hidden]="clients_loading" [formGroup]="tableForm">
-      <div class="table-responsive-lg">
-        <table class="table table-bordered table-sm table-hover">
+        </thead>
 
-          <thead>
-          <tr class="table-info">
-            <th scope="col" style="width: 30px;"></th>
-            <th scope="col" colspan="3">
-              <img [hidden]="!sorting_order" src="/assets/img/sort/ascending-sorting-48.png" style="max-width: 25px;"
-                   (click)="change_sorting()"/>
-              <img [hidden]="sorting_order" src="/assets/img/sort/descending-sorting-48.png" style="max-width: 25px;"
-                   (click)="change_sorting()"/>
-              <label>&nbsp; ПІБ Клієнта</label>
-            </th>
-            <th scope="col" style="width: 40px;">Ст.</th>
-            <th scope="col" style="width: 40px;">Дата народж.</th>
-            <th scope="col">Телефон</th>
-          </tr>
+        <tbody formArrayName="clientsForm">
+        <tr *ngFor="let clientForm of (tableForm.get('clientsForm').controls); let i=index"
+            [ngClass]="{changed:clientForm.get('isChanged').value}">
 
-          </thead>
+          <td [formGroupName]="i">
+            <input type="checkbox" formControlName="isChanged"
+                   class="form-control form-control-sm input-style-active">
+          </td>
 
-          <tbody formArrayName="clientsForm">
-          <tr *ngFor="let clientForm of (tableForm.get('clientsForm').controls); let i=index"
-              [ngClass]="{changed:clientForm.get('isChanged').value}">
-
-            <td [formGroupName]="i">
-              <input type="checkbox" formControlName="isChanged"
-                     class="form-control form-control-sm input-style-active">
-            </td>
-
-            <td [formGroupName]="i">
-              <input #surname id="surname" type="text" formControlName="surname" title="" placeholder="  - Прізвище -  "
-                     [ngClass]="{'form-control form-control-sm':true,
+          <td [formGroupName]="i">
+            <input #surname id="surname" type="text" formControlName="surname" title="" placeholder="  - Прізвище -  "
+                   [ngClass]="{'form-control form-control-sm':true,
                     'input-style-active':clientForm.get('surname').valid,
                     'is-invalid':!clientForm.get('surname').valid
                     }"
-                     (input)="clientForm.get('isChanged').patchValue(true)"
-                     (keydown.space)="firstName.focus(); false">
-            </td>
+                   (input)="clientForm.get('isChanged').patchValue(true)"
+                   (keydown.space)="firstName.focus(); false">
+          </td>
 
-            <td [formGroupName]="i">
-              <input #firstName type="text" formControlName="firstName" placeholder="  - Ім'я -  "
-                     class="form-control form-control-sm"
-                     [ngClass]="{'input-style-active':clientForm.get('firstName').valid,
+          <td [formGroupName]="i">
+            <input #firstName type="text" formControlName="firstName" placeholder="  - Ім'я -  "
+                   class="form-control form-control-sm"
+                   [ngClass]="{'input-style-active':clientForm.get('firstName').valid,
                     'is-invalid':!clientForm.get('firstName').valid }"
-                     (input)="clientForm.get('isChanged').patchValue(true)"
-                     (keydown.space)="secondName.focus(); false">
-            </td>
+                   (input)="clientForm.get('isChanged').patchValue(true)"
+                   (keydown.space)="secondName.focus(); false">
+          </td>
 
-            <td [formGroupName]="i">
-              <input #secondName type="text" formControlName="secondName" placeholder="  - по-Батькові -  "
-                     class="form-control form-control-sm"
-                     [ngClass]="{'input-style-active':clientForm.get('secondName').valid,
+          <td [formGroupName]="i">
+            <input #secondName type="text" formControlName="secondName" placeholder="  - по-Батькові -  "
+                   class="form-control form-control-sm"
+                   [ngClass]="{'input-style-active':clientForm.get('secondName').valid,
                     'is-invalid':!clientForm.get('secondName').valid
                     }"
-                     (input)="clientForm.get('isChanged').patchValue(true)"
-                     (keydown.space)="sex.focus(); false">
-            </td>
+                   (input)="clientForm.get('isChanged').patchValue(true)"
+                   (keydown.space)="sex.focus(); false">
+          </td>
 
-            <td [formGroupName]="i">
-              <select #sex type="text" formControlName="sex"
-                      class="form-control form-control-sm"
-                      [ngClass]="{'input-style-active':clientForm.get('sex').valid,
+          <td [formGroupName]="i">
+            <select #sex type="text" formControlName="sex"
+                    class="form-control form-control-sm"
+                    [ngClass]="{'input-style-active':clientForm.get('sex').valid,
                     'is-invalid':!clientForm.get('sex').valid    }"
-                      (change)="clientForm.get('isChanged').patchValue(true)">
-                <option *ngFor="let sex of genders" [selected]="clientForm.get('sex').value === sex" value="{{sex}}">
-                  {{sex}}
-                </option>
-              </select>
-            </td>
+                    (change)="clientForm.get('isChanged').patchValue(true)">
+              <option *ngFor="let sex of genders" [selected]="clientForm.get('sex').value === sex" value="{{sex}}">
+                {{sex}}
+              </option>
+            </select>
+          </td>
 
-            <td [formGroupName]="i">
-              <input #birthday type="date" formControlName="birthday"
-                     min="{{min_date | date: 'yyyy-MM-dd'}}" max="{{max_date | date: 'yyyy-MM-dd'}}"
-                     class="form-control form-control-sm"
-                     [ngClass]="{'input-style-active':clientForm.get('birthday').valid,
+          <td [formGroupName]="i">
+            <input #birthday type="date" formControlName="birthday"
+                   min="{{min_date | date: 'yyyy-MM-dd'}}" max="{{max_date | date: 'yyyy-MM-dd'}}"
+                   class="form-control form-control-sm"
+                   [ngClass]="{'input-style-active':clientForm.get('birthday').valid,
                     'is-invalid':!clientForm.get('birthday').valid }"
-                     (change)="clientForm.get('isChanged').patchValue(true)">
-            </td>
+                   (change)="clientForm.get('isChanged').patchValue(true)">
+          </td>
 
-            <td [formGroupName]="i">
-              <input #telephone type="tel" formControlName="telephone" placeholder="  - Телефон -  "
-                     class="form-control form-control-sm"
-                     [ngClass]="{'input-style-active':clientForm.get('telephone').valid,
+          <td [formGroupName]="i">
+            <input #telephone type="tel" formControlName="telephone" placeholder="  - Телефон -  "
+                   class="form-control form-control-sm"
+                   [ngClass]="{'input-style-active':clientForm.get('telephone').valid,
                     'is-invalid':!clientForm.get('telephone').valid }"
-                     (change)="clientForm.get('isChanged').patchValue(true)">
-            </td>
-          </tr>
-          </tbody>
-        </table>
-      </div>
-    </form>
-  </div>
-  <br><br>
-
-  <div class="left-container fixed-bottom bg-light">
-    <button class="btn btn-min-style" (click)="onAdd()" title="Додати">Add</button>
-    <button class="btn btn-success btn-min-style" (click)="onSave()" title="Зберегти"
-            [disabled]="countOfChangedClients == 0">Save
-    </button>
-    <img [hidden]="!save_loading" src="/assets/img/rotating-balls-spinner.gif" height="40" width="40"/>
-    <button class="btn btn-warning btn-min-style" (click)="onRefresh()" title="Обновити">Refresh</button>
-    <button class="btn btn-dark btn-min-style" (click)="onDelete()" title="Видалити"
-            [disabled]="countOfChangedClients == 0">Delete
-    </button>
-    <img [hidden]="!del_loading" src="/assets/img/rotating-balls-spinner.gif" height="40" width="40"/>
-    <button class="btn btn-danger btn-min-style" (click)="onCancel()" title="Відмінити"
-            [disabled]="countOfChangedClients == 0">Cancel
-    </button>
-    <!--<button class="btn btn-danger btn-min-style" (click)="test()">Test</button>-->
-  </div>
-
+                   (change)="clientForm.get('isChanged').patchValue(true)">
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </form>
 </div>
+<br><br>
+
+<div class="left-container fixed-bottom bg-light">
+  <button class="btn btn-min-style" (click)="onAdd()" title="Додати">Add</button>
+  <button class="btn btn-success btn-min-style" (click)="onSave()" title="Зберегти"
+          [disabled]="countOfChangedClients == 0">Save
+  </button>
+  <img [hidden]="!save_loading" src="/assets/img/rotating-balls-spinner.gif" height="40" width="40"/>
+  <button class="btn btn-warning btn-min-style" (click)="onRefresh()" title="Обновити">Refresh</button>
+  <button class="btn btn-dark btn-min-style" (click)="onDelete()" title="Видалити"
+          [disabled]="countOfChangedClients == 0">Delete
+  </button>
+  <img [hidden]="!del_loading" src="/assets/img/rotating-balls-spinner.gif" height="40" width="40"/>
+  <button class="btn btn-danger btn-min-style" (click)="onCancel()" title="Відмінити"
+          [disabled]="countOfChangedClients == 0">Cancel
+  </button>
+  <!--<button class="btn btn-danger btn-min-style" (click)="test()">Test</button>-->
+</div>
+

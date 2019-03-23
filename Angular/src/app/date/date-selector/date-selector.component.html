@@ -5,23 +5,27 @@
              (click)="calendar.toggle();"
              [minDate]="minDate"
              [maxDate]="maxDate"
-             [dayTemplate]="selectedCustomDay" >
+             [dayTemplate]="selectedCustomDay">
 
       <div class="input-group-append">
-        <button mat-raised-button matTooltip="Додати нову дату операційного дня." class="btn btn-outline-secondary" (click)="addDate()" (click)="calendar.close()" type="button"  > +
+        <button type="button"
+                class="btn btn-light"
+                (click)="addDate()"
+                (click)="calendar.close()"
+                title="Додати нову дату операційного дня."> +
         </button>
       </div>
     </div>
   </div>
 </form>
 
-<ng-template #selectedCustomDay let-date="date" let-currentMonth="currentMonth" let-disabled="disabled" >
+<ng-template #selectedCustomDay let-date="date" let-currentMonth="currentMonth" let-disabled="disabled">
   <span class="custom-day"
         (click)="!disabled ? onSelect(date): false"
         [class.work-day]="!disabled"
         [class.lock-day]="isLocked(date)"
         [class.hidden]="date.month !== currentMonth"
-        [class.text-muted]="disabled" >
+        [class.text-muted]="disabled">
     {{ date.day }}
   </span>
 </ng-template>

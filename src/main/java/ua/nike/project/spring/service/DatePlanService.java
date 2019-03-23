@@ -6,11 +6,15 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import ua.nike.project.hibernate.entity.Client;
 import ua.nike.project.hibernate.entity.DatePlan;
 import ua.nike.project.spring.dao.DAO;
+import ua.nike.project.spring.vo.ClientVO;
 import ua.nike.project.spring.vo.DatePlanVO;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -44,6 +48,18 @@ public class DatePlanService {
         if (entities == null) return null;
         List<DatePlanVO> result = new ArrayList<>();
         for (DatePlan entity : entities) {
+            result.add(convertToDatePlanVO(entity));
+        }
+        return result;
+    }
+
+    public List<DatePlanVO> getByDepartment(Integer departmentID, LocalDate minDate) {
+        Object[] parameters = {departmentID, minDate};
+        List<DatePlan> datePlans = datePlanDAO.findAll("DatePlan.findByDepartment", parameters);
+
+        if (datePlans == null) return null;
+        List<DatePlanVO> result = new ArrayList<>();
+        for (DatePlan entity : datePlans) {
             result.add(convertToDatePlanVO(entity));
         }
         return result;

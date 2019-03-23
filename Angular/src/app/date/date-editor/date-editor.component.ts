@@ -7,6 +7,10 @@ import {HttpErrorResponse} from "@angular/common/http";
 import {ToastMessageService} from "../../service/toast-message.service";
 import {DatePlan} from "../../backend_types/date-plan";
 import {DatePlanService} from "../../service/date-plan.service";
+import {DepartmentService} from "../../service/department.service";
+import {Department} from "../../backend_types/department";
+import {GlobalService} from "../../service/global.service";
+import {Subscription} from "rxjs";
 
 const I18N_VALUES = {
   "ua": {
@@ -59,27 +63,29 @@ export class EditedDatepickerI18n extends NgbDatepickerI18n {
 export class DateEditorComponent implements OnInit, OnDestroy {
   minDate: NgbDate = NgbDate.from(this.calendar.getToday());
   maxDate: NgbDate = new NgbDate(this.calendar.getToday().year + 5, 12, 31);
-  visitDates: DatePlan[] = [];
+  datePlans: DatePlan[] = [];
   selectedDates: DatePlan[] = [];
+
+  selectedDepartment: Department = this.globalService.getDepartment();
+  private departmentSubscriber: Subscription;
+
   loading_save = false;
   del_loading = false;
-  lock_loading = false;
-  unlock_loading = false;
   dates_loading = false;
 
   isLoadingOFF(): boolean {
     return !(this.loading_save
-      || this.del_loading
-      || this.lock_loading
-      || this.unlock_loading);
+      || this.del_loading);
   };
 
   constructor(private router: Router,
               private config: NgbDatepickerConfig,
               private calendar: NgbCalendar,
-              private dateService: DatePlanService,
+              private datePlanService: DatePlanService,
+              private globalService: GlobalService,
               private serviceNavbar: NavbarService,
               private compiler: Compiler,
+              private departmentService: DepartmentService,
               private toastMessageService: ToastMessageService,
   ) {
 
@@ -92,15 +98,24 @@ export class DateEditorComponent implements OnInit, OnDestroy {
       const d = new Date(date.year, date.month - 1, date.day);
       return d.getDay() === 0 || d.getDay() === 6;
     };
+
+
   }
 
   ngOnInit(): void {
     this.serviceNavbar.change("date");
-    this.getDates();
+    if (this.selectedDepartment) {
+      this.getDatePlans(this.selectedDepartment.departmentId, new Date(this.minDate.year, this.minDate.month - 2, this.minDate.day));
+    }
+    this.departmentSubscriber = this.globalService.emittedDepartment.subscribe((selectedDepartment: Department) => {
+      this.selectedDepartment = selectedDepartment;
+      this.getDatePlans(this.selectedDepartment.departmentId, new Date(this.minDate.year, this.minDate.month - 2, this.minDate.day));
+    });
   }
 
   ngOnDestroy(): void {
     this.compiler.clearCache();
+    this.departmentSubscriber.unsubscribe();
   }
 
   onSelect(date: NgbDateStruct, disabled: boolean) {
@@ -109,13 +124,15 @@ export class DateEditorComponent implements OnInit, OnDestroy {
       if (date_index !== -1) {
         this.selectedDates.splice(date_index, 1);
       } else {
-        const visitDate_index = this.indexOf(date, this.visitDates);
-        if (visitDate_index !== -1) {
-          this.selectedDates.push(this.visitDates[visitDate_index]);
+        const datePlan_index = this.indexOf(date, this.datePlans);
+        if (datePlan_index !== -1) {
+          this.selectedDates.push(this.datePlans[datePlan_index]);
         } else {
-          const visitDate: DatePlan = new DatePlan();
-          visitDate.date = [date.year, date.month, date.day];
-          this.selectedDates.push(visitDate);
+          const datePlan: DatePlan = new DatePlan();
+          datePlan.date = [date.year, date.month, date.day];
+          datePlan.departmentID = this.selectedDepartment.departmentId;
+          datePlan.disable = false;
+          this.selectedDates.push(datePlan);
         }
         this.selectedDates.sort((date1, date2) => {
           if (date1.date[0] !== date2.date[0]) {
@@ -134,73 +151,59 @@ export class DateEditorComponent implements OnInit, OnDestroy {
     if (this.selectedDates.length > 0) {
       this.loading_save = true;
       if (this.selectedDates[0].datePlanId === 0) {
-        this.dateService.addDatePlan(this.selectedDates[0]).toPromise().then((visitDate: DatePlan) => {
+        this.datePlanService.addDatePlan(this.selectedDates[0]).toPromise().then((datePlan: DatePlan) => {
           this.loading_save = false;
           this.selectedDates.splice(0, 1);
-          this.success_saving(visitDate);
+          this.success_saving(datePlan);
         }).catch((err: HttpErrorResponse) => {
           this.error_saving(err, this.selectedDates[0]);
         });
       } else if (this.selectedDates[0].datePlanId > 0) {
-        this.dateService.editDatePlan(this.selectedDates[0]).toPromise().then((visitDate: DatePlan) => {
+        this.datePlanService.editDatePlan(this.selectedDates[0]).toPromise().then((datePlan: DatePlan) => {
           this.loading_save = false;
           this.selectedDates.splice(0, 1);
-          this.success_saving(visitDate);
+          this.success_saving(datePlan);
         }).catch((err: HttpErrorResponse) => {
           this.error_saving(err);
         });
       }
     } else {
-      this.lock_loading = false;
-      this.unlock_loading = false;
       this.loading_save = false;
       this.onRefresh();
     }
   }
 
-  private success_saving(visitDate?: DatePlan) {
+  private success_saving(datePlan?: DatePlan) {
     this.toastMessageService.inform("Збережено !", "Операційна дата успішно збережена !", "success");
     this.onSave();
   }
 
-  private error_saving(err: HttpErrorResponse, visitDate?: DatePlan) {
+  private error_saving(err: HttpErrorResponse, datePlan?: DatePlan) {
     this.loading_save = false;
     if (err.status === 422) {
-      this.toastMessageService.inform("Помилка при збережені! <br>" + this.refactorDay(visitDate) + "<br> не відповідає критеріям !",
+      this.toastMessageService.inform("Помилка при збережені! <br>" + this.refactorDay(datePlan) + "<br> не відповідає критеріям !",
         err.error, "error");
     } else if (err.status === 404) {
-      this.toastMessageService.inform("Помилка при збережені! <br>" + this.refactorDay(visitDate),
+      this.toastMessageService.inform("Помилка при збережені! <br>" + this.refactorDay(datePlan),
         err.error + "<br> Обновіть сторінку та спробуйте знову.", "error");
     } else if (err.status === 409) {
-      this.toastMessageService.inform("Помилка при збережені! <br>" + this.refactorDay(visitDate) + "<br> Конфлікт в базі даних !",
+      this.toastMessageService.inform("Помилка при збережені! <br>" + this.refactorDay(datePlan) + "<br> Конфлікт в базі даних !",
         err.error + "<br> Обновіть сторінку та спробуйте знову. <br> Можливо дата існує серед прихованих.", "error");
     } else {
-      this.toastMessageService.inform("Помилка при збережені! <br>" + this.refactorDay(visitDate),
+      this.toastMessageService.inform("Помилка при збережені! <br>" + this.refactorDay(datePlan),
         err.error + "<br>" + "HTTP status: " + err.status, "error");
     }
   }
 
   onRefresh() {
-    this.getDates();
-  }
-
-  onLock() {
-    this.lock_loading = true;
-    this.selectedDates.forEach(value => value.disable = true);
-    this.onSave();
-  }
-
-  onUnlock() {
-    this.unlock_loading = true;
-    this.selectedDates.forEach(value => value.disable = false);
-    this.onSave();
+    this.getDatePlans(this.selectedDepartment.departmentId, new Date(this.minDate.year, this.minDate.month - 2, this.minDate.day));
   }
 
   onDelete() {
     if (this.selectedDates.length > 0) {
       this.del_loading = true;
       if (this.selectedDates[0].datePlanId > 0) {
-        this.dateService.removeDatePlan(this.selectedDates[0].datePlanId).toPromise().then(() => {
+        this.datePlanService.removeDatePlan(this.selectedDates[0].datePlanId).toPromise().then(() => {
           this.selectedDates.splice(0, 1);
           this.success_deleting();
         }).catch((err: HttpErrorResponse) => {
@@ -214,22 +217,21 @@ export class DateEditorComponent implements OnInit, OnDestroy {
       this.del_loading = false;
       this.onRefresh();
     }
-
   }
 
-  private success_deleting(visitDate?: DatePlan) {
+  private success_deleting(datePlan?: DatePlan) {
     this.toastMessageService.inform("Видалено !", "Дати успішно видалені !", "success");
     this.onDelete();
   }
 
-  private error_deleting(err: HttpErrorResponse, visitDate?: DatePlan) {
+  private error_deleting(err: HttpErrorResponse, datePlan?: DatePlan) {
     this.del_loading = false;
     if (err.status === 409) {
-      this.toastMessageService.inform("Помилка при видалені! <br>" + this.refactorDay(visitDate), "Цього числа існують активні візити! <br>" +
+      this.toastMessageService.inform("Помилка при видалені! <br>" + this.refactorDay(datePlan), "Цього числа існують активні візити! <br>" +
         " Спочатку видаліть візити !", "error");
       this.toastMessageService.inform("Рекомендація.", "Можна заблокувати через кнопку 'Lock'", "info", 10000);
     } else {
-      this.toastMessageService.inform("Помилка при видалені! <br>" + this.refactorDay(visitDate),
+      this.toastMessageService.inform("Помилка при видалені! <br>" + this.refactorDay(datePlan),
         err.error + "<br>" + "HTTP status: " + err.status, "error");
     }
   }
@@ -239,41 +241,48 @@ export class DateEditorComponent implements OnInit, OnDestroy {
   }
 
   isPresented(date: NgbDate): boolean {
-    const index = this.indexOf(date, this.visitDates);
-    return index !== -1 && !this.visitDates[index].disable;
+    const index = this.indexOf(date, this.datePlans);
+    return index !== -1 && !this.datePlans[index].disable;
   }
 
   isDisabled(date: NgbDate): boolean {
-    const index = this.indexOf(date, this.visitDates);
-    return index !== -1 && this.visitDates[index].disable;
+    const index = this.indexOf(date, this.datePlans);
+    return index !== -1 && this.datePlans[index].disable;
   }
 
-  private indexOf(date: NgbDateStruct, visitDates: DatePlan[]): number {
-    return visitDates.findIndex((visitDate: DatePlan) => {
-      return visitDate.date[0] == date.year && visitDate.date[1] == date.month && visitDate.date[2] == date.day;
+  private indexOf(date: NgbDateStruct, datePlans: DatePlan[]): number {
+    return datePlans.findIndex((datePlan: DatePlan) => {
+      return datePlan.date[0] == date.year && datePlan.date[1] == date.month && datePlan.date[2] == date.day;
     });
   }
 
-  private getDates(): void {
+  private getDatePlans(departmentID: number, minDate: Date): void {
     this.dates_loading = true;
     this.selectedDates = [];
-    this.dateService.getDatePlans().toPromise().then((visitDates: DatePlan[]) => {
-      this.visitDates = visitDates;
+    this.datePlanService.getDatePlansByDepartment(departmentID, minDate).toPromise().then((datePlans: DatePlan[]) => {
+      this.datePlans = datePlans;
       setTimeout(() => this.dates_loading = false, 400);
     }).catch((err: HttpErrorResponse) => {
       this.dates_loading = true;
       this.toastMessageService.inform("Сервер недоступний!",
         "Спробуйте пізніше !" + "<br>" + err.error + "<br>" + err.message, "error", 10000);
       setTimeout(() => {
-        this.getDates();
+        this.getDatePlans(departmentID, minDate);
       }, 15000);
     });
   }
 
-  refactorDay(visitDate: DatePlan): string {
-    return (visitDate.date[2] < 10 ? "0" + visitDate.date[2] : visitDate.date[2])
-      + (visitDate.date[1] < 10 ? ".0" + visitDate.date[1] : "." + visitDate.date[1])
-      + (visitDate.date[0] < 10 ? ".0" + visitDate.date[0] : "." + visitDate.date[0]);
+  refactorDay(datePlan: DatePlan): string {
+    return (datePlan.date[2] < 10 ? "0" + datePlan.date[2] : datePlan.date[2])
+      + (datePlan.date[1] < 10 ? ".0" + datePlan.date[1] : "." + datePlan.date[1])
+      + (datePlan.date[0] < 10 ? ".0" + datePlan.date[0] : "." + datePlan.date[0]);
   }
 
+
+  // test(){
+  //   console.log(this.selectedDepartment);
+  //   console.log(this.departmentService);
+  //   console.log(this.departmentService.selectedDepartment);
+  //   this.departmentService.selectedDepartment.toPromise().then(value => console.log(value));
+  // }
 }

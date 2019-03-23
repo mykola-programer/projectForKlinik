@@ -21,6 +21,8 @@ import {MatDialog} from "@angular/material";
 import {RelocationDialogComponent} from "../relocation-dialog/relocation-dialog.component";
 import {Subscription} from "rxjs";
 import {DatePlan} from "../backend_types/date-plan";
+import {GlobalService} from "../service/global.service";
+import {Department} from "../backend_types/department";
 
 @Component({
   selector: "app-visit",
@@ -161,15 +163,19 @@ export class VisitComponent implements OnInit, OnDestroy {
               private operationTypeService: OperationTypeService,
               private visitService: VisitService,
               private toastMessageService: ToastMessageService,
+              private globalService: GlobalService,
               private dialog: MatDialog,
               private compiler: Compiler,
               private fb: FormBuilder
   ) {
+    this.globalService.emittedDepartment.subscribe((selectedDepartment: Department) => {
+    });
   }
 
   ngOnInit() {
     this.navbarService.change("visit");
     this.calender_loading = true;
+    // console.log("Init Visit Editor !!!");
 
     this.selected_date_Subscriber = this.dateService.selected_date.subscribe(
       (selected_visit_date: DatePlan) => {

@@ -1,5 +1,6 @@
 import {Component, OnInit} from "@angular/core";
 import {AuthService} from "./service/auth.service";
+import {ToastMessageService} from "./service/toast-message.service";
 
 @Component({
   selector: "app-root",
@@ -10,7 +11,9 @@ export class AppComponent implements OnInit {
 
   isLogging: boolean = false;
 
-  constructor(private auth: AuthService) {
+  constructor(private auth: AuthService,
+              private toastMessageService: ToastMessageService,
+  ) {
   }
 
   ngOnInit() {

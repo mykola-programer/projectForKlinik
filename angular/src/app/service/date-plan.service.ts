@@ -1,6 +1,6 @@
 import {Injectable} from "@angular/core";
 import {Observable} from "rxjs/internal/Observable";
-import {HttpClient} from "@angular/common/http";
+import {HttpClient, HttpParams} from "@angular/common/http";
 import {UrlProperty} from "./url-property";
 import {DatePlan} from "../backend_types/date-plan";
 
@@ -16,8 +16,18 @@ export class DatePlanService {
     return this.http.get<DatePlan>(UrlProperty.serverUrl + UrlProperty.datePlansUrl + datePlanId);
   }
 
+/** @deprecated */
   getDatePlans(): Observable<DatePlan[]> {
     return this.http.get<DatePlan[]>(UrlProperty.serverUrl + UrlProperty.datePlansUrl);
+  }
+  getDatePlansByDepartment(departmentID: number, minDate: Date): Observable<DatePlan[]> {
+    let params = new HttpParams()
+      .set("departmentID", departmentID.toString())
+      .set("minDate", minDate.toLocaleDateString());
+    return this.http.get<DatePlan[]>(UrlProperty.serverUrl + UrlProperty.datePlansUrl, {
+      headers: UrlProperty.httpOptions.headers,
+      params: params
+    });
   }
 
   addDatePlan(datePlan: DatePlan): Observable<DatePlan> {

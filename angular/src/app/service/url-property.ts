@@ -10,6 +10,7 @@ export class UrlProperty {
   static readonly search = "search/";
   static readonly datePlansUrl = "date_plans/";
   static readonly managersUrl = "managers/";
+  static readonly departmentsUrl = "departments/";
   static readonly proceduresUrl = "operation_types/";
   static readonly surgeonPlansUrl = "surgeon_plans/";
   static readonly surgeonsUrl = "surgeons/";

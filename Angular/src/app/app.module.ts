@@ -21,9 +21,23 @@ import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 import {OperationTypeEditorComponent} from "./operation-type-editor/operation-type-editor.component";
 import {DateSelectorComponent} from "./date/date-selector/date-selector.component";
 import {RelocationDialogComponent} from "./relocation-dialog/relocation-dialog.component";
-import { LoginComponent } from './login/login.component';
-import {MatPaginatorModule} from '@angular/material/paginator';
+import {LoginComponent} from "./login/login.component";
+import {MatPaginatorModule} from "@angular/material/paginator";
 import {DatePlanService} from "./service/date-plan.service";
+import {DepartmentSelectorComponent} from "./department/department-selector/department-selector.component";
+import {DepartmentService} from "./service/department.service";
+import {GlobalService} from "./service/global.service";
+import {AccomodationService} from "./service/accomodation.service";
+import {AuthService} from "./service/auth.service";
+import {ClientService} from "./service/client.service";
+import {DateService} from "./service/date.service";
+import {ManagerService} from "./service/manager.service";
+import {OperationTypeService} from "./service/operation-type.service";
+import {SurgeonService} from "./service/surgeon.service";
+import {SurgeonPlanService} from "./service/surgeon-plan.service";
+import {ToastMessageService} from "./service/toast-message.service";
+import {UserService} from "./service/user.service";
+import {VisitService} from "./service/visit.service";
 
 @NgModule({
   declarations: [
@@ -38,6 +52,7 @@ import {DatePlanService} from "./service/date-plan.service";
     OperationTypeEditorComponent,
     RelocationDialogComponent,
     LoginComponent,
+    DepartmentSelectorComponent,
   ],
   imports: [
     ReactiveFormsModule,
@@ -56,7 +71,21 @@ import {DatePlanService} from "./service/date-plan.service";
     ToastaModule.forRoot()
   ],
   exports: [BrowserModule, ToastaModule],
-  providers: [DatePlanService, NavbarService],
+  providers: [AccomodationService,
+    AuthService,
+    ClientService,
+    DateService,
+    DatePlanService,
+    NavbarService,
+    DepartmentService,
+    GlobalService,
+    ManagerService,
+    OperationTypeService,
+    SurgeonService,
+    SurgeonPlanService,
+    ToastMessageService,
+    UserService,
+    VisitService],
   entryComponents: [
     RelocationDialogComponent,
   ],
