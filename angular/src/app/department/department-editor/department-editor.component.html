@@ -1,0 +1,94 @@
+<div>
+  <div class="left-container" style="max-width: 800px; min-width: 550px; margin-left: 10px">
+    <form [formGroup]="searchForm">
+      <div class="input-group-prepend">
+        <span class="input-group-text">Пошук :</span>
+        <input #search id="search" type="search" formControlName="searchControlForm"
+               [ngClass]="{'form-control border-left':true,
+                    'is-valid':searchForm.valid,
+                    'is-invalid':!searchForm.valid
+                    }">
+      </div>
+    </form>
+  </div>
+
+  <div class="left-container" style="max-width: 800px; min-width: 550px; margin-left: 10px">
+    <p class="h3 text-center">Філіали :</p>
+
+    <mat-spinner *ngIf="departments_loading && !badConnection"></mat-spinner>
+    <img [hidden]="!badConnection" src="/assets/img/no_connection.jpg" style="max-width: 500px"/>
+    <div [hidden]="departments_loading">
+      <label class="text-right">
+        <input type="checkbox" [(ngModel)]="hidden_departments"
+               class="text-right"> приховані
+      </label>
+
+      <form [formGroup]="tableForm">
+        <div class="table-responsive-lg">
+          <table id="table" class="table table-bordered table-sm table-hover">
+
+            <thead>
+            <tr class="table-info">
+              <th scope="col" style="width: 30px"></th>
+              <th scope="col">
+                <img [hidden]="!sorting_order" src="/assets/img/sort/sort-ASC.png" style="max-width: 25px;"
+                     (click)="change_sorting()"/>
+                <img [hidden]="sorting_order" src="/assets/img/sort/sort-DESC.png" style="max-width: 25px;"
+                     (click)="change_sorting()"/>
+                <label>&nbsp; Назва</label>
+              </th>
+              <th scope="col" style="width: 30px" *ngIf="hidden_departments">бл.</th>
+            </tr>
+            </thead>
+
+            <tbody formArrayName="departmentsForm">
+
+            <tr *ngFor="let departmentForm of (tableForm.get('departmentsForm').controls) | filterDepartment : search_value; let i=index"
+                [hidden]="departmentForm.get('disable').value && !hidden_departments"
+                [ngClass]="{changed:departmentForm.get('isChanged').value}">
+
+              <td [formGroupName]="i">
+                <input type="checkbox" formControlName="isChanged"
+                       class="form-control form-control-sm input-style-active">
+              </td>
+
+              <td [formGroupName]="i">
+                <input id="name" #name type="text" formControlName="name" title="" placeholder="  - Назва філіалу -  "
+                       [ngClass]="{'form-control form-control-sm':true,
+                    'input-style-active':departmentForm.get('name').valid,
+                    'is-invalid':!departmentForm.get('name').valid
+                    }"
+                       (input)="departmentForm.get('isChanged').patchValue(true)">
+              </td>
+
+              <td [formGroupName]="i" *ngIf="hidden_departments">
+                <input type="checkbox" formControlName="disable"
+                       (change)="departmentForm.get('isChanged').patchValue(true)"
+                       class="form-control form-control-sm input-style-active">
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<br><br><br>
+
+<div class="left-container fixed-bottom bg-light">
+  <button class="btn btn-min-style" (click)="onAdd()" title="Додати">Add</button>
+  <button class="btn btn-success btn-min-style" (click)="onSave()" title="Зберегти"
+          [disabled]="count_of_department == 0">Save
+  </button>
+  <img [hidden]="!save_loading" src="/assets/img/rotating-balls-spinner.gif" height="40" width="40"/>
+  <button class="btn btn-warning btn-min-style" (click)="onRefresh()" title="Обновити">Refresh</button>
+  <button class="btn btn-dark btn-min-style" (click)="onDelete()" title="Видалити"
+          [disabled]="count_of_department == 0">Delete
+  </button>
+  <img [hidden]="!del_loading" src="/assets/img/rotating-balls-spinner.gif" height="40" width="40"/>
+  <button class="btn btn-danger btn-min-style" (click)="onCancel()" title="Відмінити"
+          [disabled]="count_of_department == 0">Cancel
+  </button>
+  <button (click)="test()">TEST</button>
+</div>

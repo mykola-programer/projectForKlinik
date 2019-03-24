@@ -4,6 +4,4 @@ export class OperationType {
   public disable = false;
   public isChanged = false;
 
-
-
 }

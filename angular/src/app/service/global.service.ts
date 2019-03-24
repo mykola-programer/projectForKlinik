@@ -6,6 +6,9 @@ export class GlobalService {
   emittedDepartment: EventEmitter<Department> = new EventEmitter();
   private selectedDepartment: Department;
 
+  statusNavbar: EventEmitter<string> = new EventEmitter();
+
+
   constructor() {
     this.emittedDepartment.subscribe(selectedDepartment => {
       this.selectedDepartment = selectedDepartment;
@@ -14,7 +17,7 @@ export class GlobalService {
     });
   }
 
-  public change(selectedDepartment: Department) {
+  public changeDepartment(selectedDepartment: Department) {
     // console.log("changeDepartment");
     this.emittedDepartment.emit(selectedDepartment);
   }
@@ -22,5 +25,9 @@ export class GlobalService {
   getDepartment(): Department {
     // console.log("getDepartment");
     return this.selectedDepartment;
+  }
+
+  public changeNavbar(status: string) {
+    this.statusNavbar.emit(status);
   }
 }

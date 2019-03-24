@@ -12,7 +12,6 @@ import {MatDialogModule} from "@angular/material/dialog";
 import {DateEditorComponent} from "./date/date-editor/date-editor.component";
 import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {NavbarComponent} from "./navbar/navbar.component";
-import {NavbarService} from "./service/navbar.service";
 import {SurgeonEditorComponent} from "./surgeon-editor/surgeon-editor.component";
 import {ToastaModule} from "ngx-toasta";
 import {ManagerEditorComponent} from "./manager-editor/manager-editor.component";
@@ -38,6 +37,8 @@ import {SurgeonPlanService} from "./service/surgeon-plan.service";
 import {ToastMessageService} from "./service/toast-message.service";
 import {UserService} from "./service/user.service";
 import {VisitService} from "./service/visit.service";
+import {DepartmentEditorComponent} from "./department/department-editor/department-editor.component";
+import {FilterDepartmentPipe} from "./department/department-editor/filter-department.pipe";
 
 @NgModule({
   declarations: [
@@ -53,6 +54,8 @@ import {VisitService} from "./service/visit.service";
     RelocationDialogComponent,
     LoginComponent,
     DepartmentSelectorComponent,
+    DepartmentEditorComponent,
+    FilterDepartmentPipe,
   ],
   imports: [
     ReactiveFormsModule,
@@ -76,7 +79,6 @@ import {VisitService} from "./service/visit.service";
     ClientService,
     DateService,
     DatePlanService,
-    NavbarService,
     DepartmentService,
     GlobalService,
     ManagerService,

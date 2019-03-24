@@ -3,5 +3,6 @@ export class DatePlan {
   public date: number[];
   public departmentID: number;
   public disable = false;
+  public isChanged = false;
 
 }

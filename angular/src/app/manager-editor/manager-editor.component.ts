@@ -1,11 +1,11 @@
 import {Component, OnInit} from "@angular/core";
-import {NavbarService} from "../service/navbar.service";
 import {ManagerService} from "../service/manager.service";
 import {Manager} from "../backend_types/manager";
 import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {HttpErrorResponse} from "@angular/common/http";
 import {ToastMessageService} from "../service/toast-message.service";
 import {debounceTime} from "rxjs/operators";
+import {GlobalService} from "../service/global.service";
 
 @Component({
   selector: "app-manager-editor",
@@ -36,13 +36,13 @@ export class ManagerEditorComponent implements OnInit {
   sorting_order = true;
 
   constructor(private managerService: ManagerService,
-              private navbarService: NavbarService,
+              private globalService: GlobalService,
               private toastMessageService: ToastMessageService,
               private fb: FormBuilder) {
   }
 
   ngOnInit() {
-    this.navbarService.change("manager");
+    this.globalService.changeNavbar("manager");
     this.managers_loading = true;
     this.getManagers();
     this.searchForm.get("searchControlForm").valueChanges

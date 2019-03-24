@@ -19,7 +19,7 @@ export class DepartmentSelectorComponent implements OnInit, OnDestroy {
   public departments_loading = false;
 
   constructor(private departmentService: DepartmentService,
-              private global: GlobalService,
+              private globalService: GlobalService,
               private router: Router,
               private toastMessageService: ToastMessageService) {
   }
@@ -28,8 +28,8 @@ export class DepartmentSelectorComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.getDepartments();
-    this.selectedDepartment = this.global.getDepartment();
-    this.departmentSubscriber = this.global.emittedDepartment.subscribe(selectedDepartment => {
+    this.selectedDepartment = this.globalService.getDepartment();
+    this.departmentSubscriber = this.globalService.emittedDepartment.subscribe(selectedDepartment => {
       this.selectedDepartment = selectedDepartment;
     });
   }
@@ -55,11 +55,11 @@ export class DepartmentSelectorComponent implements OnInit, OnDestroy {
   }
 
   change(department: Department) {
-    this.global.change(department);
+    this.globalService.changeDepartment(department);
   }
 
   addDepartment() {
-    // this.router.navigateByUrl("department");
+    this.router.navigateByUrl("department");
     // console.log(this.selectedDepartment);
   }
 }

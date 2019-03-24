@@ -1,5 +1,4 @@
 import {Compiler, Component, OnDestroy, OnInit} from "@angular/core";
-import {NavbarService} from "../service/navbar.service";
 import {VisitService} from "../service/visit.service";
 import {AccomodationService} from "../service/accomodation.service";
 import {DateService} from "../service/date.service";
@@ -154,8 +153,7 @@ export class VisitComponent implements OnInit, OnDestroy {
   private selected_date_Subscriber: Subscription;
   private page_form_Subscriber: Subscription;
 
-  constructor(private navbarService: NavbarService,
-              private dateService: DateService,
+  constructor(private dateService: DateService,
               private accomodationService: AccomodationService,
               private clientService: ClientService,
               private surgeonService: SurgeonService,
@@ -173,7 +171,7 @@ export class VisitComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.navbarService.change("visit");
+    this.globalService.changeNavbar("visit");
     this.calender_loading = true;
     // console.log("Init Visit Editor !!!");
 

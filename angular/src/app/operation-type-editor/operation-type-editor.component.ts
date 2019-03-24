@@ -1,12 +1,11 @@
 import {Component, OnInit} from "@angular/core";
 import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {OperationType} from "../backend_types/operation-type";
-import {NavbarService} from "../service/navbar.service";
 import {ToastMessageService} from "../service/toast-message.service";
 import {OperationTypeService} from "../service/operation-type.service";
 import {debounceTime} from "rxjs/operators";
-import {Surgeon} from "../backend_types/surgeon";
 import {HttpErrorResponse} from "@angular/common/http";
+import {GlobalService} from "../service/global.service";
 
 @Component({
   selector: "app-operation-type-editor",
@@ -37,33 +36,24 @@ export class OperationTypeEditorComponent implements OnInit {
 
 
   constructor(private operationTypeService: OperationTypeService,
-              private navbarService: NavbarService,
+              private globalService: GlobalService,
               private toastMessageService: ToastMessageService,
               private fb: FormBuilder) {
   }
 
   ngOnInit() {
-    this.navbarService.change("operation-type");
+    this.globalService.changeNavbar("operation-type");
     this.operation_types_loading = true;
     this.getOperationTypes();
     this.searchForm.get("searchControlForm").valueChanges
       .pipe(debounceTime(900))
       .subscribe(search_value => this.filterOperationTypes(search_value));
 
-    this.searchForm.get("searchControlForm").statusChanges
-      .pipe(debounceTime(900))
-      .subscribe(value => {
-        if (value === "INVALID") {
-          this.toastMessageService.inform("Некорректне значення для пошуку",
-            "Вводьте тільки літери та пробіли." + "<br>" +
-            "Не більше 50 символів", "info");
-        }
-      });
     this.tableForm.valueChanges.pipe(debounceTime(600)).subscribe(() => {
       this.count_of_operation_type = (<OperationType[]>this.tableForm.get("operationTypesForm").value)
         .filter((operationType: OperationType) => {
-        return operationType.isChanged;
-      }).length;
+          return operationType.isChanged;
+        }).length;
     });
   }
 
@@ -242,7 +232,7 @@ export class OperationTypeEditorComponent implements OnInit {
     if (search_value) {
       const filteredOperationTypes = this.operation_types.filter((operationType: OperationType) => {
         if (operationType.name) {
-          return (operationType.name.toLowerCase().indexOf(search_value) === 0);
+          return (operationType.name.toLowerCase().indexOf(search_value.toLowerCase()) === 0);
         } else {
           return true;
         }
@@ -267,7 +257,7 @@ export class OperationTypeEditorComponent implements OnInit {
     } else if (operation_type1.name && operation_type2.name && operation_type1.name.localeCompare(operation_type2.name) !== 0) {
       return operation_type1.name.localeCompare(operation_type2.name);
     }
-  }
+  };
 
 
 }

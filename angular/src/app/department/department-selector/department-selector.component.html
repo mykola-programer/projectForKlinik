@@ -1,5 +1,5 @@
 <div class="input-group">
-  <select class="form-control" ([ngModel])="selectedDepartment">
+  <select class="form-control" ([ngModel])="selectedDepartment" >
     <option [hidden]="!departments_loading" selected>Завантаження...</option>
     <option [hidden]="departments_loading || department.disable"
             *ngFor="let department of departments"
@@ -7,6 +7,7 @@
             (click)="change(department)">
       {{department.name}}
     </option>
+    <option (click)="getDepartments()">...Оновити...</option>
   </select>
   <div class="input-group-append">
     <button type="button"

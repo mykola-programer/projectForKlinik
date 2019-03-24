@@ -1,11 +1,11 @@
 import {Component, OnInit} from "@angular/core";
 import {Surgeon} from "../backend_types/surgeon";
 import {SurgeonService} from "../service/surgeon.service";
-import {NavbarService} from "../service/navbar.service";
 import {HttpErrorResponse} from "@angular/common/http";
 import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {ToastMessageService} from "../service/toast-message.service";
 import {debounceTime} from "rxjs/operators";
+import {GlobalService} from "../service/global.service";
 
 @Component({
   selector: "app-surgeon-editor",
@@ -36,13 +36,13 @@ export class SurgeonEditorComponent implements OnInit {
   sorting_order = true;
 
   constructor(private surgeonService: SurgeonService,
-              private navbarService: NavbarService,
+              private globalService: GlobalService,
               private toastMessageService: ToastMessageService,
               private fb: FormBuilder) {
   }
 
   ngOnInit() {
-    this.navbarService.change("surgeonPlan");
+    this.globalService.changeNavbar("surgeonPlan");
     this.surgeons_loading = true;
     this.getSurgeons();
     this.searchForm.get("searchControlForm").valueChanges
