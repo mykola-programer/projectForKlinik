@@ -1,13 +1,13 @@
 import {Component, OnInit, ViewChild} from "@angular/core";
 import {Client} from "../backend_types/client";
 import {ClientService} from "../service/client.service";
-import {NavbarService} from "../service/navbar.service";
 import {HttpErrorResponse} from "@angular/common/http";
 import {ToastMessageService} from "../service/toast-message.service";
 import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {debounceTime} from "rxjs/operators";
 import {MatPaginator} from "@angular/material";
 import {PageEvent} from "@angular/material/paginator/typings/paginator";
+import {GlobalService} from "../service/global.service";
 
 @Component({
   selector: "app-client-editor",
@@ -47,13 +47,13 @@ export class ClientEditorComponent implements OnInit {
 
   constructor(
     private clientService: ClientService,
-    private navbarService: NavbarService,
+    private global: GlobalService,
     private toastMessageService: ToastMessageService,
     private fb: FormBuilder) {
   }
 
   ngOnInit(): void {
-    this.navbarService.change("client");
+    this.global.changeNavbar("client");
     this.clients_loading = true;
     this.getClients("", this.pageSize, 0, true);
 

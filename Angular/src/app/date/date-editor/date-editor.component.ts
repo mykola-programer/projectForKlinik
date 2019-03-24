@@ -1,7 +1,6 @@
 import {Compiler, Component, Injectable, OnDestroy, OnInit} from "@angular/core";
 import {NgbCalendar, NgbDatepickerConfig, NgbDatepickerI18n, NgbDateStruct} from "@ng-bootstrap/ng-bootstrap";
 import {Router} from "@angular/router";
-import {NavbarService} from "../../service/navbar.service";
 import {NgbDate} from "@ng-bootstrap/ng-bootstrap/datepicker/ngb-date";
 import {HttpErrorResponse} from "@angular/common/http";
 import {ToastMessageService} from "../../service/toast-message.service";
@@ -83,7 +82,6 @@ export class DateEditorComponent implements OnInit, OnDestroy {
               private calendar: NgbCalendar,
               private datePlanService: DatePlanService,
               private globalService: GlobalService,
-              private serviceNavbar: NavbarService,
               private compiler: Compiler,
               private departmentService: DepartmentService,
               private toastMessageService: ToastMessageService,
@@ -103,7 +101,7 @@ export class DateEditorComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.serviceNavbar.change("date");
+    this.globalService.changeNavbar("date");
     if (this.selectedDepartment) {
       this.getDatePlans(this.selectedDepartment.departmentId, new Date(this.minDate.year, this.minDate.month - 2, this.minDate.day));
     }

@@ -1,7 +1,7 @@
 import {Component, Input, OnInit} from "@angular/core";
 import {MatDialog} from "@angular/material";
-import {NavbarService} from "../service/navbar.service";
 import {AuthService} from "../service/auth.service";
+import {GlobalService} from "../service/global.service";
 
 @Component({
   selector: "app-navbar",
@@ -13,15 +13,15 @@ export class NavbarComponent implements OnInit {
   @Input() statusNavbar: string;
 
   constructor(private dialog: MatDialog,
-              private serviceNavbar: NavbarService,
+              private globalService: GlobalService,
               private authService: AuthService,) {
   }
 
   ngOnInit() {
-    this.serviceNavbar.statusNavbar.subscribe(statusNavbar => this.statusNavbar = statusNavbar);
+    this.globalService.statusNavbar.subscribe(statusNavbar => this.statusNavbar = statusNavbar);
   }
 
-  logOut (){
+  logOut() {
     this.authService.isLogging.emit(false);
   }
 }
