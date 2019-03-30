@@ -13,10 +13,10 @@ import {GlobalService} from "../../service/global.service";
   styleUrls: ["./department-selector.component.css"]
 })
 export class DepartmentSelectorComponent implements OnInit, OnDestroy {
-  public defaultDepartment = "Чернівці";
-  public departments: Department[] = [];
-  public selectedDepartment: Department;
-  public departments_loading = false;
+  private defaultDepartment = "Чернівці";
+  departments: Department[] = [];
+  selectedDepartment: Department = this.globalService.getDepartment();
+  departments_loading = false;
 
   constructor(private departmentService: DepartmentService,
               private globalService: GlobalService,
@@ -28,7 +28,6 @@ export class DepartmentSelectorComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.getDepartments();
-    this.selectedDepartment = this.globalService.getDepartment();
     this.departmentSubscriber = this.globalService.emittedDepartment.subscribe(selectedDepartment => {
       this.selectedDepartment = selectedDepartment;
     });

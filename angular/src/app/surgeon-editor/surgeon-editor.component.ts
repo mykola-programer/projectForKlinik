@@ -42,7 +42,7 @@ export class SurgeonEditorComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.globalService.changeNavbar("surgeonPlan");
+    this.globalService.changeNavbar("surgeon");
     this.surgeons_loading = true;
     this.getSurgeons();
     this.searchForm.get("searchControlForm").valueChanges

@@ -1,14 +1,25 @@
-import {Compiler, Component, Injectable, OnDestroy, OnInit} from "@angular/core";
+import {Compiler, Component, Injectable, OnDestroy, OnInit, ViewChild} from "@angular/core";
 
-import {NgbCalendar, NgbDateParserFormatter, NgbDatepickerConfig, NgbDatepickerI18n, NgbDateStruct} from "@ng-bootstrap/ng-bootstrap";
+import {
+  NgbCalendar,
+  NgbDateParserFormatter,
+  NgbDatepicker,
+  NgbDatepickerConfig,
+  NgbDatepickerI18n,
+  NgbDateStruct, NgbInputDatepicker
+} from "@ng-bootstrap/ng-bootstrap";
 import {isNumber, padNumber, toInteger} from "@ng-bootstrap/ng-bootstrap/util/util";
 import {Router} from "@angular/router";
-import {DateService} from "../../service/date.service";
 import {NgbDate} from "@ng-bootstrap/ng-bootstrap/datepicker/ngb-date";
 import {HttpErrorResponse} from "@angular/common/http";
 import {ToastMessageService} from "../../service/toast-message.service";
 import {DatePlan} from "../../backend_types/date-plan";
 import {DatePlanService} from "../../service/date-plan.service";
+import {GlobalService} from "../../service/global.service";
+import {Department} from "../../backend_types/department";
+import {Subscription} from "rxjs";
+import {NgbDatepickerNavigateEvent} from "@ng-bootstrap/ng-bootstrap/datepicker/datepicker";
+import {DatepickerViewModel} from "@ng-bootstrap/ng-bootstrap/datepicker/datepicker-view-model";
 
 const I18N_VALUES = {
   "ua": {
@@ -85,74 +96,98 @@ export class NgbDateCustomParserFormatter extends NgbDateParserFormatter {
 
 })
 export class DateSelectorComponent implements OnInit, OnDestroy {
-  minDate: NgbDate = new NgbDate(this.calendar.getToday().year, this.calendar.getToday().month - 3, this.calendar.getToday().day);
-  maxDate: NgbDate = new NgbDate(this.calendar.getToday().year + 5, 12, 31);
+  @ViewChild('calendar') calendar_view;
 
-  visitDates: DatePlan[] = [];
+  minDate: NgbDate = this.calendar.getPrev(this.calendar.getToday(), "y", 2);
+  maxDate: NgbDate = this.calendar.getNext(this.calendar.getToday(), "y", 5);
+
+  datePlans: DatePlan[] = [];
+  selectedDepartment: Department = this.globalService.getDepartment();
+  private departmentSubscriber: Subscription;
+  private showedMonth: NgbDate = this.calendar.getToday();
 
   constructor(
-    private visitDateService: DatePlanService,
+    private datePlanService: DatePlanService,
     private config: NgbDatepickerConfig,
     private calendar: NgbCalendar,
     private router: Router,
     private compiler: Compiler,
     private toastMessageService: ToastMessageService,
-    private dateService: DateService) {
+    private globalService: GlobalService) {
 
     this.config.outsideDays = "hidden";
     this.config.displayMonths = 2;
     this.config.navigation = "select";
     this.config.showWeekNumbers = false;
     this.config.firstDayOfWeek = 1;
-    this.config.markDisabled = (date: NgbDate) => {
-      const index = this.indexOf(date, this.visitDates);
-      return !(index !== -1 && !this.visitDates[index].disable);
-    }
+
   }
 
   ngOnInit(): void {
-    this.getDates();
-    // Delete
-    this.visitDateService.getDatePlan(154).toPromise().then(value => this.dateService.change(value));
+    this.config.markDisabled = (date: NgbDate) => {
+      const index = this.indexOf(date, this.datePlans);
+      return !(index !== -1 && !this.datePlans[index].disable);
+    };
+    // TODO Delete
+    this.datePlanService.getDatePlan(154).toPromise().then(value => this.globalService.changeDatePlan(value));
+    //
+
+    if (this.selectedDepartment) {
+      this.getDatePlans(this.selectedDepartment.departmentId, this.convertDate(this.calendar.getPrev(this.showedMonth, "m", 2)));
+    }
+    this.departmentSubscriber = this.globalService.emittedDepartment.subscribe((selectedDepartment: Department) => {
+      this.selectedDepartment = selectedDepartment;
+      this.getDatePlans(this.selectedDepartment.departmentId, this.convertDate(this.calendar.getPrev(this.showedMonth, "m", 2)));
+    });
   }
 
   ngOnDestroy(): void {
     this.compiler.clearCache();
+    this.departmentSubscriber.unsubscribe();
   }
 
   onSelect(date: NgbDate): void {
-      const selected_visitDate: DatePlan = this.visitDates.find((visitDate: DatePlan) => {
-        return (visitDate.date[0] == date.year &&
-          visitDate.date[1] == date.month &&
-          visitDate.date[2] == date.day);
-      });
-      this.dateService.change(selected_visitDate);
+    const selected_datePlan: DatePlan = this.datePlans.find((datePlan: DatePlan) => {
+      return (datePlan.date[0] == date.year &&
+        datePlan.date[1] == date.month &&
+        datePlan.date[2] == date.day);
+    });
+    this.globalService.changeDatePlan(selected_datePlan);
   }
 
   isLocked(date: NgbDate): boolean {
-    const index = this.indexOf(date, this.visitDates);
-    return index !== -1 && this.visitDates[index].disable;
+    const index = this.indexOf(date, this.datePlans);
+    return index !== -1 && this.datePlans[index].disable;
   }
 
   addDate() {
     this.router.navigateByUrl("dates");
   }
 
-  private getDates(): void {
-    this.visitDateService.getDatePlans().toPromise().then((visitDates: DatePlan[]) => {
-      this.visitDates = visitDates;
+  private getDatePlans(departmentID: number, minDate: Date): void {
+    this.calendar_view.close();
+    this.datePlanService.getDatePlansByDepartment(departmentID, minDate).toPromise().then((datePlans: DatePlan[]) => {
+      this.datePlans = datePlans;
     }).catch((err: HttpErrorResponse) => {
       this.toastMessageService.inform("Сервер недоступний!",
         "Спробуйте пізніше !" + "<br>" + err.error + "<br>" + err.message, "error", 10000);
       setTimeout(() => {
-        this.getDates();
+        this.getDatePlans(departmentID, minDate);
       }, 15000);
     });
   }
 
-  private indexOf(date: NgbDateStruct, visitDates: DatePlan[]): number {
-    return visitDates.findIndex((visitDate: DatePlan) => {
-      return visitDate.date[0] == date.year && visitDate.date[1] == date.month && visitDate.date[2] == date.day;
+  private indexOf(date: NgbDateStruct, datePlans: DatePlan[]): number {
+    return datePlans.findIndex((datePlan: DatePlan) => {
+      return datePlan.date[0] == date.year && datePlan.date[1] == date.month && datePlan.date[2] == date.day;
     });
+  }
+
+  setCurrentMonth(navigateEvent: NgbDatepickerNavigateEvent) {
+    this.showedMonth = NgbDate.from({year: navigateEvent.next.year, month: navigateEvent.next.month, day: 1});
+  }
+
+  private convertDate(date: NgbDateStruct): Date {
+    return new Date(date.year, date.month - 1, date.day);
   }
 }

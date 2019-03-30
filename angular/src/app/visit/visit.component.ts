@@ -1,7 +1,6 @@
 import {Compiler, Component, OnDestroy, OnInit} from "@angular/core";
 import {VisitService} from "../service/visit.service";
 import {AccomodationService} from "../service/accomodation.service";
-import {DateService} from "../service/date.service";
 import {AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {Visit} from "../backend_types/visit";
 import {Accomodation} from "../backend_types/accomodation";
@@ -153,7 +152,7 @@ export class VisitComponent implements OnInit, OnDestroy {
   private selected_date_Subscriber: Subscription;
   private page_form_Subscriber: Subscription;
 
-  constructor(private dateService: DateService,
+  constructor(private globalService: GlobalService,
               private accomodationService: AccomodationService,
               private clientService: ClientService,
               private surgeonService: SurgeonService,
@@ -161,7 +160,6 @@ export class VisitComponent implements OnInit, OnDestroy {
               private operationTypeService: OperationTypeService,
               private visitService: VisitService,
               private toastMessageService: ToastMessageService,
-              private globalService: GlobalService,
               private dialog: MatDialog,
               private compiler: Compiler,
               private fb: FormBuilder
@@ -175,7 +173,7 @@ export class VisitComponent implements OnInit, OnDestroy {
     this.calender_loading = true;
     // console.log("Init Visit Editor !!!");
 
-    this.selected_date_Subscriber = this.dateService.selected_date.subscribe(
+    this.selected_date_Subscriber = this.globalService.selected_datePlan.subscribe(
       (selected_visit_date: DatePlan) => {
         this.calender_loading = false;
         this.selected_visit_date = selected_visit_date;

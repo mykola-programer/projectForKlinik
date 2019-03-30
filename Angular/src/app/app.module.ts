@@ -29,7 +29,6 @@ import {GlobalService} from "./service/global.service";
 import {AccomodationService} from "./service/accomodation.service";
 import {AuthService} from "./service/auth.service";
 import {ClientService} from "./service/client.service";
-import {DateService} from "./service/date.service";
 import {ManagerService} from "./service/manager.service";
 import {OperationTypeService} from "./service/operation-type.service";
 import {SurgeonService} from "./service/surgeon.service";
@@ -77,7 +76,6 @@ import {FilterDepartmentPipe} from "./department/department-editor/filter-depart
   providers: [AccomodationService,
     AuthService,
     ClientService,
-    DateService,
     DatePlanService,
     DepartmentService,
     GlobalService,

@@ -3,6 +3,7 @@
     <div class="input-group">
       <input class="form-control" placeholder="Виберіть дату:" ngbDatepicker #calendar="ngbDatepicker"
              (click)="calendar.toggle();"
+             (navigate)="setCurrentMonth($event)"
              [minDate]="minDate"
              [maxDate]="maxDate"
              [dayTemplate]="selectedCustomDay">

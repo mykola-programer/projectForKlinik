@@ -1,12 +1,14 @@
 import {EventEmitter, Injectable} from "@angular/core";
 import {Department} from "../backend_types/department";
+import {DatePlan} from "../backend_types/date-plan";
 
 @Injectable()
 export class GlobalService {
-  emittedDepartment: EventEmitter<Department> = new EventEmitter();
   private selectedDepartment: Department;
 
+  emittedDepartment: EventEmitter<Department> = new EventEmitter();
   statusNavbar: EventEmitter<string> = new EventEmitter();
+  selected_datePlan: EventEmitter<DatePlan> = new EventEmitter();
 
 
   constructor() {
@@ -17,17 +19,21 @@ export class GlobalService {
     });
   }
 
-  public changeDepartment(selectedDepartment: Department) {
-    // console.log("changeDepartment");
-    this.emittedDepartment.emit(selectedDepartment);
-  }
-
   getDepartment(): Department {
     // console.log("getDepartment");
     return this.selectedDepartment;
   }
 
+  public changeDepartment(selectedDepartment: Department) {
+    // console.log("changeDepartment");
+    this.emittedDepartment.emit(selectedDepartment);
+  }
+
   public changeNavbar(status: string) {
     this.statusNavbar.emit(status);
+  }
+
+  public changeDatePlan(selected_date: DatePlan) {
+    this.selected_datePlan.emit(selected_date);
   }
 }
