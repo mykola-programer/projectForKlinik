@@ -1,4 +1,4 @@
-package ua.nike.project.spring.service;
+package ua.nike.project.spring.service.auth;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -84,7 +84,7 @@ public class UserService {
         if (user == null) return null;
         UserVO result = new UserVO();
         result.setUserId(user.getUserId());
-        result.setLogin(user.getLogin());
+        result.setLogin(user.getUsername());
         result.setPassword(null);
         return result;
     }
@@ -92,8 +92,8 @@ public class UserService {
     private User copyToUser(UserVO original, User result) throws NoSuchAlgorithmException {
         if (original != null) {
             if (result == null) result = new User();
-            result.setLogin(original.getLogin());
-            result.setHashedPassword(encryptPasswordBySHA512(original));
+            result.setUsername(original.getLogin());
+            result.setPassword(encryptPasswordBySHA512(original));
         }
         return result;
     }
@@ -114,7 +114,7 @@ public class UserService {
     }
 
     private boolean checkPassword(UserVO userVO, User user) throws NoSuchAlgorithmException {
-        return user.getHashedPassword().equals(encryptPasswordBySHA512(userVO));
+        return user.getPassword().equals(encryptPasswordBySHA512(userVO));
     }
 
     private String getSalt() {

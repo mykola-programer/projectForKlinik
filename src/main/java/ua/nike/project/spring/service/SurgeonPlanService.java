@@ -45,7 +45,7 @@ public class SurgeonPlanService {
     public List<SurgeonPlanVO> findAll() {
         List<SurgeonPlan> entities = surgeonPlanDAO.findAll("SurgeonPlan.findAll");
         if (entities == null) return null;
-        List<SurgeonPlanVO> result = new ArrayList<>();
+        List<SurgeonPlanVO> result = new ArrayList<SurgeonPlanVO>();
         for (SurgeonPlan entity : entities) {
             result.add(convertToSurgeonPlanVO(entity));
         }

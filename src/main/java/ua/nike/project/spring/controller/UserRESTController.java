@@ -5,12 +5,11 @@ import org.springframework.http.MediaType;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ua.nike.project.spring.exceptions.ValidationException;
-import ua.nike.project.spring.service.UserService;
+import ua.nike.project.spring.service.auth.UserService;
 import ua.nike.project.spring.vo.UserVO;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Map;
 

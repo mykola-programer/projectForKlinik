@@ -39,7 +39,7 @@ public class DepartmentService {
     public List<DepartmentVO> findAll() {
         List<Department> entities = departmentDAO.findAll("Department.findAll");
         if (entities == null) return null;
-        List<DepartmentVO> result = new ArrayList<>();
+        List<DepartmentVO> result = new ArrayList<DepartmentVO>();
         for (Department entity : entities) {
             result.add(convertToDepartmentVO(entity));
         }
