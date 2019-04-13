@@ -14,7 +14,7 @@ export class NavbarComponent implements OnInit {
 
   constructor(private dialog: MatDialog,
               private globalService: GlobalService,
-              private authService: AuthService,) {
+              private authService: AuthService) {
   }
 
   ngOnInit() {

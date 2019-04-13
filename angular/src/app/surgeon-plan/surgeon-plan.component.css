@@ -1,0 +1,14 @@
+@import '../../css/calendar.css';
+
+.btn {
+  margin-right: 5px;
+  margin-top: 5px;
+  min-width: 65px;
+}
+
+.mat-spinner {
+  position: fixed;
+  margin-left: 30%;
+  margin-right: 30%;
+  display: block
+}

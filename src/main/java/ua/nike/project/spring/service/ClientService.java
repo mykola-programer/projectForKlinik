@@ -12,6 +12,8 @@ import ua.nike.project.spring.dao.DAO;
 import ua.nike.project.spring.vo.ClientVO;
 
 import javax.persistence.EntityNotFoundException;
+import java.sql.Date;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

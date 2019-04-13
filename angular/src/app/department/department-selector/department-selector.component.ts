@@ -41,7 +41,11 @@ export class DepartmentSelectorComponent implements OnInit, OnDestroy {
     this.departments_loading = true;
     this.departmentService.getDepartments().toPromise().then((departments: Department[]) => {
       this.departments = departments;
-      this.change(departments.find(value => value.name === this.defaultDepartment));
+      if (!this.globalService.getDepartment()) {
+        this.change(departments.find(value => value.name === this.defaultDepartment));
+      } else {
+        this.selectedDepartment = this.globalService.getDepartment();
+      }
       this.departments_loading = false;
     }).catch((err: HttpErrorResponse) => {
       this.departments_loading = true;

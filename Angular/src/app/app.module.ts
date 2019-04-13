@@ -38,6 +38,7 @@ import {UserService} from "./service/user.service";
 import {VisitService} from "./service/visit.service";
 import {DepartmentEditorComponent} from "./department/department-editor/department-editor.component";
 import {FilterDepartmentPipe} from "./department/department-editor/filter-department.pipe";
+import { SurgeonPlanComponent } from './surgeon-plan/surgeon-plan.component';
 
 @NgModule({
   declarations: [
@@ -55,6 +56,7 @@ import {FilterDepartmentPipe} from "./department/department-editor/filter-depart
     DepartmentSelectorComponent,
     DepartmentEditorComponent,
     FilterDepartmentPipe,
+    SurgeonPlanComponent,
   ],
   imports: [
     ReactiveFormsModule,

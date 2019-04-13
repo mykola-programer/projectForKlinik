@@ -1,12 +1,15 @@
 import {EventEmitter, Injectable} from "@angular/core";
 import {Department} from "../backend_types/department";
 import {DatePlan} from "../backend_types/date-plan";
+import {Surgeon} from "../backend_types/surgeon";
 
 @Injectable()
 export class GlobalService {
   private selectedDepartment: Department;
+  private selectedSurgeon: Surgeon;
 
   emittedDepartment: EventEmitter<Department> = new EventEmitter();
+  emittedSurgeon: EventEmitter<Surgeon> = new EventEmitter();
   statusNavbar: EventEmitter<string> = new EventEmitter();
   selected_datePlan: EventEmitter<DatePlan> = new EventEmitter();
 
@@ -14,19 +17,24 @@ export class GlobalService {
   constructor() {
     this.emittedDepartment.subscribe(selectedDepartment => {
       this.selectedDepartment = selectedDepartment;
-      // console.log("Global emitted");
-      // console.log(this.selectedDepartment);
+    });
+    this.emittedSurgeon.subscribe(selectedSurgeon => {
+      this.selectedSurgeon = selectedSurgeon;
     });
   }
 
   getDepartment(): Department {
-    // console.log("getDepartment");
     return this.selectedDepartment;
+  }
+  getSurgeon(): Surgeon {
+    return this.selectedSurgeon;
   }
 
   public changeDepartment(selectedDepartment: Department) {
-    // console.log("changeDepartment");
     this.emittedDepartment.emit(selectedDepartment);
+  }
+  public changeSurgeon(selectedSurgeon: Surgeon) {
+    this.emittedSurgeon.emit(selectedSurgeon);
   }
 
   public changeNavbar(status: string) {

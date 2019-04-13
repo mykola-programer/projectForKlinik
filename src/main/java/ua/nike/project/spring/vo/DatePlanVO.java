@@ -1,5 +1,10 @@
 package ua.nike.project.spring.vo;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import ua.nike.project.spring.service.convert.ArrayToLocalDateConverter;
+import ua.nike.project.spring.service.convert.LocalDateToArrayConverter;
+
 import javax.validation.constraints.Future;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
@@ -12,6 +17,8 @@ public class DatePlanVO implements VisualObject {
 
     @NotNull(message = "visit_dates.date.null")
     @Future(message = "visit_dates.date.future")
+    @JsonSerialize(converter = LocalDateToArrayConverter.class)
+    @JsonDeserialize(converter = ArrayToLocalDateConverter.class)
     private LocalDate date;
     private Integer departmentID;
     private boolean disable;

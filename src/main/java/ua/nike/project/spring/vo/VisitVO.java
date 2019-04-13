@@ -1,5 +1,10 @@
 package ua.nike.project.spring.vo;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import ua.nike.project.spring.service.convert.ArrayToLocalTimeConverter;
+import ua.nike.project.spring.service.convert.LocalTimeToArrayConverter;
+
 import javax.validation.constraints.PositiveOrZero;
 import java.time.LocalTime;
 import java.util.Objects;
@@ -7,6 +12,8 @@ import java.util.Objects;
 public class VisitVO implements VisualObject {
 
     private int visitId;
+    @JsonSerialize(converter = LocalTimeToArrayConverter.class)
+    @JsonDeserialize(converter = ArrayToLocalTimeConverter.class)
     private LocalTime timeForCome;
     @PositiveOrZero
     private Integer orderForCome;

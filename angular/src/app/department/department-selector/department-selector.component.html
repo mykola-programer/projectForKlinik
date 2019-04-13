@@ -3,7 +3,7 @@
     <option [hidden]="!departments_loading" selected>Завантаження...</option>
     <option [hidden]="departments_loading || department.disable"
             *ngFor="let department of departments"
-            [selected]="department === selectedDepartment"
+            [selected]="department.departmentId === selectedDepartment.departmentId"
             (click)="change(department)">
       {{department.name}}
     </option>

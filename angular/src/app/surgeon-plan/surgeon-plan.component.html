@@ -1,9 +1,9 @@
-<mat-spinner *ngIf="dates_loading"></mat-spinner>
-<div *ngIf="!dates_loading" class="container-fluid" style="min-width:500px; max-width: 1000px">
+<div class="container-fluid" style="min-width:500px; max-width: 1000px">
   <div class="row">
     <div class="col-lg-5">
-      <div> <p class="h3 text-center">Заплановані операційні дати :</p>
-            <p class="h4 text-center">(м.{{selectedDepartment?.name}})</p>
+      <mat-spinner *ngIf="dates_loading"></mat-spinner>
+      <div *ngIf="!dates_loading"><p class="h3 text-center">Заплановані операційні дати :</p>
+        <p class="h4 text-center">(м.{{selectedDepartment?.name}})</p>
 
         <ngb-datepicker
           [minDate]="minDate" [maxDate]="maxDate" [dayTemplate]="customDay">
@@ -38,14 +38,15 @@
 
       <div class="left-container" style="max-width: 280px">
         <br>
-        <p class="h5 text-center">Вибрані дати ({{selectedDepartment?.name}}):</p>
+        <p class="h5 text-center">Вибрані дати :</p>
+        <p class="h5 text-center">для хірурга : ({{selectedSurgeon?.surname}} {{selectedSurgeon?.firstName[0]}}.{{selectedSurgeon?.secondName[0]}}.):</p>
 
 
         <!--<button (click)="test()">Test</button>-->
 
-        <mat-spinner *ngIf="!isLoadingOFF()" style="margin-left: 2%" [diameter]="60"></mat-spinner>
-        <ol *ngIf="isLoadingOFF()">
-          <li class="h6 text" *ngFor="let selectedDate of selectedDates">
+        <mat-spinner *ngIf="false" style="margin-left: 2%" [diameter]="60"></mat-spinner>
+        <ol *ngIf="true">
+          <li class="h6 text" *ngFor="let selectedDate of selectedSurgeonPlans">
             {{refactorDay(selectedDate)}}
             <img [hidden]="!(selectedDate.datePlanId > 0) || !selectedDate.disable" src="/assets/img/icons8/lock-48.png" height="20" width="20"
                  (click)="selectedDate.disable = false"/>

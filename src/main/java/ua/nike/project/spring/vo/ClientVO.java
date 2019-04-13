@@ -1,5 +1,10 @@
 package ua.nike.project.spring.vo;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import ua.nike.project.spring.service.convert.LocalDateToArrayConverter;
+import ua.nike.project.spring.service.convert.ArrayToLocalDateConverter;
+
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
@@ -29,6 +34,8 @@ public class ClientVO implements VisualObject {
     private Character sex;
 
     @NotNull(message = "client.birthday.null")
+    @JsonSerialize(converter = LocalDateToArrayConverter.class)
+    @JsonDeserialize(converter = ArrayToLocalDateConverter.class)
     private LocalDate birthday;
 
     @Size(max = 19, message = "client.telephone.size")
