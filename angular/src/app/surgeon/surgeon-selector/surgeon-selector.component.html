@@ -1,23 +1,23 @@
 <div class="input-group">
-  <label class="form-control" *ngIf="departments_loading">Завантаження...</label>
-  <select class="form-control" [hidden]="departments_loading" ([ngModel])="selectedDepartment">
-    <option [hidden]="department.disable"
-            *ngFor="let department of departments"
-            [selected]="department.departmentId === selectedDepartment.departmentId"
-            (click)="change(department)">
-      {{department.name}}
+  <label class="form-control" *ngIf="surgeons_loading">Завантаження...</label>
+  <select class="form-control" [hidden]="surgeons_loading" ([ngModel])="selectedSurgeon">
+    <option [hidden]="surgeon.disable"
+            *ngFor="let surgeon of surgeons"
+            [selected]="surgeon.surgeonId === selectedSurgeon.surgeonId"
+            (click)="change(surgeon)">
+      {{surgeon.surname}} {{surgeon.firstName[0]}}.{{surgeon.secondName[0]}}.
     </option>
   </select>
   <div class="input-group-append">
     <button type="button"
             class="btn btn-light"
-            (click)="addDepartment()"
+            (click)="addSurgeon()"
             title="Додати новий філіал.">
       <img  src="/assets/img/icons8/add-48.png" style="max-height: 15px; max-width: 15px"/>
     </button>
     <button type="button"
             class="btn btn-light"
-            (click)="getDepartments()"
+            (click)="getSurgeons()"
             title="Оновити">
       <img  src="/assets/img/icons8/synchronize-48.png" style="max-height: 15px; max-width: 15px"/>
     </button>

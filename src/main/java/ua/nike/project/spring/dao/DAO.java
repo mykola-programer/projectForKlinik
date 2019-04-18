@@ -32,7 +32,7 @@ public interface DAO<T extends EntityObject> {
 
     List<? extends Object> getObjectsByQuery(String namedQuery, Map<String, Object> parameters, Class<? extends Object> oClass);
 
-    Object getObjectByQuery(String hqlQuery, Map<String, Object> parameters, Class<? extends Object> oClass);
+    Object getObjectByQuery(String hqlQuery, Object[] parameters, Class<? extends Object> oClass);
 
 
 }

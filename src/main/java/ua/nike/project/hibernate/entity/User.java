@@ -7,6 +7,7 @@ import java.util.Objects;
 @Entity
 @NamedQueries(value = {
         @NamedQuery(name = "User.findAll", query = "FROM User ORDER BY username"),
+        @NamedQuery(name = "User.searchByName", query = "FROM User user WHERE user.username = ?1"),
 })
 @Table(name = "users", uniqueConstraints = {
         @UniqueConstraint(name = "user_pk", columnNames = {"username"})

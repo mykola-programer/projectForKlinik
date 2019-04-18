@@ -265,13 +265,15 @@ export class ClientEditorComponent implements OnInit {
   }
 
   private createFormGroup(client: Client): FormGroup {
+    // console.log(client);
+    // console.log((new Date(client.birthday[0], client.birthday[1] - 1, client.birthday[2] + 1)));
     return this.fb.group({
       clientId: [client.clientId],
       surname: [client.surname, [Validators.required, Validators.maxLength(50), Validators.pattern("[A-Za-zА-Яа-яЁёІіЇїЄє '`]*")]],
       firstName: [client.firstName, [Validators.required, Validators.maxLength(50), Validators.pattern("[A-Za-zА-Яа-яЁёІіЇїЄє '`]*")]],
       secondName: [client.secondName, [Validators.required, Validators.maxLength(50), Validators.pattern("[A-Za-zА-Яа-яЁёІіЇїЄє '`]*")]],
       sex: [client.sex, [Validators.required, Validators.maxLength(1), Validators.pattern("^[ЧЖ]*$")]],
-      birthday: [client.birthday ? (new Date(client.birthday[0], client.birthday[1] - 1, client.birthday[2]).toISOString().substring(0, 10)) : null,
+      birthday: [client.birthday ? (new Date(client.birthday[0], client.birthday[1] - 1, client.birthday[2] + 1).toISOString().substring(0, 10)) : null,
         [Validators.required]],
       telephone: [client.telephone, [Validators.pattern("[ ()0123456789+-]*")]],
       isChanged: [false],

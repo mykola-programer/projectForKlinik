@@ -1,4 +1,4 @@
-package ua.nike.project.spring.service.auth;
+package ua.nike.project.spring.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -32,6 +32,11 @@ public class UserService {
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public UserVO findByID(int userID) {
         return convertToUserVO(dao.findByID(userID));
+    }
+
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+    public User loadUserByUsername(String username) {
+        return (User)dao.getObjectByQuery("User.searchByName", new Object[]{username}, User.class);
     }
 
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)

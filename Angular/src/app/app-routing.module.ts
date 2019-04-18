@@ -2,12 +2,12 @@ import {NgModule} from "@angular/core";
 import {RouterModule, Routes} from "@angular/router";
 import {ClientEditorComponent} from "./client-editor/client-editor.component";
 import {DateEditorComponent} from "./date/date-editor/date-editor.component";
-import {SurgeonEditorComponent} from "./surgeon-editor/surgeon-editor.component";
+import {SurgeonEditorComponent} from "./surgeon/surgeon-editor/surgeon-editor.component";
 import {ManagerEditorComponent} from "./manager-editor/manager-editor.component";
 import {VisitComponent} from "./visit/visit.component";
 import {OperationTypeEditorComponent} from "./operation-type-editor/operation-type-editor.component";
 import {DepartmentEditorComponent} from "./department/department-editor/department-editor.component";
-import {SurgeonPlanComponent} from "./surgeon-plan/surgeon-plan.component";
+import {SurgeonPlanComponent} from "./surgeon/surgeon-plan/surgeon-plan.component";
 
 const routes: Routes = [
   {path: "", pathMatch: "full", redirectTo: "client"},

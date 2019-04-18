@@ -12,7 +12,7 @@ import {MatDialogModule} from "@angular/material/dialog";
 import {DateEditorComponent} from "./date/date-editor/date-editor.component";
 import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {NavbarComponent} from "./navbar/navbar.component";
-import {SurgeonEditorComponent} from "./surgeon-editor/surgeon-editor.component";
+import {SurgeonEditorComponent} from "./surgeon/surgeon-editor/surgeon-editor.component";
 import {ToastaModule} from "ngx-toasta";
 import {ManagerEditorComponent} from "./manager-editor/manager-editor.component";
 import {VisitComponent} from "./visit/visit.component";
@@ -38,7 +38,8 @@ import {UserService} from "./service/user.service";
 import {VisitService} from "./service/visit.service";
 import {DepartmentEditorComponent} from "./department/department-editor/department-editor.component";
 import {FilterDepartmentPipe} from "./department/department-editor/filter-department.pipe";
-import { SurgeonPlanComponent } from './surgeon-plan/surgeon-plan.component';
+import { SurgeonPlanComponent } from "./surgeon/surgeon-plan/surgeon-plan.component";
+import { SurgeonSelectorComponent } from "./surgeon/surgeon-selector/surgeon-selector.component";
 
 @NgModule({
   declarations: [
@@ -57,6 +58,7 @@ import { SurgeonPlanComponent } from './surgeon-plan/surgeon-plan.component';
     DepartmentEditorComponent,
     FilterDepartmentPipe,
     SurgeonPlanComponent,
+    SurgeonSelectorComponent,
   ],
   imports: [
     ReactiveFormsModule,

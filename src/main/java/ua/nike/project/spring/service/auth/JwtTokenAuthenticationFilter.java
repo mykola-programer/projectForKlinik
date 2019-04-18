@@ -1,29 +1,28 @@
 package ua.nike.project.spring.service.auth;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.stream.Collectors;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.filter.OncePerRequestFilter;
+//@Component(value = "springSecurityFilterChain")
+public class JwtTokenAuthenticationFilter extends OncePerRequestFilter {
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-
-public class JwtTokenAuthenticationFilter extends  OncePerRequestFilter {
-
-    private final JwtConfig jwtConfig;
-
-    public JwtTokenAuthenticationFilter(JwtConfig jwtConfig) {
-        this.jwtConfig = jwtConfig;
-    }
+    @Autowired
+    private JwtConfig jwtConfig;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
@@ -33,8 +32,8 @@ public class JwtTokenAuthenticationFilter extends  OncePerRequestFilter {
         String header = request.getHeader(jwtConfig.getHeader());
 
         // 2. validate the header and check the prefix
-        if(header == null || !header.startsWith(jwtConfig.getPrefix())) {
-            chain.doFilter(request, response);  		// If not valid, go to the next filter.
+        if (header == null || !header.startsWith(jwtConfig.getPrefix())) {
+            chain.doFilter(request, response);        // If not valid, go to the next filter.
             return;
         }
 
@@ -47,7 +46,7 @@ public class JwtTokenAuthenticationFilter extends  OncePerRequestFilter {
         // 3. Get the token
         String token = header.replace(jwtConfig.getPrefix(), "");
 
-        try {	// exceptions might be thrown in creating the claims if for example the token is expired
+        try {    // exceptions might be thrown in creating the claims if for example the token is expired
 
             // 4. Validate the token
             Claims claims = Jwts.parser()
@@ -56,7 +55,7 @@ public class JwtTokenAuthenticationFilter extends  OncePerRequestFilter {
                     .getBody();
 
             String username = claims.getSubject();
-            if(username != null) {
+            if (username != null) {
                 @SuppressWarnings("unchecked")
                 List<String> authorities = (List<String>) claims.get("authorities");
 
@@ -80,4 +79,8 @@ public class JwtTokenAuthenticationFilter extends  OncePerRequestFilter {
         chain.doFilter(request, response);
     }
 
+    @Bean
+    public JwtConfig getJwtConfig() {
+        return jwtConfig;
+    }
 }

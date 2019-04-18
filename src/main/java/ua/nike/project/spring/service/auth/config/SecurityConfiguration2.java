@@ -15,19 +15,19 @@ public class SecurityConfiguration2 extends WebSecurityConfigurerAdapter {
 
 
     @Autowired
-    public void configureGlobalSecurity(AuthenticationManagerBuilder auth) throws Exception {
-        auth.inMemoryAuthentication().withUser("bill").password("abc123").roles("USER");
-        auth.inMemoryAuthentication().withUser("admin").password("root123").roles("ADMIN");
-        auth.inMemoryAuthentication().withUser("dba").password("root123").roles("ADMIN","DBA");
+    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+        auth
+                .inMemoryAuthentication()
+                .withUser("user").password("password").roles("USER").and()
+                .withUser("admin").password("password").roles("USER","ADMIN");
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-
         http.authorizeRequests()
-                .antMatchers("/", "/home").access("hasRole('USER') or hasRole('ADMIN') or hasRole('DBA')")
-                .and().formLogin().loginPage("/login")
-                .usernameParameter("ssoId").passwordParameter("password")
-                .and().exceptionHandling().accessDeniedPage("/Access_Denied");
+                .antMatchers("/").permitAll()
+                .antMatchers("/admin").access("hasRole('ADMIN')")
+                .and().formLogin();
+        http.csrf().disable();
     }
 }

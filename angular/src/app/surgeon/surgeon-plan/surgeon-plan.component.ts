@@ -3,16 +3,16 @@ import {NgbCalendar, NgbDatepickerConfig, NgbDatepickerI18n, NgbDateStruct} from
 import {Router} from "@angular/router";
 import {NgbDate} from "@ng-bootstrap/ng-bootstrap/datepicker/ngb-date";
 import {HttpErrorResponse} from "@angular/common/http";
-import {ToastMessageService} from "../service/toast-message.service";
-import {DatePlan} from "../backend_types/date-plan";
-import {DatePlanService} from "../service/date-plan.service";
-import {DepartmentService} from "../service/department.service";
-import {Department} from "../backend_types/department";
-import {GlobalService} from "../service/global.service";
+import {ToastMessageService} from "../../service/toast-message.service";
+import {DatePlan} from "../../backend_types/date-plan";
+import {DatePlanService} from "../../service/date-plan.service";
+import {DepartmentService} from "../../service/department.service";
+import {Department} from "../../backend_types/department";
+import {GlobalService} from "../../service/global.service";
 import {Subscription} from "rxjs";
-import {Surgeon} from "../backend_types/surgeon";
-import {SurgeonPlan} from "../backend_types/surgeonPlan";
-import {SurgeonPlanService} from "../service/surgeon-plan.service";
+import {Surgeon} from "../../backend_types/surgeon";
+import {SurgeonPlan} from "../../backend_types/surgeonPlan";
+import {SurgeonPlanService} from "../../service/surgeon-plan.service";
 
 const I18N_VALUES = {
   "ua": {
@@ -58,7 +58,8 @@ export class EditedDatepickerI18n extends NgbDatepickerI18n {
 @Component({
   selector: "app-surgeon-plan",
   templateUrl: "./surgeon-plan.component.html",
-  styleUrls: ["./surgeon-plan.component.css"]
+  styleUrls: ["./surgeon-plan.component.css"],
+  providers: [I18n, {provide: NgbDatepickerI18n, useClass: EditedDatepickerI18n}] // define custom NgbDatepickerI18n provider
 })
 export class SurgeonPlanComponent implements OnInit, OnDestroy {
   minDate: NgbDate = NgbDate.from(this.calendar.getToday());
@@ -71,6 +72,7 @@ export class SurgeonPlanComponent implements OnInit, OnDestroy {
   selectedDepartment: Department = this.globalService.getDepartment();
   selectedSurgeon: Surgeon = this.globalService.getSurgeon();
   private departmentSubscriber: Subscription;
+  private surgeonSubscriber: Subscription;
 
   loading_save = false;
   del_loading = false;
@@ -114,12 +116,17 @@ export class SurgeonPlanComponent implements OnInit, OnDestroy {
     this.departmentSubscriber = this.globalService.emittedDepartment.subscribe((selectedDepartment: Department) => {
       this.selectedDepartment = selectedDepartment;
       this.getDatePlans(this.selectedDepartment.departmentId, new Date(this.minDate.year, this.minDate.month - 2, this.minDate.day));
+    })
+    this.surgeonSubscriber = this.globalService.emittedSurgeon.subscribe((selectedSurgeon: Surgeon) => {
+      this.selectedSurgeon = selectedSurgeon;
+      this.getDatePlans(this.selectedDepartment.departmentId, new Date(this.minDate.year, this.minDate.month - 2, this.minDate.day));
     });
   }
 
   ngOnDestroy(): void {
     this.compiler.clearCache();
     this.departmentSubscriber.unsubscribe();
+    this.surgeonSubscriber.unsubscribe();
   }
 
   onSelect(date: NgbDateStruct, disabled: boolean) {

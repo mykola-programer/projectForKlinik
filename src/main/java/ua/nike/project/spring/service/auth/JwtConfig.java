@@ -4,22 +4,22 @@ import org.springframework.beans.factory.annotation.Value;
 
 public class JwtConfig {
 
-    @Value("${security.jwt.uri:/auth/**}")
+    @Value("${security.jwt.url}")
     private String Uri;
 
-    @Value("${security.jwt.header:Authorization}")
+    @Value("${security.jwt.header}")
     private String header;
 
-    @Value("${security.jwt.prefix:Bearer }")
+    @Value("${security.jwt.prefix}")
     private String prefix;
 
-    @Value("${security.jwt.expiration:#{24*60*60}}")
+    @Value("${security.jwt.expiration}")
     private int expiration;
 
-    @Value("${security.jwt.secret:JwtSecretKey}")
+    @Value("${security.jwt.secret}")
     private String secret;
 
-    // getters ...
+    // getters and setters...
 
     public String getUri() {
         return Uri;

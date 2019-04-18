@@ -40,7 +40,7 @@ public class SurgeonService {
     public List<SurgeonVO> findAll() {
         List<Surgeon> entities = dao.findAll("Surgeon.findAll");
         if (entities == null) return null;
-        List<SurgeonVO> result = new ArrayList<>();
+        List<SurgeonVO> result = new ArrayList<SurgeonVO>();
         for (Surgeon entity : entities) {
             result.add(convertToSurgeonVO(entity));
         }

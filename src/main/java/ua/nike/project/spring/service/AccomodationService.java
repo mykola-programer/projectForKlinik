@@ -41,7 +41,7 @@ public class AccomodationService {
     public List<AccomodationVO> findAll() {
         List<Accomodation> entities = dao.findAll("Accomodation.findAll");
         if (entities == null) return null;
-        List<AccomodationVO> result = new ArrayList<>();
+        List<AccomodationVO> result = new ArrayList<AccomodationVO>();
         for (Accomodation entity : entities) {
             result.add(convertToAccomodationVO(entity));
         }

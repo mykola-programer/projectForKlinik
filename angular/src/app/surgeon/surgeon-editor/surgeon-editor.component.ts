@@ -1,11 +1,11 @@
 import {Component, OnInit} from "@angular/core";
-import {Surgeon} from "../backend_types/surgeon";
-import {SurgeonService} from "../service/surgeon.service";
+import {Surgeon} from "../../backend_types/surgeon";
+import {SurgeonService} from "../../service/surgeon.service";
 import {HttpErrorResponse} from "@angular/common/http";
 import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {ToastMessageService} from "../service/toast-message.service";
+import {ToastMessageService} from "../../service/toast-message.service";
 import {debounceTime} from "rxjs/operators";
-import {GlobalService} from "../service/global.service";
+import {GlobalService} from "../../service/global.service";
 
 @Component({
   selector: "app-surgeon-editor",

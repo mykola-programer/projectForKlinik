@@ -92,11 +92,11 @@ public class DAOImpl<T extends EntityObject> implements DAO<T> {
 
     @Override
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-    public Object getObjectByQuery(String hqlQuery, Map<String, Object> parameters, Class<? extends Object> oClass) {
+    public Object getObjectByQuery(String hqlQuery, Object[] parameters, Class<? extends Object> oClass) {
         TypedQuery<? extends Object> query = entityManager.createQuery(hqlQuery, oClass);
         if (parameters != null) {
-            for (Map.Entry<String, Object> parameter : parameters.entrySet()) {
-                query.setParameter(parameter.getKey(), parameter.getValue());
+            for (int i = 0; i < parameters.length; i++) {
+                query.setParameter(i + 1, parameters[i]);
             }
         }
         return query.getSingleResult();

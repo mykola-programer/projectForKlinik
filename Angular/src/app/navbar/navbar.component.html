@@ -53,6 +53,9 @@
           <app-department-selector *ngIf="statusNavbar=='accomodation' || statusNavbar=='visit' || statusNavbar=='date' || statusNavbar=='surgeonPlan'"></app-department-selector>
       </li>
       <li>
+          <app-surgeon-selector *ngIf="statusNavbar=='surgeonPlan'"></app-surgeon-selector>
+      </li>
+      <li>
         <div>
           <app-date-selector *ngIf="statusNavbar=='accomodation' || statusNavbar=='visit'"></app-date-selector>
         </div>
