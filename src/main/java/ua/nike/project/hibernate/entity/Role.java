@@ -1,6 +1,7 @@
 package ua.nike.project.hibernate.entity;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "roles")
@@ -9,36 +10,36 @@ public class Role implements EntityObject {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "role_id", nullable = false, updatable = false)
-    private long role_id;
+    private long roleID;
 
     @Column(name = "name", nullable = false)
     private String name;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_id")
-    private User user;
+    @OneToMany(targetEntity = User.class, fetch = FetchType.LAZY, mappedBy = "role")
+    private List<User> users;
 
-    public long getRole_id() {
-        return role_id;
+    public long getRoleID() {
+        return roleID;
     }
 
-    public void setRole_id(long role_id) {
-        this.role_id = role_id;
+    public void setRoleID(long roleID) {
+        this.roleID = roleID;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.name = name.toUpperCase();
     }
 
-    public User getUser() {
-        return user;
+    public List<User> getUsers() {
+        return users;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setUsers(List<User> users) {
+        this.users = users;
     }
 
-    public String getAuthority() {
-        return name;
-    }
 }

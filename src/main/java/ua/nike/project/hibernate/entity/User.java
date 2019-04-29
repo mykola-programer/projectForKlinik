@@ -1,13 +1,12 @@
 package ua.nike.project.hibernate.entity;
 
 import javax.persistence.*;
-import java.util.List;
 import java.util.Objects;
 
 @Entity
 @NamedQueries(value = {
         @NamedQuery(name = "User.findAll", query = "FROM User ORDER BY username"),
-        @NamedQuery(name = "User.searchByName", query = "FROM User user WHERE user.username = ?1"),
+        @NamedQuery(name = "User.findByName", query = "FROM User WHERE upper(username) like upper(?1)"),
 })
 @Table(name = "users", uniqueConstraints = {
         @UniqueConstraint(name = "user_pk", columnNames = {"username"})
@@ -19,12 +18,12 @@ public class User implements EntityObject {
     @Column(name = "user_id")
     private int userId;
     private String username;
-    @Column(name = "password")
     private String password;
-
     private boolean enabled;
-    @OneToMany(targetEntity = Role.class, fetch = FetchType.EAGER, mappedBy = "user")
-    private List<Role> roles;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "role_id")
+    private Role role;
 
     public int getUserId() {
         return userId;
@@ -39,7 +38,7 @@ public class User implements EntityObject {
     }
 
     public void setUsername(String username) {
-        this.username = username;
+        this.username = username.toUpperCase();
     }
 
     public String getPassword() {
@@ -58,12 +57,12 @@ public class User implements EntityObject {
         this.enabled = enabled;
     }
 
-    public List<Role> getRoles() {
-        return roles;
+    public Role getRole() {
+        return role;
     }
 
-    public void setRoles(List<Role> roles) {
-        this.roles = roles;
+    public void setRole(Role role) {
+        this.role = role;
     }
 
     @Override
@@ -82,8 +81,11 @@ public class User implements EntityObject {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("User{");
-        sb.append("login='").append(username).append('\'');
-        sb.append(", password='").append("******").append('\'');
+        sb.append("userId=").append(userId);
+        sb.append(", username='").append(username).append('\'');
+        sb.append(", password='").append(password).append('\'');
+        sb.append(", enabled=").append(enabled);
+        sb.append(", role=").append(role);
         sb.append('}');
         return sb.toString();
     }

@@ -22,7 +22,8 @@ import java.util.Objects;
                         " ORDER BY surname ASC ,firstName ASC,secondName ASC"),
         @NamedQuery(name = "Client.searchAllDESC",
                 query = "FROM Client cl" +
-                        " WHERE (lower(surname) like concat( lower(?1), '%')" +
+                        " WHERE (" +
+                        "lower(surname) like concat( lower(?1), '%')" +
                         " AND lower(firstName) like concat( lower(?2), '%')" +
                         " AND lower(secondName) like concat( lower(?3), '%'))" +
                         " OR lower(telephone) like concat( '%', lower(?1), '%')" +

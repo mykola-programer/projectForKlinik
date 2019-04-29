@@ -1,4 +1,4 @@
-package ua.nike.project.spring.service.auth;
+package ua.nike.project.spring.service.auth.variant1;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
@@ -23,9 +23,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         ua.nike.project.hibernate.entity.User user = userService.loadUserByUsername(username);
         if (user != null) {
             List<GrantedAuthority> grantedAuthorities = AuthorityUtils
-                    .commaSeparatedStringToAuthorityList("ROLE_" + user.getRoles().get(0)); // TODO Correct Roles
+                    .commaSeparatedStringToAuthorityList("ROLE_" + user.getRole().getName()); // TODO Correct Roles
 
-            return new User(user.getUsername(), user.getPassword(), grantedAuthorities);
+            return new User(user.getUsername(), user.getPassword(), user.isEnabled(), true, true, true, grantedAuthorities);
         }
         throw new UsernameNotFoundException("Username: " + username + " not found");
     }

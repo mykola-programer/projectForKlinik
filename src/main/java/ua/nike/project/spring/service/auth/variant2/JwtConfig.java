@@ -1,11 +1,11 @@
-package ua.nike.project.spring.service.auth;
+package ua.nike.project.spring.service.auth.variant2;
 
 import org.springframework.beans.factory.annotation.Value;
 
 public class JwtConfig {
 
     @Value("${security.jwt.url}")
-    private String Uri;
+    private String Url;
 
     @Value("${security.jwt.header}")
     private String header;
@@ -21,12 +21,12 @@ public class JwtConfig {
 
     // getters and setters...
 
-    public String getUri() {
-        return Uri;
+    public String getUrl() {
+        return Url;
     }
 
-    public void setUri(String uri) {
-        Uri = uri;
+    public void setUrl(String url) {
+        Url = url;
     }
 
     public String getHeader() {

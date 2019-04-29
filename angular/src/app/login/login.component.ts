@@ -2,7 +2,7 @@ import {Component, OnInit} from "@angular/core";
 import {AuthService} from "../service/auth.service";
 import {UserService} from "../service/user.service";
 import {User} from "../backend_types/user";
-import {HttpClient, HttpErrorResponse, HttpParams} from "@angular/common/http";
+import {HttpClient, HttpErrorResponse} from "@angular/common/http";
 import {ToastMessageService} from "../service/toast-message.service";
 
 @Component({
@@ -41,7 +41,7 @@ export class LoginComponent implements OnInit {
   }
 
   loginUser(login, password) {
-    const user: User = this.users.find(user => user.login === login);
+    const user: User = this.users.find((value: User) => value.username === login);
     if (user) {
       user.password = password;
       this.userService.loginUser(user).subscribe((isLogged: boolean) => {
@@ -63,4 +63,10 @@ export class LoginComponent implements OnInit {
     }
   }
 
+  test() {
+    const user = new User();
+    user.username = "admin";
+    user.password = "123";
+     this.userService.testLogin(user).subscribe(value => console.log(value));
+  }
 }

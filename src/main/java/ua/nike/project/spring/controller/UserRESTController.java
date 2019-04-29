@@ -70,4 +70,13 @@ public class UserRESTController {
             throw new ValidationException("Object is not valid", bindingResult);
         return userService.loginUser(userVO);
     }
+
+    @CrossOrigin
+    @RequestMapping(value = "/login2", method = RequestMethod.GET)
+    public String loginUser2() {
+        System.out.println(userService.loadUserByUsername("user"));
+        return "Successful";
+    }
+
+
 }

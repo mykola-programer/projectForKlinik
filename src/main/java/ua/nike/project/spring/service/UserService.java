@@ -3,6 +3,7 @@ package ua.nike.project.spring.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,9 +12,6 @@ import ua.nike.project.spring.dao.DAO;
 import ua.nike.project.spring.exceptions.ValidationException;
 import ua.nike.project.spring.vo.UserVO;
 
-import javax.validation.constraints.NotNull;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,6 +19,8 @@ import java.util.List;
 @Scope(BeanDefinition.SCOPE_SINGLETON)
 public class UserService {
 
+    @Autowired
+    public BCryptPasswordEncoder passwordEncoder;
     private DAO<User> dao;
 
     @Autowired
@@ -36,7 +36,7 @@ public class UserService {
 
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public User loadUserByUsername(String username) {
-        return (User)dao.getObjectByQuery("User.searchByName", new Object[]{username}, User.class);
+        return (User) dao.getObjectByQuery("User.findByName", User.class, username);
     }
 
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
@@ -45,11 +45,7 @@ public class UserService {
         if (user == null) {
             throw new ValidationException("Uncorrected User !", null);
         } else {
-            try {
-                return checkPassword(userVO, user);
-            } catch (NoSuchAlgorithmException e) {
-                throw new ValidationException("Error to check password !", null);
-            }
+            return passwordEncoder.matches(userVO.getPassword(), user.getPassword());
         }
     }
 
@@ -65,65 +61,62 @@ public class UserService {
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public UserVO create(UserVO userVO) throws ValidationException {
-        try {
-            User entity = copyToUser(userVO, null);
-            return convertToUserVO(dao.save(entity));
-        } catch (NoSuchAlgorithmException e) {
-            throw new ValidationException("Error to save password !", null);
-        }
+    public UserVO create(UserVO userVO) {
+        User entity = copyToUser(userVO, null);
+        return convertToUserVO(dao.save(entity));
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public UserVO update(int userID, UserVO userVO) throws ValidationException {
-        try {
-            User currentEntity = dao.findByID(userID);
-            User updatedEntity = copyToUser(userVO, currentEntity);
-            return convertToUserVO(dao.update(updatedEntity));
-        } catch (NoSuchAlgorithmException e) {
-            throw new ValidationException("Error to save password !", null);
-        }
+    public UserVO update(int userID, UserVO userVO) {
+        User currentEntity = dao.findByID(userID);
+        User updatedEntity = copyToUser(userVO, currentEntity);
+        return convertToUserVO(dao.update(updatedEntity));
     }
 
     private UserVO convertToUserVO(User user) {
         if (user == null) return null;
         UserVO result = new UserVO();
         result.setUserId(user.getUserId());
-        result.setLogin(user.getUsername());
+        result.setUsername(user.getUsername());
         result.setPassword(null);
+        result.setEnabled(user.isEnabled());
         return result;
     }
 
-    private User copyToUser(UserVO original, User result) throws NoSuchAlgorithmException {
+    private User copyToUser(UserVO original, User result) {
         if (original != null) {
             if (result == null) result = new User();
-            result.setUsername(original.getLogin());
-            result.setPassword(encryptPasswordBySHA512(original));
+            result.setUsername(original.getUsername());
+            result.setPassword(passwordEncoder.encode(original.getPassword()));
+            result.setEnabled(original.isEnabled());
         }
         return result;
     }
 
-    private String encryptPasswordBySHA512(@NotNull UserVO userVO) throws NoSuchAlgorithmException {
+/*    @Deprecated
+    private String encryptPasswordByBCrypt(@NotNull UserVO userVO) throws NoSuchAlgorithmException {
         if (userVO.getPassword() == null) {
             userVO.setPassword("");
         }
         MessageDigest md = MessageDigest.getInstance("SHA-512");
         md.update(getSalt().getBytes());
-        md.update(userVO.getLogin().getBytes());
+        md.update(userVO.getUsername().getBytes());
         byte[] bytes = md.digest(userVO.getPassword().getBytes());
         StringBuilder hashedPassword = new StringBuilder();
         for (byte aByte : bytes) {
             hashedPassword.append(Integer.toString((aByte & 0xff) + 0x100, 16).substring(1));
         }
         return hashedPassword.toString();
-    }
+    }*/
 
+/*    @Deprecated
     private boolean checkPassword(UserVO userVO, User user) throws NoSuchAlgorithmException {
-        return user.getPassword().equals(encryptPasswordBySHA512(userVO));
-    }
+        return user.getPassword().equals(encryptPasswordByBCrypt(userVO));
+    }*/
 
+/*    @Deprecated
     private String getSalt() {
         String salt = "96BqJAw2n4J2p#S-G+W_E_%$53dwn-@Qz@^*p=S4hJn7e=m+6DE4VwYuvZhyxUp9eekNaVkd8-RDKYWCUP@XVWpQm!kGNp#gm^Qp_J*UfzLTBLU8*3r#!t=+P4EcR_rH";
         return salt;
-    }
+    }*/
 }

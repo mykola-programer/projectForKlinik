@@ -1,4 +1,4 @@
-package ua.nike.project.spring.service.auth;
+package ua.nike.project.spring.service.auth.variant1;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Jwts;
@@ -10,6 +10,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import ua.nike.project.spring.vo.UserVO;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -39,11 +40,12 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
 	@Override
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
 			throws AuthenticationException {
-		
+		System.out.println(request);
 		try {
 			
 			// 1. Get credentials from request
-			UserCredentials creds = new ObjectMapper().readValue(request.getInputStream(), UserCredentials.class);
+			System.out.println(request.getUserPrincipal());/////////
+			UserVO creds = new ObjectMapper().readValue(request.getInputStream(), UserVO.class);
 			
 			// 2. Create auth object (contains credentials) which will be used by auth manager
 			UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
@@ -79,22 +81,5 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
 		response.addHeader(jwtConfig.getHeader(), jwtConfig.getPrefix() + token);
 	}
 	
-	// A (temporary) class just to represent the user credentials
-	private static class UserCredentials {
-	    private String username, password;
-	    
-	    public String getUsername() {
-			return username;
-		}
-	    
-	    public void setUsername(String username) {
-			this.username = username;
-		}
-	    public String getPassword() {
-			return password;
-		}
-	    public void setPassword(String password) {
-			this.password = password;
-		}
-	}
+
 }

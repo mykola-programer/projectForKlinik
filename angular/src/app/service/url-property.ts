@@ -2,7 +2,8 @@ import {HttpHeaders} from "@angular/common/http";
 
 export class UrlProperty {
 
-  static readonly serverUrl = "https://localhost:8334/";  // URL to REST-server
+  // static readonly serverUrl = "https://localhost:8334/";  // URL to REST-server
+  static readonly serverUrl = "http://localhost:8080/";  // URL to REST-server
 
   static readonly accomodationsUrl = "accomodations/";
   static readonly clientsUrl = "clients/";

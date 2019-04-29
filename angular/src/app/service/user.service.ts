@@ -25,7 +25,10 @@ export class UserService {
   }
 
   editUser(userID: number, currentUser: User, editedUser: User): Observable<User> {
-    return this.http.put<User>(UrlProperty.serverUrl + UrlProperty.usersUrl + userID, JSON.stringify({currentUser: currentUser, editedUser: editedUser}), UrlProperty.httpOptions);
+    return this.http.put<User>(UrlProperty.serverUrl + UrlProperty.usersUrl + userID, JSON.stringify({
+      currentUser: currentUser,
+      editedUser: editedUser
+    }), UrlProperty.httpOptions);
   }
 
   loginUser(user: User): Observable<boolean> {
@@ -36,4 +39,7 @@ export class UserService {
     return this.http.delete<boolean>(UrlProperty.serverUrl + UrlProperty.usersUrl + user_id, UrlProperty.httpOptions);
   }
 
+  testLogin(user: User): Observable<object> {
+    return this.http.post(UrlProperty.serverUrl + UrlProperty.usersUrl + "login", JSON.stringify(user), UrlProperty.httpOptions);
+  }
 }
