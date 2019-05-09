@@ -13,6 +13,7 @@ public class UserVO implements VisualObject {
     @NotNull
     private String username;
     private String password;
+    private String role;
     private boolean enabled;
 
     public int getUserId() {
@@ -37,6 +38,14 @@ public class UserVO implements VisualObject {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 
     public boolean isEnabled() {
@@ -65,7 +74,8 @@ public class UserVO implements VisualObject {
         final StringBuilder sb = new StringBuilder("UserVO{");
         sb.append("userId=").append(userId);
         sb.append(", username='").append(username).append('\'');
-        sb.append(", password='").append("********").append('\'');
+        sb.append(", password='").append("******").append('\'');
+        sb.append(", role='").append(role).append('\'');
         sb.append(", enabled=").append(enabled);
         sb.append('}');
         return sb.toString();

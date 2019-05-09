@@ -1,7 +1,8 @@
 import {Component, Input, OnInit} from "@angular/core";
 import {MatDialog} from "@angular/material";
-import {AuthService} from "../service/auth.service";
 import {GlobalService} from "../service/global.service";
+import {UrlProperty} from "../service/url-property";
+import {User} from "../backend_types/user";
 
 @Component({
   selector: "app-navbar",
@@ -11,17 +12,19 @@ import {GlobalService} from "../service/global.service";
 export class NavbarComponent implements OnInit {
 
   @Input() statusNavbar: string;
+  authUser: User = null;
 
   constructor(private dialog: MatDialog,
-              private globalService: GlobalService,
-              private authService: AuthService) {
+              private globalService: GlobalService) {
   }
 
   ngOnInit() {
     this.globalService.statusNavbar.subscribe(statusNavbar => this.statusNavbar = statusNavbar);
+    UrlProperty.authUser.subscribe(user => this.authUser = user);
   }
 
   logOut() {
-    this.authService.isLogging.emit(false);
+    UrlProperty.authUser.emit(null);
+    return false;
   }
 }

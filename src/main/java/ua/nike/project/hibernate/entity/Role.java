@@ -4,6 +4,10 @@ import javax.persistence.*;
 import java.util.List;
 
 @Entity
+@NamedQueries(value = {
+        @NamedQuery(name = "Role.findAll", query = "FROM Role ORDER BY name"),
+        @NamedQuery(name = "Role.findByName", query = "FROM Role WHERE upper(name) like upper(?1)"),
+})
 @Table(name = "roles")
 public class Role implements EntityObject {
 

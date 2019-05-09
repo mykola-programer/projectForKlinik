@@ -6,7 +6,7 @@ import java.util.Objects;
 @Entity
 @NamedQueries(value = {
         @NamedQuery(name = "User.findAll", query = "FROM User ORDER BY username"),
-        @NamedQuery(name = "User.findByName", query = "FROM User WHERE upper(username) like upper(?1)"),
+        @NamedQuery(name = "User.findByName", query = "FROM User WHERE username like ?1"),
 })
 @Table(name = "users", uniqueConstraints = {
         @UniqueConstraint(name = "user_pk", columnNames = {"username"})
@@ -85,7 +85,7 @@ public class User implements EntityObject {
         sb.append(", username='").append(username).append('\'');
         sb.append(", password='").append(password).append('\'');
         sb.append(", enabled=").append(enabled);
-        sb.append(", role=").append(role);
+        sb.append(", role=").append(role.toString());
         sb.append('}');
         return sb.toString();
     }

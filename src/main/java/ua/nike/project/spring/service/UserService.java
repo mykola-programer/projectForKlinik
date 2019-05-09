@@ -20,8 +20,10 @@ import java.util.List;
 public class UserService {
 
     @Autowired
-    public BCryptPasswordEncoder passwordEncoder;
+    private BCryptPasswordEncoder passwordEncoder;
     private DAO<User> dao;
+    @Autowired
+    private RoleService roleService;
 
     @Autowired
     public void setDao(DAO<User> dao) {
@@ -35,17 +37,17 @@ public class UserService {
     }
 
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-    public User loadUserByUsername(String username) {
+    public User findUserByUsername(String username) {
         return (User) dao.getObjectByQuery("User.findByName", User.class, username);
     }
 
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-    public boolean loginUser(UserVO userVO) throws ValidationException {
-        User user = dao.findByID(userVO.getUserId());
-        if (user == null) {
-            throw new ValidationException("Uncorrected User !", null);
+    public UserVO loginUser(UserVO userVO) throws ValidationException {
+        User user = findUserByUsername(userVO.getUsername());
+        if (user != null && passwordEncoder.matches(userVO.getPassword(), user.getPassword())) {
+            return convertToUserVO(user);
         } else {
-            return passwordEncoder.matches(userVO.getPassword(), user.getPassword());
+            throw new ValidationException("Uncorrected User !", null);
         }
     }
 
@@ -79,6 +81,7 @@ public class UserService {
         result.setUserId(user.getUserId());
         result.setUsername(user.getUsername());
         result.setPassword(null);
+        result.setRole(user.getRole().getName());
         result.setEnabled(user.isEnabled());
         return result;
     }
@@ -88,6 +91,7 @@ public class UserService {
             if (result == null) result = new User();
             result.setUsername(original.getUsername());
             result.setPassword(passwordEncoder.encode(original.getPassword()));
+            result.setRole(roleService.findRoleByName(original.getRole()));
             result.setEnabled(original.isEnabled());
         }
         return result;

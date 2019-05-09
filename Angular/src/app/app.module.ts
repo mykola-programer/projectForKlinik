@@ -27,14 +27,14 @@ import {DepartmentSelectorComponent} from "./department/department-selector/depa
 import {DepartmentService} from "./service/department.service";
 import {GlobalService} from "./service/global.service";
 import {AccomodationService} from "./service/accomodation.service";
-import {AuthService} from "./service/auth.service";
+import {AuthService} from "./service/auth/auth.service";
 import {ClientService} from "./service/client.service";
 import {ManagerService} from "./service/manager.service";
 import {OperationTypeService} from "./service/operation-type.service";
 import {SurgeonService} from "./service/surgeon.service";
 import {SurgeonPlanService} from "./service/surgeon-plan.service";
 import {ToastMessageService} from "./service/toast-message.service";
-import {UserService} from "./service/user.service";
+import {UserService} from "./service/auth/user.service";
 import {VisitService} from "./service/visit.service";
 import {DepartmentEditorComponent} from "./department/department-editor/department-editor.component";
 import {FilterDepartmentPipe} from "./department/department-editor/filter-department.pipe";

@@ -20,7 +20,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        ua.nike.project.hibernate.entity.User user = userService.loadUserByUsername(username);
+        ua.nike.project.hibernate.entity.User user = userService.findUserByUsername(username);
         if (user != null) {
             List<GrantedAuthority> grantedAuthorities = AuthorityUtils
                     .commaSeparatedStringToAuthorityList("ROLE_" + (user.getRole() != null ? user.getRole().getName() : "ANONYMOUS"));
