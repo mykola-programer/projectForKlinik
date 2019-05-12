@@ -1,10 +1,11 @@
-<img [hidden]="!isBadConnection" src="/assets/img/no_connection.jpg" style="max-width: 500px"/>
-<form  autocomplete="off" *ngIf="!isBadConnection" (submit)="loginUser(login.value, password.value)">
+<ngx-toasta></ngx-toasta>
+<form autocomplete="off" (submit)="loginUser(login, password)">
   <div class="container">
     <div>
-      <input #login type="text" autocomplete="off" placeholder="Login" id="login"
-              (keyup)="invalidLogin = false"
-              [ngStyle]="{'background': invalidLogin ? 'pink' : 'white'}">
+      <input #login type="text" autocomplete="off" placeholder="Login" id="login" pattern="[a-zA-Z]*" required
+             (change)="invalidLogin = false"
+             (keydown)="($event.keyCode === 13 || $event.keyCode === 32) ? password.focus() : 0"
+             [ngStyle]="{'background': invalidLogin ? 'pink' : 'white'}">
     </div>
     <div>
       <input #password type="password" autocomplete="off" placeholder="Password" id="password"
@@ -13,7 +14,7 @@
     </div>
     <div>
       <button type="submit" id="submit">Submit</button>
-      <button (click)="test()">Test</button>
+      <!--<button (click)="test()">Test</button>-->
     </div>
   </div>
 </form>

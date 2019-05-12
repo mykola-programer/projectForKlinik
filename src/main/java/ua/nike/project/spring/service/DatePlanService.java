@@ -53,10 +53,23 @@ public class DatePlanService {
         return result;
     }
 
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<DatePlanVO> getByDepartment(Integer departmentID, LocalDate minDate) {
         Object[] parameters = {departmentID, minDate};
         List<DatePlan> datePlans = datePlanDAO.findAll("DatePlan.findByDepartment", parameters);
 
+        if (datePlans == null) return null;
+        List<DatePlanVO> result = new ArrayList<>();
+        for (DatePlan entity : datePlans) {
+            result.add(convertToDatePlanVO(entity));
+        }
+        return result;
+    }
+
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+    public List<DatePlanVO> getBySurgeon(Integer surgeonID, LocalDate minDate) {
+        Object[] parameters = {surgeonID, minDate};
+        List<DatePlan> datePlans = datePlanDAO.findAll("DatePlan.findBySurgeon", parameters);
         if (datePlans == null) return null;
         List<DatePlanVO> result = new ArrayList<>();
         for (DatePlan entity : datePlans) {
@@ -102,6 +115,7 @@ public class DatePlanService {
         }
         return result;
     }
+
 
 
 /*    @Deprecated

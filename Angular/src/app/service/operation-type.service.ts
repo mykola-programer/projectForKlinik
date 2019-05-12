@@ -13,11 +13,11 @@ export class OperationTypeService {
   }
 
   getProcedures(): Observable<OperationType[]> {
-    return this.http.get<OperationType[]>(UrlProperty.serverUrl + UrlProperty.proceduresUrl);
+    return this.http.get<OperationType[]>(UrlProperty.serverUrl + UrlProperty.proceduresUrl, UrlProperty.httpOptions);
   }
 
   getProcedure(procedure_id: number): Observable<OperationType> {
-    return this.http.get<OperationType>(UrlProperty.serverUrl + UrlProperty.proceduresUrl + procedure_id);
+    return this.http.get<OperationType>(UrlProperty.serverUrl + UrlProperty.proceduresUrl + procedure_id, UrlProperty.httpOptions);
   }
 
   addProcedure(procedure: OperationType): Observable<OperationType> {

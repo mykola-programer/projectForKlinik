@@ -8,6 +8,7 @@ import {debounceTime} from "rxjs/operators";
 import {MatPaginator} from "@angular/material";
 import {PageEvent} from "@angular/material/paginator/typings/paginator";
 import {GlobalService} from "../service/global.service";
+import {UrlProperty} from "../service/url-property";
 
 @Component({
   selector: "app-client-editor",
@@ -96,6 +97,8 @@ export class ClientEditorComponent implements OnInit {
       if (err.status === 422) {
         this.toastMessageService.inform("Некорректні параметри!",
           err.error + "<br>" + err.message, "error", 10000);
+      } else if (err.status === 401) {
+        UrlProperty.authUser.emit(null);
       } else {
         this.clients_loading = true;
         this.badConnection = true;
@@ -172,6 +175,8 @@ export class ClientEditorComponent implements OnInit {
         client.surname + " " + client.firstName + " " + client.secondName +
         "<br> не відповідає критеріям !",
         err.error, "error");
+    } else if (err.status === 401) {
+      UrlProperty.authUser.emit(null);
     } else if (err.status === 404) {
       this.toastMessageService.inform("Помилка при збережені! <br>" +
         client.surname + " " + client.firstName + " " + client.secondName,
@@ -224,6 +229,8 @@ export class ClientEditorComponent implements OnInit {
         + client.surname + " " + client.firstName + " " + client.secondName,
         "Кліент має активні візити! <br>" +
         " Спочатку видаліть візити цього клієнта !", "error");
+    } else if (err.status === 401) {
+      UrlProperty.authUser.emit(null);
     } else {
       this.toastMessageService.inform("Помилка при видалені!",
         err.error + "<br>" + "HTTP status: " + err.status, "error");

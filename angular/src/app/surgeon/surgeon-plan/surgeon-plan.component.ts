@@ -64,9 +64,11 @@ export class EditedDatepickerI18n extends NgbDatepickerI18n {
 export class SurgeonPlanComponent implements OnInit, OnDestroy {
   minDate: NgbDate = NgbDate.from(this.calendar.getToday());
   maxDate: NgbDate = new NgbDate(this.calendar.getToday().year + 5, 12, 31);
-  datePlans: DatePlan[] = [];
+  datePlansByDepartment: DatePlan[] = [];
+  datePlansBySurgeon: DatePlan[] = [];
+  datePlansBySurgeonCurrentDepartment: DatePlan[] = [];
+  datePlansBySurgeonOtherDepartments: DatePlan[] = [];
   selectedDates: DatePlan[] = [];
-  surgeonPlans: SurgeonPlan[] = [];
   selectedSurgeonPlans: SurgeonPlan[] = [];
 
   selectedDepartment: Department = this.globalService.getDepartment();
@@ -77,11 +79,12 @@ export class SurgeonPlanComponent implements OnInit, OnDestroy {
   loading_save = false;
   del_loading = false;
   dates_loading = false;
+  surgeon_dates_loading = false;
 
   isLoadingOFF(): boolean {
     return !(this.loading_save
       || this.del_loading);
-  };
+  }
 
   constructor(private router: Router,
               private config: NgbDatepickerConfig,
@@ -103,23 +106,24 @@ export class SurgeonPlanComponent implements OnInit, OnDestroy {
       const d = new Date(date.year, date.month - 1, date.day);
       return d.getDay() === 0 || d.getDay() === 6;
     };
-
-
   }
 
   ngOnInit(): void {
     this.globalService.changeNavbar("surgeonPlan");
-    if (this.globalService.getDepartment()) {
-      this.selectedDepartment = this.globalService.getDepartment();
-      this.getDatePlans(this.selectedDepartment.departmentId, new Date(this.minDate.year, this.minDate.month - 2, this.minDate.day));
-    }
+    // if (this.globalService.getDepartment()) {
+    //   this.selectedDepartment = this.globalService.getDepartment();
+    //   this.selectedSurgeon = this.globalService.getSurgeon();
+    //   this.getDatePlansByDepartment(this.selectedDepartment.departmentId,
+    //     new Date(this.minDate.year, this.minDate.month - 2, this.minDate.day));
+    // }
     this.departmentSubscriber = this.globalService.emittedDepartment.subscribe((selectedDepartment: Department) => {
       this.selectedDepartment = selectedDepartment;
-      this.getDatePlans(this.selectedDepartment.departmentId, new Date(this.minDate.year, this.minDate.month - 2, this.minDate.day));
-    })
+      this.getDatePlansByDepartment(this.selectedDepartment.departmentId,
+        new Date(this.minDate.year, this.minDate.month - 2, this.minDate.day));
+    });
     this.surgeonSubscriber = this.globalService.emittedSurgeon.subscribe((selectedSurgeon: Surgeon) => {
       this.selectedSurgeon = selectedSurgeon;
-      this.getDatePlans(this.selectedDepartment.departmentId, new Date(this.minDate.year, this.minDate.month - 2, this.minDate.day));
+      this.getSurgeonDatePlans(this.selectedSurgeon.surgeonId, new Date(this.minDate.year, this.minDate.month - 2, this.minDate.day));
     });
   }
 
@@ -135,9 +139,9 @@ export class SurgeonPlanComponent implements OnInit, OnDestroy {
       if (date_index !== -1) {
         this.selectedDates.splice(date_index, 1);
       } else {
-        const datePlan_index = this.indexOf(date, this.datePlans);
+        const datePlan_index = this.indexOf(date, this.datePlansByDepartment);
         if (datePlan_index !== -1) {
-          this.selectedDates.push(this.datePlans[datePlan_index]);
+          this.selectedDates.push(this.datePlansByDepartment[datePlan_index]);
         } else {
           const datePlan: DatePlan = new DatePlan();
           datePlan.date = [date.year, date.month, date.day];
@@ -209,7 +213,7 @@ export class SurgeonPlanComponent implements OnInit, OnDestroy {
   }
 
   onRefresh() {
-    this.getDatePlans(this.selectedDepartment.departmentId, new Date(this.minDate.year, this.minDate.month - 2, this.minDate.day));
+    this.getDatePlansByDepartment(this.selectedDepartment.departmentId, new Date(this.minDate.year, this.minDate.month - 2, this.minDate.day));
   }
 
   onDelete() {
@@ -254,13 +258,13 @@ export class SurgeonPlanComponent implements OnInit, OnDestroy {
   }
 
   isPresented(date: NgbDate): boolean {
-    const index = this.indexOf(date, this.datePlans);
-    return index !== -1 && !this.datePlans[index].disable;
+    const index = this.indexOf(date, this.datePlansByDepartment);
+    return index !== -1 && !this.datePlansByDepartment[index].disable;
   }
 
   isDisabled(date: NgbDate): boolean {
-    const index = this.indexOf(date, this.datePlans);
-    return index !== -1 && this.datePlans[index].disable;
+    const index = this.indexOf(date, this.datePlansByDepartment);
+    return index !== -1 && this.datePlansByDepartment[index].disable;
   }
 
   private indexOf(date: NgbDateStruct, datePlans: DatePlan[]): number {
@@ -269,18 +273,49 @@ export class SurgeonPlanComponent implements OnInit, OnDestroy {
     });
   }
 
-  private getDatePlans(departmentID: number, minDate: Date): void {
+  private getDatePlansByDepartment(departmentID: number, minDate: Date): void {
     this.dates_loading = true;
     this.selectedDates = [];
-    this.datePlanService.getDatePlansByDepartment(departmentID, minDate).toPromise().then((datePlans: DatePlan[]) => {
-      this.datePlans = datePlans;
+    this.datePlanService.getDatePlansByDepartment(departmentID, minDate).toPromise().then((datePlansByDepartment: DatePlan[]) => {
+      this.datePlansByDepartment = datePlansByDepartment;
+
+      this.getSurgeonDatePlans(this.selectedSurgeon.surgeonId, minDate);
+
       setTimeout(() => this.dates_loading = false, 400);
     }).catch((err: HttpErrorResponse) => {
       this.dates_loading = true;
       this.toastMessageService.inform("Сервер недоступний!",
         "Спробуйте пізніше !" + "<br>" + err.error + "<br>" + err.message, "error", 10000);
       setTimeout(() => {
-        this.getDatePlans(departmentID, minDate);
+        this.getDatePlansByDepartment(departmentID, minDate);
+      }, 15000);
+    });
+  }
+
+  private getSurgeonDatePlans(surgeonID: number, minDate: Date): void {
+    this.surgeon_dates_loading = true;
+    this.selectedDates = [];
+    this.datePlanService.getDatePlansBySurgeon(surgeonID, minDate).toPromise().then((datePlansBySurgeon: DatePlan[]) => {
+      this.datePlansBySurgeon = datePlansBySurgeon;
+
+      this.datePlansBySurgeonCurrentDepartment = this.datePlansBySurgeon.filter((datePlan: DatePlan) => {
+        return datePlan.departmentID === this.selectedDepartment.departmentId;
+      });
+
+      this.datePlansBySurgeonOtherDepartments = this.datePlansBySurgeon.filter((datePlan: DatePlan) => {
+        return datePlan.departmentID !== this.selectedDepartment.departmentId;
+      });
+
+      // console.log(this.datePlansBySurgeonCurrentDepartment);
+      // console.log(this.datePlansBySurgeonOtherDepartments);
+
+      // setTimeout(() => this.surgeon_dates_loading = false, 400);
+    }).catch((err: HttpErrorResponse) => {
+      this.surgeon_dates_loading = true;
+      this.toastMessageService.inform("Сервер недоступний!",
+        "Спробуйте пізніше !" + "<br>" + err.error + "<br>" + err.message, "error", 10000);
+      setTimeout(() => {
+        this.getSurgeonDatePlans(surgeonID, minDate);
       }, 15000);
     });
   }

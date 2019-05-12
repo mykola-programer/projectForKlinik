@@ -12,6 +12,7 @@ import java.util.Objects;
 @NamedQueries(value = {
         @NamedQuery(name = "DatePlan.findAll", query = "FROM DatePlan ORDER BY date"),
         @NamedQuery(name = "DatePlan.findByDepartment", query = "FROM DatePlan WHERE department.departmentId = ?1 AND date > ?2 ORDER BY date"),
+        @NamedQuery(name = "DatePlan.findBySurgeon", query = "SELECT dp FROM SurgeonPlan sp LEFT JOIN sp.datePlan dp WHERE sp.surgeon.surgeonId = ?1 AND sp.datePlan.date > ?2"),
         @NamedQuery(name = "DatePlan.deleteByIDs", query = "DELETE DatePlan vd WHERE vd.datePlanId IN (:IDs)")
 })
 public class DatePlan implements EntityObject {

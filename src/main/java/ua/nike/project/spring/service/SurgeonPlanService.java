@@ -10,6 +10,8 @@ import ua.nike.project.hibernate.entity.SurgeonPlan;
 import ua.nike.project.spring.dao.DAO;
 import ua.nike.project.spring.vo.SurgeonPlanVO;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,6 +42,18 @@ public class SurgeonPlanService {
     public SurgeonPlan findEntityByID(int entityID) {
         return surgeonPlanDAO.findByID(entityID);
     }
+
+/*    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+    public List<SurgeonPlanVO> findBySurgeonID(int surgeonID, LocalDate minDate) {
+        Object[] param = {surgeonID, minDate};
+        List<SurgeonPlan> entities = surgeonPlanDAO.findAll("SurgeonPlan.findBySurgeon", param);
+        if (entities == null) return null;
+        List<SurgeonPlanVO> result = new ArrayList<SurgeonPlanVO>();
+        for (SurgeonPlan entity : entities) {
+            result.add(convertToSurgeonPlanVO(entity));
+        }
+        return result;
+    }*/
 
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<SurgeonPlanVO> findAll() {

@@ -61,7 +61,7 @@
                        (input)="departmentForm.get('isChanged').patchValue(true)">
               </td>
 
-              <td [formGroupName]="i" *ngIf="hidden_departments">
+              <td [formGroupName]="i" [hidden]="!hidden_departments">
                 <input type="checkbox" formControlName="disable"
                        (change)="departmentForm.get('isChanged').patchValue(true)"
                        class="form-control form-control-sm input-style-active">

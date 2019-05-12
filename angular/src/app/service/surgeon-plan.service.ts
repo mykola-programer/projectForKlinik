@@ -1,5 +1,5 @@
 import {Injectable} from "@angular/core";
-import {HttpClient} from "@angular/common/http";
+import {HttpClient, HttpParams} from "@angular/common/http";
 import {Observable} from "rxjs/internal/Observable";
 import {UrlProperty} from "./url-property";
 import {SurgeonPlan} from "../backend_types/surgeonPlan";
@@ -14,6 +14,16 @@ export class SurgeonPlanService {
 
   getSurgeonPlans(): Observable<SurgeonPlan[]> {
     return this.http.get<SurgeonPlan[]>(UrlProperty.serverUrl + UrlProperty.surgeonPlansUrl, UrlProperty.httpOptions);
+  }
+
+  getBySurgeonID(surgeonID: number, minDate: Date): Observable<SurgeonPlan[]> {
+    const params = new HttpParams()
+      .set("surgeonID", surgeonID.toString())
+      .set("minDate", minDate.toLocaleDateString());
+    return this.http.get<SurgeonPlan[]>(UrlProperty.serverUrl + UrlProperty.surgeonPlansUrl, {
+      headers: UrlProperty.httpOptions.headers,
+      params: params
+    });
   }
 
   addSurgeonPlan(surgeonPlan: SurgeonPlan): Observable<SurgeonPlan> {

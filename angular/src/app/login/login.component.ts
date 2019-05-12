@@ -13,7 +13,6 @@ import {UrlProperty} from "../service/url-property";
 })
 export class LoginComponent implements OnInit {
   users: User[];
-  isBadConnection = false;
   invalidLogin = false;
 
   constructor(private authService: AuthService,
@@ -27,6 +26,9 @@ export class LoginComponent implements OnInit {
     UrlProperty.authUser.subscribe((user: User) => {
       user ? this.invalidLogin = false : this.invalidLogin = true;
     });
+    setTimeout(() => {
+      document.getElementById("login").focus();
+    }, 1000);
   }
 
   // getUsers() {
@@ -44,23 +46,26 @@ export class LoginComponent implements OnInit {
   // }
 
   loginUser(login, password) {
-    const user: User = new User();
-    user.username = login;
-    user.password = password;
-    this.authService.loginUser(user).subscribe((respUser: User) => {
-        respUser.password = user.password;
-        UrlProperty.authUser.emit(respUser);
-      },
-      (err: HttpErrorResponse) => {
-        this.toastMessageService.inform("Помилка авторизації!", "", "error");
-        UrlProperty.authUser.emit(null);
-      });
+    if (login.value && login.validity.valid) {
+      const user: User = new User();
+      user.username = login.value;
+      user.password = password.value;
+      this.authService.loginUser(user).subscribe((respUser: User) => {
+          respUser.password = user.password;
+          UrlProperty.authUser.emit(respUser);
+        },
+        (err: HttpErrorResponse) => {
+          this.toastMessageService.inform("Помилка авторизації!", "", "error");
+          UrlProperty.authUser.emit(null);
+        });
+    } else {
+      this.invalidLogin = true;
+    }
   }
-
-  test() {
-    console.log(UrlProperty.authUser);
-    console.log(UrlProperty.httpOptions);
-  }
+  // test() {
+  //   console.log(UrlProperty.authUser);
+  //   console.log(UrlProperty.httpOptions);
+  // }
 }
 
 /*

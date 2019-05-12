@@ -35,7 +35,7 @@ public class DatePlanRESTController implements RESTController<DatePlanVO> {
     }
 
     @CrossOrigin
-    @RequestMapping(value = "", params = {"departmentID", "minDate"}, method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(value = "/by_department", params = {"departmentID", "minDate"}, method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public List<DatePlanVO> getByDepartment(
             @RequestParam("departmentID") Integer departmentID,
             @RequestParam("minDate") String minDate) throws ApplicationException, ValidationException {
@@ -46,6 +46,19 @@ public class DatePlanRESTController implements RESTController<DatePlanVO> {
             throw new ValidationException("incorrect.ID", null);
         }
         return datePlanService.getByDepartment(departmentID, convertToDate(minDate));
+    }
+    @CrossOrigin
+    @RequestMapping(value = "/by_surgeon", params = {"surgeonID", "minDate"}, method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public List<DatePlanVO> getBySurgeon(
+            @RequestParam("surgeonID") Integer surgeonID,
+            @RequestParam("minDate") String minDate) throws ApplicationException, ValidationException {
+        if (minDate == null || minDate.equals("undefined") || minDate.equals("null")) {
+            throw new ValidationException("incorrect.minDate", null);
+        }
+        if (surgeonID == null || surgeonID <= 0) {
+            throw new ValidationException("incorrect.ID", null);
+        }
+        return datePlanService.getBySurgeon(surgeonID, convertToDate(minDate));
     }
 
     @CrossOrigin

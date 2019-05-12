@@ -7,7 +7,7 @@ import {AbstractControl} from "@angular/forms";
 export class FilterDepartmentPipe implements PipeTransform {
 
   transform(controls: AbstractControl[], search_value: string): any {
-    if (!controls) return null;
+    if (!controls) { return null; }
     if (!search_value) {
       return controls;
     } else {

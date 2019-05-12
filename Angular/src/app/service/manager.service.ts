@@ -14,11 +14,11 @@ export class ManagerService {
   }
 
   getManagers(): Observable<Manager[]> {
-    return this.http.get<Manager[]>(UrlProperty.serverUrl + UrlProperty.managersUrl);
+    return this.http.get<Manager[]>(UrlProperty.serverUrl + UrlProperty.managersUrl, UrlProperty.httpOptions);
   }
 
   getManager(managerId: number): Observable<Client> {
-    return this.http.get<Client>(UrlProperty.serverUrl + UrlProperty.managersUrl + managerId);
+    return this.http.get<Client>(UrlProperty.serverUrl + UrlProperty.managersUrl + managerId, UrlProperty.httpOptions);
   }
 
   addManager(manager: Manager): Observable<Manager> {

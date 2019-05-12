@@ -16,7 +16,7 @@ export class ClientService {
     if (search) {
       search = search.replace("+", "%2B");
     }
-    let params = new HttpParams().set("search", search ? search : "").set("limit", limit ? limit.toString() : "10").set("offset", offset ? offset.toString() : "0").set("sort", sort ? "ASC" : "DESC");
+    const params = new HttpParams().set("search", search ? search : "").set("limit", limit ? limit.toString() : "10").set("offset", offset ? offset.toString() : "0").set("sort", sort ? "ASC" : "DESC");
     return this.http.get<Client[]>(UrlProperty.serverUrl + UrlProperty.clientsUrl + UrlProperty.search, {
       headers: UrlProperty.httpOptions.headers,
       params: params
@@ -27,7 +27,7 @@ export class ClientService {
     if (search) {
       search = search.replace("+", "%2B");
     }
-    let params = new HttpParams().set("search", search ? search : "");
+    const params = new HttpParams().set("search", search ? search : "");
     return this.http.get<number>(UrlProperty.serverUrl + UrlProperty.clientsUrl + UrlProperty.search + UrlProperty.count, {
       headers: UrlProperty.httpOptions.headers,
       params: params
