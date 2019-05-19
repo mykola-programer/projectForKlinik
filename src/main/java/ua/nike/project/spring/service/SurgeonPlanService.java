@@ -43,7 +43,7 @@ public class SurgeonPlanService {
         return surgeonPlanDAO.findByID(entityID);
     }
 
-/*    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<SurgeonPlanVO> findBySurgeonID(int surgeonID, LocalDate minDate) {
         Object[] param = {surgeonID, minDate};
         List<SurgeonPlan> entities = surgeonPlanDAO.findAll("SurgeonPlan.findBySurgeon", param);
@@ -53,7 +53,7 @@ public class SurgeonPlanService {
             result.add(convertToSurgeonPlanVO(entity));
         }
         return result;
-    }*/
+    }
 
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<SurgeonPlanVO> findAll() {
@@ -88,7 +88,9 @@ public class SurgeonPlanService {
         if (surgeonPlan == null) return null;
         SurgeonPlanVO result = new SurgeonPlanVO();
         result.setSurgeonPlanId(surgeonPlan.getSurgeonPlanId());
-        result.setDatePlanId(surgeonPlan.getDatePlan() != null ? surgeonPlan.getDatePlan().getDatePlanId() : 0);
+
+        result.setDatePlan(surgeonPlan.getDatePlan() != null ? datePlanService.findByID(surgeonPlan.getDatePlan().getDatePlanId()) : null);
+
         result.setSurgeonId(surgeonPlan.getSurgeon() != null ? surgeonPlan.getSurgeon().getSurgeonId() : 0);
         result.setDisable(surgeonPlan.isDisable());
         return result;
@@ -97,7 +99,7 @@ public class SurgeonPlanService {
     private SurgeonPlan copyToSurgeonPlan(SurgeonPlanVO original, SurgeonPlan result) {
         if (original != null) {
             if (result == null) result = new SurgeonPlan();
-            result.setDatePlan(datePlanService.findEntityByID(original.getDatePlanId()));
+            result.setDatePlan(datePlanService.findEntityByID(original.getDatePlan().getDatePlanId()));
             result.setSurgeon(surgeonService.findEntityByID(original.getSurgeonId()));
             result.setDisable(original.isDisable());
         }

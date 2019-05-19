@@ -1,6 +1,6 @@
 import {Component, OnInit} from "@angular/core";
 import {ManagerService} from "../service/manager.service";
-import {Manager} from "../backend_types/manager";
+import {Manager} from "../types/manager";
 import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {HttpErrorResponse} from "@angular/common/http";
 import {ToastMessageService} from "../service/toast-message.service";

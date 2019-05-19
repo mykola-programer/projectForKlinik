@@ -1,5 +1,5 @@
 import {Component, OnInit, ViewChild} from "@angular/core";
-import {Client} from "../backend_types/client";
+import {Client} from "../types/client";
 import {ClientService} from "../service/client.service";
 import {HttpErrorResponse} from "@angular/common/http";
 import {ToastMessageService} from "../service/toast-message.service";

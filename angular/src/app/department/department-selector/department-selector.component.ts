@@ -1,5 +1,5 @@
 import {Component, OnDestroy, OnInit} from "@angular/core";
-import {Department} from "../../backend_types/department";
+import {Department} from "../../types/department";
 import {DepartmentService} from "../../service/department.service";
 import {HttpErrorResponse} from "@angular/common/http";
 import {ToastMessageService} from "../../service/toast-message.service";
@@ -15,7 +15,7 @@ import {GlobalService} from "../../service/global.service";
 export class DepartmentSelectorComponent implements OnInit, OnDestroy {
   private defaultDepartment = "Чернівці";
   departments: Department[] = [];
-  selectedDepartment: Department = this.globalService.getDepartment();
+  selectedDepartment: Department;
   departments_loading = false;
 
   constructor(private departmentService: DepartmentService,
@@ -44,7 +44,11 @@ export class DepartmentSelectorComponent implements OnInit, OnDestroy {
       if (!this.globalService.getDepartment()) {
         this.change(departments.find(value => value.name === this.defaultDepartment));
       } else {
-        this.selectedDepartment = this.globalService.getDepartment();
+        if (this.departments.some(value => value.departmentId === this.globalService.getDepartment().departmentId)){
+          this.selectedDepartment = this.globalService.getDepartment();
+        } else {
+          this.change(departments.find(value => value.name === this.defaultDepartment));
+        }
       }
       this.departments_loading = false;
     }).catch((err: HttpErrorResponse) => {

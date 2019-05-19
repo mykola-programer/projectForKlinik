@@ -2,7 +2,7 @@ import {Component, Input, OnInit} from "@angular/core";
 import {MatDialog} from "@angular/material";
 import {GlobalService} from "../service/global.service";
 import {UrlProperty} from "../service/url-property";
-import {User} from "../backend_types/user";
+import {User} from "../types/user";
 
 @Component({
   selector: "app-navbar",

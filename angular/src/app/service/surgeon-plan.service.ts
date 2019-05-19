@@ -2,7 +2,7 @@ import {Injectable} from "@angular/core";
 import {HttpClient, HttpParams} from "@angular/common/http";
 import {Observable} from "rxjs/internal/Observable";
 import {UrlProperty} from "./url-property";
-import {SurgeonPlan} from "../backend_types/surgeonPlan";
+import {SurgeonPlan} from "../types/surgeonPlan";
 
 @Injectable({
   providedIn: "root"

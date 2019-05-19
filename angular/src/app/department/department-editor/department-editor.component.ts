@@ -3,7 +3,7 @@ import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from "@a
 import {ToastMessageService} from "../../service/toast-message.service";
 import {debounceTime} from "rxjs/operators";
 import {HttpErrorResponse} from "@angular/common/http";
-import {Department} from "../../backend_types/department";
+import {Department} from "../../types/department";
 import {DepartmentService} from "../../service/department.service";
 import {GlobalService} from "../../service/global.service";
 

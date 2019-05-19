@@ -10,7 +10,7 @@ import java.util.Set;
 })
 @NamedQueries(value = {
         @NamedQuery(name = "SurgeonPlan.findAll", query = "FROM SurgeonPlan"),
-        @NamedQuery(name = "SurgeonPlan.findBySurgeon", query = "FROM SurgeonPlan sp WHERE sp.surgeon.surgeonId = ?1 AND sp.datePlan.date > ?2"),
+        @NamedQuery(name = "SurgeonPlan.findBySurgeon", query = "FROM SurgeonPlan sp WHERE sp.surgeon.surgeonId = ?1 AND sp.datePlan.date > ?2 ORDER BY sp.datePlan.date"),
 })
 public class SurgeonPlan implements EntityObject {
 

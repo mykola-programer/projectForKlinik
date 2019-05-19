@@ -1,6 +1,6 @@
 import {EventEmitter, Injectable} from "@angular/core";
 import {Observable} from "rxjs/internal/Observable";
-import {Department} from "../backend_types/department";
+import {Department} from "../types/department";
 import {UrlProperty} from "./url-property";
 import {HttpClient} from "@angular/common/http";
 

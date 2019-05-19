@@ -2,7 +2,7 @@ import {Component, OnInit} from "@angular/core";
 import {AuthService} from "./service/auth/auth.service";
 import {ToastMessageService} from "./service/toast-message.service";
 import {UrlProperty} from "./service/url-property";
-import {User} from "./backend_types/user";
+import {User} from "./types/user";
 
 @Component({
   selector: "app-root",
@@ -11,7 +11,7 @@ import {User} from "./backend_types/user";
 })
 export class AppComponent implements OnInit {
 
-  isLogging = false;
+  isLogging = true; // TODO false
 
   constructor(private auth: AuthService,
               private toastMessageService: ToastMessageService,

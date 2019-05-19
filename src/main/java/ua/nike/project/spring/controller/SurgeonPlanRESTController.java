@@ -28,7 +28,7 @@ public class SurgeonPlanRESTController implements RESTController<SurgeonPlanVO> 
         return surgeonPlanService.findByID(surgeonPlanID);
     }
 
-/*    @Deprecated
+//    @Deprecated
     @CrossOrigin
     @RequestMapping(value = "",
             params = {"surgeonID", "minDate"},
@@ -43,7 +43,7 @@ public class SurgeonPlanRESTController implements RESTController<SurgeonPlanVO> 
             throw new ValidationException("incorrect.ID", null);
         }
         return surgeonPlanService.findBySurgeonID(surgeonID, convertToDate(minDate));
-    }*/
+    }
 
     @CrossOrigin
     @RequestMapping(value = "", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)

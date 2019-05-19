@@ -13,10 +13,10 @@ import {Router} from "@angular/router";
 import {NgbDate} from "@ng-bootstrap/ng-bootstrap/datepicker/ngb-date";
 import {HttpErrorResponse} from "@angular/common/http";
 import {ToastMessageService} from "../../service/toast-message.service";
-import {DatePlan} from "../../backend_types/date-plan";
+import {DatePlan} from "../../types/date-plan";
 import {DatePlanService} from "../../service/date-plan.service";
 import {GlobalService} from "../../service/global.service";
-import {Department} from "../../backend_types/department";
+import {Department} from "../../types/department";
 import {Subscription} from "rxjs";
 import {NgbDatepickerNavigateEvent} from "@ng-bootstrap/ng-bootstrap/datepicker/datepicker";
 import {DatepickerViewModel} from "@ng-bootstrap/ng-bootstrap/datepicker/datepicker-view-model";
@@ -128,7 +128,7 @@ export class DateSelectorComponent implements OnInit, OnDestroy {
       const index = this.indexOf(date, this.datePlans);
       return !(index !== -1 && !this.datePlans[index].disable);
     };
-    // TODO Delete
+    // TODO to delete
     this.datePlanService.getDatePlan(154).toPromise().then(value => this.globalService.changeDatePlan(value));
     //
 

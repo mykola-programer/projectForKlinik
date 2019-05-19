@@ -4,53 +4,13 @@ import {Router} from "@angular/router";
 import {NgbDate} from "@ng-bootstrap/ng-bootstrap/datepicker/ngb-date";
 import {HttpErrorResponse} from "@angular/common/http";
 import {ToastMessageService} from "../../service/toast-message.service";
-import {DatePlan} from "../../backend_types/date-plan";
+import {DatePlan} from "../../types/date-plan";
 import {DatePlanService} from "../../service/date-plan.service";
 import {DepartmentService} from "../../service/department.service";
-import {Department} from "../../backend_types/department";
+import {Department} from "../../types/department";
 import {GlobalService} from "../../service/global.service";
 import {Subscription} from "rxjs";
-
-const I18N_VALUES = {
-  "ua": {
-    weekdays: ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Нд"],
-    months: ["Січень", "Лютий", "Березень", "Квітень", "Травень",
-      "Червень", "Липень", "Серпень", "Вересень", "Жовтень", "Листопад", "Грудень"],
-  }
-  // other languages you would support
-};
-
-// Define a service holding the language. You probably already have one if your app is i18ned. Or you could also
-// use the Angular LOCALE_ID value
-@Injectable()
-export class I18n {
-  language = "ua";
-}
-
-// Define custom service providing the months and weekdays translations
-@Injectable()
-export class EditedDatepickerI18n extends NgbDatepickerI18n {
-
-  constructor(private _i18n: I18n) {
-    super();
-  }
-
-  getWeekdayShortName(weekday: number): string {
-    return I18N_VALUES[this._i18n.language].weekdays[weekday - 1];
-  }
-
-  getMonthShortName(month: number): string {
-    return I18N_VALUES[this._i18n.language].months[month - 1];
-  }
-
-  getMonthFullName(month: number): string {
-    return this.getMonthShortName(month);
-  }
-
-  getDayAriaLabel(date: NgbDateStruct): string {
-    return `${date.day}-${date.month}-${date.year}`;
-  }
-}
+import {EditedDatepickerI18n, I18n} from "../../types/ua-i18n";
 
 @Component({
   selector: "app-date-editor",
@@ -225,8 +185,7 @@ export class DateEditorComponent implements OnInit, OnDestroy {
   private error_deleting(err: HttpErrorResponse, datePlan?: DatePlan) {
     this.del_loading = false;
     if (err.status === 409) {
-      this.toastMessageService.inform("Помилка при видалені! <br>" + this.refactorDay(datePlan), "Цього числа існують активні візити! <br>" +
-        " Спочатку видаліть візити !", "error");
+      this.toastMessageService.inform("Помилка при видалені! <br>" + this.refactorDay(datePlan), "Це число заброньоване за хірургом!", "error");
       this.toastMessageService.inform("Рекомендація.", "Можна заблокувати через кнопку 'Lock'", "info", 10000);
     } else {
       this.toastMessageService.inform("Помилка при видалені! <br>" + this.refactorDay(datePlan),

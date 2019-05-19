@@ -1,6 +1,6 @@
 import {HttpHeaders} from "@angular/common/http";
 import {EventEmitter} from "@angular/core";
-import {User} from "../backend_types/user";
+import {User} from "../types/user";
 import {Subscription} from "rxjs";
 
 export class UrlProperty {
@@ -24,7 +24,7 @@ export class UrlProperty {
   static httpOptions = {
     headers: new HttpHeaders({
       "Content-Type": "application/json; charset=utf-8",
-      // "Authorization": "Basic " + btoa("user" + ":" + "password"),
+      "Authorization": "Basic " + btoa("user" + ":" + "password"), // TODO Commited
     })
   };
 

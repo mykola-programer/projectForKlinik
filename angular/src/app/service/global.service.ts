@@ -1,7 +1,7 @@
 import {EventEmitter, Injectable} from "@angular/core";
-import {Department} from "../backend_types/department";
-import {DatePlan} from "../backend_types/date-plan";
-import {Surgeon} from "../backend_types/surgeon";
+import {Department} from "../types/department";
+import {DatePlan} from "../types/date-plan";
+import {Surgeon} from "../types/surgeon";
 
 @Injectable()
 export class GlobalService {

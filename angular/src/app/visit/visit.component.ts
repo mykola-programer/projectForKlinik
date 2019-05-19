@@ -2,25 +2,25 @@ import {Compiler, Component, OnDestroy, OnInit} from "@angular/core";
 import {VisitService} from "../service/visit.service";
 import {AccomodationService} from "../service/accomodation.service";
 import {AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
-import {Visit} from "../backend_types/visit";
-import {Accomodation} from "../backend_types/accomodation";
+import {Visit} from "../types/visit";
+import {Accomodation} from "../types/accomodation";
 import {HttpErrorResponse} from "@angular/common/http";
 import {ToastMessageService} from "../service/toast-message.service";
-import {Client} from "../backend_types/client";
+import {Client} from "../types/client";
 import {ClientService} from "../service/client.service";
 import {debounceTime} from "rxjs/operators";
-import {OperationType} from "../backend_types/operation-type";
+import {OperationType} from "../types/operation-type";
 import {OperationTypeService} from "../service/operation-type.service";
-import {Surgeon} from "../backend_types/surgeon";
-import {Manager} from "../backend_types/manager";
+import {Surgeon} from "../types/surgeon";
+import {Manager} from "../types/manager";
 import {SurgeonService} from "../service/surgeon.service";
 import {ManagerService} from "../service/manager.service";
 import {MatDialog} from "@angular/material";
 import {RelocationDialogComponent} from "../relocation-dialog/relocation-dialog.component";
 import {Subscription} from "rxjs";
-import {DatePlan} from "../backend_types/date-plan";
+import {DatePlan} from "../types/date-plan";
 import {GlobalService} from "../service/global.service";
-import {Department} from "../backend_types/department";
+import {Department} from "../types/department";
 
 @Component({
   selector: "app-visit",

@@ -1,6 +1,6 @@
 import {Component, OnInit} from "@angular/core";
 import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {OperationType} from "../backend_types/operation-type";
+import {OperationType} from "../types/operation-type";
 import {ToastMessageService} from "../service/toast-message.service";
 import {OperationTypeService} from "../service/operation-type.service";
 import {debounceTime} from "rxjs/operators";

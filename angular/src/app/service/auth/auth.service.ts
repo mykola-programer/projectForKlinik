@@ -1,7 +1,7 @@
 import {EventEmitter, Injectable} from "@angular/core";
 import {TokenStorage} from "./token-storage";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
-import {User} from "../../backend_types/user";
+import {User} from "../../types/user";
 import {Observable} from "rxjs/internal/Observable";
 import {UrlProperty} from "../url-property";
 

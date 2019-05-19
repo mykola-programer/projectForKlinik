@@ -5,7 +5,8 @@ import java.util.Objects;
 public class SurgeonPlanVO implements VisualObject {
 
     private Integer surgeonPlanId;
-    private Integer datePlanId;
+//    private Integer datePlanId;
+    private DatePlanVO datePlan;
     private Integer surgeonId;
     private boolean disable;
 
@@ -17,12 +18,12 @@ public class SurgeonPlanVO implements VisualObject {
         this.surgeonPlanId = surgeonPlanId;
     }
 
-    public Integer getDatePlanId() {
-        return datePlanId;
+    public DatePlanVO getDatePlan() {
+        return datePlan;
     }
 
-    public void setDatePlanId(Integer datePlanId) {
-        this.datePlanId = datePlanId;
+    public void setDatePlan(DatePlanVO datePlan) {
+        this.datePlan = datePlan;
     }
 
     public Integer getSurgeonId() {
@@ -46,20 +47,20 @@ public class SurgeonPlanVO implements VisualObject {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         SurgeonPlanVO that = (SurgeonPlanVO) o;
-        return Objects.equals(datePlanId, that.datePlanId) &&
+        return Objects.equals(datePlan, that.datePlan) &&
                 Objects.equals(surgeonId, that.surgeonId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(datePlanId, surgeonId);
+        return Objects.hash(datePlan, surgeonId);
     }
 
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("SurgeonPlanVO{");
         sb.append("surgeonPlanId=").append(surgeonPlanId);
-        sb.append(", datePlanId=").append(datePlanId);
+        sb.append(", datePlan=").append(datePlan);
         sb.append(", surgeonId=").append(surgeonId);
         sb.append(", disable=").append(disable);
         sb.append('}');

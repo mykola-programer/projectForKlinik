@@ -244,7 +244,7 @@
   <button class="btn btn-dark btn-min-style" (click)="onDelete()"
           [disabled]="number_of_changed_values == 0">Delete
   </button>
-  <img [hidden]="!del_loading" src="/assets/img/rotating-balls-spinner.gif" height="40" width="40"/>
+  <img [hidden]="!deleting" src="/assets/img/rotating-balls-spinner.gif" height="40" width="40"/>
 
   <button class="btn btn-info btn-min-style" (click)="onDisplace()"
           [disabled]="number_of_changed_values == 0">Displace

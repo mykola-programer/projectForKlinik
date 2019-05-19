@@ -1,7 +1,7 @@
 import {Injectable} from "@angular/core";
 import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs/internal/Observable";
-import {Surgeon} from "../backend_types/surgeon";
+import {Surgeon} from "../types/surgeon";
 import {UrlProperty} from "./url-property";
 
 @Injectable({

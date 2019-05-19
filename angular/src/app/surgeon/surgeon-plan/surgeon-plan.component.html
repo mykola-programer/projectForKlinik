@@ -1,8 +1,9 @@
-<div class="container-fluid" style="min-width:500px; max-width: 1000px">
+<mat-spinner *ngIf="loading"></mat-spinner>
+<div *ngIf="!loading" class="container-fluid" style="min-width:500px; max-width: 1000px">
   <div class="row">
     <div class="col-lg-5">
-      <mat-spinner *ngIf="dates_loading"></mat-spinner>
-      <div *ngIf="!dates_loading"><p class="h3 text-center">Заплановані операційні дати :</p>
+      <div>
+        <p class="h3 text-center">Заплановані операційні дати :</p>
         <p class="h4 text-center">(м.{{selectedDepartment?.name}})</p>
 
         <ngb-datepicker
@@ -10,7 +11,7 @@
         </ngb-datepicker>
 
         <ng-template #customDay let-date="date" let-currentMonth="currentMonth" let-selected="selected"
-                     let-disabled="disabled" let-focused="focused">
+                     let-disabled="disabled">
           <span class="custom-day"
                 (click)="onSelect(date, disabled)"
                 [class.work-day]="isPresented(date)"
@@ -18,18 +19,28 @@
                 [class.bg-primary]="isSelected(date)"
                 [class.hidden]="date.month !== currentMonth"
                 [class.text-muted]="disabled">
-                  {{ date.day }}
+                            <img [hidden]="!checkForDisable(date)"
+                                 src="../../../assets/img/icons8/lock-48.png" height="20" width="20"
+                                 [ngClass]="{'bg-primary':isSelected(date)}">
+
+                            <img [hidden]="!(checkForLock(date) && !checkForDisable(date))"
+                                 src="../../../assets/img/icons8/no-entry-48.png" height="20" width="20"
+                                 [ngClass]="{'work-day':isPresented(date)}"
+                                 [title]="getDepartmentByDate(date)">
+
+                                 <div *ngIf="!checkForLock(date) && !checkForDisable(date)"> {{ date.day }} </div>
           </span>
 
         </ng-template>
-      </div>
-      <div>
-        <button class="btn btn-success btn-min-style" (click)="onSave()" [disabled]="!(selectedDates.length > 0)">Save
-        </button>
-        <button class="btn btn-warning btn-min-style" (click)="onRefresh()">Refresh</button>
-        <button class="btn btn-dark btn-min-style" (click)="onDelete()" [disabled]="!(selectedDates.length > 0)">
+        <div>
+          <button class="btn btn-success btn-min-style" (click)="onSave()"
+                  [disabled]="!(selectedSurgeonPlansByCurrentDepartment.length > 0)">Save
+          </button>
+          <button class="btn btn-warning btn-min-style" (click)="onRefresh()">Refresh</button>
+          <button class="btn btn-dark btn-min-style" (click)="onDelete()" [disabled]="!(selectedSurgeonPlansByCurrentDepartment.length > 0)">
           Delete
-        </button>
+          </button>
+        </div>
       </div>
 
     </div>
@@ -39,19 +50,28 @@
       <div class="left-container" style="max-width: 280px">
         <br>
         <p class="h5 text-center">Вибрані дати для хірурга : </p>
-        <p class="h5 text-center">({{selectedSurgeon?.surname}} {{selectedSurgeon?.firstName[0]}}.{{selectedSurgeon?.secondName[0]}}.):</p>
+        <p class="h5 text-center">({{selectedSurgeon?.surname}}
+          {{selectedSurgeon?.firstName[0]}}.{{selectedSurgeon?.secondName[0]}}.):</p>
 
 
         <!--<button (click)="test()">Test</button>-->
 
-        <mat-spinner *ngIf="false" style="margin-left: 2%" [diameter]="60"></mat-spinner>
-        <ol *ngIf="true">
-          <li class="h6 text" *ngFor="let selectedDate of selectedSurgeonPlans">
-            {{refactorDay(selectedDate)}}
-            <img [hidden]="!(selectedDate.datePlanId > 0) || !selectedDate.disable" src="/assets/img/icons8/lock-48.png" height="20" width="20"
-                 (click)="selectedDate.disable = false"/>
-            <img [hidden]="!(selectedDate.datePlanId > 0) || selectedDate.disable" src="/assets/img/icons8/unlock-48.png" height="20" width="20"
-                 (click)="selectedDate.disable = true"/>
+        <mat-spinner *ngIf="saving || deleting" style="margin-left: 2%" [diameter]="60"></mat-spinner>
+        <ol *ngIf="!(saving || deleting)">
+          <li class="h6 text" *ngFor="let surgeonPlan of selectedSurgeonPlansByCurrentDepartment">
+            <input type="checkbox" [(ngModel)]=surgeonPlan.isChanged>
+            {{refactorDay(surgeonPlan.datePlan)}}
+            <img [hidden]="!(surgeonPlan.datePlan.datePlanId > 0) || !surgeonPlan.disable"
+                 src="../../../assets/img/icons8/lock-48.png" height="20" width="20"
+                 (click)="changeLock(surgeonPlan)"
+                 title="заблоковано для запису"/>
+            <img [hidden]="!(surgeonPlan.datePlan.datePlanId > 0) || surgeonPlan.disable"
+                 src="../../../assets/img/icons8/unlock-48.png" height="20" width="20"
+                 (click)="changeLock(surgeonPlan)"
+                 title="заброньована дата для запису"/>
+            <!--<img src="../../../assets/img/icons8/delete-48.png" height="20" width="20"-->
+                 <!--(click)="onDelete(surgeonPlan)"-->
+                 <!--title="видалити дату"/>-->
           </li>
         </ol>
       </div>

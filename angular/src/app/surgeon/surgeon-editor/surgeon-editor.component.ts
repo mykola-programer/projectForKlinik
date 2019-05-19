@@ -1,5 +1,5 @@
 import {Component, OnInit} from "@angular/core";
-import {Surgeon} from "../../backend_types/surgeon";
+import {Surgeon} from "../../types/surgeon";
 import {SurgeonService} from "../../service/surgeon.service";
 import {HttpErrorResponse} from "@angular/common/http";
 import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from "@angular/forms";

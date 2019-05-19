@@ -1,8 +1,8 @@
 import {Injectable} from "@angular/core";
 import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs/internal/Observable";
-import {Manager} from "../backend_types/manager";
-import {Client} from "../backend_types/client";
+import {Manager} from "../types/manager";
+import {Client} from "../types/client";
 import {UrlProperty} from "./url-property";
 
 @Injectable({

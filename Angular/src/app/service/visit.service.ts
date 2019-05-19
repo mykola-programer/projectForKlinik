@@ -1,7 +1,7 @@
 import {Injectable} from "@angular/core";
 import {Observable} from "rxjs/internal/Observable";
 import {HttpClient, HttpParams} from "@angular/common/http";
-import {Visit} from "../backend_types/visit";
+import {Visit} from "../types/visit";
 import {UrlProperty} from "./url-property";
 
 @Injectable({

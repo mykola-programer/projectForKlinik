@@ -1,5 +1,5 @@
 import {Component, OnDestroy, OnInit} from "@angular/core";
-import {Surgeon} from "../../backend_types/surgeon";
+import {Surgeon} from "../../types/surgeon";
 import {SurgeonService} from "../../service/surgeon.service";
 import {GlobalService} from "../../service/global.service";
 import {Router} from "@angular/router";
@@ -44,7 +44,11 @@ export class SurgeonSelectorComponent implements OnInit, OnDestroy {
       if (!this.globalService.getSurgeon()) {
         this.change(surgeons.find(value => value.surname === this.defaultSurgeon));
       } else {
-        this.selectedSurgeon = this.globalService.getSurgeon();
+        if (this.surgeons.some(value => value.surgeonId === this.globalService.getSurgeon().surgeonId)){
+          this.selectedSurgeon = this.globalService.getSurgeon();
+        } else {
+          this.change(surgeons.find(value => value.surname === this.defaultSurgeon));
+        }
       }
       this.surgeons_loading = false;
     }).catch((err: HttpErrorResponse) => {

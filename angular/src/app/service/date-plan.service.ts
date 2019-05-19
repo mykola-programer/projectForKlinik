@@ -2,7 +2,7 @@ import {Injectable} from "@angular/core";
 import {Observable} from "rxjs/internal/Observable";
 import {HttpClient, HttpParams} from "@angular/common/http";
 import {UrlProperty} from "./url-property";
-import {DatePlan} from "../backend_types/date-plan";
+import {DatePlan} from "../types/date-plan";
 
 @Injectable({
   providedIn: "root"

@@ -1,7 +1,7 @@
 import {Injectable} from "@angular/core";
 import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs/internal/Observable";
-import {Accomodation} from "../backend_types/accomodation";
+import {Accomodation} from "../types/accomodation";
 import {UrlProperty} from "./url-property";
 
 @Injectable({

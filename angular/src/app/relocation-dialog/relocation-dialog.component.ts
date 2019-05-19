@@ -2,56 +2,16 @@ import {Component, Inject, Injectable, OnInit} from "@angular/core";
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material";
 import {NgbCalendar, NgbDatepickerConfig, NgbDatepickerI18n, NgbDateStruct} from "@ng-bootstrap/ng-bootstrap";
 import {NgbDate} from "@ng-bootstrap/ng-bootstrap/datepicker/ngb-date";
-import {Accomodation} from "../backend_types/accomodation";
+import {Accomodation} from "../types/accomodation";
 import {ToastMessageService} from "../service/toast-message.service";
-import {Visit} from "../backend_types/visit";
-import {Client} from "../backend_types/client";
+import {Visit} from "../types/visit";
+import {Client} from "../types/client";
 import {AccomodationService} from "../service/accomodation.service";
 import {VisitService} from "../service/visit.service";
 import {HttpErrorResponse} from "@angular/common/http";
-import {DatePlan} from "../backend_types/date-plan";
+import {DatePlan} from "../types/date-plan";
 import {DatePlanService} from "../service/date-plan.service";
-
-const I18N_VALUES = {
-  "ua": {
-    weekdays: ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Нд"],
-    months: ["Січень", "Лютий", "Березень", "Квітень", "Травень",
-      "Червень", "Липень", "Серпень", "Вересень", "Жовтень", "Листопад", "Грудень"],
-  }
-  // other languages you would support
-};
-
-// Define a service holding the language. You probably already have one if your app is i18ned. Or you could also
-// use the Angular LOCALE_ID value
-@Injectable()
-export class I18n {
-  language = "ua";
-}
-
-// Define custom service providing the months and weekdays translations
-@Injectable()
-export class EditedDatepickerI18n extends NgbDatepickerI18n {
-
-  constructor(private _i18n: I18n) {
-    super();
-  }
-
-  getWeekdayShortName(weekday: number): string {
-    return I18N_VALUES[this._i18n.language].weekdays[weekday - 1];
-  }
-
-  getMonthShortName(month: number): string {
-    return I18N_VALUES[this._i18n.language].months[month - 1];
-  }
-
-  getMonthFullName(month: number): string {
-    return this.getMonthShortName(month);
-  }
-
-  getDayAriaLabel(date: NgbDateStruct): string {
-    return `${date.day}-${date.month}-${date.year}`;
-  }
-}
+import {EditedDatepickerI18n, I18n} from "../types/ua-i18n";
 
 @Component({
   selector: "app-relocation-dialog",
